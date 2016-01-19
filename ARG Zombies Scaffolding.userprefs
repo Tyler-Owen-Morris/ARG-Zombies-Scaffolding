@@ -1,0 +1,14 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace />
+  <MonoDevelop.Ide.Workbench ActiveDocument="../Glitch Garden/Assets/Scripts/LevelManager.cs">
+    <Files>
+      <File FileName="../Glitch Garden/Assets/Scripts/GameTimer.cs" Line="46" Column="29" />
+      <File FileName="../Glitch Garden/Assets/Scripts/LevelManager.cs" Line="46" Column="27" />
+      <File FileName="../Glitch Garden/Assets/Scripts/StarDisplay.cs" Line="14" Column="3" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
