@@ -1,0 +1,17 @@
+/Users/Owen/ARG Zombies Scaffolding/Temp/bin/Debug/UnityEngine.dll
+/Users/Owen/ARG Zombies Scaffolding/Temp/bin/Debug/UnityEditor.dll
+/Users/Owen/ARG Zombies Scaffolding/Temp/bin/Debug/UnityEngine.UI.dll
+/Users/Owen/ARG Zombies Scaffolding/Temp/bin/Debug/UnityEngine.Networking.dll
+/Users/Owen/ARG Zombies Scaffolding/Temp/bin/Debug/Mono.Cecil.dll
+/Users/Owen/ARG Zombies Scaffolding/Temp/bin/Debug/Unity.SerializationLogic.dll
+/Users/Owen/ARG Zombies Scaffolding/Temp/bin/Debug/Unity.DataContract.dll
+/Users/Owen/ARG Zombies Scaffolding/Temp/bin/Debug/ICSharpCode.NRefactory.dll
+/Users/Owen/ARG Zombies Scaffolding/Temp/bin/Debug/Unity.UNetWeaver.dll
+/Users/Owen/ARG Zombies Scaffolding/Temp/bin/Debug/Unity.UNetWeaver.dll.mdb
+/Users/Owen/ARG Zombies Scaffolding/Temp/bin/Debug/Unity.CecilTools.dll
+/Users/Owen/ARG Zombies Scaffolding/Temp/bin/Debug/Mono.Cecil.Pdb.dll
+/Users/Owen/ARG Zombies Scaffolding/Temp/bin/Debug/Mono.Cecil.Mdb.dll
+/Users/Owen/ARG Zombies Scaffolding/Temp/bin/Debug/Assembly-CSharp.dll.mdb
+/Users/Owen/ARG Zombies Scaffolding/Temp/bin/Debug/Assembly-CSharp.dll
+/Users/Owen/ARG Zombies Scaffolding/obj/Debug/Assembly-CSharp.dll
+/Users/Owen/ARG Zombies Scaffolding/obj/Debug/Assembly-CSharp.dll.mdb

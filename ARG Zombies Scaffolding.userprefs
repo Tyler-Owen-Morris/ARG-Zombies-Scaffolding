@@ -1,11 +1,33 @@
-﻿<Properties>
-  <MonoDevelop.Ide.Workspace />
-  <MonoDevelop.Ide.Workbench ActiveDocument="../Glitch Garden/Assets/Scripts/LevelManager.cs">
+﻿<Properties StartupItem="Assembly-CSharp.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Zombie.cs">
     <Files>
-      <File FileName="../Glitch Garden/Assets/Scripts/GameTimer.cs" Line="46" Column="29" />
-      <File FileName="../Glitch Garden/Assets/Scripts/LevelManager.cs" Line="46" Column="27" />
-      <File FileName="../Glitch Garden/Assets/Scripts/StarDisplay.cs" Line="14" Column="3" />
+      <File FileName="Assets/Scripts/MusicManager.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="Assets/Scripts/GameManager.cs" Line="57" Column="29" NotebookId="2" />
+      <File FileName="Assets/Scripts/TextController.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="Assets/Scripts/Building.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="Assets/Scripts/Button.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="Assets/Scripts/SetStartVolume.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="Assets/Scripts/CharacterAnimation.cs" Line="49" Column="5" NotebookId="2" />
+      <File FileName="Assets/Scripts/BuildingSpawner.cs" Line="1" Column="1" NotebookId="2" />
     </Files>
+    <FloatingWindows>
+      <FloatingWindow WindowId="1" X="1391" Y="1056" Width="1030" Height="940">
+        <Files>
+          <File FileName="Assets/Scripts/CombatManager.cs" Line="48" Column="5" />
+        </Files>
+      </FloatingWindow>
+      <FloatingWindow WindowId="2" X="2145" Y="1100" Width="1154" Height="941">
+        <Files>
+          <File FileName="Assets/Scripts/LevelManager.cs" Line="10" Column="2" NotebookId="1" />
+          <File FileName="Assets/Scripts/Zombie.cs" Line="36" Column="4" NotebookId="1" />
+          <File FileName="Assets/Scripts/PlayerPrefsManager.cs" Line="1" Column="1" NotebookId="1" />
+          <File FileName="Assets/Scripts/GamePreferences.cs" Line="1" Column="1" NotebookId="1" />
+          <File FileName="Assets/Scripts/MapLevelManager.cs" Line="45" Column="30" NotebookId="1" />
+          <File FileName="Assets/Scripts/Player.cs" Line="17" Column="20" NotebookId="1" />
+        </Files>
+      </FloatingWindow>
+    </FloatingWindows>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />

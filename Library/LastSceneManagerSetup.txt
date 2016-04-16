@@ -1,0 +1,4 @@
+sceneSetups:
+- path: Assets/_Scenes/02b Combat Level.unity
+  isLoaded: 1
+  isActive: 1

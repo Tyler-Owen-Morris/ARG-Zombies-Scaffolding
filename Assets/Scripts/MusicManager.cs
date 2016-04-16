@@ -1,37 +1,49 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class MusicManager : MonoBehaviour {
 
 	public AudioClip[] levelMusicChangeArray;
+	private static MusicManager instance;
 	
 	private AudioSource audioSource;
+	private Scene activeScene;
 	
 	// Use this for initialization
 	void Awake () {
-		DontDestroyOnLoad (gameObject);
-		Debug.Log ("Don't destroy on load" + name);
+		MakeSingleton();
 	}
 	
 	void Start () {
 		audioSource = GetComponent<AudioSource>();
 	}
 	
-	void OnLevelWasLoaded (int level) {
+	void OnLevelWasLoaded () {
+		activeScene = SceneManager.GetActiveScene();
 		AudioClip lastLevelMusic = GetComponent<AudioSource>().clip;
-		AudioClip thislevelMusic = levelMusicChangeArray[level];
+		AudioClip thislevelMusic = levelMusicChangeArray[activeScene.buildIndex];
 		
 		if ( thislevelMusic != lastLevelMusic) {
-			Debug.Log ("playing clip:" + thislevelMusic);
-			if (thislevelMusic){
+			//Debug.Log ("playing clip:" + thislevelMusic);
+			if (thislevelMusic && audioSource != null){
 				audioSource.clip = thislevelMusic;
 				audioSource.loop = true;
 				audioSource.Play ();
 			}
 		} else {
-			Debug.Log ("resuming same music");
+			//Debug.Log ("resuming same music");
 			audioSource.loop = true;
 			//audioSource.Play ();
+		}
+	}
+
+	void MakeSingleton() {
+		if (instance != null) {
+			Destroy (gameObject);
+		} else {
+			instance = this;
+			DontDestroyOnLoad (gameObject);
 		}
 	}
 	
