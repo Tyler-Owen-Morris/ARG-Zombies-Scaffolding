@@ -1,30 +1,34 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Zombie.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Player.cs">
     <Files>
-      <File FileName="Assets/Scripts/MusicManager.cs" Line="1" Column="1" NotebookId="2" />
-      <File FileName="Assets/Scripts/GameManager.cs" Line="57" Column="29" NotebookId="2" />
-      <File FileName="Assets/Scripts/TextController.cs" Line="1" Column="1" NotebookId="2" />
-      <File FileName="Assets/Scripts/Building.cs" Line="1" Column="1" NotebookId="2" />
-      <File FileName="Assets/Scripts/Button.cs" Line="1" Column="1" NotebookId="2" />
-      <File FileName="Assets/Scripts/SetStartVolume.cs" Line="1" Column="1" NotebookId="2" />
-      <File FileName="Assets/Scripts/CharacterAnimation.cs" Line="49" Column="5" NotebookId="2" />
-      <File FileName="Assets/Scripts/BuildingSpawner.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="Assets/Scripts/MusicManager.cs" Line="1" Column="1" NotebookId="3" />
+      <File FileName="Assets/Scripts/GameManager.cs" Line="90" Column="35" NotebookId="3" />
+      <File FileName="Assets/Scripts/TextController.cs" Line="1" Column="1" NotebookId="3" />
+      <File FileName="Assets/Scripts/Building.cs" Line="1" Column="1" NotebookId="3" />
+      <File FileName="Assets/Scripts/Button.cs" Line="1" Column="1" NotebookId="3" />
+      <File FileName="Assets/Scripts/SetStartVolume.cs" Line="1" Column="1" NotebookId="3" />
+      <File FileName="Assets/Scripts/BuildingSpawner.cs" Line="1" Column="1" NotebookId="3" />
     </Files>
     <FloatingWindows>
-      <FloatingWindow WindowId="1" X="1391" Y="1056" Width="1030" Height="940">
+      <FloatingWindow WindowId="1" X="87" Y="967" Width="1442" Height="1017">
         <Files>
-          <File FileName="Assets/Scripts/CombatManager.cs" Line="48" Column="5" />
+          <File FileName="Assets/Scripts/CombatManager.cs" Line="34" Column="1" />
         </Files>
       </FloatingWindow>
-      <FloatingWindow WindowId="2" X="2145" Y="1100" Width="1154" Height="941">
+      <FloatingWindow WindowId="2" X="1124" Y="993" Width="1154" Height="927">
         <Files>
           <File FileName="Assets/Scripts/LevelManager.cs" Line="10" Column="2" NotebookId="1" />
           <File FileName="Assets/Scripts/Zombie.cs" Line="36" Column="4" NotebookId="1" />
           <File FileName="Assets/Scripts/PlayerPrefsManager.cs" Line="1" Column="1" NotebookId="1" />
           <File FileName="Assets/Scripts/GamePreferences.cs" Line="1" Column="1" NotebookId="1" />
-          <File FileName="Assets/Scripts/MapLevelManager.cs" Line="45" Column="30" NotebookId="1" />
-          <File FileName="Assets/Scripts/Player.cs" Line="17" Column="20" NotebookId="1" />
+          <File FileName="Assets/Scripts/MapLevelManager.cs" Line="30" Column="54" NotebookId="1" />
+          <File FileName="Assets/Scripts/Player.cs" Line="34" Column="3" NotebookId="1" />
+        </Files>
+      </FloatingWindow>
+      <FloatingWindow WindowId="3" X="532" Y="87" Width="1140" Height="765">
+        <Files>
+          <File FileName="Assets/Scripts/CharacterAnimation.cs" Line="48" Column="4" NotebookId="2" />
         </Files>
       </FloatingWindow>
     </FloatingWindows>

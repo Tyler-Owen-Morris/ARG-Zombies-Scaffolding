@@ -41,7 +41,7 @@ public class CombatManager : MonoBehaviour {
 			zombiesLeft.text = zombiesToWin.ToString();
 			survivorsAlive.text = GameManager.instance.survivorsActive.ToString();
 			int daysSurvived = GameManager.instance.daysSurvived;
-		gameOverText.text = "You, and your entire party are now a part of the zombie horde. You managed to survive " + daysSurvived + " days before all dying terrible deaths. /n /n Would you like to Start all over from Day 1? or pay a lucky dollar that a lucky event occurs, and you're spared, and then thanks to 3d printer technology, the limb that you lost was replaced cheaply and quickly with little to no technical skill --- look I'll let you live with 75% of your shit for 1$... straight developer bribe... your call mr " + daysSurvived + " days..." ;
+		 	gameOverText.text = "You, and your entire party are now a part of the zombie horde. You managed to survive " + daysSurvived + " days before all dying terrible deaths. /n /n Would you like to Start all over from Day 1? or pay a lucky dollar that a lucky event occurs, and you're spared, and then thanks to 3d printer technology, the limb that you lost was replaced cheaply and quickly with little to no technical skill --- look I'll let you live with 75% of your shit for 1$... straight developer bribe... your call mr " + daysSurvived + " days..." ;
 	}
 
 	public void SetZombiesEncountered (int zombies) {
@@ -92,7 +92,8 @@ public class CombatManager : MonoBehaviour {
 		zombiesToWin --;//incriment the total # of zombies down
 		zombiesLeft.text = zombiesToWin.ToString();//update the UI count
 
-		if (zombiesToWin <= 0) {//this is my *********WIN********** the building Condition 
+		//this is my *********WIN********** the building Condition
+		if (zombiesToWin <= 0) { 
 			GameManager.instance.BuildingIsCleared(CalculateSupplyEarned());
 			GameManager.instance.SetPublicPlayerHealth(FindObjectOfType<Player>().currentHealth);//this stores in permenant memory
 			GameManager.instance.playerCurrentHealth = FindObjectOfType<Player>().currentHealth;//this stores in gameManager
@@ -129,6 +130,7 @@ public class CombatManager : MonoBehaviour {
 
 	public void EndGameCalled () {
 		gameOverpanel.gameObject.SetActive(true);
+		Time.timeScale = 0;
 
 	}
 

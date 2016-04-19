@@ -6,9 +6,10 @@ public class Player : MonoBehaviour {
 
 	public int currentHealth, totalHealth, baseAttack;
 	public int shivTopAttack, shivBottomAttack, clubTopAttack, clubBottomAttack, gunTopAttack, gunBottomAttack;
+	public float chanceToGetBit;
 
 	private int attk;
-	private float chanceToGetBit;
+
 
 	[SerializeField]
 	private Slider myHealthSlider;
@@ -18,7 +19,7 @@ public class Player : MonoBehaviour {
 	
 	// Use this for initialization
 	void Start () {
-		chanceToGetBit = 5.0f;
+		chanceToGetBit = 25.0f;
 		totalHealth = 100;// this is a placeholder for 100 total health.
 		currentHealth = GetCurrentHealthFromGameManager ();
 		baseAttack = 5;
@@ -60,7 +61,7 @@ public class Player : MonoBehaviour {
 
 		//wether bitten or not- report the attack, notify game manager of current health, and set the slider to correct health.
 		Debug.Log ("Player got Hit for " + dmg + " damage and now has " + currentHealth + " current health of " + totalHealth + " possible total health");
-		GameManager.instance.SetPublicPlayerHealth (currentHealth);//this updates the permanent memory as the GameManager is permanent, and stores to Prefs
+		FindObjectOfType<GameManager>().SetPublicPlayerHealth (currentHealth);//this updates the permanent memory as the GameManager is permanent, and stores to Prefs
 		myHealthSlider.value = ConvertCurrentHealthToSliderValue();
 		if (currentHealth <= 0) {
 			Die();

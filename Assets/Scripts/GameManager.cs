@@ -9,14 +9,19 @@ public class GameManager : MonoBehaviour {
 	public static GameManager instance;
 
 	public int survivorsActive, totalSurvivors, daysSurvived, supply, reportedSupply, playerCurrentHealth, zombiesToFight;
-	public static DateTime timeCharacterStarted;
+	public DateTime timeCharacterStarted;
 	public float homebaseLat, homebaseLong;
+	public bool[] buildingToggleStatusArray;
 
 	private Scene activeScene;
+	private string activeBldg;
 
 	void Awake () {
 		MakeSingleton();
 		StartCoroutine (StartLocationServices());
+
+		buildingToggleStatusArray = new bool[4];
+		ResetAllBuildings();
 	}
 
 	void OnLevelWasLoaded () {
@@ -24,6 +29,9 @@ public class GameManager : MonoBehaviour {
 		if (activeScene.name.ToString() == "02b Combat Level") {
 			CombatManager combatManager = FindObjectOfType<CombatManager>();
 			combatManager.zombiesToWin = zombiesToFight;
+		} else if (activeScene.name.ToString() == "02a Map Level"){
+			Debug.Log ("Time character started set to: " + timeCharacterStarted);
+			
 		}
 	}
 
@@ -107,16 +115,36 @@ public class GameManager : MonoBehaviour {
 		GamePreferences.SetHomebaseLongitude(lon);
 	}
 
-	public void LoadIntoCombat (int zombies) {
+	public void LoadIntoCombat (int zombies, string bldg) {
+		activeBldg = bldg;
 		zombiesToFight = zombies;
 		SceneManager.LoadScene ("02b Combat level");
+	}
+
+	public void ResetAllBuildings () {
+		for (int i=0; i < buildingToggleStatusArray.Length;i++ ){
+			buildingToggleStatusArray[i] = false;
+		}
 	}
 
 	public void BuildingIsCleared (int sup) {
 		reportedSupply = sup;
 		supply += sup;
 		GamePreferences.SetSupply(supply); 
+		SetClearedBuilding();
 		// should possibly also build a list or an array here with the names of buildings cleared and use 01-04 to store states.
+	}
+
+	private void SetClearedBuilding () {
+		if (activeBldg == "Building01") {
+			buildingToggleStatusArray[0]=true;
+		} else if (activeBldg == "Building02") {
+			buildingToggleStatusArray[1]=true;
+		} else if (activeBldg == "Building03") {
+			buildingToggleStatusArray[2]=true;
+		} else if (activeBldg == "Building04") {
+			buildingToggleStatusArray[3]=true;
+		}
 	}
 
 

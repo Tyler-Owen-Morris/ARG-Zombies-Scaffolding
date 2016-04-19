@@ -66,7 +66,6 @@ public class CharacterAnimation : MonoBehaviour {
 	public void CheckBeforeContinuing () { // this will be called from animation
 		if (GameManager.instance.totalSurvivors <= 0) {
 			combatManager.EndGameCalled();
-			Time.timeScale = 0; //freeze, and combat manager will have the panel on
 		} 
 	}
 	
