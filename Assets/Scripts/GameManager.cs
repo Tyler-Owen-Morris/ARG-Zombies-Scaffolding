@@ -122,8 +122,13 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void ResetAllBuildings () {
-		for (int i=0; i < buildingToggleStatusArray.Length;i++ ){
+		for (int i = 0 ; i < buildingToggleStatusArray.Length ; i++ ){
 			buildingToggleStatusArray[i] = false;
+		}
+		Building[] arrayOfBuildings = FindObjectsOfType<Building>();
+		for (int i = 0; i < arrayOfBuildings.Length; i++) {
+			Debug.Log("Sending reactivation message to " + arrayOfBuildings[i].name );
+			arrayOfBuildings[i].ReactivateMe();
 		}
 	}
 
@@ -207,7 +212,7 @@ public class GameManager : MonoBehaviour {
 		} else if (Input.location.status == LocationServiceStatus.Running) {
 			//access granted and location values can be retireved
 			Debug.Log ("Location Services report running successfully");
-			yield return new WaitForSeconds(3);
+			yield return Input.location.lastData;
 			print ("location is: " + Input.location.lastData.latitude + " " + Input.location.lastData.longitude);
 		}
 

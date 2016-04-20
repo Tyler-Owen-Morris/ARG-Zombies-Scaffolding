@@ -31,6 +31,12 @@ public class MapLevelManager : MonoBehaviour {
 		GameManager.instance.PlayerAttemptingPurchaseNewSurvivor ();
 	}
 
+	public void ResetBuildingsCalled () {
+		GameManager.instance.ResetAllBuildings();
+
+
+	}
+
 	void OnLevelWasLoaded () {
 		UpdateTheUI();
 	}

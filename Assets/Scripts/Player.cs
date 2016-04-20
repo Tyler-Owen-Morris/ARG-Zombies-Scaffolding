@@ -19,7 +19,7 @@ public class Player : MonoBehaviour {
 	
 	// Use this for initialization
 	void Start () {
-		chanceToGetBit = 25.0f;
+		chanceToGetBit = 2.0f;
 		totalHealth = 100;// this is a placeholder for 100 total health.
 		currentHealth = GetCurrentHealthFromGameManager ();
 		baseAttack = 5;

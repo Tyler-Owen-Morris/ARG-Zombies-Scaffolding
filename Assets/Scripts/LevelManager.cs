@@ -30,16 +30,6 @@ public class LevelManager : MonoBehaviour {
 		SceneManager.LoadScene (currentScene.buildIndex + 1);
 	}
 
-	public void ResumeCharacter () {
-		GameManager.instance.ResumeCharacter();
-		SceneManager.LoadScene ("01b Start");
-	}
-
-	public void StartNewCharacter () {
-		GameManager.instance.StartNewCharacter();
-		SceneManager.LoadScene ("01b Start");
-	}
-
 	public void LoadCombatLevel (int zombies) {
 		SceneManager.LoadScene ("02b Combat Level");
 	}
