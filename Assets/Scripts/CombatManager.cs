@@ -14,7 +14,7 @@ public class CombatManager : MonoBehaviour {
 	private int zombiesKilled, playerHealthLeavingCombat;
 
 	[SerializeField]
-	private Text zombiesLeft, survivorsAlive, gameOverText;
+	private Text zombiesLeft, survivorsAlive, gameOverText, shivCountText, clubCountText, gunCountText;
 
 	[SerializeField]
 	private GameObject gameOverpanel;
@@ -37,9 +37,24 @@ public class CombatManager : MonoBehaviour {
 		UpdateTheUI();
 	}
 
-	void UpdateTheUI () {
+	public void SetWeaponEquipped (string weapon) {
+		if (weapon == "gun") {
+			characterAnimation.GetComponent<Animator>().SetBool("CharactersAttack-Shoot", true);
+		} else {
+			characterAnimation.GetComponent<Animator>().SetBool("CharactersAttack-Shoot", false);		
+		}
+		GameManager.instance.weaponEquipped = weapon;
+	}
+
+	public void UpdateTheUI () {
 			zombiesLeft.text = zombiesToWin.ToString();
 			survivorsAlive.text = GameManager.instance.survivorsActive.ToString();
+			shivCountText.text = GameManager.instance.shivCount.ToString();
+			clubCountText.text = GameManager.instance.clubCount.ToString();
+			gunCountText.text = GameManager.instance.gunCount.ToString();
+
+
+			//only seen if game ends
 			int daysSurvived = GameManager.instance.daysSurvived;
 		 	gameOverText.text = "You, and your entire party are now a part of the zombie horde. You managed to survive " + daysSurvived + " days before all dying terrible deaths. /n /n Would you like to Start all over from Day 1? or pay a lucky dollar that a lucky event occurs, and you're spared, and then thanks to 3d printer technology, the limb that you lost was replaced cheaply and quickly with little to no technical skill --- look I'll let you live with 75% of your shit for 1$... straight developer bribe... your call mr " + daysSurvived + " days..." ;
 	}
@@ -85,6 +100,20 @@ public class CombatManager : MonoBehaviour {
 
 	}
 
+	IEnumerator LevelClearCalled () {
+			GameManager.instance.BuildingIsCleared(CalculateSupplyEarned());
+			GameManager.instance.SetPublicPlayerHealth(FindObjectOfType<Player>().currentHealth);
+
+
+			Debug.Log ("The player is leaving combat SUCCESSFULLY with a current health of " + FindObjectOfType<Player>().currentHealth);
+			//must pass out which building was cleared.
+			levelManager.LoadLevel ("03a Win");
+
+
+		yield return new WaitForSeconds(1);
+
+	}
+
 	public void ZombieIsKilled () {
 		//characterAnimation.ZombieIsDead();//play death animation
 
@@ -94,12 +123,7 @@ public class CombatManager : MonoBehaviour {
 
 		//this is my *********WIN********** the building Condition
 		if (zombiesToWin <= 0) { 
-			GameManager.instance.BuildingIsCleared(CalculateSupplyEarned());
-			GameManager.instance.SetPublicPlayerHealth(FindObjectOfType<Player>().currentHealth);//this stores in permenant memory
-			GameManager.instance.playerCurrentHealth = FindObjectOfType<Player>().currentHealth;//this stores in gameManager
-			Debug.Log ("The player is leaving combat SUCCESSFULLY with a current health of " + FindObjectOfType<Player>().currentHealth);
-			//must pass out which building was cleared.
-			levelManager.LoadLevel ("03a Win");
+			StartCoroutine(LevelClearCalled());
 		} else {
 			//Notify the animator to play the replacement animation.
 		}

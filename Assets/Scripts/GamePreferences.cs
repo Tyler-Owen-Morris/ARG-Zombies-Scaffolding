@@ -11,6 +11,12 @@ public static class GamePreferences {
 	public static string HomebaseLongitude = "HomebaseLongitude";
 	public static string PlayerHealthInMemory = "LastPlayerCurrentHealth";
 
+	public static string ShivCount = "ShivCount";
+	public static string ClubCount = "ClubCount";
+	public static string GunCount = "GunCount";
+	public static string ShivDurability = "ShivDurability";
+	public static string ClubDurability = "ClubDurability";
+
 
 	public static int GetTotalSurvivors () {
 		return PlayerPrefs.GetInt(GamePreferences.TotalSurvivors);
@@ -67,6 +73,48 @@ public static class GamePreferences {
 	public static int GetLastPlayerCurrentHealth () {
 		return PlayerPrefs.GetInt(PlayerHealthInMemory);
 	}
+
+	public static void SetShivCount (int count) {
+		PlayerPrefs.SetInt(ShivCount, count);
+	}
+
+	public static int GetShivCount () {
+		return PlayerPrefs.GetInt(ShivCount);
+	}
+
+	public static void SetClubCount (int count) {
+		PlayerPrefs.SetInt(ClubCount, count);
+	}
+
+	public static int GetClubCount () {
+		return PlayerPrefs.GetInt(ClubCount);
+	}
+
+	public static void SetGunCount (int count) {
+		PlayerPrefs.SetInt(GunCount, count);
+	}
+
+	public static int GetGunCount () {
+		return PlayerPrefs.GetInt(GunCount);
+	}
+
+	public static void SetShivDurability (int durabil) {
+		PlayerPrefs.SetInt(ShivDurability, durabil);
+	}
+
+	public static int GetShivDurability () {
+		return PlayerPrefs.GetInt(ShivDurability);
+	}
+
+	public static void SetClubDurability (int durabil) {
+		PlayerPrefs.SetInt(ClubDurability, durabil);
+	}
+
+	public static int GetClubDurability () {
+		return PlayerPrefs.GetInt(ClubDurability);
+	}
+
+
 }//GamePreferences - This handles all the data that is stored in local memory. AKA offline.
 
 ///this is the script that should probbaly be turned into the web interface so all this small data can be stored and recieved, as well as processed offline.

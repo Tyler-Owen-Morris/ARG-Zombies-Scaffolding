@@ -11,6 +11,9 @@ public class Button : MonoBehaviour {
 	
 	private Button[] buttonArray;
 
+	[SerializeField]
+	private CombatManager combatManager;
+
 	void Awake () {
 		buttonArray = GameObject.FindObjectsOfType<Button>();
 		TurnButtonsOff();
@@ -21,6 +24,8 @@ public class Button : MonoBehaviour {
 		//default is initialized to shiv- turn that button on after turning them all off on Awake
 		if  (gameObject.name == "Shiv") {
 			//Debug.Log ("found the shiv and turning it on");
+			combatManager.SetWeaponEquipped ("shiv");
+			weaponSelected = "shiv";
 			GetComponent<SpriteRenderer>().color = Color.white;
 			//StartCoroutine(ShowTheWeaponSelected());
 		}
@@ -46,10 +51,13 @@ public class Button : MonoBehaviour {
 		//selectedDefender = defenderPrefab;
 		if (gameObject.name == "Shiv") {
 			weaponSelected = "shiv";
+			combatManager.SetWeaponEquipped ("shiv");
 		} else if (gameObject.name == "Club") {
 			weaponSelected = "club";
+			combatManager.SetWeaponEquipped ("club");
 		}else if (gameObject.name == "Gun") {
 			weaponSelected = "gun";
+			combatManager.SetWeaponEquipped ("gun");
 		}
 	}
 	

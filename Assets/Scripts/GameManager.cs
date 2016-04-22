@@ -8,13 +8,15 @@ public class GameManager : MonoBehaviour {
 
 	public static GameManager instance;
 
-	public int survivorsActive, totalSurvivors, daysSurvived, supply, reportedSupply, playerCurrentHealth, zombiesToFight;
+	public int survivorsActive, totalSurvivors, daysSurvived, supply, reportedSupply, playerCurrentHealth, zombiesToFight, shivCount, clubCount, gunCount;
 	public DateTime timeCharacterStarted;
 	public float homebaseLat, homebaseLong;
 	public bool[] buildingToggleStatusArray;
+	public string weaponEquipped;
 
 	private Scene activeScene;
 	private string activeBldg;
+	private int shivDurability, clubDurability;
 
 	void Awake () {
 		MakeSingleton();
@@ -22,6 +24,7 @@ public class GameManager : MonoBehaviour {
 
 		buildingToggleStatusArray = new bool[4];
 		ResetAllBuildings();
+		weaponEquipped = "shiv";
 	}
 
 	void OnLevelWasLoaded () {
@@ -58,10 +61,22 @@ public class GameManager : MonoBehaviour {
 
 
 		//roll a random number of survivors left alive and set both active and alive to that number.
+		shivCount = UnityEngine.Random.Range (2,12);
+		clubCount = UnityEngine.Random.Range (4,7);
+		gunCount = UnityEngine.Random.Range (10,50);
+		shivDurability = 50;
+		clubDurability = 25;
 		int survivors = UnityEngine.Random.Range(2, 8);
 		survivorsActive = survivors;
 		totalSurvivors = survivors;
 		supply = UnityEngine.Random.Range(1, 50);
+
+		//pass all the rolled info to the gamePreferences - aka permenent memory
+		GamePreferences.SetShivCount(shivCount);
+		GamePreferences.SetClubCount(clubCount);
+		GamePreferences.SetGunCount(gunCount);
+		GamePreferences.SetShivDurability(shivDurability);
+		GamePreferences.SetClubDurability(clubDurability);
 		GamePreferences.SetSupply(supply);
 		GamePreferences.SetTotalSurvivors (totalSurvivors);
 		GamePreferences.SetActiveSurvivors (survivorsActive);
@@ -82,6 +97,13 @@ public class GameManager : MonoBehaviour {
 		SetDaysSurvived();
 		playerCurrentHealth = GamePreferences.GetLastPlayerCurrentHealth();
 
+		shivCount = GamePreferences.GetShivCount();
+		clubCount = GamePreferences.GetClubCount();
+		gunCount = GamePreferences.GetGunCount();
+
+		shivDurability = GamePreferences.GetShivDurability();
+		clubDurability = GamePreferences.GetClubDurability();
+
 	}
 
 	public void RestartTheGame () {
@@ -93,11 +115,15 @@ public class GameManager : MonoBehaviour {
 		int survivors = UnityEngine.Random.Range(4, 8);
 		survivorsActive = survivors;
 		totalSurvivors = survivors;
-		GamePreferences.SetTotalSurvivors (totalSurvivors);
-		GamePreferences.SetActiveSurvivors (survivorsActive);
+
 		int newSupply = Mathf.RoundToInt(this.supply * 0.75f);
 		this.supply = newSupply;
+
+
 		GamePreferences.SetSupply(newSupply);
+		GamePreferences.SetTotalSurvivors (totalSurvivors);
+		GamePreferences.SetActiveSurvivors (survivorsActive);
+
 		SceneManager.LoadScene("01b Start");
 	}
 
@@ -154,15 +180,19 @@ public class GameManager : MonoBehaviour {
 
 
 	public void PlayerAttemptingPurchaseFullHealth () {
-		if (supply >= 20) {
-			supply -= 20;
-			GamePreferences.SetSupply(supply);
-			SetPublicPlayerHealth(100);
+		if (playerCurrentHealth < 100) {
+			if (supply >= 20) {
+				supply -= 20;
+				GamePreferences.SetSupply(supply);
+				SetPublicPlayerHealth(100);
 
-			MapLevelManager mapLevelManager = FindObjectOfType<MapLevelManager>();  //only called from map level manager, and passed 
-			mapLevelManager.UpdateTheUI();
+				MapLevelManager mapLevelManager = FindObjectOfType<MapLevelManager>();  //only called from map level manager, and passed 
+				mapLevelManager.UpdateTheUI();
+			} else {
+				Debug.Log ("Player does not have enough supply to make the purchase");
+			}
 		} else {
-			Debug.Log ("Player does not have enough supply to make the purchase");
+			Debug.Log ("Player Health already full");
 		}
 	}
 
@@ -187,12 +217,96 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
+	public void PlayerAttemptingPurchaseShiv () {
+		if ( supply >= 5 ) {
+
+			supply -= 5;
+			GamePreferences.SetSupply(this.supply);
+
+			shivCount ++;
+			GamePreferences.SetShivCount(shivCount);
+
+			MapLevelManager mapLevelManager = FindObjectOfType<MapLevelManager>();  //only called from map level manager, and passed 
+			mapLevelManager.UpdateTheUI();
+		}
+	}
+
+	public void PlayerAttemtpingPurchaseClub () {
+		if (supply >= 15) {
+			supply -= 15;
+			GamePreferences.SetSupply(supply);
+
+			clubCount ++;
+			GamePreferences.SetClubCount(clubCount);
+
+
+			MapLevelManager mapLevelManager = FindObjectOfType<MapLevelManager>();  //only called from map level manager, and passed 
+			mapLevelManager.UpdateTheUI();
+		}
+	}
+
+	public void PlayterAttemtptingPurchaseGun () {
+		if (supply >= 25) {
+			supply -= 25;
+			GamePreferences.SetSupply(supply);
+
+			gunCount += 10;
+			GamePreferences.SetGunCount(gunCount);
+
+			MapLevelManager mapLevelManager = FindObjectOfType<MapLevelManager>();  //only called from map level manager, and passed 
+			mapLevelManager.UpdateTheUI();
+		}
+	}
+
+	public void ProcessDurability () {
+		if (weaponEquipped == "shiv") {
+			shivDurability --;
+
+			if (shivDurability <= 0) {
+				shivCount --;
+				shivDurability = 50;
+				GamePreferences.SetShivCount (shivCount);
+				GamePreferences.SetShivDurability (shivDurability);
+			} else {
+				GamePreferences.SetShivDurability (shivDurability);
+			}
+
+			Debug.Log ("Shiv has successfully processed durability, it's now got " + shivDurability + " durability, and total shivs: " +shivCount);
+		} else if (weaponEquipped == "club") {
+			clubDurability --;
+
+			if (clubDurability <= 0) {
+				clubCount --;
+				clubDurability = 50;
+				GamePreferences.SetClubCount (clubCount);
+				GamePreferences.SetClubDurability (clubDurability);
+			} else {
+				GamePreferences.SetClubDurability (clubDurability);
+			}
+
+			Debug.Log ("Club has successfully processed durability, it's now got " + clubDurability + " durability, and total clubs: " + clubCount);
+		} else if (weaponEquipped == "gun"){
+			gunCount --;
+
+			GamePreferences.SetGunCount(gunCount);
+
+			Debug.Log ("Gun has successfully processed ammo spent, player now has " + gunCount +" amunition left");
+		} else {
+			Debug.Log ("Durability function failed to execute");
+		}
+	}
+
 
 
 	IEnumerator StartLocationServices () {
-		Input.location.Start();
+		if (!Input.location.isEnabledByUser){
+			Debug.Log ("location services not enabled by user");
+            yield break;
+        }
 
-		//wait until Service initializes
+		Input.location.Start(10f, 10f);
+
+		//wait until Service initializes, or 20 seconds.
 		int maxWait = 20;
 		while (Input.location.status ==  LocationServiceStatus.Initializing && maxWait > 0) {
 			yield return new WaitForSeconds(1);

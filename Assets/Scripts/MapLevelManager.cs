@@ -8,7 +8,7 @@ public class MapLevelManager : MonoBehaviour {
 	private GameObject inventoryPanel;
 
 	[SerializeField]
-	private Text supplyText, daysAliveText, survivorsAliveText;
+	private Text supplyText, daysAliveText, survivorsAliveText, shivCountText, clubCountText, gunCountText;
 
 	[SerializeField]
 	private Slider playerHealthSlider, playerHealthSliderDuplicate;
@@ -31,10 +31,21 @@ public class MapLevelManager : MonoBehaviour {
 		GameManager.instance.PlayerAttemptingPurchaseNewSurvivor ();
 	}
 
+	public void PlayerAttemptingPurchaseShiv () {
+		GameManager.instance.PlayerAttemptingPurchaseShiv();
+	}
+
+	public void PlayerAttemptingPurchaseClub () {
+		GameManager.instance.PlayerAttemtpingPurchaseClub();
+	}
+
+	public void PlayerAttemptingPurchaseGun () {
+		GameManager.instance.PlayterAttemtptingPurchaseGun();
+	}
+
+
 	public void ResetBuildingsCalled () {
 		GameManager.instance.ResetAllBuildings();
-
-
 	}
 
 	void OnLevelWasLoaded () {
@@ -46,9 +57,17 @@ public class MapLevelManager : MonoBehaviour {
 	}
 
 	public void UpdateTheUI () {
+		//left UI panel update
 		supplyText.text = "Supply: " + GameManager.instance.supply.ToString();
 		daysAliveText.text = GameManager.instance.daysSurvived.ToString();
 		survivorsAliveText.text = "Survivors: " + GameManager.instance.survivorsActive.ToString();
+
+		//inventory panel text updates
+		shivCountText.text = GameManager.instance.shivCount.ToString();
+		clubCountText.text = GameManager.instance.clubCount.ToString();
+		gunCountText.text = GameManager.instance.gunCount.ToString();
+
+		//duplicate health slider updates
 		playerHealthSlider.value = (CalculatePlayerHealthSliderValue());
 		playerHealthSliderDuplicate.value = (CalculatePlayerHealthSliderValue());
 

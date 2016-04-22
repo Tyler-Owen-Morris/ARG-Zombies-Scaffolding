@@ -35,8 +35,60 @@ public class CharacterAnimation : MonoBehaviour {
 	}
 	
 	public void Attack () {
-		animator.SetTrigger("CharactersAttack");
-		//StartCoroutine(AfterPlayerAttack());
+		//need to write a function here to stop the animator from proceeding at all. animation parameter "HasWeapon" bool?
+		if (CheckHasCurrentWeapon()) {
+			//this sets whether to run melee or not.
+			if (GameManager.instance.weaponEquipped == "gun") {
+				animator.SetBool("CharactersAttack-Shoot", true);
+			} else {
+				animator.SetBool("CharactersAttack-Shoot", false);
+			}
+
+
+			//legacy name, but it sends the character down either animation path depending on above bool set.
+			animator.SetTrigger("CharactersAttack-melee");
+		} else {
+			Debug.LogWarning ("Player does not have a valid weapon equipped");
+
+			//this should possibly call to a warning animation trigger? notify the player in some way "no weapon equipped"
+		}
+	}
+
+
+
+	private bool CheckHasCurrentWeapon () {
+		if (GameManager.instance.weaponEquipped == "shiv") {
+
+			if (GameManager.instance.shivCount <= 0) {
+				return false;
+			} else {
+				return true;
+			}
+
+
+		} else if (GameManager.instance.weaponEquipped == "club") {
+
+			if (GameManager.instance.clubCount <= 0) {
+				return false;
+			} else {
+				return true;
+			}
+
+
+		} else if (GameManager.instance.weaponEquipped == "gun") {
+
+			if (GameManager.instance.gunCount <= 0) {
+				return false;
+			}else {
+				return true;
+			}
+
+		} else {
+			Debug.Log ("Animator did not find a weapon, not setting current weapon status");
+			return false;
+		}
+
+
 	}
 
 	public void ZombieTakesDmg () {

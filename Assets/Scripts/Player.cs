@@ -42,16 +42,29 @@ public class Player : MonoBehaviour {
 		//int attk = attack;
 		if (Button.weaponSelected == "shiv") {
 			attk = baseAttack + Random.Range(shivBottomAttack, shivTopAttack); 
+			SendProcessDurability();
+
+
 			//Debug.Log ("Shiv Used");
 		} else if (Button.weaponSelected == "club") {
 			attk = baseAttack + Random.Range(clubBottomAttack, clubBottomAttack);
+			SendProcessDurability();
+
 			//Debug.Log ("Club Used");
 		} else if (Button.weaponSelected == "gun") {
 			attk = baseAttack + Random.Range(gunBottomAttack, gunTopAttack);
+			SendProcessDurability();
+
 			//Debug.Log ("Gun Used");
 		}
 		//Debug.Log ("Player hits for " + attk +" dmg");
 		return attk;
+	}
+
+	private void SendProcessDurability () {
+		GameManager.instance.ProcessDurability();
+			//call to local combatManager to update the ui- which reads to GameManager data.
+		combatManager.UpdateTheUI();
 	}
 
 	public void GetHit (int dmg) {
