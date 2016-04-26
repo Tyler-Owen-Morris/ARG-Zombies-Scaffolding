@@ -7,34 +7,43 @@ using UnityEngine.SceneManagement;
 public class CombatManager : MonoBehaviour {
 
 	public int zombiesToWin, playerHealthStatus;
-	public bool zombiesAreLeft;
+	public bool zombiesAreLeft, autoAttackEngaged;
 
 	private LevelManager levelManager;
 	private CharacterAnimation characterAnimation;
 	private int zombiesKilled, playerHealthLeavingCombat;
 
 	[SerializeField]
-	private Text zombiesLeft, survivorsAlive, gameOverText, shivCountText, clubCountText, gunCountText;
+	private Player player;
+
+
+	[SerializeField]
+	private Text zombiesLeft, survivorsAlive, gameOverText, shivCountText, clubCountText, gunCountText, oddsText;
 
 	[SerializeField]
 	private GameObject gameOverpanel;
 
-	//[SerializeField]
-	//private Slider ZombieHealthSlider, PlayerHealthSlider;
+	[SerializeField]
+	private Toggle autoAttackToggle;
 
 	void awake () {
 		zombiesKilled = 0;
+
 	}
 
 	// Use this for initialization
 	void Start () {
 		levelManager = LevelManager.FindObjectOfType<LevelManager>();
 		characterAnimation = CharacterAnimation.FindObjectOfType<CharacterAnimation>();
+
+
 	}
 
 	void OnLevelWasLoaded () {
 		this.zombiesToWin = GameManager.instance.zombiesToFight;
+		autoAttackEngaged = true;
 		UpdateTheUI();
+		FloatingTextController.Initialize();
 	}
 
 	public void SetWeaponEquipped (string weapon) {
@@ -52,7 +61,30 @@ public class CombatManager : MonoBehaviour {
 			shivCountText.text = GameManager.instance.shivCount.ToString();
 			clubCountText.text = GameManager.instance.clubCount.ToString();
 			gunCountText.text = GameManager.instance.gunCount.ToString();
+			autoAttackToggle.isOn = autoAttackEngaged;
 
+			string myString = "";
+			if (GameManager.instance.weaponEquipped == "shiv") {
+				myString += player.oddsToCritShiv.ToString() + "% - to crit \n";
+				myString += player.oddsToMissShiv.ToString() + "% - to miss \n";
+				myString += player.chanceToGetBit.ToString() + "% - to get bit\n";
+				myString += player.baseAttack.ToString() + " - base attack";
+				
+			} else if (GameManager.instance.weaponEquipped == "club") {
+				myString += player.oddsToCritClub.ToString() + "% - to crit \n";
+				myString += player.oddsToMissClub.ToString() + "% - to miss \n";
+				myString += player.chanceToGetBit.ToString() + "% - to get bit\n";
+				myString += player.baseAttack.ToString() + " - base attack";
+
+			} else if (GameManager.instance.weaponEquipped == "gun") {
+				myString += player.oddsToCritGun.ToString() + "% - to crit \n";
+				myString += player.oddsToMissGun.ToString() + "% - to miss \n";
+				myString += player.chanceToGetBit.ToString() + "% - to get bit\n";
+				myString += player.baseAttack.ToString() + " - base attack";
+
+			}
+			Debug.Log ("Attempting to change stats text to: "+ myString);
+			oddsText.text = myString ;
 
 			//only seen if game ends
 			int daysSurvived = GameManager.instance.daysSurvived;
@@ -98,6 +130,16 @@ public class CombatManager : MonoBehaviour {
 		}
 
 
+	}
+
+	public void AutoAttackPressed () {
+
+		//this sets the public bool for the animator to check in it's "checkBeforeContinue" animation trigger- should set attack trigger based on return.
+		if (autoAttackToggle.isOn == true) {
+			autoAttackEngaged = true;
+		} else {
+			autoAttackEngaged = false;
+		}
 	}
 
 	IEnumerator LevelClearCalled () {

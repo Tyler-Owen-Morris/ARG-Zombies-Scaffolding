@@ -115,10 +115,34 @@ public class CharacterAnimation : MonoBehaviour {
 		animator.SetBool ("PlayerHasBeenBitten", true);
 	}
 
-	public void CheckBeforeContinuing () { // this will be called from animation
+	public void CheckForAutoAttack () {
+		//first check if it's on
+		if (combatManager.autoAttackEngaged){
+
+				//then check that weapon equipped can be used.
+				if ( CheckHasCurrentWeapon() ) {
+					//this should call near enough to continue the attack cycle based on current weapon.
+					animator.SetTrigger("CharactersAttack-melee");
+				}
+
+			} else {
+				//I don't know why I put an else clause here... I feel like I should be setting something else to false... ?????
+			}
+
+	}
+
+	// this will be called from end of player animation
+	public void CheckForGameOver () { //leaveing name for now due to many declaraions as string
 		if (GameManager.instance.totalSurvivors <= 0) {
 			combatManager.EndGameCalled();
-		} 
+
+			//this should start the coroutine to end the game.
+		} else {
+			// if the game is continuing
+
+		}
+
+		//include here to check if auto attack toggle is checked- so that player "dwell" also triggers "charachters attack button again in UI, and continues loop.
 	}
 	
 }

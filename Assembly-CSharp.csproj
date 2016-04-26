@@ -50,7 +50,10 @@
      <Compile Include="Assets\Scripts\Button.cs" />
      <Compile Include="Assets\Scripts\CharacterAnimation.cs" />
      <Compile Include="Assets\Scripts\CombatManager.cs" />
+     <Compile Include="Assets\Scripts\CurrentLocationUpdater.cs" />
      <Compile Include="Assets\Scripts\FadeIn.cs" />
+     <Compile Include="Assets\Scripts\FloatingText.cs" />
+     <Compile Include="Assets\Scripts\FloatingTextController.cs" />
      <Compile Include="Assets\Scripts\GameManager.cs" />
      <Compile Include="Assets\Scripts\GamePreferences.cs" />
      <Compile Include="Assets\Scripts\Health.cs" />

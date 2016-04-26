@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class Button : MonoBehaviour {
@@ -10,9 +10,13 @@ public class Button : MonoBehaviour {
 	public static string weaponSelected = "shiv";
 	
 	private Button[] buttonArray;
+    
 
 	[SerializeField]
 	private CombatManager combatManager;
+    
+    [SerializeField]
+    private Player player;
 
 	void Awake () {
 		buttonArray = GameObject.FindObjectsOfType<Button>();
@@ -50,14 +54,26 @@ public class Button : MonoBehaviour {
 		GetComponent<SpriteRenderer>().color = Color.white;
 		//selectedDefender = defenderPrefab;
 		if (gameObject.name == "Shiv") {
+            
 			weaponSelected = "shiv";
 			combatManager.SetWeaponEquipped ("shiv");
+            player.SetBaseDamageBasedOnWeapon (7);
+            player.chanceToGetBit = 5.0f;
+            combatManager.UpdateTheUI();
 		} else if (gameObject.name == "Club") {
+            
 			weaponSelected = "club";
 			combatManager.SetWeaponEquipped ("club");
+            player.SetBaseDamageBasedOnWeapon (15);
+            player.chanceToGetBit = 3.0f;
+            combatManager.UpdateTheUI();
 		}else if (gameObject.name == "Gun") {
+            
 			weaponSelected = "gun";
 			combatManager.SetWeaponEquipped ("gun");
+            player.SetBaseDamageBasedOnWeapon (20);
+            player.chanceToGetBit = 1.0f;
+            combatManager.UpdateTheUI();
 		}
 	}
 	
