@@ -8,7 +8,7 @@ public class GameManager : MonoBehaviour {
 
 	public static GameManager instance;
 
-	public int survivorsActive, totalSurvivors, daysSurvived, supply, reportedSupply, playerCurrentHealth, zombiesToFight, shivCount, clubCount, gunCount;
+	public int survivorsActive, totalSurvivors, daysSurvived, supply, reportedSupply, reportedWater, reportedFood, playerCurrentHealth, zombiesToFight, shivCount, clubCount, gunCount, foodCount, waterCount, mealCount;
 	public DateTime timeCharacterStarted;
 	public float homebaseLat, homebaseLong;
 	public bool[] buildingToggleStatusArray;
@@ -22,12 +22,16 @@ public class GameManager : MonoBehaviour {
 		MakeSingleton();
 		StartCoroutine (StartLocationServices());
 
+
 		buildingToggleStatusArray = new bool[4];
 		ResetAllBuildings();
 		weaponEquipped = "shiv";
 	}
 
 	void OnLevelWasLoaded () {
+		//this is a catch all to slave the long term memory to the active GameManager.instance object- each load will update long term memory.
+		UpdateAllStatsToGameMemory ();
+
 		activeScene = SceneManager.GetActiveScene();
 		if (activeScene.name.ToString() == "02b Combat Level") {
 			CombatManager combatManager = FindObjectOfType<CombatManager>();
@@ -35,6 +39,8 @@ public class GameManager : MonoBehaviour {
 		} else if (activeScene.name.ToString() == "02a Map Level"){
 			Debug.Log ("Time character started set to: " + timeCharacterStarted);
 			
+		} else if (activeScene.name.ToString() == "01b Start") {
+			InvokeRepeating ( "CheckEatingAndDrinking", 1.0f, 30.0f);
 		}
 	}
 
@@ -45,6 +51,23 @@ public class GameManager : MonoBehaviour {
 			instance = this;
 			DontDestroyOnLoad (gameObject);
 		}
+	}
+
+	public void UpdateAllStatsToGameMemory () {
+		GamePreferences.SetShivCount(shivCount);
+		GamePreferences.SetClubCount(clubCount);
+		GamePreferences.SetGunCount(gunCount);
+		GamePreferences.SetShivDurability(shivDurability);
+		GamePreferences.SetClubDurability(clubDurability);
+		GamePreferences.SetSupply(supply);
+		GamePreferences.SetTotalSurvivors (totalSurvivors);
+		GamePreferences.SetActiveSurvivors (survivorsActive);
+		GamePreferences.SetWaterCount (waterCount);
+		GamePreferences.SetFoodCount (foodCount);
+		GamePreferences.SetMealsCount (mealCount);
+		SetPublicPlayerHealth (this.playerCurrentHealth);
+		GamePreferences.SetHomebaseLattitude (homebaseLat);
+		GamePreferences.SetHomebaseLongitude (homebaseLong);
 	}
 	
 	public void SetDaysSurvived () {
@@ -69,7 +92,11 @@ public class GameManager : MonoBehaviour {
 		int survivors = UnityEngine.Random.Range(2, 8);
 		survivorsActive = survivors;
 		totalSurvivors = survivors;
-		supply = UnityEngine.Random.Range(1, 50);
+		supply = UnityEngine.Random.Range(20, 70);
+		waterCount = UnityEngine.Random.Range(10, 20);
+		foodCount = UnityEngine.Random.Range(15, 30);
+		mealCount = 0;
+
 
 		//pass all the rolled info to the gamePreferences - aka permenent memory
 		GamePreferences.SetShivCount(shivCount);
@@ -80,6 +107,11 @@ public class GameManager : MonoBehaviour {
 		GamePreferences.SetSupply(supply);
 		GamePreferences.SetTotalSurvivors (totalSurvivors);
 		GamePreferences.SetActiveSurvivors (survivorsActive);
+		GamePreferences.SetWaterCount (waterCount);
+		GamePreferences.SetFoodCount (foodCount);
+
+		Debug.Log ("GameManager started a new character- food / water: " + foodCount +" / "+ waterCount );
+
 		this.SetPublicPlayerHealth (100);
 		Debug.Log ("Character started at: " + timeCharacterStarted);
 	}
@@ -92,6 +124,9 @@ public class GameManager : MonoBehaviour {
 			survivorsActive = totalSurvivors;
 			// if there are more active than total, make the active = the total. temp idiot check.
 		}
+
+		waterCount = GamePreferences.GetWaterCount();
+		foodCount = GamePreferences.GetFoodCount();
 		supply = GamePreferences.GetSupply();
 		timeCharacterStarted = Convert.ToDateTime(GamePreferences.GetDayTimeCharacterCreated());
 		SetDaysSurvived();
@@ -118,11 +153,17 @@ public class GameManager : MonoBehaviour {
 
 		int newSupply = Mathf.RoundToInt(this.supply * 0.75f);
 		this.supply = newSupply;
+		int newFood = Mathf.RoundToInt(this.foodCount / 2);
+		foodCount = newFood;
+		int newWater = Mathf.RoundToInt(this.waterCount / 2);
+		waterCount = newWater;
 
 
-		GamePreferences.SetSupply(newSupply);
+		GamePreferences.SetSupply(supply);
 		GamePreferences.SetTotalSurvivors (totalSurvivors);
 		GamePreferences.SetActiveSurvivors (survivorsActive);
+		GamePreferences.SetWaterCount (waterCount);
+		GamePreferences.SetFoodCount (foodCount);
 
 		SceneManager.LoadScene("01b Start");
 	}
@@ -134,8 +175,8 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void SetHomebaseLocation (float lat, float lon) {
-		homebaseLat = lat;
-		homebaseLong = lon;
+		this.homebaseLat = lat;
+		this.homebaseLong = lon;
 
 		GamePreferences.SetHomebaseLattitude(lat);
 		GamePreferences.SetHomebaseLongitude(lon);
@@ -145,6 +186,13 @@ public class GameManager : MonoBehaviour {
 		activeBldg = bldg;
 		zombiesToFight = zombies;
 		SceneManager.LoadScene ("02b Combat level");
+	}
+
+	public void AddTimePlayed () {
+		timeCharacterStarted  = timeCharacterStarted.AddHours(-1.0);
+		GamePreferences.SetDayTimeCharacterCreated (timeCharacterStarted.ToString());
+		SetDaysSurvived ();
+		Debug.Log ("1 Hour added to time started. New Datetime is: " + timeCharacterStarted.ToString() );
 	}
 
 	public void ResetAllBuildings () {
@@ -158,10 +206,17 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
-	public void BuildingIsCleared (int sup) {
+	public void BuildingIsCleared (int sup, int water, int food) {
 		reportedSupply = sup;
 		supply += sup;
-		GamePreferences.SetSupply(supply); 
+		reportedWater = water;
+		waterCount += water;
+		reportedFood = food;
+		foodCount += food;
+
+		GamePreferences.SetFoodCount(foodCount);
+		GamePreferences.SetWaterCount(waterCount);
+		GamePreferences.SetSupply(supply);
 		SetClearedBuilding();
 		// should possibly also build a list or an array here with the names of buildings cleared and use 01-04 to store states.
 	}
@@ -294,6 +349,43 @@ public class GameManager : MonoBehaviour {
 		} else {
 			Debug.Log ("Durability function failed to execute");
 		}
+	}
+
+	public void CheckEatingAndDrinking () {
+		StartCoroutine ( UpdatePlayersEatingAndDrinking () );
+	}
+
+	// the idea with this coroutine is to invokerepeating on awake, every 15-30, and execute the 'meal' as soon as it's time.
+	IEnumerator UpdatePlayersEatingAndDrinking () {
+		//Debug.Log ("Checking to update food / Water / Meal counts");
+		
+		//if we have fewer meals than expected.
+		DateTime now = System.DateTime.Now;
+		Double days = (now - timeCharacterStarted).TotalDays;
+		int expected = (int)Mathf.Floor( (float)days * 2 );
+
+		if (mealCount < expected) {
+			mealCount ++;
+			foodCount = foodCount - totalSurvivors;
+			waterCount = waterCount - totalSurvivors;
+
+			Debug.Log ("a meal has been processed. Total meals eaten: " + mealCount + " Food Count: " + foodCount + " Water Count: "+ waterCount);
+
+			GamePreferences.SetWaterCount(waterCount);
+			GamePreferences.SetFoodCount(foodCount);
+			GamePreferences.SetMealsCount(mealCount);
+
+			//we need to restart the coroutine to ensure that we don't need to process multiple meals.  
+			if (mealCount != expected) {
+				StartCoroutine( UpdatePlayersEatingAndDrinking () );
+			} else {
+				yield break;
+			}
+		} else {
+			Debug.Log ("not time to eat or drink yet... but coroutine is checking @ days played: " + days + " and an expected meal count of " + expected);
+			yield break;
+		}
+
 	}
 
 

@@ -9,7 +9,7 @@ public class VictoryScreenController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		text.text = "You earned " + GameManager.instance.reportedSupply + " supply";
+		text.text = "You earned " + GameManager.instance.reportedSupply + " supply\n" + GameManager.instance.reportedFood + " Food\nand, " + GameManager.instance.reportedWater + " water.";
 	}
 	
 	// Update is called once per frame

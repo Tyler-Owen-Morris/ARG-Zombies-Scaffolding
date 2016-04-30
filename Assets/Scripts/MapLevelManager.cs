@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
 
@@ -8,7 +8,7 @@ public class MapLevelManager : MonoBehaviour {
 	private GameObject inventoryPanel;
 
 	[SerializeField]
-	private Text supplyText, daysAliveText, survivorsAliveText, shivCountText, clubCountText, gunCountText, locationReportText;
+	private Text supplyText, daysAliveText, survivorsAliveText, shivCountText, clubCountText, gunCountText, currentLatText, currentLonText, locationReportText, foodText, waterText;
 
 	[SerializeField]
 	private Slider playerHealthSlider, playerHealthSliderDuplicate;
@@ -50,6 +50,7 @@ public class MapLevelManager : MonoBehaviour {
 
 	void OnLevelWasLoaded () {
 		UpdateTheUI();
+        
 	}
 
 	void Start () {
@@ -59,8 +60,11 @@ public class MapLevelManager : MonoBehaviour {
 	public void UpdateTheUI () {
 		//left UI panel update
 		supplyText.text = "Supply: " + GameManager.instance.supply.ToString();
+        foodText.text = "Food: " + GameManager.instance.foodCount.ToString();
+        waterText.text = "Water: " + GameManager.instance.waterCount.ToString();
 		daysAliveText.text = GameManager.instance.daysSurvived.ToString();
 		survivorsAliveText.text = "Survivors: " + GameManager.instance.survivorsActive.ToString();
+        
 
 		//inventory panel text updates
 		shivCountText.text = GameManager.instance.shivCount.ToString();
@@ -70,8 +74,20 @@ public class MapLevelManager : MonoBehaviour {
 		//duplicate health slider updates
 		playerHealthSlider.value = (CalculatePlayerHealthSliderValue());
 		playerHealthSliderDuplicate.value = (CalculatePlayerHealthSliderValue());
-
+        
+        StartCoroutine(SetCurrentLocationText());
 	}
+    
+    //this is to get the last location data coroutine, it's part of updating the UI.
+    IEnumerator SetCurrentLocationText () {
+        if (Input.location.status == LocationServiceStatus.Running) {
+            yield return Input.location.lastData;
+            currentLatText.text = "Current Latitude: " + Input.location.lastData.latitude;
+            currentLonText.text = "Current Longitude: " + Input.location.lastData.longitude;
+        } else {
+            Debug.Log ("Location services not running- can't update UI");
+        }
+    }
 
 	private float CalculatePlayerHealthSliderValue (){
 		float health = GameManager.instance.playerCurrentHealth;

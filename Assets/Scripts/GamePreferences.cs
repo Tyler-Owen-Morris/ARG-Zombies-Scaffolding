@@ -6,10 +6,14 @@ public static class GamePreferences {
 	public static string TotalSurvivors = "TotalSurvivors";
 	public static string ActiveSurvivors = "ActiveSurvivors";
 	public static string DayTimeCharacterCreated = "DayTimeCharacterCreated";
-	public static string Supply = "Supply";
 	public static string HomebaseLattitude = "HomebaseLattitude";
 	public static string HomebaseLongitude = "HomebaseLongitude";
 	public static string PlayerHealthInMemory = "LastPlayerCurrentHealth";
+
+	public static string Supply = "Supply";
+	public static string Water = "Water";
+	public static string Food = "Food";
+	public static string Meals = "Meals";
 
 	public static string ShivCount = "ShivCount";
 	public static string ClubCount = "ClubCount";
@@ -112,6 +116,30 @@ public static class GamePreferences {
 
 	public static int GetClubDurability () {
 		return PlayerPrefs.GetInt(ClubDurability);
+	}
+
+	public static void SetWaterCount (int count) {
+		PlayerPrefs.SetInt(Water, count);
+	}
+
+	public static int GetWaterCount () {
+		return PlayerPrefs.GetInt(Water);
+	}
+
+	public static void SetFoodCount (int count) {
+		PlayerPrefs.SetInt(Food, count);
+	}
+
+	public static int GetFoodCount () {
+		return PlayerPrefs.GetInt(Food);
+	}
+
+	public static void SetMealsCount (int count) {
+		PlayerPrefs.SetInt(Meals, count);
+	}
+
+	public static int GetMealsCount () {
+		return PlayerPrefs.GetInt(Meals);
 	}
 
 

@@ -143,7 +143,9 @@ public class CombatManager : MonoBehaviour {
 	}
 
 	IEnumerator LevelClearCalled () {
-			GameManager.instance.BuildingIsCleared(CalculateSupplyEarned());
+			yield return new WaitForSeconds(1);
+		
+			GameManager.instance.BuildingIsCleared(CalculateSupplyEarned(), CalculateWaterFound(), CalculateFoodFound());
 			GameManager.instance.SetPublicPlayerHealth(FindObjectOfType<Player>().currentHealth);
 
 
@@ -172,14 +174,52 @@ public class CombatManager : MonoBehaviour {
 	}
 	
 	int CalculateSupplyEarned () {
-		Debug.Log ("Calculating the sum of supply earned from " + zombiesKilled + " zombies killed.");
+		//Debug.Log ("Calculating the sum of supply earned from " + zombiesKilled + " zombies killed.");
 		int sum = 0;
 		for (int i = 0; i < zombiesKilled; i++) {
 			int num = UnityEngine.Random.Range(0, 8);
 			sum += num;
 			Debug.Log ("adding "+ num +" supply to the list");
 		}
-		Debug.Log ("calculating total supply earned yields: " + sum);
+		//Debug.Log ("calculating total supply earned yields: " + sum);
+		return sum;
+	}
+
+	int CalculateWaterFound () {
+		float oddsToFind = 50.0f;
+		int sum = 0;
+
+		float roll = UnityEngine.Random.Range(0.0f, 100.0f);
+
+		for (int i = 0; i < zombiesKilled; i++) {
+				int amount = (int)UnityEngine.Random.Range( 1 , 4 ) * 3;
+				sum += amount;
+		}
+
+		// this is so that you can find nothing
+		if (roll <= oddsToFind) {
+			sum = 0;
+		}
+
+		return sum;
+	}
+
+	int CalculateFoodFound () {
+		float oddsToFind = 50.0f;
+		int sum = 0;
+
+		float roll = UnityEngine.Random.Range(0.0f, 100.0f);
+
+		for (int i = 0; i < zombiesKilled; i++) {
+				int amount = (int)UnityEngine.Random.Range( 1 , 4 ) * 3;
+				sum += amount;
+		}
+
+		// this is so that you can find nothing
+		if (roll <= oddsToFind) {
+			sum = 0;
+		}
+
 		return sum;
 	}
 
