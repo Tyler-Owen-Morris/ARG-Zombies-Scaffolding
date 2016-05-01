@@ -46,6 +46,7 @@ public class Player : MonoBehaviour {
 	}
 
 	public int Hit () {
+		FloatingTextController.SendWeaponAnimation ();
 		StartCoroutine (ProcessHit());
 
 		//Debug.Log ("Player hits for " + attk +" dmg");
@@ -62,7 +63,7 @@ public class Player : MonoBehaviour {
             //player DID critical, now calculate multiplier % to return
             Debug.Log ("***************** PLAYER CRIT *******************");
             float multiplier = System.Convert.ToInt32(1.0 + Random.Range (1.0f, 3.0f));
-            FloatingTextController.CreateFloatingText ( "CRIT!", gameObject.transform, false);
+            FloatingTextController.CreateFloatingText ( "CRITICAL!", gameObject.transform, false);
             Debug.Log ("Damage multiplier for crit is: " + multiplier.ToString());
             return multiplier;
 

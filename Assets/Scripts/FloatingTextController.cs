@@ -7,6 +7,9 @@ public class FloatingTextController : MonoBehaviour {
 	private static FloatingText popUpTextZombie;
 	private static FloatingText popUpTextPlayer;
 	private static FloatingText popUpCritText;
+	private static WeaponGFX gunBlast;
+	private static WeaponGFX clubSwing;
+	private static WeaponGFX knifeStab;
 	private static GameObject gameCanvas;
 
 	public static void Initialize () {
@@ -15,6 +18,11 @@ public class FloatingTextController : MonoBehaviour {
 		popUpTextZombie = Resources.Load<FloatingText>("Prefabs/PopupTextZombie");
 		popUpTextPlayer = Resources.Load<FloatingText>("Prefabs/PopupTextPlayer");
 		popUpCritText = Resources.Load<FloatingText>("Prefabs/PopupCritText");
+
+		gunBlast = Resources.Load<WeaponGFX>("Prefabs/GunBlast");
+		clubSwing = Resources.Load<WeaponGFX>("Prefabs/ClubSwing");
+		knifeStab = Resources.Load<WeaponGFX>("Prefabs/KnifeStab");
+
 	}
 
 	public static void CreateFloatingText (string text, Transform location, bool isPlayer) {
@@ -22,7 +30,7 @@ public class FloatingTextController : MonoBehaviour {
 		Color red = new Color(1, 0, 0, 1);
 
 
-		if (text != "CRIT!" && text != "MISS!" ){
+		if (text != "CRITICAL!" && text != "MISS!" ){
 
 		//this is for damage text
 			if (isPlayer == true) {
@@ -50,6 +58,23 @@ public class FloatingTextController : MonoBehaviour {
 			Color blue = new Color(0, 0, 1, 1);
 			instance.SetText(text, blue);
 			Debug.Log("Position of floating text ended up at: " + instance.transform.position.ToString());
+		}
+	}
+
+	public static void SendWeaponAnimation () {
+		//Vector3 origin = new Vector3(0,0,0);
+
+		if (GameManager.instance.weaponEquipped == "shiv" ) {
+			WeaponGFX instance = Instantiate(knifeStab);
+			instance.gameObject.SetActive(true);
+		} else if (GameManager.instance.weaponEquipped == "club" ) {
+			WeaponGFX instance = Instantiate(clubSwing);
+			instance.gameObject.SetActive(true);
+		} else if (GameManager.instance.weaponEquipped == "gun" ) {
+			WeaponGFX instance = Instantiate(gunBlast);
+			instance.gameObject.SetActive(true);
+		} else {
+			Debug.Log ("failed to send weapon FX animation call, no matching weapon found");
 		}
 	}
 }
