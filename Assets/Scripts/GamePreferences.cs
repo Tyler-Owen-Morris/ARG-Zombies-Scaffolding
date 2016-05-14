@@ -22,6 +22,8 @@ public static class GamePreferences {
 	public static string ClubDurability = "ClubDurability";
 
 
+	//this used to be how game data was stored in "preferences" memory between plays. it's commented to find places where it needs to be removed.
+	/*
 	public static int GetTotalSurvivors () {
 		return PlayerPrefs.GetInt(GamePreferences.TotalSurvivors);
 	}
@@ -141,7 +143,7 @@ public static class GamePreferences {
 	public static int GetMealsCount () {
 		return PlayerPrefs.GetInt(Meals);
 	}
-
+	*/
 
 }//GamePreferences - This handles all the data that is stored in local memory. AKA offline.
 

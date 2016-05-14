@@ -1,7 +1,9 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
 using UnityEngine.UI;
+using Facebook.Unity;
 
 public class LoginManager : MonoBehaviour {
 
@@ -16,7 +18,93 @@ public class LoginManager : MonoBehaviour {
 	private string loginUrl = "http://localhost/ARGZ_SERVER/login.php";
 	
 	// Use this for initialization
-	void Start () {
+	void Start () { 
+        if (FB.IsInitialized) {
+            FB.ActivateApp();
+        } else {
+        //Handle FB.Init
+            FB.Init(SetInit, OnHideUnity);
+        }
+        
+        
+    }
+    
+    void SetInit () {
+        FB.ActivateApp();
+        if (FB.IsLoggedIn) {
+            Debug.Log ("FB is logged in");
+            loggedInPanel.SetActive (true);
+        } else {
+            Debug.Log ("FB is not logged in");
+            loggedInPanel.SetActive (false);
+        }
+        
+    }
+    
+    void OnHideUnity (bool isGameShown) {
+        
+        if (!isGameShown) {
+            Time.timeScale = 0;
+        } else {
+            Time.timeScale = 1;
+        }
+    }
+    
+    public void FBlogin ()  {
+        
+        List<string> permissions = new List<string>();
+        permissions.Add("public_profile");
+        permissions.Add("user_friends");
+        permissions.Add("email");
+        
+        
+        FB.LogInWithReadPermissions (permissions, AuthCallBack);
+        
+    }
+    
+    void AuthCallBack (IResult result) {
+        
+        if (result.Error != null) {
+            Debug.Log (result.Error);
+        } else {
+            
+            if (FB.IsLoggedIn) {
+                Debug.Log ("FB is logged in");
+                loggedInPanel.SetActive (true);
+                FB.API ("/me?fields=id", HttpMethod.GET, UpdateUserId);
+		          FB.API ("/me?fields=first_name", HttpMethod.GET, UpdateUserFirstName);
+		          FB.API ("/me?fields=last_name", HttpMethod.GET, UpdateUserLastName);
+            } else {
+                Debug.Log ("FB is NOT logged in");
+                loggedInPanel.SetActive (false);
+            }
+            
+        }
+        
+    }
+    
+	private void UpdateUserId (IResult result) {
+		if (result.Error == null) {
+            GameManager.instance.userId = result.ResultDictionary["id"].ToString();
+        } else {
+            Debug.Log (result.Error);
+        }
+	}
+
+	private void UpdateUserFirstName(IResult result) {
+		if (result.Error == null) {
+			GameManager.instance.userFirstName = result.ResultDictionary["first_name"].ToString();
+		} else {
+			Debug.Log (result.Error);
+		}
+	}
+
+	private void UpdateUserLastName (IResult result) {
+		if (result.Error == null) {
+			GameManager.instance.userLastName = result.ResultDictionary["last_name"].ToString();
+		}else{
+			Debug.Log(result.Error);
+		}
 	}
 
 	public void FetchPlayerData () {
@@ -111,11 +199,11 @@ public class LoginManager : MonoBehaviour {
 
 	public void ResumeCharacter () {
 			GameManager.instance.ResumeCharacter();
-			SceneManager.LoadScene ("01b Start");
+			SceneManager.LoadScene ("02a Map Level");
 	}
 
 	public void StartNewCharacter () {
 			GameManager.instance.StartNewCharacter();
-			SceneManager.LoadScene ("01b Start");
+			
 	}
 }

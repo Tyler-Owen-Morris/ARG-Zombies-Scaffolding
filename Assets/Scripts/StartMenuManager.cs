@@ -19,7 +19,7 @@ public class StartMenuManager : MonoBehaviour {
 	}
 
 	void UpdateTheText () {
-		daysSurvived.text = ( Mathf.Floor (GameManager.instance.daysSurvived)).ToString();
+		daysSurvived.text = ((int)(Mathf.Floor (GameManager.instance.daysSurvived))).ToString();
 		activeSurvivors.text = "Active Survivors: " + GameManager.instance.survivorsActive.ToString();
 		membersAlive.text = "Total Living Survivors: " + GameManager.instance.totalSurvivors.ToString();
 		supply.text = "Supply: " + GameManager.instance.supply.ToString();
@@ -37,6 +37,8 @@ public class StartMenuManager : MonoBehaviour {
         int food = GameManager.instance.foodCount;
         int water = GameManager.instance.waterCount;
         
+        //Debug.Log ("meals of food left, should be: "Mathf.Floor( food / GameManager.instance.totalSurvivors));
+        //Debug.Log ("meals of water left, should be: "Mathf.Floor( water / GameManager.instance.totalSurvivors));
         int foodExpireInMeals = (int)Mathf.Floor( food / GameManager.instance.totalSurvivors);
         int waterExpireInMeals = (int)Mathf.Floor( water / GameManager.instance.totalSurvivors);
         

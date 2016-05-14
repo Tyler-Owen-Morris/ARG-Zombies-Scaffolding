@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using Facebook.Unity;
 
 public class MapLevelManager : MonoBehaviour {
 
@@ -8,7 +9,7 @@ public class MapLevelManager : MonoBehaviour {
 	private GameObject inventoryPanel;
 
 	[SerializeField]
-	private Text supplyText, daysAliveText, survivorsAliveText, shivCountText, clubCountText, gunCountText, currentLatText, currentLonText, locationReportText, foodText, waterText;
+	private Text supplyText, daysAliveText, survivorsAliveText, shivCountText, clubCountText, gunCountText, currentLatText, currentLonText, locationReportText, foodText, waterText, playerNameText;
 
 	[SerializeField]
 	private Slider playerHealthSlider, playerHealthSliderDuplicate;
@@ -47,17 +48,19 @@ public class MapLevelManager : MonoBehaviour {
 	public void ResetBuildingsCalled () {
 		GameManager.instance.ResetAllBuildings();
 	}
+    
+    void Awake () {
+        FB.API ("/me?fields=name", HttpMethod.GET, DisplayUsername);
+    }
 
 	void OnLevelWasLoaded () {
 		UpdateTheUI();
         
 	}
 
-	void Start () {
-		
-	}
-
 	public void UpdateTheUI () {
+        
+        
 		//left UI panel update
 		supplyText.text = "Supply: " + GameManager.instance.supply.ToString();
         foodText.text = "Food: " + GameManager.instance.foodCount.ToString();
@@ -78,6 +81,16 @@ public class MapLevelManager : MonoBehaviour {
         StartCoroutine(SetCurrentLocationText());
 	}
     
+    void DisplayUsername (IResult result) {
+        
+        if (result.Error == null) {
+            playerNameText.text = result.ResultDictionary["name"].ToString();
+        } else {
+            Debug.Log (result.Error);
+        }
+        
+    }
+    
     //this is to get the last location data coroutine, it's part of updating the UI.
     IEnumerator SetCurrentLocationText () {
         if (Input.location.status == LocationServiceStatus.Running) {
@@ -92,7 +105,7 @@ public class MapLevelManager : MonoBehaviour {
 	private float CalculatePlayerHealthSliderValue (){
 		float health = GameManager.instance.playerCurrentHealth;
 		float value = health / 100.0f; 
-		Debug.Log ("Calculating the players health slider value to be " + value );
+		//Debug.Log ("Calculating the players health slider value to be " + value );
 		return value;//the number 100 is a plceholder for total health possible.
 	}
 

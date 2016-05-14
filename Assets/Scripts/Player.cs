@@ -177,8 +177,7 @@ public class Player : MonoBehaviour {
 	}
 
 	void Die () {//the animator notifies itself as it has internal player, this notifies combat and game managers, as well as updating long term memory
-		GameManager.instance.totalSurvivors--;
-		GameManager.instance.survivorsActive--;
+		
 		combatManager.PlayerHasDied();
 	}
 

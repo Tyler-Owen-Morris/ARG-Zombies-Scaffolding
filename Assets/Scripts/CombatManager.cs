@@ -11,7 +11,7 @@ public class CombatManager : MonoBehaviour {
 
 	private LevelManager levelManager;
 	private CharacterAnimation characterAnimation;
-	private int zombiesKilled, playerHealthLeavingCombat;
+	private int zombiesKilled, playerHealthLeavingCombat, totalSurvivorsFound = 0 ;
 
 	[SerializeField]
 	private Player player;
@@ -88,7 +88,7 @@ public class CombatManager : MonoBehaviour {
 
 			//only seen if game ends
 			int daysSurvived = GameManager.instance.daysSurvived;
-		 	gameOverText.text = "You, and your entire party are now a part of the zombie horde. You managed to survive " + daysSurvived + " days before all dying terrible deaths. /n /n Would you like to Start all over from Day 1? or pay a lucky dollar that a lucky event occurs, and you're spared, and then thanks to 3d printer technology, the limb that you lost was replaced cheaply and quickly with little to no technical skill --- look I'll let you live with 75% of your shit for 1$... straight developer bribe... your call mr " + daysSurvived + " days..." ;
+		 	gameOverText.text = "You, and your entire party are now a part of the zombie horde. You managed to survive " + daysSurvived + " days before all dying terrible deaths. \n \n Would you like to Start all over from Day 1? or pay a lucky dollar that a lucky event occurs, and you're spared, and then thanks to 3d printer technology, the limb that you lost was replaced cheaply and quickly with little to no technical skill --- look I'll let you live with 75% of your shit for 1$... straight developer bribe... your call mr " + daysSurvived + " days..." ;
 	}
 
 	public void SetZombiesEncountered (int zombies) {
@@ -145,9 +145,9 @@ public class CombatManager : MonoBehaviour {
 	IEnumerator LevelClearCalled () {
 			yield return new WaitForSeconds(1);
 		
-			GameManager.instance.BuildingIsCleared(CalculateSupplyEarned(), CalculateWaterFound(), CalculateFoodFound());
+			GameManager.instance.BuildingIsCleared(CalculateSupplyEarned(), CalculateWaterFound(), CalculateFoodFound(), CalculateFoundTotalSurvivors(), CalculateActiveSurvivorsFound());
 			GameManager.instance.SetPublicPlayerHealth(FindObjectOfType<Player>().currentHealth);
-
+			//updating stats to server memory is called from the building cleared function
 
 			Debug.Log ("The player is leaving combat SUCCESSFULLY with a current health of " + FindObjectOfType<Player>().currentHealth);
 			//must pass out which building was cleared.
@@ -192,7 +192,7 @@ public class CombatManager : MonoBehaviour {
 		float roll = UnityEngine.Random.Range(0.0f, 100.0f);
 
 		for (int i = 0; i < zombiesKilled; i++) {
-				int amount = (int)UnityEngine.Random.Range( 1 , 4 ) * 3;
+				int amount = (int)UnityEngine.Random.Range( 1 , 4 );
 				sum += amount;
 		}
 
@@ -211,7 +211,7 @@ public class CombatManager : MonoBehaviour {
 		float roll = UnityEngine.Random.Range(0.0f, 100.0f);
 
 		for (int i = 0; i < zombiesKilled; i++) {
-				int amount = (int)UnityEngine.Random.Range( 1 , 4 ) * 3;
+				int amount = (int)UnityEngine.Random.Range( 1 , 4 );
 				sum += amount;
 		}
 
@@ -223,18 +223,55 @@ public class CombatManager : MonoBehaviour {
 		return sum;
 	}
 
+	int CalculateFoundTotalSurvivors () {
+
+		float odds = 50.0f;
+		int sum = 0;
+
+		float roll = UnityEngine.Random.Range (0.0f, 100.0f);
+
+		if ( roll >= odds) {
+			sum += UnityEngine.Random.Range (0, 4);
+		}
+		totalSurvivorsFound = sum;
+		return sum;
+
+	}
+
+	int CalculateActiveSurvivorsFound () {
+		
+		float oddsOfBeingActive = 30.0f;
+		int activeSurvivors = 0;
+
+		if (totalSurvivorsFound <= 0 ) {
+			return activeSurvivors;
+		} else {
+			for (int i = 0; i < totalSurvivorsFound; i++ ) {
+				float roll = UnityEngine.Random.Range (0.0f, 100.0f);
+
+				if (roll <= oddsOfBeingActive) {
+					activeSurvivors++;
+				}
+			}
+			return activeSurvivors;
+		}
+
+	}
+
 	public void PlayerHasBeenBitten () {
 		characterAnimation.PlayerHasBeenBitten(); // 
 	}
 
 	public void PlayerHasDied () {
-		GamePreferences.SetTotalSurvivors(GameManager.instance.totalSurvivors);
-		GamePreferences.SetActiveSurvivors(GameManager.instance.survivorsActive);
+		GameManager.instance.totalSurvivors--;
+		GameManager.instance.survivorsActive--;
+		GameManager.instance.UpdateAllStatsToGameMemory();
 		UpdateTheUI();
 		//run this in update, so that it triggers the -- of # of players
 	}
 
 	public void EndGameCalled () {
+		characterAnimation.gameObject.SetActive(false);
 		gameOverpanel.gameObject.SetActive(true);
 		Time.timeScale = 0;
 
@@ -255,3 +292,4 @@ public class CombatManager : MonoBehaviour {
 		}
 	}
 }
+//end combatmanager

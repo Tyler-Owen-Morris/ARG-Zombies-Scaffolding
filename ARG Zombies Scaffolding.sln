@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 
 Project("{83262130-5CDD-EF28-EE8A-137565C71CE8}") = "ARG Zombies Scaffolding", "Assembly-CSharp.csproj", "{1B887EB7-A337-AC1E-7377-6BAA5683569A}"
 EndProject
+Project("{83262130-5CDD-EF28-EE8A-137565C71CE8}") = "ARG Zombies Scaffolding", "Assembly-CSharp-Editor.csproj", "{135EE819-99CA-EAC2-5FF7-A20B91AD58F2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +15,10 @@ Global
 		{1B887EB7-A337-AC1E-7377-6BAA5683569A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1B887EB7-A337-AC1E-7377-6BAA5683569A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1B887EB7-A337-AC1E-7377-6BAA5683569A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{135EE819-99CA-EAC2-5FF7-A20B91AD58F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{135EE819-99CA-EAC2-5FF7-A20B91AD58F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{135EE819-99CA-EAC2-5FF7-A20B91AD58F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{135EE819-99CA-EAC2-5FF7-A20B91AD58F2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
