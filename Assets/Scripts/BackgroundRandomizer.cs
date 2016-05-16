@@ -17,16 +17,12 @@ public class BackgroundRandomizer : MonoBehaviour {
 		//There are currently 10 backgrounds, so that's how I've decided to split the rolls.
 		if (roll <= 10.0f) {
 			bg.sprite = backgroundsArray[0];
-			
 		} else if (roll <= 20.0f) {
 			bg.sprite = backgroundsArray[1];
-			
 		} else if (roll <= 30.0f) {
 			bg.sprite = backgroundsArray[2];
-			
 		} else if (roll <= 40.0f) {
 			bg.sprite = backgroundsArray[3];
-			
 		} else if (roll <= 50.0f) {
 			bg.sprite = backgroundsArray[4];
 		} else if (roll <= 60.0f) {

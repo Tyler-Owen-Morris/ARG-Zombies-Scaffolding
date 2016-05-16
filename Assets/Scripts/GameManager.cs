@@ -25,9 +25,9 @@ public class GameManager : MonoBehaviour {
 	public string userFirstName;
 	public string userLastName;
 
-	private string startNewCharURL = "http://localhost/ARGZ_SERVER/StartNewCharacter.php";
-	private string resumeCharacterUrl = "http://localhost/ARGZ_SERVER/ResumeCharacter.php";
-	private string updateAllStatsURL = "http://localhost/ARGZ_SERVER/UpdateAllPlayerStats.php";
+	private string startNewCharURL = "http://www.argzombie.com/ARGZ_SERVER/StartNewCharacter.php";
+	private string resumeCharacterUrl = "http://www.argzombie.com/ARGZ_SERVER/ResumeCharacter.php";
+	private string updateAllStatsURL = "http://www.argzombie.com/ARGZ_SERVER/UpdateAllPlayerStats.php";
 
 	void Awake () {
 		MakeSingleton();
@@ -160,9 +160,12 @@ public class GameManager : MonoBehaviour {
 	}
 
 	IEnumerator FetchResumePlayerData () {
-
 		WWWForm form = new WWWForm();
-		form.AddField("id", GameManager.instance.userId);
+		if (FB.IsLoggedIn == true) {
+			form.AddField("id", GameManager.instance.userId);
+		} else {
+			form.AddField("id", "10154194346243928");
+		}
 
 		WWW www = new WWW(resumeCharacterUrl, form);
 		yield return www;
