@@ -20,11 +20,13 @@ public class BuildingSpawner : MonoBehaviour {
     private string googleJsonReturn;
     
     private static GameObject gameCanvas;
+    private static GameObject bldgHolder;
     private static PopulatedBuilding populatedBuildingPrefab;
 
 	// Use this for initialization
 	void Start () {
         gameCanvas = GameObject.Find("Canvas");
+        bldgHolder = GameObject.Find("BuildingHolder");
         populatedBuildingPrefab = Resources.Load<PopulatedBuilding>("Prefabs/Populated Building");
 		CreateBuildings();
         //StartCoroutine(GetNearbyBuildingsFoursquare());
@@ -46,15 +48,17 @@ public class BuildingSpawner : MonoBehaviour {
 		WWW www = new WWW(myWwwString);
 		yield return www;
 
-		File.WriteAllText(Application.dataPath + "/Resources/googlelocations.json", www.text.ToString());
+		//File.WriteAllText(Application.dataPath + "/Resources/googlelocations.json", www.text.ToString());
 		googleJsonReturn = www.text;
+		GameManager.instance.locationJsonText = www.text;
 		TurnGoogleJsonIntoBuildings();
 
 	}
 
 	void TurnGoogleJsonIntoBuildings () {
     	
-		string jsonString = File.ReadAllText(Application.dataPath + "/Resources/googlelocations.json");
+		//string jsonString = File.ReadAllText(Application.dataPath + "/Resources/googlelocations.json");
+		string jsonString = googleJsonReturn;
 		JsonData bldgJson = JsonMapper.ToObject(jsonString);
         //JsonData foursquareJson = JsonMapper.ToObject(jsonReturn);
        
@@ -65,21 +69,27 @@ public class BuildingSpawner : MonoBehaviour {
         	float lat = (float)(double)bldgJson["results"][i]["geometry"]["location"]["lat"];
 			float lng = (float)(double)bldgJson["results"][i]["geometry"]["location"]["lng"];
 			
-			Debug.Log (name + lat + lng);
+			//Debug.Log (name + lat + lng);
 
 			//calculate the average latitude between the two locations, and then calculate the meters/DEGREE lat/lon
 			float latMid =(Input.location.lastData.latitude + lat)/2f;
 			double m_per_deg_lat = 111132.954 - 559.822 * Mathf.Cos( 2 * latMid ) + 1.175 * Mathf.Cos( 4 * latMid);
 			double m_per_deg_lon = 111132.954 * Mathf.Cos( latMid );
 
-			Debug.Log ("for the " + name + " building, meters per degree calculated as " + m_per_deg_lat + " m/deg lat, and " + m_per_deg_lon +" m/deg lon");
-
-			double deltaLatitude = (Input.location.lastData.latitude - lat);
-			double deltaLongitude = (Input.location.lastData.longitude - lng);
+			//Debug.Log ("for the " + name + " building, meters per degree calculated as " + m_per_deg_lat + " m/deg lat, and " + m_per_deg_lon +" m/deg lon");
+			double deltaLatitude = 0;
+			double deltaLongitude = 0;
+			if (Input.location.status == LocationServiceStatus.Running){
+				deltaLatitude = (Input.location.lastData.latitude - lat);
+				deltaLongitude = (Input.location.lastData.longitude - lng);
+			} else {
+				deltaLatitude = (37.70883f - lat);
+				deltaLongitude = (-122.4293 - lng);
+			}
 			double xDistMeters = deltaLongitude * m_per_deg_lon;
 			double yDistMeters = deltaLatitude * m_per_deg_lat;
 
-
+			Debug.Log ("for "+myName+" change in lat/lng is "+deltaLatitude+" "+deltaLongitude+" and x/y dist calculated to be: "+ xDistMeters+" "+yDistMeters);
 			/*
 			float earthRadius = 6378.137f; // in KM
 			double dLat = (lat - Input.location.lastData.latitude) * Mathf.Deg2Rad; //convert angular difference to radians
@@ -91,20 +101,22 @@ public class BuildingSpawner : MonoBehaviour {
 			*/
 			//this was my first pass at the math.  Deg2Rad is not solid enough, nor does it take into account lat-long characteristics
 			
-			Debug.Log ("The building named "+ name +" should be appearing " + xDistMeters+" meters in the x direction and " + yDistMeters + " meters in the y direction");
+			//Debug.Log ("The building named "+ name +" should be appearing " + xDistMeters+" meters in the x direction and " + yDistMeters + " meters in the y direction");
 			//now we have the realive distance in meters translated to x,y offsets from our origin.
 			//current Gamespace renders buildings x:260-1030 and y:30-580 -PROVIDED objects are childed to the canvas
 			//origin is at 385,275 all buildings should be placed there with appropriate relative distance.
 			
 			PopulatedBuilding instance = Instantiate(populatedBuildingPrefab);
 			instance.name = myName;
-			float xCoord = (float)(385 + (xDistMeters/1000));
-			float yCoord = (float)(275 + (yDistMeters/1000));
+			instance.buildingName = myName;
+			float xCoord = (float)(385 + (xDistMeters));
+			float yCoord = (float)(275 + (yDistMeters));
 			Vector3 pos = new Vector3 (xCoord, yCoord, 0);
 
+			//instance.transform.SetParent(gameCanvas.transform);
+			instance.transform.SetParent(bldgHolder.transform);
 			instance.transform.position = pos;
-			instance.transform.SetParent(gameCanvas.transform);
-			
+				
 			Debug.Log("placed "+instance.name+" at coords: "+xCoord+" x and "+yCoord+" y");
       }
         
@@ -164,24 +176,23 @@ public class BuildingSpawner : MonoBehaviour {
        
         //this loop is currently only set to do 4 iterations. AKA- first 4 locations on the list.
         for (int i = 0; i < bldgJson["response"]["venues"].Count; i++) {
-			string name = (string)bldgJson["response"]["venues"][i]["name"];
+			string bldgName = (string)bldgJson["response"]["venues"][i]["name"];
         	float lat = (float)(double)bldgJson["response"]["venues"][i]["location"]["lat"];
 			float lng = (float)(double)bldgJson["response"]["venues"][i]["location"]["lng"];
 			
 			Debug.Log (name + lat + lng);
 
 			//calculate the average latitude between the two locations, and then calculate the meters/DEGREE lat/lon
-			float latMid =(Input.location.lastData.latitude + lat)/2f;
-			double m_per_deg_lat = 111132.954 - 559.822 * Mathf.Cos( 2 * latMid ) + 1.175 * Mathf.Cos( 4 * latMid);
+			float latMid = lat;//(Input.location.lastData.latitude + lat)/2f;
+			double m_per_deg_lat = 111132.954 - 559.822 * (Mathf.Cos( 2 * latMid )) + (1.175 * Mathf.Cos( 4 * latMid));
 			double m_per_deg_lon = 111132.954 * Mathf.Cos( latMid );
 
-			Debug.Log ("for the " + name + " building, meters per degree calculated as " + m_per_deg_lat + " m/deg lat, and " + m_per_deg_lon +" m/deg lon");
+			Debug.Log ("for the " + bldgName + " building, meters per degree calculated as " + m_per_deg_lat + " m/deg lat, and " + m_per_deg_lon +" m/deg lon");
 
 			double deltaLatitude = (Input.location.lastData.latitude - lat);
 			double deltaLongitude = (Input.location.lastData.longitude - lng);
 			double xDistMeters = deltaLongitude * m_per_deg_lon;
 			double yDistMeters = deltaLatitude * m_per_deg_lat;
-
 
 			/*
 			float earthRadius = 6378.137f; // in KM
@@ -200,13 +211,13 @@ public class BuildingSpawner : MonoBehaviour {
 			//origin is at 385,275 all buildings should be placed there with appropriate relative distance.
 			
 			PopulatedBuilding instance = Instantiate(populatedBuildingPrefab);
-			instance.name = name;
+			instance.buildingName = bldgName;
 			float xCoord = (float)(385 + (xDistMeters/10000));
 			float yCoord = (float)(275 + (yDistMeters/10000));
 			Vector3 pos = new Vector3 (xCoord, yCoord, 0);
 
-			instance.transform.position = pos;
 			instance.transform.SetParent(gameCanvas.transform);
+			instance.transform.position = pos;
 			
 			Debug.Log("placed "+instance.name+" at coords: "+xCoord+" x and "+yCoord+" y");
       }

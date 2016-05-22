@@ -55,7 +55,7 @@ public class Building : MonoBehaviour {
 		GetComponent<BoxCollider2D>().enabled = false;
 		GetComponent<Image>().color = Color.gray;
 
-		Debug.Log ("Deactivate function has completed for " + this.gameObject.name + " and currently has " + this.zombiePopulation.ToString() + " zombies");
+		//Debug.Log ("Deactivate function has completed for " + this.gameObject.name + " and currently has " + this.zombiePopulation.ToString() + " zombies");
 		//still need to write the code to change appearance, turn on transparent panel? indicate that it's clear.
 	}
 

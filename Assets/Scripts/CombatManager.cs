@@ -143,19 +143,15 @@ public class CombatManager : MonoBehaviour {
 	}
 
 	IEnumerator LevelClearCalled () {
-			yield return new WaitForSeconds(1);
-		
-			GameManager.instance.BuildingIsCleared(CalculateSupplyEarned(), CalculateWaterFound(), CalculateFoodFound(), CalculateFoundTotalSurvivors(), CalculateActiveSurvivorsFound());
-			GameManager.instance.SetPublicPlayerHealth(FindObjectOfType<Player>().currentHealth);
-			//updating stats to server memory is called from the building cleared function
-
-			Debug.Log ("The player is leaving combat SUCCESSFULLY with a current health of " + FindObjectOfType<Player>().currentHealth);
-			//must pass out which building was cleared.
-			levelManager.LoadLevel ("03a Win");
-
-
 		yield return new WaitForSeconds(1);
+	
+		GameManager.instance.BuildingIsCleared(CalculateSupplyEarned(), CalculateWaterFound(), CalculateFoodFound(), CalculateFoundTotalSurvivors(), CalculateActiveSurvivorsFound());
+		GameManager.instance.SetPublicPlayerHealth(FindObjectOfType<Player>().currentHealth);
+		//updating stats to server memory is called from the building cleared function
 
+		Debug.Log ("The player is leaving combat SUCCESSFULLY with a current health of " + FindObjectOfType<Player>().currentHealth);
+		//must pass out which building was cleared.
+		levelManager.LoadLevel ("03a Win");
 	}
 
 	public void ZombieIsKilled () {

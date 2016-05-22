@@ -18,16 +18,19 @@ public class GameManager : MonoBehaviour {
 	public string weaponEquipped;
 
 	private Scene activeScene;
-	private string activeBldg;
+	//made this public while working on the server "cleared list" data retention.
+	public string activeBldg;
 	private int shivDurability, clubDurability;
 
 	public string userId;
 	public string userFirstName;
 	public string userLastName;
+	public string locationJsonText;
 
 	private string startNewCharURL = "http://www.argzombie.com/ARGZ_SERVER/StartNewCharacter.php";
 	private string resumeCharacterUrl = "http://www.argzombie.com/ARGZ_SERVER/ResumeCharacter.php";
 	private string updateAllStatsURL = "http://www.argzombie.com/ARGZ_SERVER/UpdateAllPlayerStats.php";
+	private string buildingClearedURL = "http://www.argzombie.com/ARGZ_SERVER/NewBuildingCleared.php";
 
 	void Awake () {
 		MakeSingleton();
@@ -145,6 +148,7 @@ public class GameManager : MonoBehaviour {
 		form.AddField("gun_count", GameManager.instance.gunCount);
 		form.AddField("knife_durability", GameManager.instance.shivDurability);
 		form.AddField("club_durability", GameManager.instance.clubDurability);
+		form.AddField("char_created_DateTime", GameManager.instance.timeCharacterStarted.ToString());
 
 		WWW www = new WWW(startNewCharURL, form);
 		yield return www;
@@ -178,7 +182,7 @@ public class GameManager : MonoBehaviour {
 			File.WriteAllText(Application.dataPath + "/Resources/Player.json", www.text.ToString());
 
 			//read that text out into a string object, and map that to a json object
-			string playerJsonString = File.ReadAllText(Application.dataPath + "/Resources/Player.json");
+			string playerJsonString = www.text.ToString();
 			JsonData playerJson = JsonMapper.ToObject(playerJsonString);
 
 
@@ -189,7 +193,6 @@ public class GameManager : MonoBehaviour {
 			GameManager.instance.totalSurvivors = totsuv;
 			int suvAct = Convert.ToInt32(playerJson["active_survivors"].ToString());
 			GameManager.instance.survivorsActive = suvAct;
-			GameManager.instance.timeCharacterStarted = Convert.ToDateTime(playerJson["char_created_DateTime"].ToString());
 			int currHealth = Convert.ToInt32(playerJson["last_player_current_health"].ToString());
 			GameManager.instance.playerCurrentHealth = currHealth;
 			int sup = Convert.ToInt32(playerJson["supply"].ToString());
@@ -214,6 +217,9 @@ public class GameManager : MonoBehaviour {
 			GameManager.instance.homebaseLat = homeLat;
 			float homeLon = (float)Convert.ToDouble(playerJson["homebase_lon"].ToString());
 			GameManager.instance.homebaseLong = homeLon;
+			Debug.Log ("server returned a date time string of: " + playerJson["char_created_DateTime"]);
+			DateTime oDate = Convert.ToDateTime(playerJson["char_created_DateTime"].ToString());
+			GameManager.instance.timeCharacterStarted = oDate;
 
 			//once the GameManager.instance is updated- you're clear to load the map level.
 			SceneManager.LoadScene("02a Map Level");
@@ -244,14 +250,14 @@ public class GameManager : MonoBehaviour {
 		gunCount = UnityEngine.Random.Range (10,50);
 		shivDurability = 50;
 		clubDurability = 25;
-		int survivors = UnityEngine.Random.Range(2, 8);
-		survivorsActive = UnityEngine.Random.Range(1,survivors);
-		totalSurvivors = survivors;
+		totalSurvivors = UnityEngine.Random.Range(2, 8);
+		survivorsActive = UnityEngine.Random.Range(1, totalSurvivors);
 		supply = UnityEngine.Random.Range(20, 70);
 		waterCount = UnityEngine.Random.Range(10, 20);
 		foodCount = UnityEngine.Random.Range(15, 30);
 		mealCount = 0;
 		playerCurrentHealth = 100;
+		timeCharacterStarted = DateTime.UtcNow;
 
 		StartCoroutine (NewCharacterUpdateServer());
 
@@ -397,10 +403,13 @@ public class GameManager : MonoBehaviour {
 //		GamePreferences.SetActiveSurvivors(survivorsActive);
 		GameManager.instance.UpdateAllStatsToGameMemory();
 
-		SetClearedBuilding();
+		StartCoroutine(SendClearedBuilding());
 	}
 
-	private void SetClearedBuilding () {
+	IEnumerator SendClearedBuilding () {
+
+		//This code was for the mock-up. using an array and strings to store data on 4 test buildings.
+		/*
 		if (activeBldg == "Building01") {
 			buildingToggleStatusArray[0]=true;
 		} else if (activeBldg == "Building02") {
@@ -409,6 +418,31 @@ public class GameManager : MonoBehaviour {
 			buildingToggleStatusArray[2]=true;
 		} else if (activeBldg == "Building04") {
 			buildingToggleStatusArray[3]=true;
+		}
+		*/
+		string jsonString = GameManager.instance.locationJsonText;
+		JsonData bldgJson = JsonMapper.ToObject(jsonString);
+		string bldg_id = "";
+
+		for (int i = 0; i < bldgJson["results"].Count; i++) {
+			if (bldgJson["results"][i]["name"].ToString() == GameManager.instance.activeBldg) {
+				bldg_id = bldgJson["results"][i]["id"].ToString();
+			}
+		}
+
+		WWWForm wwwForm = new WWWForm();
+		wwwForm.AddField("id", GameManager.instance.userId);
+		wwwForm.AddField("bldg_name", GameManager.instance.activeBldg);
+		wwwForm.AddField("bldg_id", bldg_id);
+
+		Debug.Log ("sending cleared building message to the server- bldg_name: "+GameManager.instance.activeBldg+" and id: "+bldg_id);
+		WWW www = new WWW(buildingClearedURL, wwwForm);
+		yield return www;
+
+		if (www.error == null) {
+			Debug.Log(www.text);
+		} else {
+			Debug.Log(www.error);
 		}
 	}
 

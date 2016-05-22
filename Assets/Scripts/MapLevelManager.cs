@@ -6,15 +6,16 @@ using Facebook.Unity;
 public class MapLevelManager : MonoBehaviour {
 
 	[SerializeField]
-	private GameObject inventoryPanel;
+	private GameObject inventoryPanel, buildingPanel;
 
 	[SerializeField]
-	private Text supplyText, daysAliveText, survivorsAliveText, shivCountText, clubCountText, gunCountText, currentLatText, currentLonText, locationReportText, foodText, waterText, playerNameText;
+	private Text supplyText, daysAliveText, survivorsAliveText, shivCountText, clubCountText, gunCountText, currentLatText, currentLonText, locationReportText, foodText, waterText, playerNameText, bldgNameText, zombiePopText;
 
 	[SerializeField]
 	private Slider playerHealthSlider, playerHealthSliderDuplicate;
 
-
+	private int zombieCount;
+	private string bldgName;
 
 	public void InventoryButtonPressed () {
 		if (inventoryPanel.activeInHierarchy == false ) {
@@ -55,7 +56,6 @@ public class MapLevelManager : MonoBehaviour {
 
 	void OnLevelWasLoaded () {
 		UpdateTheUI();
-        
 	}
 
 	public void UpdateTheUI () {
@@ -79,6 +79,27 @@ public class MapLevelManager : MonoBehaviour {
 		playerHealthSliderDuplicate.value = (CalculatePlayerHealthSliderValue());
         
         StartCoroutine(SetCurrentLocationText());
+	}
+
+	public void ActivateBuildingInspector(int zombiesInBldg, string buildingName) {
+
+		//this sets text, stores the int/string, and activates the panel.
+		bldgName = buildingName;
+		bldgNameText.text = buildingName;
+		zombieCount = zombiesInBldg;
+		int rand = Random.Range(1,3);
+		zombiePopText.text = "It looks like there are about "+(zombiesInBldg-rand)+"-"+(zombiesInBldg+rand)+" zombies in the way";
+		buildingPanel.SetActive(true);
+
+	}
+
+	public void DeactivateBuildingInspector () {
+		buildingPanel.SetActive(false);
+
+	}
+
+	public void LoadIntoCombatFromBldgInspector () {
+		GameManager.instance.LoadIntoCombat(zombieCount, bldgName);
 	}
     
     void DisplayUsername (IResult result) {

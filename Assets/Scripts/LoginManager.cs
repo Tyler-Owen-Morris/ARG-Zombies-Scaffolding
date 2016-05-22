@@ -199,7 +199,7 @@ public class LoginManager : MonoBehaviour {
 
 	public void ResumeCharacter () {
 			GameManager.instance.ResumeCharacter();
-			SceneManager.LoadScene ("02a Map Level");
+			//SceneManager.LoadScene ("02a Map Level");
 	}
 
 	public void StartNewCharacter () {

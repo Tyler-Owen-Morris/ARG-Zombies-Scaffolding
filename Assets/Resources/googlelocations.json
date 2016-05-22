@@ -1,6 +1,6 @@
 {
    "html_attributions" : [],
-   "next_page_token" : "CoQC8wAAAEPHDsIdTcaJsZCDtP2tkfZBJaEgZNbwmhbc3nmrAMlHpvs1ok4r8akrY_ybNdSHZTuzu9ipVPcbjw-7jz6RPSbHKRetYWkopbDhEDUbb9yGbLHPQv6OsAXsvPZWPPzN8QaRlFVzOT_cX-Pv49NH5iC-9abOH5wmCMnO5ZiH_O55KjO0mgP-tDX5fNiF4GawbPe2k2grjje8THf-WirSrpAtVW-xtzkVAePa6wkuA1tLewLDxAt4Y0CL_yrDu4Dfq-dK-vgNwFQbCrtpTgMaw62aMPcwcMMp7wq_mJBwQUhpfRu0MVfi4Rrj8BHsbnqpX04O8NrRpPV5jE76Vd9gqBgSEETgwNXWeR2T5wam7bXJmvYaFDACJg74jg4OCj-at-b6WQla3U5k",
+   "next_page_token" : "CoQC8wAAAN8VE3MG4oyEeM_LiHII_pLja0qZeh9-xvEFlBsC-OgecaQQO9ROD0H_rsT8V50Llh97NaPOx28awGSe_VY784Nw8E0ZEzipf8dGc2s7cm0uoXSfxujEkOpn84gdEjjHuC03S5EyGmn_ztJBeF-mQaxQ9QhDvy6rkDxTAasZXjEBc7KYpgHhxjfw25_X0W8JW_W2ePblrPebSHlMypvg7ntaCs6h1Ym_2eHGe2iTzsnM-ujUTQB_6iEW5qrvU8d_jepmC2oTQguVE03in1vccrc6fGVCGHpj28OB7sDphz6fERBnq2iwC8EhJm7Nfvefa-aWG3n7vIe2Pna4HYdq6tMSEMMtsMJRCKLuXtHOKkwmaxYaFMNn0W2zzyAgE5VKmTCtJKr5JK-X",
    "results" : [
       {
          "geometry" : {
@@ -23,7 +23,7 @@
          "id" : "1b9ea3c094d3ac23c9a3afa8cd4d8a41f05de50a",
          "name" : "San Francisco",
          "place_id" : "ChIJIQBpAG2ahYAR_6128GcTUEo",
-         "reference" : "CoQBcwAAAEcmFInEIGNNgNNjszArSHGdzi6aV-mkIqujWPpDEKOxoakc_1QsKBeQKVN-lsVbW7aEAqiu_0qF1pBwRjPl1pwiILvfbvw9r7EZwsr8XkQntBS2cs9LudsY0SgLsLGXbTZiZfZwOnC4_cHMV8XnXSaBaJfrdelztIUAJNMESEfmEhD2P9LRMXOa1gW-x1iJIoILGhQeMHgxaC6y08ezcTcVmj9dyykReQ",
+         "reference" : "CoQBcwAAAA-nZj6h3ZCJ_cFzD5s4dD5H5tQqLcIEcegS4qmjtK0dsmPdnjgvTinWRCh6PhAlkfnqfVAiNLMtdAvi5Jsoy6qFfldND4MW1cK-dUFcGqKxq6aPMs1PilUJZBd6n0h6ytcTH9gNM3b3sd5EN5OlT6NmeT6CYoMTVK-bua8lLpUzEhCKwJ_0SOw73ELRmKicLhD6GhStGMVaO9A_rGXiT5KBBbmtBpYeGA",
          "scope" : "GOOGLE",
          "types" : [ "locality", "political" ],
          "vicinity" : "San Francisco"
@@ -48,13 +48,13 @@
                "html_attributions" : [
                   "\u003ca href=\"https://maps.google.com/maps/contrib/104409896245294427302/photos\"\u003eAlpine Inn &amp; Suites\u003c/a\u003e"
                ],
-               "photo_reference" : "CoQBcwAAAH1WfpQpGPhkec4MLKvBDoqdg1_GDi46oZppvm7eYvAs844aLy6TiC7n_v9TI7WIXLIl1aNgd6G49ba_euWYRHe0r-WBle0RhVN1QRdtb4IOcXSyna01WltsL0sDjZXVr1YgTL-KRD7Gp1Gte2PURLaEgYMA0CtCbOsXax_-waYSEhDpZt-ulQA_Dlhy9fDhVr7RGhS6G7lbO7Ayt3E9R1Dypm2Lnh-Jpw",
+               "photo_reference" : "CoQBcwAAAADinCpXKrqeCs10_OA5zHpcYo7TPknfju-NS9hcTbPSTcrzJ1O1jOq36ZIdnKadSKvR6m80j90T3J-auGYuliGa_XD19hOsyxpbw2lFDCWgny8tYLKJYNmrxX0S22EjrLQNRhUap0QbvmouEfOFsWJ4YO86kB9XGz-bZ7xkATMqEhCEqTppmfObTD0e9Gl7BwemGhTos-b6zx-iqKU_zCSqNARr3aTIqQ",
                "width" : 250
             }
          ],
          "place_id" : "ChIJpSQ0WMd-j4ARRZUatoTVLEo",
          "rating" : 3.8,
-         "reference" : "CnRmAAAAPJl6QpwVpP1ZtqXL68v_dKneNhqkgaBb5qx43lYPwZ-zHQEjnB7YJi90xkHNU7cRUWCR_zUR989EBfI0V6NMTtinpqoCuPC2Pg5ci4ajNflvXGrBZT-YvqrWIt_kTXs9sDdyxqVgPd__fYhIZFCzthIQRlznlvK-VDmUHgVmzar3qxoU2Nrog8Pl96gKO7-C0QYrO1HRGJs",
+         "reference" : "CnRmAAAAfnwpsUwkKUZzC_qc92WQojWLWqOZ30Z8eZWyVzsAAoR6QBMlK6CXgiFcWd9nKqwIc7whRwssErt11CaQ1CGZ9d0h2HHu2oJ7hnabaRj-ASqhlmKRiQW01_Ipr7XN80IwTn0SrS1mpF5_y7OylV7F2RIQbUXQKJWi-07g7bEzrrSHmBoU_x1T1NtB1OKIkBS7C7dyIQWxoQw",
          "scope" : "GOOGLE",
          "types" : [ "lodging", "point_of_interest", "establishment" ],
          "vicinity" : "560 Carter Street, Daly City"
@@ -71,7 +71,7 @@
          "name" : "Guadalupe Elementary School",
          "place_id" : "ChIJPYxQ_Zd-j4ARdCU4dW2RYLQ",
          "rating" : 3.5,
-         "reference" : "CnRvAAAAMn3utHjkt-dfQ4cn8DL5p98w61HyCBmjY0jjsebZCQOGe2qnopF3Uxp01lEbZ60xopKAu6DLUDzrjueRAXJRGo-2XkSLmEGGVyZ_PTsOhIxU1pFM_s_-3jNIoMwvaDKww8L5axNbwds-k6bSP-b7ExIQf9ynz0f4JV9KavtL23A_fRoU_GzxZYDc9bNyQj80QNE9tP7mbdc",
+         "reference" : "CnRvAAAAWMbMNPUbLRLlzrBpC4LeLdlPXXVO05jMuL05hgKwMw5qDTkijTTlcgxSIxPQz3ahGVM6HB44X7c54Oj8R2JGyBxEU9IQUHImiWWa2PNrHYN2Hq52j7hnh20fge-n6iVjR4iZojpt5jAb6fDs22OlpRIQksga_IgOtnsBVsX6B424ABoUhnEXbAGfAk8QuAumJlxfThAPTyQ",
          "scope" : "GOOGLE",
          "types" : [ "school", "point_of_interest", "establishment" ],
          "vicinity" : "859 Prague St, San Francisco"
@@ -87,11 +87,11 @@
          "id" : "227930a3f174801857de2e0a934fa35c866eada5",
          "name" : "Arden Park",
          "opening_hours" : {
-            "open_now" : true,
+            "open_now" : false,
             "weekday_text" : []
          },
          "place_id" : "ChIJ9zT5Y7l-j4ARFMkiVjgrPnw",
-         "reference" : "CmRdAAAApGP1hVyJyRUMbCZmv8rVEETFpfmP4nN5XTMVUXr3XnGxUAckbL36_AKx6TUDTqx2wAgsCswQqAGzXc0q7xE36KpFT1GY5ydF7XOFPC81zk-duZPUq0Q7htfMUAmGPLZIEhBI78Fw7DT5BWPoUx_Jwa7aGhTOIukuz_zILsMyktK3Ftp_wVADjQ",
+         "reference" : "CmRdAAAAs1xACZPClF4ld5J4RlQO2h97a9CvLeeL7_3-gBQby40MuuGLBRrOYMQOo-gOYF-NLfOH32VZp0Ny-frmszxRe_6npZGAv-oqyj2eM-E3xRe8zQAQoS6e7m864IzayvcDEhCKa6_DblX-KZCpXqTBjAErGhQ8ZQiTkCgdjDzo1b9FPAAoKu_mrg",
          "scope" : "GOOGLE",
          "types" : [ "park", "point_of_interest", "establishment" ],
          "vicinity" : "2 Arden Court, Daly City"
@@ -116,12 +116,12 @@
                "html_attributions" : [
                   "\u003ca href=\"https://maps.google.com/maps/contrib/112940518243520454749/photos\"\u003eSan Francisco Rooter Plumbing\u003c/a\u003e"
                ],
-               "photo_reference" : "CoQBcwAAAM3xMthqUU-LnQiFbaaDJ37i5bYNYAEdAmZRT6fH7y4EVpsJlYGr4brpul-3o-MpalBit8OBM0FbRKJwKvmHg0C2jRvOxg3RqQGW7FAXCboZcJ0TlClSy1RaFmGH4EZ3CgVyvtvn2OcB8nZ2hzRhKPUXvHvl74fjF8DdLrhq26jSEhCILvbzk5Q-Ny8B8lNmt51eGhThEp0A3GpkPOYXBJEUlnCE36OOrg",
+               "photo_reference" : "CoQBcwAAAI8zD8Z9TbSRP7GR0epFR5lY4H5Th6XK8R1luSYgzB_tCKgEL14Jnt5Y9sGxEpMMQwWy_PE3N4-N9nbBsHT6at4DKaC6X7YHquvXEAlNeqFNf_nWqlCfCwoddh3GXsGpIN1l01jUDlVM6P49O5mwfyeb6ubpOkorQQzPWZLRM9reEhAmHq3LAaI0h_Jd6TOzXWAuGhSgoZg-DB-BOrTDwuCVKayMH6FExw",
                "width" : 640
             }
          ],
          "place_id" : "ChIJ0bMEC75-j4ARaMYLn6SusZc",
-         "reference" : "CoQBcQAAAM-ItPtH--7Ad6d1UjefpbJl_kXB0NOMrTyzg4SJSvoCODIlQ1KrhSEwsGvlpCyyBljLfPYw1VfzIuIeDELOsGqyFSpeY_vnDrdBArSb4wJiGyF1CQydG6KY5ovZplYYrifj3HfeeRkqKahg4Hl0ggT99pKfnE6Re6phamdtsXtREhB2eNexL-5JodfTDOm46vCqGhQK0wmH8Jtt0yPvJ2LTD1LINwycJw",
+         "reference" : "CoQBcQAAAIgytYC0ibI833oYsUGVJSbhDQk0-iSKqNj0j8GchFtsGg5YK5fZI_6S7dw4R3WKt__cUOfsvHRAN7iGAA-4j1M7VSx_MDQILpdRDWDDeLfEWtPbe7jsjN50608aUHK5gecG3H1yGchfiZectFwDN1Ffed0a9LGjniLHRMlf2RJ5EhDvyvfw0YQsDvPpMGmBHHzrGhTR4p91ZyHqZak4YmLeD55BYgisdg",
          "scope" : "GOOGLE",
          "types" : [ "plumber", "point_of_interest", "establishment" ],
          "vicinity" : "66 Chicago Way, San Francisco"
@@ -137,7 +137,7 @@
          "id" : "c0311b6d93cbc5b7ca9063eb40d81ac3648fc9f1",
          "name" : "Clark's Painting Company",
          "opening_hours" : {
-            "open_now" : true,
+            "open_now" : false,
             "weekday_text" : []
          },
          "photos" : [
@@ -146,12 +146,12 @@
                "html_attributions" : [
                   "\u003ca href=\"https://maps.google.com/maps/contrib/100858348642398065082/photos\"\u003eClark&#39;s Painting Company\u003c/a\u003e"
                ],
-               "photo_reference" : "CoQBcwAAAJiAYK59wTXKFX6B991lWUN7hjkRX0Vq-DOPEHvUqtMnvh7C5dZKBUjQ-fombv2BuRNQOzsw7ZnFWaYgXjUJPx3VidnYLDL4K1SrhWpa3V69GxdAis8JXBFV4SOj1cUaF5U7a2ceVeWzjog8d2gMvgqZI6uxRUVicXnuywYirVZoEhCwRNciZxMy7OskLa04vkiBGhTTDFUA-QEyLK86xe7nghuegRnBGA",
+               "photo_reference" : "CoQBcwAAAPIXoCMF5yWFNAk9vbE8yt8tYiMNwkZW9vzXLEG1FayZcH0Jl0UXHfQBm90m6claJaAo5c_zY2xPbcbqhwgt47s1L-4Fn_WLInYovRY0wHFJ-HFX-FN3TtwHLkUnrbU2SxUZJxrZjtiRPE3WmS_kdjQjRfYsM7LbsqwBFznp1ZHJEhC1z0Li-fYpjFGvaWbIko0qGhTAZQoexdpJS2eSV_ZOWejd-Z7DUQ",
                "width" : 1536
             }
          ],
          "place_id" : "ChIJmc34fw6HhYAROfb83VSnzJU",
-         "reference" : "CnRsAAAAWD7e2gkFD4VoK8iUpRrOYwEFuhNdlC2u0GVvTzv_2UDBBOPyxmf5dYEtlAPkkijxilcgh4dtbQRLi-roxDa0WXNpKl48ZFJx88B1HHMWM0OkbI9ranK8P_B838otz6DWyNbY4Amr4azXa02GtHeGSxIQZTUS1xDS1FI8gpk8PVj7xhoUT-bFjM6cRs9I5hTx60r3w3FsL8g",
+         "reference" : "CnRsAAAAwDw9uJpFzqnXDIGdDY0ZIvtr79g3Vpcnj2sSfXMlBjTTcT_O0SbkM518DVLDqZos0bZdms3wOsOdthKD1ZGFFdsIjiC2cu-90jExIQjfZm27LewRlHLAreIc3ptNPiTFqeY1oEVQCMkLcQKJWA7iwxIQXjBAAe-YDOY_pxnqcSGhWBoUuMyRRL08OkNqhAeFfO7IwLcKE6E",
          "scope" : "GOOGLE",
          "types" : [ "painter", "point_of_interest", "establishment" ],
          "vicinity" : "304 South Hill Blvd, San Francisco"
@@ -167,21 +167,11 @@
          "id" : "40a2d2a415e167053647f7ece68dc36d56eb0be1",
          "name" : "Ghazala Day Care",
          "opening_hours" : {
-            "open_now" : true,
+            "open_now" : false,
             "weekday_text" : []
          },
-         "photos" : [
-            {
-               "height" : 600,
-               "html_attributions" : [
-                  "\u003ca href=\"https://maps.google.com/maps/contrib/103433296157551770599/photos\"\u003eGhazala Day Care\u003c/a\u003e"
-               ],
-               "photo_reference" : "CoQBcwAAAJye5uq8MMgoqLWYPRGThsTLxxO1XSNaVZ_TiZZAca23VSMiew-6A3og6hxYuls_1ZUS_2e872q2MLS_PoJIp7sN5HB0TCdLtuVeYljM5d3FQ7u0ITsLIP_6438e6hr48qbGKSXQ5Gr5C5Pgf_TttXTYq7kwc2FsCfQgF1ZcBr-XEhD8l0pgBAj-HimBEAVvVFt9GhQSRpGZCOtxYLUFgq-4dOSrq_B-LA",
-               "width" : 800
-            }
-         ],
          "place_id" : "ChIJh6WIu7h-j4AR0PV-QIvxnvI",
-         "reference" : "CnRkAAAA4r07gae5Xq2qU2Tqgoo9EUtfjFJFYId64dzPE2ni11XS3IINHQ5vz_QJDmZ73I2W4EwsXlcelrkj7YZAapq8FOTJGnj1E3WTF5-yPUepqfcbK3f-aXVx8yYIajweCmWPp49-dho3iPHvqvb3WDK-RRIQtN7_2tpwqewF3szI-zuT6xoUGD584VLyBLGYoBDPuZbCoTi1Kxk",
+         "reference" : "CnRkAAAAPbOD3z9r-PhwdIw_06nZycEO9zYri1AX-nf36QEz4koAHkyzgliakTpXX10XXxOCNqFna3Nj3Tcg8tX2gKhqpFpONUo6_1csko2stMQ7WnOzKss9xaEbw36GkjzMJKcvY-ManxTLzmWPvLs_iYMiXBIQqyeaqznt-MeSwIn8FhQ17RoU7vPKICZ4LtqUu8i-4n-i_5G8nb8",
          "scope" : "GOOGLE",
          "types" : [ "school", "point_of_interest", "establishment" ],
          "vicinity" : "2406 Lpine Drive, Daly City"
@@ -197,7 +187,7 @@
          "id" : "44dca2acd15a63e13764e560ad50021d31d3f92a",
          "name" : "Soup Galaxy",
          "place_id" : "ChIJj9kG8r1-j4ARd2l_fIfi9NY",
-         "reference" : "CmRfAAAA6aVlCMAOOi16LQy6mJKHSqNdgSpB9Q_TlxXVely6uEBhsqeYgRB9jfRuX4aEjJh6sTHv--86CW353achm3PiGPRrMYiNW0ZT3yJNv61uTdavdBFt_wKSQLuSa53Ep3u6EhALi9xadGKkk3EE_2WXa0qiGhQNrB3hqLVpss4rFJ4t7jPjqp34rw",
+         "reference" : "CmRfAAAAIOI73sdanN_QVCFRkKBnYFa6VPgi_XJr6UyAnhUBn3XiUamk8pYSiPNz9aHj3k2pby5UrkkuytlHtO0rK4uKvnHWcZEGcRWB8S7Qn-tQ2lmdtz5uqbipp8L3E3uJzEHbEhCFXU60A2ls1ZN5VL20xBJ9GhS-UTGxXKe-aB6m3fynYWd6ifYzvg",
          "scope" : "GOOGLE",
          "types" : [ "restaurant", "food", "point_of_interest", "establishment" ],
          "vicinity" : "141 Chicago Way, San Francisco"
@@ -213,7 +203,7 @@
          "id" : "575cd354e3a9aa0b5b948a4b7f457a9452c86ee5",
          "name" : "Boiled Architecture",
          "place_id" : "ChIJKcmanb1-j4AR96M3By8ZJTg",
-         "reference" : "CnRmAAAAEIvnk0Rph3MXNR_Lrx3To0nGzd_xUJ1win_t6IJZLsO0EBx085vHG_cakM2TdZn010WBFw6s8avUUvHsmb9oWqfKLNjUgCm65tDsiH_3ao3cxjLSldthvFUkLF9Uoa_-A0p8lYnpiMB64H1AZQUpoRIQR60r-vjjyDqOAMhy5T5AYRoUzerppqgZ3kJrQg5dQDFqTL53o3w",
+         "reference" : "CnRmAAAAbecBSjJcLGL-1_E4Eqm0qS7CEvi2v4-VOGWwY9Z-Ncxj98Xa1VyXCfbKzk99HVKhWON2QxFbiBzsbr93NEbbyx_jy-69efMJiG6ONXvz4vgcg4_96fmsDcWUJOZSqXSKiGVtm68yNdg6cBMPxd7Z_BIQ19e_5CQlX5c5UQ1dRLVzrRoUC7y9OSk2vk-GucwnudpMwV9fETc",
          "scope" : "GOOGLE",
          "types" : [ "point_of_interest", "establishment" ],
          "vicinity" : "225 Naylor Street, San Francisco"
@@ -229,7 +219,7 @@
          "id" : "00cab09150df71f90bd265bc3e4e062a1f8f4522",
          "name" : "Forward Transportation Inc",
          "place_id" : "ChIJNwbBzrh-j4ARffZpxygdmeE",
-         "reference" : "CnRuAAAAxeTgb4cJ17KcjqsVGuvfk2UeJRnGFeaGOwyGl-R2Ses2XZ4LGRABz1Iq4cfw1U3jt3--7aRVSZjzKZh0ncXOpiu32QRbDHO1NqtHIptvof_MVj68lqKQIvSqSEsvo0x-ngrElR7lQJnzuxch3G_R1BIQkrwXZFHy8LvBzu_dR7n-oBoUQFs_NSME0GQb9IpaseVPQOQ7RfM",
+         "reference" : "CnRuAAAAx4dH0nxmnDB21yQWegHnJfp594xjffb76jc-nlYQOkEBfzhHbFFSZzLn5YZTRBcTxqlhuHs9-Nf7UdJhKHXLCkZ1iAtsobmSDb6HVCmcCK81sOOX1RhQdSVECs2NCxSjd2X9pX6XzRdjt9J3hFVbUhIQZw0sOoUe4GzStUhnavnuyBoUW2Wc8foslZ7RId0egMOI6GFU7Uw",
          "scope" : "GOOGLE",
          "types" : [ "moving_company", "point_of_interest", "establishment" ],
          "vicinity" : "1908 Pine Court, Daly City"
@@ -245,7 +235,7 @@
          "id" : "546366a0034a497b96055f42335bb61fc4733bea",
          "name" : "Excelsior Nursery & School-Age",
          "place_id" : "ChIJPYxQ_Zd-j4AR_f_R3EFEZgo",
-         "reference" : "CoQBcQAAAJ2Mbd-JzbybWstcf9NuNLnLN0ZpvUKpGimjDrXc7O3_NiVogVAg8hl3wnE4qsJWuAb-VoutlWW2AhcSnnAi0Y3mE2hKPqnh7ZTyRA0ibrGrvIMSIt9A_ISHOd9faPd_TAI50I6RUsKyNfl5IlsEZ9aYYEC3HZzBKHrqB5JvB2CXEhDCBZe4IJbQHVxPluLEaAR_GhTn_mKY8omtvEKZOOLRVxjI8X0Dyg",
+         "reference" : "CoQBcQAAAI_50rMw6GnTKfn3ODr6lzoAr9xv0EVHsyVOXGYUtz0pEJQrU5FsZXGSZBgiAagcM6Mi3bC5to9b-7i9YQ5RVmpeT7PRFPjCWIkdu8bZH7z7MttiypxbJ2vOCiGHKVnT86NxJgBbmbKBs11ZksVXHo3KkM58UB9wlzEDG84drJLFEhC3q0IzpSLpUck_ySF50nkcGhQ-znZ0rXi2zGU0ozZkQcjfe1LEjw",
          "scope" : "GOOGLE",
          "types" : [ "school", "point_of_interest", "establishment" ],
          "vicinity" : "859 Prague Street, San Francisco"
@@ -261,7 +251,7 @@
          "id" : "fd93b8d9eb33e11ab79490c0dbcfc5f9dfe685ce",
          "name" : "Tqs Systems Inc",
          "place_id" : "ChIJe8QJur9-j4ARiGfgd_9T-Uc",
-         "reference" : "CnRiAAAARJfI29x45t_is4tnEBIfw0O-oo7thppAgDun3t_eflLRJ3DLL5FdGbvKj-uQvphPRNVrbOmeZuMnZQYPBSxfU_uhoAp_rIk9WKioJqzsf4RMZny50j6Y6B_NirUvSd_dFKteU4wYdCYxf8M8EuHeBhIQaKLcGqLJLLq5HdtJRd40DRoUMKblPNOulPv22mmEIiDURL_LoIs",
+         "reference" : "CnRiAAAAP1mSmfFObuOJF444lH8wScsEL-fLfeuI-MNaaCzol61aG4fskt3nLzYN8P0xepxGyvaoD2LC24uTWJ7LJ9sqzT1S4_8QZxFDRSMYgvUVJkYADVb-KGQBfcCVyUCVU2pRM-PK4dVVP4XjXI7sviF5ORIQTItJSEX41wrLWw9GxODEcRoUzsI6Eb0dkJmoO7WsCfUeR7JIYEw",
          "scope" : "GOOGLE",
          "types" : [ "point_of_interest", "establishment" ],
          "vicinity" : "1717 Geneva Avenue, San Francisco"
@@ -286,12 +276,12 @@
                "html_attributions" : [
                   "\u003ca href=\"https://maps.google.com/maps/contrib/103292614213370455814/photos\"\u003eQueen&#39;s Beauty House\u003c/a\u003e"
                ],
-               "photo_reference" : "CoQBcwAAAMKD9pcEJearzYfclY8ZC1Xy8rmYGzfJp6KxOzn1rSp7y6BmGyUKTtzxuL3Lp_mkKzT0rOaet_vde2qen3r49bsNT8XxvV0qW5E3WDhxPMGk50QGmDRihKPYfPytLoFqqi2XyDBKvKg7NkIDIah9b-IryhZ21_UIN1ZTRUDk9Z_LEhDLYP3r6G9hbf4-MEpgrcoPGhSZvjCLM6YFEsR9vvys-UdYZErOfg",
+               "photo_reference" : "CoQBcwAAAH1us_1jZMKzj5bLAg9-dXtT7IMLSPLMDU4ubvN2hmro3Qi3bKZTJ4SLWrfkuzHGQv0aUAmxfb3QJ3c8oKBFOLe5WbCAe_7NlLRfAsEiKvfvGNqg_RPMWrjelrl70t-4xY0_cOEOr_knlBL_Oy4vLYIbcfsH0Ls_RhN3_teMHB_6EhDKsyEeWh3OJXHuDtbO6cW9GhRl4Maw7idDwMKV614JQuGzjBRpAg",
                "width" : 871
             }
          ],
          "place_id" : "ChIJEz9F9pl-j4ARRT1rgdgZ1UE",
-         "reference" : "CnRnAAAA5OHGomMkIRMHvmY0E4TTJJTP1IqpxIWuo62-jUboq1pJ0brLQwKMnOtmu84EJZpEU7RqeQk-CB3YmPLTw-taB24-67zJgKUmf7NUXdEjulpJpjJ7ieK8XIcL4S9xTmfbvrwKQwsiRLGGUxs49JxFeRIQvnQ56NJlLbxCILgmwqKy6BoUy2win_p8maWpilARa6Kymj1HkJ4",
+         "reference" : "CnRnAAAA7-ZUG05w8NarUFA1R5mQPcQPyy91tpjUor4Ijc9jlU4RJdDmqc8YG3JlyrAE134bYz4mQ5admHPQZECfEXk7BgW8bW74c8TFSHgrzoXlzx6vPc4gNs3YU8z9ZNn5eO00kaoFcVrVdYfJQUcGEtXfohIQTNbVgdnopO-MaTAVP2DHGxoU9ukGMQvL0VuYpWUzQuzeX8m_1AI",
          "scope" : "GOOGLE",
          "types" : [
             "spa",
@@ -314,7 +304,7 @@
          "id" : "8b43b84ddbaefc3b9602a50171deb86918ff0631",
          "name" : "Carter Terrace",
          "place_id" : "ChIJkyQcrcB-j4ARajSeowprO-4",
-         "reference" : "CnRiAAAAQFk8LlRJhBk1ngdJW107el4EDh2vbT_8vWMaIATnov3RsKKd6m6IW326tiM_QNYYrwfv-pG-M6hsIeS3WLxSoUVesPNOW1mZMzZBkc2ZkmTm9-Jfpuv7_-fwKKUVoiSBH7O6O3KwnCM8OXE3MbckBxIQnerWZxUkW8hcEDR65UMgQxoU1xgfhWYbxggNaalgYWbKGQIMloQ",
+         "reference" : "CnRiAAAAXvO7SeBym8huUXbxFgpqj5ctdVTm3IXjv-k6QksVUiG-9zwirY7O2KliJ5F6KMeR9sDqb9fOoDZxBcUQsUXiq4QLoajuNv9qHcy2r0TglhU8zt5pBeCXr1L-3PHGvtzpcVuvbqaFGHS9RS-6qUn9aBIQoR8XtlLNyUDSa3OKbFwIjhoUOHAbFq4S1nQ7Wuz5hx0_lnxdCk4",
          "scope" : "GOOGLE",
          "types" : [ "point_of_interest", "establishment" ],
          "vicinity" : "530 Carter Street, San Francisco"
@@ -330,7 +320,7 @@
          "id" : "830955fd5ebbcf9df98c16e34822042febfc92f7",
          "name" : "Highpoint",
          "place_id" : "ChIJTbOVXr9-j4AR4g3gsE7YI1o",
-         "reference" : "CmRcAAAAlWpWcEq2NtiBcTHXDPLzFLUKRjqhldt-Z2fyKDi_F05K42vQvXiVC556weuMbJ2BnVeqkpkYUW-po_uIbPbpLjRvpYzaJk16UHIIE_IYjvqt-4RceumsuKZ1bfIJUzVAEhBKRK7k1f7Pk9UzbGM6urc_GhRsxPWGSanymddovkqjUScprYS-Sw",
+         "reference" : "CmRcAAAA_GnphccS9AI2GU4cYF9MVJuLIDYnBRjy2PBJ3-lxipioaPPeI1A36bLSD_7gWhJh1DJ8KQ8ySkN3IRt5AkZ7rAOqwI7IWqKbeTtXj_k6g6bnT9rHX8CRuFNmS458CkK-EhApI1_m85i9Emv-5Nn092xlGhQ2jz_fbIAdySH9oQ5fsH-o5lhgvw",
          "scope" : "GOOGLE",
          "types" : [ "point_of_interest", "establishment" ],
          "vicinity" : "1888 Geneva Avenue, San Francisco"
@@ -346,7 +336,7 @@
          "id" : "3f9536db0572c190b571bcc5f967c2092237528a",
          "name" : "J & M Auto body",
          "opening_hours" : {
-            "open_now" : true,
+            "open_now" : false,
             "weekday_text" : []
          },
          "photos" : [
@@ -355,12 +345,12 @@
                "html_attributions" : [
                   "\u003ca href=\"https://maps.google.com/maps/contrib/112130206110191092812/photos\"\u003eJ &amp; M Auto body\u003c/a\u003e"
                ],
-               "photo_reference" : "CoQBcwAAAH9OfMERtTZ44uf0lAglf91UXqJnAVuAo1o_LSlkjP6p7VzPLrau5OayicP6dWCvzLykVrcs960VojR6v0boCKs5zKfFP4sG4n84u1BRUVzg2ZNe-Lc4oPCcLb1KKNCMCUEglHrL9zADYbajCoMiB1JkLNcDamnu4gIs52GoP3ZCEhBOboHPA2iL_7RwhQj_h6iVGhSLSfs2xDhQ9-jL6Juvja2xrA4tqg",
+               "photo_reference" : "CoQBcwAAANlQm5GxStONs4iwbwIU8wGbv5WHwvReGzVG7LgD1dcgqEyUWgB0ww8eM1e94fZcWK_g15NASIl7cPrZNMsQkt_UdleGMz2SphcASD0U74iNydL1jciEOBsyILxCU3LAoXXtok9usmTutC3vy-W8PkoVkA7naOaULb7_CInr9ahXEhCpBHNUwPOy2jgpRwrPoCGtGhRougnKifv_P0n-G5WS3Sxi6kYn4Q",
                "width" : 512
             }
          ],
          "place_id" : "ChIJ6Ws_p7h-j4ARNmp9vgYzwhg",
-         "reference" : "CnRiAAAA5j-D8ol1q0ZGDlk8sz47yc-M3jQpcoqELwDr2wJIh7535c7TMtfiCBJt5GfF-C2XDCbvvoAevBwmBYWvV6Jc1s_FRUWqIEFavdcP6-z7f94LeGr3rlMDxXmr8RnmZfh7dm9gCokq14koZj9mRuRNDhIQsYQ70VBS_uvC-CsDUu89RBoU5AwBruHeIxpkMpyccLg_vUFicvg",
+         "reference" : "CnRiAAAAEGnrbViYDkI6F3zY14Gflv-asLqbhOStXVDMAB0kx5y2jpbe0DTjACrJMRbJ-DhX7RRG99T0PL0bNkyXFxILhiDRVXHDfbTiNHP83oMFM38JtnSKLKmryqViR9zgrLZOoMJ3nzxB4dy6ylmEcaUsuRIQhYL7Lo5y1xNwQ6Fi6ADaoRoUF543pm6b1A7wX0vxFThZ7bFkYG0",
          "scope" : "GOOGLE",
          "types" : [ "car_repair", "point_of_interest", "establishment" ],
          "vicinity" : "620 Carter Street, Daly City"
@@ -385,12 +375,12 @@
                "html_attributions" : [
                   "\u003ca href=\"https://maps.google.com/maps/contrib/102023136081847691512/photos\"\u003eGruber Plumbing\u003c/a\u003e"
                ],
-               "photo_reference" : "CoQBcwAAABha_W52-5kkpwsckmo4U8I4A9qSpEwEbWizUUOs34AzcERgu0dhr_gkld7d0QJTU3cYaEKEolOEFbYftD8OL27UKVggFXVCwEucxZn5Av-jXV9cMXvo66o6XXgmkL0o93V5ReeNl0vCSPY3O-sG1UFPLcaQLBGYv1WmDAyCWhFKEhBBo-4RwcMMGAnNTgkVYGA9GhRjuD-iYibg7x0qDKUWGqO3Z40kAg",
+               "photo_reference" : "CoQBcwAAAEeyWpH1H9vyQsKjaRv3jFW3VjKjJwyx-ilHM4wEKRhnAAFoga_YjAQjQdn3HwOoBtf8VMht23nRyrJz53iJCb-khPsTt2EYysW6x3A9MXmqqeQ519vya9DNUIwao0-Xm_pU4RW_gpCH9vTT6EtIGy1O7sLybpgjvKtscN_9Zva-EhDyV5BNkrfsr2VZMXq60DYcGhSCU6A0KI0_GHWYYPinhdU0HWEh9w",
                "width" : 1081
             }
          ],
          "place_id" : "ChIJZ6jYt5d-j4ARKZ0ReoTL6XM",
-         "reference" : "CnRiAAAAZ6UUBRtYc7CJ4WeL3ndCaTiwiP4aygKQcEqKCI4c93g9ufBL9x0Y-fk7RqpqS8o_HqIUfGmJvXm0kcGCSUNHM8dbtz42QUIL8pZAjJ-mTJBnye8_P3yhAm61rO9lmE6gYG2qH0tai3Ss-WOGPFMBWRIQFRalp2SagWirFTccbZcMtRoU2BY_eqkdFTA4SODqOD1Q-_9dXqI",
+         "reference" : "CnRiAAAA-MIfQsorf8KO9MjMPxlvUV3dTIqPFr324SDJdqBN2OenuciFDkcvRroc9PAv5HgFrTVC5M0uF1M8CdhsBgTPgSqBM-Dqvi_gYsf8mCTnn_G8vIgzyc5cHqA5YnY5ItRk0QQj-UA-tGaJgHtmOoXwBxIQwsdbRvL41p4jQj99E21ZdhoUxi5ctSEZjQpvA3eVEyNr9sy73qQ",
          "scope" : "GOOGLE",
          "types" : [ "plumber", "point_of_interest", "establishment" ],
          "vicinity" : "518 Rolph Street, San Francisco"
@@ -406,7 +396,7 @@
          "id" : "9a0cc2db031708c4d5f21fbab03c5135d4a5ad82",
          "name" : "Zolaman Construction & Development",
          "place_id" : "ChIJ57lT_Zd-j4ARJEZhJptJw3w",
-         "reference" : "CoQBdQAAAH8htIKCCty1zjAMn15ELa9-a5U57WuDjRDYZPMcDkaWbc5tGtErmiDEJIycGComWHikKeDEvQ3qCJxAOrTchFQPGiIFKeAx_byvhWf8GhuUhyq3SDsDoKRC_K6bBWfR_yaPV1yGKHIyOryKpdDEVJZyQxXcXB30cajqGFmw5qrGEhAMtN3g5MRzj8eXwAiT3H9HGhSFhYbX8RE46WwIqbMQBiZSSDXM_w",
+         "reference" : "CoQBdQAAACSamgYSgm9R5AEjvUuNVTaTCzfFC8Y7j1NJNQgcQctYj5Swhb2f41iod33OXFv7cWkuvFd_2tt-yZ_EYkIkKa7ud-Ie75ac3_JKR0IE4DnFLwukR-Wb0hOi0bYyBrlvldjLlkCaS3O1QSL3vLLgaF5Z3VKPb5Ywh8moZmDrHKmzEhAw3CosAZXmPFQHLCBaTcF9GhRMh0_E3HbffnmDskQBLUhVeT4BJA",
          "scope" : "GOOGLE",
          "types" : [ "general_contractor", "point_of_interest", "establishment" ],
          "vicinity" : "859 Prague Street, San Francisco"
@@ -422,7 +412,7 @@
          "id" : "4fa588012b68bcf2abfb93cb789d46a8d683dbf3",
          "name" : "Grateful Gardens",
          "place_id" : "ChIJpbBr0r1-j4ARTrtcnZNzSB8",
-         "reference" : "CnRjAAAAF_7QDSt_qwXWm4q2sOP9b5iN7s9vyhm4wMmd7GDilEtZNisHLuoWVyfiY3sQfIq3doQyXL1i-F135C4i9h59yIjnERu7Jxe9d-BR_aeuRUgQf0ITCdxDHlrLSnaYPtoSB5AA_nzVe2QHjoy4FF8ukhIQHHxb40gk2nOE-1t3aQlDIBoURw_XnTAYM0loyejhemDnyYpOakI",
+         "reference" : "CnRjAAAAHbrqp8TsP-MZNq-AiQeNSqUPAvY-dkeaAZhkFcAyjGFUNQvOnHbiDn8H9ykRZTXsTlJhY0aTeq8pgL_37u4YiJHbJ3qShO5smtBW2whqX87qqvYs2k1yceaZM7EEVd_-o5xzO4yToRfg1GeB74uWWhIQ1m6Q4Qioq24KJibRbVNvsRoUlg8qHcZ0F5zxbqz0nj6Y9E5TPls",
          "scope" : "GOOGLE",
          "types" : [ "general_contractor", "point_of_interest", "establishment" ],
          "vicinity" : "260 South Hill Boulevard, San Francisco"
@@ -448,7 +438,7 @@
          "id" : "c2f94abb6fb419b0fe110b58c52edc75557b75f6",
          "name" : "Daly City",
          "place_id" : "ChIJyWPehPt7j4ARV_oTDtvgtCw",
-         "reference" : "CnRvAAAAjtJFHGf-Yf8SiB86qChDcNwMTbu-6_N6yb2m81jlcUgGoqJCR0bG6qllUD-jFpTQ8W9-WX9VEk9efHYPoJKHm2MKlUZ7UftRRfLnOstbpqqzjvI7s9lSy4z9Z16ydmDm4DYVU98cfY8P-_F0vXJyexIQwA9Kwq6kmR2_aGB1jMVDbBoU1_tpY4Hl2nLZBBYnGhk6V1cGqq8",
+         "reference" : "CnRvAAAAvV88VUUoaAby3oP9a7mhyPhFXsxY_-Q-cGdvqjifczqYxVNcxHuYx-X-CRiH3UBknzl81-g0VPUf9_kQB5h5uDJ29gxRQxfBjflVNCi9GBk-xQ7xAqwQ0eHJPViSYiraCkEyausChL5FBerAq3OIMRIQ62UEIufCNMehmgVkEnvzmhoUJyHwqR9yxQOStv0eQQWDGGGGx34",
          "scope" : "GOOGLE",
          "types" : [ "locality", "political" ],
          "vicinity" : "Daly City"
