@@ -10,8 +10,7 @@ public class LoginManager : MonoBehaviour {
 	[SerializeField]
 	private Text loginPasswordText, loginEmailText, registerEmail, registerPassword, registerPassword2;
 
-	[SerializeField]
-	private GameObject registrationPanel, loggedInPanel;
+	public GameObject registrationPanel, loggedInPanel;
 
 	private string registerUrl = "http://localhost/ARGZ_SERVER/register.php";
 	private string playerDataUrl = "http://localhost/ARGZ_SERVER/PlayerData.php";
@@ -191,6 +190,11 @@ public class LoginManager : MonoBehaviour {
 	public void FakeLoggedInSuccess () {
 		if (loggedInPanel.activeInHierarchy == false){
 			loggedInPanel.gameObject.SetActive(true);
+
+			if (FB.IsLoggedIn == true) {
+				GameManager.instance.ResumeCharacter();
+			}
+
 		} else {
 			loggedInPanel.gameObject.SetActive(false);
 		}

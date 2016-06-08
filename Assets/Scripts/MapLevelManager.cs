@@ -6,7 +6,7 @@ using Facebook.Unity;
 public class MapLevelManager : MonoBehaviour {
 
 	[SerializeField]
-	private GameObject inventoryPanel, buildingPanel;
+	private GameObject inventoryPanel, buildingPanel, qrPanel;
 
 	[SerializeField]
 	private Text supplyText, daysAliveText, survivorsAliveText, shivCountText, clubCountText, gunCountText, currentLatText, currentLonText, locationReportText, foodText, waterText, playerNameText, bldgNameText, zombiePopText;
@@ -51,7 +51,13 @@ public class MapLevelManager : MonoBehaviour {
 	}
     
     void Awake () {
-        FB.API ("/me?fields=name", HttpMethod.GET, DisplayUsername);
+    	if (FB.IsLoggedIn == true)  {
+        	FB.API ("/me?fields=name", HttpMethod.GET, DisplayUsername);
+        } else {
+        	string name;
+        	name = GameManager.instance.userFirstName + " " + GameManager.instance.userLastName;
+        	playerNameText.text = name;
+        }
     }
 
 	void OnLevelWasLoaded () {
@@ -139,7 +145,7 @@ public class MapLevelManager : MonoBehaviour {
 		//We are going to start with testing if stored homebase is within a certain range 
 		// the phone appears to return 5 decimal places.  We are going to try 3 of the smallest unit as a range test
 
-		float range = 0.00003f;
+		float range = 0.00006f;
 
 		if (Input.location.status == LocationServiceStatus.Running) {
 
@@ -165,6 +171,14 @@ public class MapLevelManager : MonoBehaviour {
 			StartCoroutine(PostTempLocationText("location services not running"));
 		}
 
+	}
+
+	public void QrScanPressed () {
+		if (qrPanel.activeInHierarchy == true) {
+			qrPanel.SetActive(false);
+		} else {
+			qrPanel.SetActive(true);
+		}
 	}
 
 	IEnumerator PostTempLocationText (string text) {

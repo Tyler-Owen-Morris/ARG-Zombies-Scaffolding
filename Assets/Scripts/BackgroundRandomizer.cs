@@ -15,6 +15,7 @@ public class BackgroundRandomizer : MonoBehaviour {
 		float roll = Random.Range(0.0f, 100.0f);
 		
 		//There are currently 10 backgrounds, so that's how I've decided to split the rolls.
+		/*
 		if (roll <= 10.0f) {
 			bg.sprite = backgroundsArray[0];
 		} else if (roll <= 20.0f) {
@@ -36,5 +37,17 @@ public class BackgroundRandomizer : MonoBehaviour {
 		} else if (roll <= 100.0f) {
 			bg.sprite = backgroundsArray[9];
 		} 
+		*/
+
+		//this is changed for the new 5v5 combat- selecting only the 4 maps that make sense with the larger character layout.
+		if (roll <= 25.0f) {
+			bg.sprite = backgroundsArray[0];
+		} else if (roll <= 50.0f) {
+			bg.sprite = backgroundsArray[1];
+		} else if (roll <= 75.0f) {
+			bg.sprite = backgroundsArray[2];
+		} else if (roll <= 100.0f) {
+			bg.sprite = backgroundsArray[1];
+		}
 	}
 }

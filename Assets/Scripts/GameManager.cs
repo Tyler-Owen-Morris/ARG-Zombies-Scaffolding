@@ -18,27 +18,33 @@ public class GameManager : MonoBehaviour {
 	public string weaponEquipped;
 
 	private Scene activeScene;
-	//made this public while working on the server "cleared list" data retention.
+	//made this public while working on the server "cleared list" data retention. it should go back to private
 	public string activeBldg;
 	private int shivDurability, clubDurability;
+	public string locationJsonText, clearedBldgJsonText;
 
 	public string userId;
 	public string userFirstName;
 	public string userLastName;
-	public string locationJsonText;
 
 	private string startNewCharURL = "http://www.argzombie.com/ARGZ_SERVER/StartNewCharacter.php";
 	private string resumeCharacterUrl = "http://www.argzombie.com/ARGZ_SERVER/ResumeCharacter.php";
 	private string updateAllStatsURL = "http://www.argzombie.com/ARGZ_SERVER/UpdateAllPlayerStats.php";
 	private string buildingClearedURL = "http://www.argzombie.com/ARGZ_SERVER/NewBuildingCleared.php";
+	private string clearedBuildingDataURL = "http://www.argzombie.com/ARGZ_SERVER/ClearedBuildingData.php";
+
+	private bool eatDrikCounterIsOn;
 
 	void Awake () {
 		MakeSingleton();
 		StartCoroutine (StartLocationServices());
 
+		eatDrikCounterIsOn = false;
+
 
 		buildingToggleStatusArray = new bool[4];
 		ResetAllBuildings();
+
 		weaponEquipped = "shiv";
 	}
 
@@ -52,9 +58,24 @@ public class GameManager : MonoBehaviour {
 			combatManager.zombiesToWin = zombiesToFight;
 		} else if (activeScene.name.ToString() == "02a Map Level"){
 			Debug.Log ("Time character started set to: " + timeCharacterStarted);
+			SetDaysSurvived();
 			
+			MapLevelManager mapManager = FindObjectOfType<MapLevelManager>();
+			mapManager.UpdateTheUI();
+
+		} else if (activeScene.name.ToString() == "01a Login") {
+
+			LoginManager loginMgr = FindObjectOfType<LoginManager>();
+			if (FB.IsLoggedIn == true) {
+				loginMgr.loggedInPanel.SetActive(true);
+			}
+
 		} else if (activeScene.name.ToString() == "01b Start") {
-			InvokeRepeating ( "CheckEatingAndDrinking", 1.0f, 30.0f);
+			if (eatDrikCounterIsOn == false) {
+				InvokeRepeating ( "CheckEatingAndDrinking", 1.0f, 30.0f);
+				eatDrikCounterIsOn = true;
+			}
+			//in the future this will have to be done on the server, and an update pulled periodically.
 		}
 	}
 
@@ -168,7 +189,8 @@ public class GameManager : MonoBehaviour {
 		if (FB.IsLoggedIn == true) {
 			form.AddField("id", GameManager.instance.userId);
 		} else {
-			form.AddField("id", "10154194346243928");
+			GameManager.instance.userId = "10154194346243929";
+			form.AddField("id", GameManager.instance.userId);
 		}
 
 		WWW www = new WWW(resumeCharacterUrl, form);
@@ -179,7 +201,7 @@ public class GameManager : MonoBehaviour {
 			Debug.Log ("resuming character, server returned raw json string of: " + www.text);
 
 			//write the raw WWW return to a .json file 
-			File.WriteAllText(Application.dataPath + "/Resources/Player.json", www.text.ToString());
+			//File.WriteAllText(Application.dataPath + "/Resources/Player.json", www.text.ToString());
 
 			//read that text out into a string object, and map that to a json object
 			string playerJsonString = www.text.ToString();
@@ -236,12 +258,19 @@ public class GameManager : MonoBehaviour {
 		DateTime now = System.DateTime.Now;
 		Double days = (now - timeCharacterStarted).TotalDays;
 		daysSurvived = Convert.ToInt32(days);
+
 		Debug.Log ("The SetDaysSurvived function has returned: " + days + " Days since character created");
 	}
 
 	public void StartNewCharacter () {
 		//Record the date and time the character is created- will be compared to get Days alive later.
 		timeCharacterStarted = System.DateTime.Now;
+
+		if (FB.IsLoggedIn == false) {
+			GameManager.instance.userId = "10154194346243929";
+			GameManager.instance.userFirstName = "Tanderson";
+			GameManager.instance.userLastName = "Flickinhausen";
+		}
 
 
 		//roll a random number of survivors left alive and set both active and alive to that number.
@@ -370,6 +399,41 @@ public class GameManager : MonoBehaviour {
 		Debug.Log ("1 Hour added to time started. New Datetime is: " + timeCharacterStarted.ToString() );
 	}
 
+	public IEnumerator DeactivateClearedBuildings () {
+		WWWForm myForm = new WWWForm();
+		myForm.AddField("id", GameManager.instance.userId);
+
+    	WWW www = new WWW(clearedBuildingDataURL, myForm);
+    	yield return www;
+
+    	if (www.error == null) {
+    		//Debug.Log ("the cleared building call returned raw text of: "+www.text);
+    		GameManager.instance.clearedBldgJsonText = www.text;
+			//File.WriteAllText(Application.dataPath + "/Resources/clearedBldg.json", www.text.ToString());
+    	} else {
+    		Debug.Log (www.error);
+    	}
+
+    	JsonData clearedJson = JsonMapper.ToObject(GameManager.instance.clearedBldgJsonText);
+
+    	//ensure there are more than 0 buildings returned
+    	if (clearedJson.Count > 0) {
+	    	for (int i = 0; i < clearedJson.Count; i++) {
+	    		//if the building is still considered inactive by the server
+	    		if (clearedJson[i]["active"].ToString() == "0") {
+	    			//Debug.Log ("Coroutine has found "+ clearedJson[i]["bldg_name"].ToString()+" to be inactive");
+	    			PopulatedBuilding populatedBldg = GameObject.Find(clearedJson[i]["bldg_name"].ToString()).GetComponent<PopulatedBuilding>();
+	    			//Debug.Log ("GameManager is attempting to deactivate "+populatedBldg.gameObject.name);
+	    			populatedBldg.DeactivateMe();
+	    		} else if (clearedJson[i]["active"].ToString() == "1") {
+					Debug.Log (clearedJson[i]["bldg_name"].ToString()+" has been reactivated by the server, but remains on player DB. Last cleared DateTime: "+clearedJson[i]["time_cleared"].ToString());
+	    		}
+	    	}
+    	} else {
+    		Debug.Log ("Player has not cleared any buildings yet");
+    	}
+    }
+
 
 	public void ResetAllBuildings () {
 		for (int i = 0 ; i < buildingToggleStatusArray.Length ; i++ ){
@@ -393,7 +457,7 @@ public class GameManager : MonoBehaviour {
 		reportedTotalSurvivor = foundTotalSurvivors;
 		reportedActiveSurvivor = foundAbleBodiedSurvivors;
 		totalSurvivors += foundTotalSurvivors;
-		survivorsActive += foundTotalSurvivors;
+		survivorsActive += foundAbleBodiedSurvivors;
 
 		//this updates the long term memory, and will need to be changed to update the PHP server.  This is essentially saving the check-in.
 //		GamePreferences.SetFoodCount(foodCount);
@@ -579,7 +643,7 @@ public class GameManager : MonoBehaviour {
 	// the idea with this coroutine is to invokerepeating on awake, every 15-30, and execute the 'meal' as soon as it's time.
 	IEnumerator UpdatePlayersEatingAndDrinking () {
 		//Debug.Log ("Checking to update food / Water / Meal counts");
-		
+
 		//if we have fewer meals than expected.
 		DateTime now = System.DateTime.Now;
 		Double days = (now - timeCharacterStarted).TotalDays;

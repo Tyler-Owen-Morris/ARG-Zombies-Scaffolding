@@ -83,7 +83,7 @@ public class CombatManager : MonoBehaviour {
 				myString += player.baseAttack.ToString() + " - base attack";
 
 			}
-			Debug.Log ("Attempting to change stats text to: "+ myString);
+			//Debug.Log ("Attempting to change stats text to: "+ myString);
 			oddsText.text = myString ;
 
 			//only seen if game ends

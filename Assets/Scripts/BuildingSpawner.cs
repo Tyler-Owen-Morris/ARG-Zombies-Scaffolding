@@ -89,7 +89,7 @@ public class BuildingSpawner : MonoBehaviour {
 			double xDistMeters = deltaLongitude * m_per_deg_lon;
 			double yDistMeters = deltaLatitude * m_per_deg_lat;
 
-			Debug.Log ("for "+myName+" change in lat/lng is "+deltaLatitude+" "+deltaLongitude+" and x/y dist calculated to be: "+ xDistMeters+" "+yDistMeters);
+			//Debug.Log ("for "+myName+" change in lat/lng is "+deltaLatitude+" "+deltaLongitude+" and x/y dist calculated to be: "+ xDistMeters+" "+yDistMeters);
 			/*
 			float earthRadius = 6378.137f; // in KM
 			double dLat = (lat - Input.location.lastData.latitude) * Mathf.Deg2Rad; //convert angular difference to radians
@@ -109,18 +109,22 @@ public class BuildingSpawner : MonoBehaviour {
 			PopulatedBuilding instance = Instantiate(populatedBuildingPrefab);
 			instance.name = myName;
 			instance.buildingName = myName;
-			float xCoord = (float)(385 + (xDistMeters));
-			float yCoord = (float)(275 + (yDistMeters));
+			float xCoord = (float)(385 - (xDistMeters));
+			float yCoord = (float)(275 - (yDistMeters));
 			Vector3 pos = new Vector3 (xCoord, yCoord, 0);
 
 			//instance.transform.SetParent(gameCanvas.transform);
 			instance.transform.SetParent(bldgHolder.transform);
 			instance.transform.position = pos;
 				
-			Debug.Log("placed "+instance.name+" at coords: "+xCoord+" x and "+yCoord+" y");
+			//Debug.Log("placed "+instance.name+" at coords: "+xCoord+" x and "+yCoord+" y");
       }
+
+      StartCoroutine(GameManager.instance.DeactivateClearedBuildings());
         
     }
+
+
 
     //this is the same thing as the google call... just a different api.
     IEnumerator GetNearbyBuildingsFoursquare () {

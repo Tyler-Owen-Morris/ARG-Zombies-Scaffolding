@@ -56,6 +56,7 @@
      <Compile Include="Assets\FacebookSDK\SDK\Editor\iOS\PListDict.cs" />
      <Compile Include="Assets\FacebookSDK\SDK\Editor\iOS\PListParser.cs" />
      <None Include="Assets\FacebookSDK\SDK\Editor\android\DefaultAndroidManifest.xml" />
+     <None Include="Assets\QRcode\CamMat\WebCam.shader" />
      <None Include="Assets\Plugins\Android\AndroidManifest.xml" />
      <None Include="Assets\FacebookSDK\SDK\Scripts\Canvas\Resources\JSSDKBindings.txt" />
  <Reference Include="UnityEditor.Advertisements">
@@ -82,6 +83,9 @@
  <Reference Include="UnityEditor.TreeEditor">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/TreeEditor/Editor/UnityEditor.TreeEditor.dll</HintPath>
  </Reference>
+ <Reference Include="QRCode">
+ <HintPath>/Users/Owen/ARG Zombies Scaffolding/Assets/QRcode/Plugins/QRCode.dll</HintPath>
+ </Reference>
  <Reference Include="LitJson">
  <HintPath>/Users/Owen/ARG Zombies Scaffolding/Assets/Resources/LitJson.dll</HintPath>
  </Reference>
@@ -106,10 +110,6 @@
  <Reference Include="UnityEditor.iOS.Extensions.Common">
  <HintPath>/Applications/Unity/PlaybackEngines/iOSSupport/UnityEditor.iOS.Extensions.Common.dll</HintPath>
  </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="Assembly-CSharp.csproj">
-      <Project>{1B887EB7-A337-AC1E-7377-6BAA5683569A}</Project>      <Name>Assembly-CSharp</Name>    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

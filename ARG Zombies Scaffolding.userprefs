@@ -1,27 +1,43 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/GameManager.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/5man Combat Scripts/BattleStateMachine.cs">
     <Files>
-      <File FileName="Assets/Scripts/MusicManager.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Button.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/SetStartVolume.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/BuildingSpawner.cs" Line="83" Column="65" />
-      <File FileName="Assets/Scripts/MapLevelManager.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/LoginManager.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/PlayerPrefsManager.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/CharacterAnimation.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/CurrentLocationUpdater.cs" Line="30" Column="33" />
-      <File FileName="Assets/Scripts/StartMenuManager.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/WeaponGFX.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/FloatingTextController.cs" Line="35" Column="28" />
-      <File FileName="Assets/Scripts/FloatingText.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/VictoryScreenController.cs" Line="1" Column="1" />
-      <File FileName="Assets/FacebookSDK/SDK/Scripts/PlatformEditor/EditorFacebookMockDialog.cs" Line="1" Column="1" />
-      <File FileName="Assets/FacebookSDK/SDK/Scripts/FacebookBase.cs" Line="1" Column="1" />
-      <File FileName="Assets/FacebookSDK/SDK/Scripts/Utils/FacebookLogger.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/GameManager.cs" Line="279" Column="19" />
-      <File FileName="Assets/Scripts/BackgroundRandomizer.cs" Line="19" Column="36" />
+      <File FileName="Assets/Scripts/MusicManager.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="Assets/Scripts/Button.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="Assets/Scripts/SetStartVolume.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="Assets/Scripts/PlayerPrefsManager.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="Assets/Scripts/CharacterAnimation.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="Assets/Scripts/CurrentLocationUpdater.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="Assets/Scripts/StartMenuManager.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="Assets/Scripts/WeaponGFX.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="Assets/Scripts/FloatingTextController.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="Assets/Scripts/FloatingText.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="Assets/Scripts/VictoryScreenController.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="Assets/FacebookSDK/SDK/Scripts/PlatformEditor/EditorFacebookMockDialog.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="Assets/FacebookSDK/SDK/Scripts/FacebookBase.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="Assets/FacebookSDK/SDK/Scripts/Utils/FacebookLogger.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="Assets/Scripts/BackgroundRandomizer.cs" Line="42" Column="120" NotebookId="2" />
+      <File FileName="Assets/Scripts/PopulatedBuilding.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="Assets/Scripts/CombatManager.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="Assets/Scripts/5man Combat Scripts/BattleStateMachine.cs" Line="58" Column="10" NotebookId="2" />
+      <File FileName="Assets/Scripts/5man Combat Scripts/TurnHandler.cs" Line="14" Column="1" NotebookId="2" />
     </Files>
+    <FloatingWindows>
+      <FloatingWindow WindowId="1" X="30" Y="39" Width="1982" Height="1264">
+        <Files>
+          <File FileName="Assets/Scripts/GameManager.cs" Line="429" Column="6" />
+          <File FileName="Assets/QRcode/Scripts/CameraPlaneController.cs" Line="1" Column="1" />
+          <File FileName="Assets/Scripts/5man Combat Scripts/ZombieStateMachine.cs" Line="40" Column="4" />
+          <File FileName="Assets/Scripts/QRPanelController.cs" Line="85" Column="58" NotebookId="1" />
+          <File FileName="Assets/Scripts/BuildingSpawner.cs" Line="1" Column="1" NotebookId="1" />
+          <File FileName="Assets/Scripts/MapLevelManager.cs" Line="1" Column="1" NotebookId="1" />
+          <File FileName="Assets/Scripts/LoginManager.cs" Line="1" Column="1" NotebookId="1" />
+          <File FileName="Assets/Scripts/5man Combat Scripts/BaseZombie.cs" Line="12" Column="24" NotebookId="1" />
+          <File FileName="Assets/Scripts/5man Combat Scripts/SurvivorStateMachine.cs" Line="15" Column="34" NotebookId="1" />
+          <File FileName="Assets/Scripts/5man Combat Scripts/BaseSurvivor.cs" Line="1" Column="1" NotebookId="1" />
+        </Files>
+      </FloatingWindow>
+    </FloatingWindows>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />

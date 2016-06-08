@@ -31,3 +31,4 @@
 /Users/Owen/ARG Zombies Scaffolding/Temp/bin/Debug/Mono.Cecil.Pdb.dll
 /Users/Owen/ARG Zombies Scaffolding/Temp/bin/Debug/Mono.Cecil.Mdb.dll
 /Users/Owen/ARG Zombies Scaffolding/Temp/bin/Debug/LitJson.dll
+/Users/Owen/ARG Zombies Scaffolding/Temp/bin/Debug/QRCode.dll
