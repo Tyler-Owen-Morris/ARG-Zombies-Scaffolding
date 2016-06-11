@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class BattleStateMachine : MonoBehaviour {
 
@@ -36,6 +37,10 @@ public class BattleStateMachine : MonoBehaviour {
 	[SerializeField]
 	public bool autoAttackIsOn= false;
 
+	public int zombiesKilled = 0;
+	public Text zombieCounter;
+
+	private int totalSurvivorsFound = 0;
 
 	void Start () {
 		battleState = PerformAction.WAIT;
@@ -43,6 +48,9 @@ public class BattleStateMachine : MonoBehaviour {
 
 		survivorList.AddRange (GameObject.FindGameObjectsWithTag("survivor"));
 		zombieList.AddRange (GameObject.FindGameObjectsWithTag("zombie"));
+		AdjustForLessThan5Zombies ();
+
+		UpdateZombieCount();
 	}
 	
 	// Update is called once per frame
@@ -52,11 +60,18 @@ public class BattleStateMachine : MonoBehaviour {
 			case (PerformAction.WAIT):
 				if (TurnList.Count > 0) {
 					battleState = PerformAction.SELECTACTION;
-				} else if (autoAttackIsOn && survivorTurnList.Count > 0) {
+				} else if (zombieList.Count < 1) {
+					// end of the building
+					Debug.Log ("End building called");
+					GameManager.instance.BuildingIsCleared(CalculateSupplyEarned(), CalculateWaterFound(), CalculateFoodFound(), CalculateFoundTotalSurvivors(), CalculateActiveSurvivorsFound());
+					SceneManager.LoadScene ("03a Win");
+				}else if (autoAttackIsOn && survivorTurnList.Count > 0) {
+					//continue auto attack
 					AttackButtonPressed();
 				} else if (survivorTurnList.Count < 1 && TurnList.Count < 1) {
+					//give NPC turns after Player has expended all their turns. 
 					ResetAllTurns();
-				}
+				} 
 			break;
 			case (PerformAction.SELECTACTION):
 				GameObject performer = GameObject.Find(TurnList[0].attacker);
@@ -112,6 +127,17 @@ public class BattleStateMachine : MonoBehaviour {
 	
 	}
 
+	void AdjustForLessThan5Zombies () {
+		if (GameManager.instance.zombiesToFight < 5) {
+			int removeNum = 5 - GameManager.instance.zombiesToFight;
+			for (int i = 0; i < removeNum; i++) {
+				zombieList[0].SetActive(false);
+				zombieList[0].GetComponent<ZombieStateMachine>().myTypeText.text = "";
+				zombieList.RemoveAt(0);
+			} 
+		}
+	}
+
 	public void CollectAction (TurnHandler myTurn) {
 		TurnList.Add (myTurn);
 	}
@@ -129,6 +155,94 @@ public class BattleStateMachine : MonoBehaviour {
 			SurvivorStateMachine SSM = survivor.GetComponent<SurvivorStateMachine>();
 			SSM.currentState = SurvivorStateMachine.TurnState.INITIALIZING;
 		}
+	}
+	public void UpdateZombieCount () {
+		zombieCounter.text = GameManager.instance.zombiesToFight.ToString();
+	}
+
+	int CalculateSupplyEarned () {
+		//Debug.Log ("Calculating the sum of supply earned from " + zombiesKilled + " zombies killed.");
+		int sum = 0;
+		for (int i = 0; i < zombiesKilled; i++) {
+			int num = UnityEngine.Random.Range(0, 8);
+			sum += num;
+			Debug.Log ("adding "+ num +" supply to the list");
+		}
+		//Debug.Log ("calculating total supply earned yields: " + sum);
+		return sum;
+	}
+
+	int CalculateWaterFound () {
+		float oddsToFind = 50.0f;
+		int sum = 0;
+
+		float roll = UnityEngine.Random.Range(0.0f, 100.0f);
+
+		for (int i = 0; i < zombiesKilled; i++) {
+				int amount = (int)UnityEngine.Random.Range( 1 , 4 );
+				sum += amount;
+		}
+
+		// this is so that you can find nothing
+		if (roll <= oddsToFind) {
+			sum = 0;
+		}
+
+		return sum;
+	}
+
+	int CalculateFoodFound () {
+		float oddsToFind = 50.0f;
+		int sum = 0;
+
+		float roll = UnityEngine.Random.Range(0.0f, 100.0f);
+
+		for (int i = 0; i < zombiesKilled; i++) {
+				int amount = (int)UnityEngine.Random.Range( 1 , 4 );
+				sum += amount;
+		}
+
+		// this is so that you can find nothing
+		if (roll <= oddsToFind) {
+			sum = 0;
+		}
+
+		return sum;
+	}
+
+	int CalculateFoundTotalSurvivors () {
+
+		float odds = 50.0f;
+		int sum = 0;
+
+		float roll = UnityEngine.Random.Range (0.0f, 100.0f);
+
+		if ( roll >= odds) {
+			sum += UnityEngine.Random.Range (0, 4);
+		}
+		totalSurvivorsFound = sum;
+		return sum;
+
+	}
+
+	int CalculateActiveSurvivorsFound () {
+		
+		float oddsOfBeingActive = 55.0f;
+		int activeSurvivors = 0;
+
+		if (totalSurvivorsFound <= 0 ) {
+			return activeSurvivors;
+		} else {
+			for (int i = 0; i < totalSurvivorsFound; i++ ) {
+				float roll = UnityEngine.Random.Range (0.0f, 100.0f);
+
+				if (roll <= oddsOfBeingActive) {
+					activeSurvivors++;
+				}
+			}
+			return activeSurvivors;
+		}
+
 	}
 
 	//this is activated on the GUI button press.

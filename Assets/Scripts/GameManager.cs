@@ -386,7 +386,7 @@ public class GameManager : MonoBehaviour {
 	public void LoadIntoCombat (int zombies, string bldg) {
 		activeBldg = bldg;
 		zombiesToFight = zombies;
-		SceneManager.LoadScene ("02b Combat level");
+		SceneManager.LoadScene ("02c Combat-5");
 	}
 
 	public void AddTimePlayed () {
