@@ -244,7 +244,10 @@ public class GameManager : MonoBehaviour {
 			GameManager.instance.timeCharacterStarted = oDate;
 
 			//once the GameManager.instance is updated- you're clear to load the map level.
-			SceneManager.LoadScene("02a Map Level");
+			if (SceneManager.GetActiveScene().buildIndex != 2 ) {
+				SceneManager.LoadScene("02a Map Level");
+			}
+
 			yield break;
 		} else {
 			Debug.Log ("WWW error" + www.error);
@@ -306,7 +309,7 @@ public class GameManager : MonoBehaviour {
 		//Debug.Log ("GameManager started a new character- food / water: " + foodCount +" / "+ waterCount );
 
 
-		Debug.Log ("Character started at: " + timeCharacterStarted);
+		//Debug.Log ("Character started at: " + timeCharacterStarted);
 	}
 
 	public void ResumeCharacter () {
