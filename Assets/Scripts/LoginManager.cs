@@ -133,10 +133,10 @@ public class LoginManager : MonoBehaviour {
 			} else if (choice == 3) {
 				StartCoroutine(SendNewSurvivorToServer("Shimbop", Random.Range(1,1000000).ToString(), 90, 12));
 			}
+
 			if (survivorsDrafted == 4) {
 				GameManager.instance.ResumeCharacter();
 			}
-
 		} else {
 			GameManager.instance.ResumeCharacter();
 		}
@@ -269,9 +269,9 @@ public class LoginManager : MonoBehaviour {
 	}
 
 	public void StartNewCharacter () {
-			survivorDraftPanel.SetActive(true);
+		survivorDraftPanel.SetActive(true);
 		FB.API("/me/friends?fields=gender,name,picture.height(200).width(200),location,first_name,last_name,age_range", HttpMethod.GET, UpdateSurvivorDraftWindow);
-			//GameManager.instance.StartNewCharacter();
+		GameManager.instance.StartNewCharacter();
 			
 	}
 }

@@ -182,8 +182,10 @@ public class MapLevelManager : MonoBehaviour {
 	}
 
 	IEnumerator PostTempLocationText (string text) {
+		locationReportText.gameObject.SetActive(true);
 		locationReportText.text = text;
 		yield return new WaitForSeconds (5);
 		locationReportText.text = "";
+		locationReportText.gameObject.SetActive(false);
 	}
 }

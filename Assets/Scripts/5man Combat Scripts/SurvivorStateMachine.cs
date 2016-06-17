@@ -8,6 +8,7 @@ public class SurvivorStateMachine : MonoBehaviour {
 	public BaseSurvivor survivor;
 	public GameObject mySelectedIcon;
 	public Slider myStamSlider;
+	public GameObject[] myWepSprites;
 
 	private BattleStateMachine BSM;
 	private Vector3 startPosition;
@@ -33,6 +34,7 @@ public class SurvivorStateMachine : MonoBehaviour {
 		isSelected = false;
 		currentState = TurnState.INITIALIZING;
 		startPosition = gameObject.transform.position;
+		UpdateWeaponSprite();
 	}
 	
 
@@ -193,6 +195,23 @@ public class SurvivorStateMachine : MonoBehaviour {
 		float sliderValue = ((float)(survivor.curStamina) / (float)(survivor.baseStamina));
 		myStamSlider.value = sliderValue;
 		//Debug.Log ("Setting "+gameObject.name+" stamina slider to "+sliderValue);
+	}
+
+	public void UpdateWeaponSprite () {
+		//first turn all of the sprites off.
+		foreach (GameObject sprite in myWepSprites) {
+			sprite.SetActive(false);
+		}
+
+		if (this.survivor.weaponEquipped.name == "Knife") {
+			myWepSprites[0].SetActive(true);
+		} else if (this.survivor.weaponEquipped.name == "Club") {
+			myWepSprites[1].SetActive(true);
+		} else if (this.survivor.weaponEquipped.name == "Gun") {
+			myWepSprites[2].SetActive(true);
+		} else {
+			Debug.Log("Warning: No weapon equipped!!!");
+		}
 	}
 
 	//I decided to remove the player ability to select characters. inventory changes will take place only on player's turn.

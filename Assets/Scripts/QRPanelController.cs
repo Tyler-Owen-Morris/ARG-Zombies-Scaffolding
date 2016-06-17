@@ -93,7 +93,7 @@ public class QRPanelController : MonoBehaviour {
 				JsonData qrJson = JsonMapper.ToObject(jsonReturn);
 
 				if (qrJson[0].ToString() == "Success") {
-					UItext.text = "Players successfully paired";
+					UItext.text = "You have successfully paired with "+qrJson[1]["first_name"].ToString()+" "+qrJson[1]["last_name"].ToString();
 				} else {
 					Debug.Log ("server returned qr failure "+ jsonReturn);
 				}
@@ -152,7 +152,7 @@ public class QRPanelController : MonoBehaviour {
 	}
 
 	public void RequestButtonPressed () {
-		UItext.gameObject.SetActive(false);
+		//UItext.gameObject.SetActive(false);
 		SetQrText();
 		Encode();
 		cameraUi.SetActive(false);

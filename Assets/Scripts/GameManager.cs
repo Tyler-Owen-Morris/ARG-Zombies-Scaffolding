@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.UI;
 using System;
 using UnityEngine.SceneManagement;
@@ -16,6 +17,10 @@ public class GameManager : MonoBehaviour {
 	public float homebaseLat, homebaseLong;
 	public bool[] buildingToggleStatusArray;
 	public string weaponEquipped;
+	[SerializeField]
+	private GameObject[] weaponOptionsArray;
+
+	public List <GameObject> survivorCardList = new List<GameObject>();
 
 	private Scene activeScene;
 	//made this public while working on the server "cleared list" data retention. it should go back to private
@@ -32,15 +37,19 @@ public class GameManager : MonoBehaviour {
 	private string updateAllStatsURL = "http://www.argzombie.com/ARGZ_SERVER/UpdateAllPlayerStats.php";
 	private string buildingClearedURL = "http://www.argzombie.com/ARGZ_SERVER/NewBuildingCleared.php";
 	private string clearedBuildingDataURL = "http://www.argzombie.com/ARGZ_SERVER/ClearedBuildingData.php";
+	private string fetchSurvivorDataURL = "http://www.argzombie.com/ARGZ_SERVER/FetchSurvivorData.php";
+	private string clearSurvivorDataURL = "http://www.argzombie.com/ARGZ_SERVER/DeleteMySurvivorData.php";
 
 	private bool eatDrikCounterIsOn;
+
+	private static SurvivorPlayCard survivorPlayCardPrefab;
 
 	void Awake () {
 		MakeSingleton();
 		StartCoroutine (StartLocationServices());
 
 		eatDrikCounterIsOn = false;
-
+		survivorPlayCardPrefab = Resources.Load<SurvivorPlayCard>("Prefabs/SurvivorPlayCard");
 
 		buildingToggleStatusArray = new bool[4];
 		ResetAllBuildings();
@@ -154,6 +163,11 @@ public class GameManager : MonoBehaviour {
 	}
 
 	IEnumerator NewCharacterUpdateServer () {
+		WWWForm form1 = new WWWForm();
+		form1.AddField("id", GameManager.instance.userId);
+		WWW www1 = new WWW(clearSurvivorDataURL, form1);
+		yield return www1;
+		Debug.Log (www1.text);
 		
 		WWWForm form = new WWWForm();
 		form.AddField("id", GameManager.instance.userId );
@@ -177,7 +191,7 @@ public class GameManager : MonoBehaviour {
 		if (www.error == null) {
 			
 			Debug.Log ("New character successfully started on the server" + www.text);
-			SceneManager.LoadScene("02a Map Level");
+			//SceneManager.LoadScene("02a Map Level");
 			yield break;
 		} else {
 			Debug.Log("WWW error "+ www.error);
@@ -244,15 +258,66 @@ public class GameManager : MonoBehaviour {
 			GameManager.instance.timeCharacterStarted = oDate;
 
 			//once the GameManager.instance is updated- you're clear to load the map level.
-			if (SceneManager.GetActiveScene().buildIndex != 2 ) {
-				SceneManager.LoadScene("02a Map Level");
-			}
+//			if (SceneManager.GetActiveScene().buildIndex != 2 ) {
+//				SceneManager.LoadScene("02a Map Level");
+//			}
 
 			yield break;
 		} else {
 			Debug.Log ("WWW error" + www.error);
 		}
 
+	}
+
+	IEnumerator FetchSurvivorData () {
+		//construct form
+		WWWForm form = new WWWForm();
+		if (FB.IsLoggedIn == true) {
+			form.AddField("id", GameManager.instance.userId);
+		} else {
+			GameManager.instance.userId = "10154194346243929";
+			form.AddField("id", GameManager.instance.userId);
+		}
+		//make www call
+		WWW www = new WWW(fetchSurvivorDataURL, form);
+		yield return www;
+		Debug.Log(www.text);
+
+		if (www.error == null) {
+			//encode json return
+			string survivorJsonString = www.text;
+			JsonData survivorJson = JsonMapper.ToObject(survivorJsonString);
+
+			//parse through json creating "player cards" within gamemanager for each player found on the server.
+			for (int i = 0; i < survivorJson.Count; i++) {
+				SurvivorPlayCard instance = Instantiate(survivorPlayCardPrefab);
+				instance.survivor.name = survivorJson[i]["name"].ToString();
+				instance.gameObject.name = survivorJson[i]["name"].ToString();
+				//instance.survivor.weaponEquipped.name = survivorJson[i]["weapon_equipped"].ToString();
+				instance.survivor.baseAttack = (int)survivorJson[i]["base_attack"];
+				instance.survivor.baseStamina = (int)survivorJson[i]["base_stam"];
+				instance.survivor.curStamina = (int)survivorJson[i]["curr_stam"];
+				instance.entry_id = (int)survivorJson[i]["entry_id"];
+				instance.survivor_id = (int)survivorJson[i]["survivor_id"];
+
+				if (survivorJson[i]["weapon_equipped"].ToString() == "knife") {
+					instance.survivor.weaponEquipped = GameManager.instance.weaponOptionsArray[0];
+				} else if (survivorJson[i]["weapon_equipped"].ToString() == "club") {
+					instance.survivor.weaponEquipped = GameManager.instance.weaponOptionsArray[1];
+				} else if (survivorJson[i]["weapon_equipped"].ToString() == "gun") {
+					instance.survivor.weaponEquipped = GameManager.instance.weaponOptionsArray[2];
+				}
+
+				instance.transform.SetParent(GameManager.instance.transform);
+			}
+			survivorCardList.AddRange (GameObject.FindGameObjectsWithTag("survivorcard"));
+			if (SceneManager.GetActiveScene().buildIndex != 2 ) {
+				SceneManager.LoadScene("02a Map Level");
+			}
+
+		} else {
+			Debug.LogWarning(www.error);
+		}
 	}
 
 
@@ -314,6 +379,7 @@ public class GameManager : MonoBehaviour {
 
 	public void ResumeCharacter () {
 
+		StartCoroutine (FetchSurvivorData());
 		StartCoroutine (FetchResumePlayerData());
 
 		//The coroutine should handle fetching and loading all the game data from server now.  No data should be stored in preferences anymore.

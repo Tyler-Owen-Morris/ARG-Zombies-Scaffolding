@@ -31,8 +31,7 @@ public class WeaponManager : MonoBehaviour {
 			//Add the weapon to the player class.        *****|||||this needs to update the game data, and store to the player class that that player has a weapon equipped. drops from tallies, stores within the player class |||||*****
 			SSM.survivor.weaponEquipped = knife;
 		}
-
-
+		SSM.UpdateWeaponSprite();
 	}
 
 	public void ClubSelectPressed () {
@@ -50,6 +49,7 @@ public class WeaponManager : MonoBehaviour {
 			//Add the weapon to the player class.       
 			SSM.survivor.weaponEquipped = club;
 		}
+		SSM.UpdateWeaponSprite();
 
 	}
 
@@ -68,6 +68,7 @@ public class WeaponManager : MonoBehaviour {
 			//Add the weapon to the player class.       
 			SSM.survivor.weaponEquipped = gun;
 		}
+		SSM.UpdateWeaponSprite();
 	}
 
 	void LocateAndSetSelectedSurvivor () {
