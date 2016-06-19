@@ -185,6 +185,7 @@
      <Compile Include="Assets\Scripts\SetStartVolume.cs" />
      <Compile Include="Assets\Scripts\StartMenuManager.cs" />
      <Compile Include="Assets\Scripts\SurvivorPlayCard.cs" />
+     <Compile Include="Assets\Scripts\TMP_locationplaceholder.cs" />
      <Compile Include="Assets\Scripts\Util.cs" />
      <Compile Include="Assets\Scripts\VictoryScreenController.cs" />
      <Compile Include="Assets\Scripts\WeaponGFX.cs" />

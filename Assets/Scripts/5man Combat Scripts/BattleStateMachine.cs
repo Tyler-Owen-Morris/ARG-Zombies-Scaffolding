@@ -107,7 +107,7 @@ public class BattleStateMachine : MonoBehaviour {
 				}
 			break;
 			case (PlayerInput.WAITING):
-
+				//idle
 			break;
 			case (PlayerInput.WEAPONCHANGE):
 
@@ -259,5 +259,11 @@ public class BattleStateMachine : MonoBehaviour {
 
 		CollectAction(myAttack);
 		survivorTurnList.RemoveAt(0);
+	}
+
+	public void PlayerChoosesRunAway () {
+		//later this will roll odds for their ability to get away, and cost the active team a stamina penalty 
+
+		SceneManager.LoadScene("02a Map Level");
 	}
 }

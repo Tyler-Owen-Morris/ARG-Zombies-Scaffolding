@@ -8,8 +8,16 @@ public class BuildingSpawner : MonoBehaviour {
 
 	[SerializeField]
 	private GameObject[] buildings;
+	public GameObject homebase;
+	public GameObject bldgHolder;
 
 	private float minX, maxX, minY, maxY;
+	private double m_per_deg_lat, m_per_deg_lon;
+
+	//the screenCenter is used to set the building locations around.
+	private Vector3 screenCenter = new Vector3(485, 363, 0); //this is best used for pc 
+	//private Vector3 screenCenter = new Vector3(1024, 768, 0); //this works better on tablet
+	//private Vector3 screenCenter = new Vector3(666, 375, 0); //this is the center for iPhone
 
 	private string googlePlacesAPIURL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json";
     private string foursquareAPIURL = "https://api.foursquare.com/v2/venues/search";
@@ -20,13 +28,13 @@ public class BuildingSpawner : MonoBehaviour {
     private string googleJsonReturn;
     
     private static GameObject gameCanvas;
-    private static GameObject bldgHolder;
+
     private static PopulatedBuilding populatedBuildingPrefab;
 
 	// Use this for initialization
 	void Start () {
         gameCanvas = GameObject.Find("Canvas");
-        bldgHolder = GameObject.Find("BuildingHolder");
+		//bldgHolder = GameObject.Find("Building Holder");
         populatedBuildingPrefab = Resources.Load<PopulatedBuilding>("Prefabs/Populated Building");
 		CreateBuildings();
         //StartCoroutine(GetNearbyBuildingsFoursquare());
@@ -61,8 +69,7 @@ public class BuildingSpawner : MonoBehaviour {
 		string jsonString = googleJsonReturn;
 		JsonData bldgJson = JsonMapper.ToObject(jsonString);
         //JsonData foursquareJson = JsonMapper.ToObject(jsonReturn);
-       
-       
+
         //this loop is currently only set to do 4 iterations. AKA- first 4 locations on the list.
         for (int i = 0; i < bldgJson["results"].Count; i++) {
 			string myName = (string)bldgJson["results"][i]["name"];
@@ -73,8 +80,8 @@ public class BuildingSpawner : MonoBehaviour {
 
 			//calculate the average latitude between the two locations, and then calculate the meters/DEGREE lat/lon
 			float latMid =(Input.location.lastData.latitude + lat)/2f;
-			double m_per_deg_lat = 111132.954 - 559.822 * Mathf.Cos( 2 * latMid ) + 1.175 * Mathf.Cos( 4 * latMid);
-			double m_per_deg_lon = 111132.954 * Mathf.Cos( latMid );
+			m_per_deg_lat = 111132.954 - 559.822 * Mathf.Cos( 2 * latMid ) + 1.175 * Mathf.Cos( 4 * latMid);
+			m_per_deg_lon = 111132.954 * Mathf.Cos( latMid );
 
 			//Debug.Log ("for the " + name + " building, meters per degree calculated as " + m_per_deg_lat + " m/deg lat, and " + m_per_deg_lon +" m/deg lon");
 			double deltaLatitude = 0;
@@ -109,8 +116,8 @@ public class BuildingSpawner : MonoBehaviour {
 			PopulatedBuilding instance = Instantiate(populatedBuildingPrefab);
 			instance.name = myName;
 			instance.buildingName = myName;
-			float xCoord = (float)(385 - (xDistMeters));
-			float yCoord = (float)(275 - (yDistMeters));
+			float xCoord = (float)(screenCenter.x - (xDistMeters));
+			float yCoord = (float)(screenCenter.y - (yDistMeters));
 			Vector3 pos = new Vector3 (xCoord, yCoord, 0);
 
 			//instance.transform.SetParent(gameCanvas.transform);
@@ -118,10 +125,39 @@ public class BuildingSpawner : MonoBehaviour {
 			instance.transform.position = pos;
 				
 			//Debug.Log("placed "+instance.name+" at coords: "+xCoord+" x and "+yCoord+" y");
-      }
+      	}
 
-      StartCoroutine(GameManager.instance.DeactivateClearedBuildings());
+      	PlaceHomebaseGraphic();
+      	StartCoroutine(GameManager.instance.DeactivateClearedBuildings());
         
+    }
+
+    public void PlaceHomebaseGraphic () {
+    	float homeLat = GameManager.instance.homebaseLat;
+    	float homeLon = GameManager.instance.homebaseLong;
+
+    	if (homeLat != 0.0f && homeLon != 0.0f) {
+	    	double deltaLatitude = 0;
+	    	double deltaLongitude = 0;
+			if (Input.location.status == LocationServiceStatus.Running){
+					deltaLatitude = (Input.location.lastData.latitude - homeLat);
+					deltaLongitude = (Input.location.lastData.longitude - homeLon);
+				} else {
+					deltaLatitude = (37.70883f - homeLat);
+					deltaLongitude = (-122.4293 - homeLon);
+				}
+				double xDistMeters = deltaLongitude * m_per_deg_lon;
+				double yDistMeters = deltaLatitude * m_per_deg_lat;
+
+				float xCoord = (float)(screenCenter.x - (xDistMeters));
+				float yCoord = (float)(screenCenter.y - (yDistMeters));
+				Vector3 pos = new Vector3 (xCoord, yCoord,0);
+				homebase.gameObject.SetActive(true);
+				homebase.transform.SetParent(bldgHolder.transform);
+				homebase.transform.position = pos;
+		} else {
+			Debug.Log("Homebase location not set");
+		}
     }
 
 
@@ -231,7 +267,7 @@ public class BuildingSpawner : MonoBehaviour {
 	void CreateBuildings () {
 		for (int i = 0; i < buildings.Length; i++) {		
 			Vector3 temp = buildings[i].transform.position;
-			Debug.Log ("the building "+ buildings[i].name + " is currently located at " + temp);
+			//Debug.Log ("the building "+ buildings[i].name + " is currently located at " + temp);
 			//Buildings are relocated to values derrived from world space- RectTransform and Transform are different, but this is flubbed to make it work.
 			temp.x = Random.Range (260, 590);
 			temp.y = Random.Range (38, 590);

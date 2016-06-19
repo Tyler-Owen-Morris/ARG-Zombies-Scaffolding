@@ -495,9 +495,10 @@ public class GameManager : MonoBehaviour {
 	    			//Debug.Log ("GameManager is attempting to deactivate "+populatedBldg.gameObject.name);
 	    			populatedBldg.DeactivateMe();
 	    		} else if (clearedJson[i]["active"].ToString() == "1") {
-					Debug.Log (clearedJson[i]["bldg_name"].ToString()+" has been reactivated by the server, but remains on player DB. Last cleared DateTime: "+clearedJson[i]["time_cleared"].ToString());
+					//Debug.Log (clearedJson[i]["bldg_name"].ToString()+" has been reactivated by the server, but remains on player DB. Last cleared DateTime: "+clearedJson[i]["time_cleared"].ToString());
 	    		}
 	    	}
+
     	} else {
     		Debug.Log ("Player has not cleared any buildings yet");
     	}
@@ -577,6 +578,8 @@ public class GameManager : MonoBehaviour {
 		} else {
 			Debug.Log(www.error);
 		}
+
+		StartCoroutine(GameManager.instance.DeactivateClearedBuildings());
 	}
 
 
