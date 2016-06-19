@@ -1,9 +1,24 @@
 fileFormatVersion: 2
 guid: fa1d250eb30424173a5f65d815c362f5
-timeCreated: 1458357223
+timeCreated: 1461346217
 licenseType: Free
 TextureImporter:
-  fileIDToRecycleName: {}
+  fileIDToRecycleName:
+    21300000: gameCombatUI_0
+    21300002: gameCombatUI_1
+    21300004: gameCombatUI_2
+    21300006: gameCombatUI_3
+    21300008: gameCombatUI_4
+    21300010: gameCombatUI_5
+    21300012: gameCombatUI_6
+    21300014: gameCombatUI_7
+    21300016: gameCombatUI_8
+    21300018: gameCombatUI_9
+    21300020: gameCombatUI_10
+    21300022: gameCombatUI_11
+    21300024: gameCombatUI_12
+    21300026: gameCombatUI_13
+    21300028: gameCombatUI_14
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -30,26 +45,294 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     filterMode: -1
-    aniso: -1
+    aniso: 16
     mipBias: -1
-    wrapMode: -1
-  nPOTScale: 1
+    wrapMode: 1
+  nPOTScale: 0
   lightmap: 0
   rGBM: 0
   compressionQuality: 50
   allowsAlphaSplitting: 0
-  spriteMode: 0
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spritePixelsToUnits: 100
-  alphaIsTransparency: 0
-  textureType: -1
+  alphaIsTransparency: 1
+  textureType: 8
   buildTargetSettings: []
   spriteSheet:
-    sprites: []
+    sprites:
+    - name: gameCombatUI_0
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 408
+        width: 968
+        height: 102
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -7, y: -48}
+        - {x: -7, y: -50}
+        - {x: -6, y: -51}
+        - {x: 24, y: -51}
+        - {x: 24, y: -47}
+        - {x: 207, y: -47}
+        - {x: 208, y: -51}
+        - {x: 239, y: -51}
+        - {x: 239, y: -47}
+        - {x: 480, y: -47}
+        - {x: 484, y: -45}
+        - {x: 484, y: -33}
+        - {x: 400, y: 51}
+        - {x: -402, y: 51}
+        - {x: -484, y: -31}
+        - {x: -484, y: -45}
+        - {x: -483, y: -46}
+        - {x: -481, y: -46}
+        - {x: -480, y: -47}
+        - {x: -228, y: -47}
+        - {x: -227, y: -51}
+        - {x: -196, y: -51}
+        - {x: -196, y: -47}
+        - {x: -8, y: -47}
+    - name: gameCombatUI_1
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 202
+        width: 12
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: gameCombatUI_2
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 101
+        width: 117
+        height: 305
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -28.5, y: 152.5}
+        - {x: -58.5, y: 111.5}
+        - {x: -58.5, y: -150.5}
+        - {x: -52.5, y: -152.5}
+        - {x: 30.5, y: -152.5}
+        - {x: 58.5, y: -149.5}
+        - {x: 58.5, y: 129.5}
+        - {x: 38.5, y: 152.5}
+    - name: gameCombatUI_3
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 157
+        width: 122
+        height: 249
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 48, y: 124.5}
+        - {x: -28, y: 124.5}
+        - {x: -61, y: 92.5}
+        - {x: -61, y: -100.5}
+        - {x: -48, y: -124.5}
+        - {x: -16, y: -124.5}
+        - {x: 26, y: -113.5}
+        - {x: 33, y: -94.5}
+        - {x: 27, y: -123.5}
+        - {x: 29, y: -124.5}
+        - {x: 46, y: -124.5}
+        - {x: 61, y: -115.5}
+        - {x: 61, y: 36.5}
+    - name: gameCombatUI_4
+      rect:
+        serializedVersion: 2
+        x: 259
+        y: 158
+        width: 122
+        height: 248
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 33, y: 124}
+        - {x: -13, y: 124}
+        - {x: -15, y: 110}
+        - {x: -12, y: 93}
+        - {x: -8, y: 80}
+        - {x: -2, y: 75}
+        - {x: -61, y: 35}
+        - {x: -61, y: 15}
+        - {x: -55, y: 12}
+        - {x: -50, y: 9}
+        - {x: -40, y: 12}
+        - {x: -32, y: 25}
+        - {x: -9, y: 36}
+        - {x: -36, y: 16}
+        - {x: -40, y: 8}
+        - {x: -18, y: -4}
+        - {x: -9, y: -106}
+        - {x: 0, y: -118}
+        - {x: 23, y: -108}
+        - {x: 30, y: -104}
+        - {x: 27, y: -118}
+        - {x: 30, y: -124}
+        - {x: 49, y: -124}
+        - {x: 61, y: -114}
+        - {x: 61, y: -7}
+        - {x: 50, y: 94}
+    - name: gameCombatUI_5
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 124
+        width: 411
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: gameCombatUI_6
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 44
+        width: 123
+        height: 55
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -59.5, y: 27.5}
+        - {x: -61.5, y: 25.5}
+        - {x: -61.5, y: -25.5}
+        - {x: -59.5, y: -27.5}
+        - {x: 59.5, y: -27.5}
+        - {x: 61.5, y: -25.5}
+        - {x: 61.5, y: 25.5}
+        - {x: 59.5, y: 27.5}
+    - name: gameCombatUI_7
+      rect:
+        serializedVersion: 2
+        x: 127
+        y: 44
+        width: 123
+        height: 55
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -59.5, y: 27.5}
+        - {x: -61.5, y: 25.5}
+        - {x: -61.5, y: -25.5}
+        - {x: -59.5, y: -27.5}
+        - {x: 59.5, y: -27.5}
+        - {x: 61.5, y: -25.5}
+        - {x: 61.5, y: 25.5}
+        - {x: 59.5, y: 27.5}
+    - name: gameCombatUI_8
+      rect:
+        serializedVersion: 2
+        x: 252
+        y: 67
+        width: 123
+        height: 55
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -59.5, y: 27.5}
+        - {x: -61.5, y: 25.5}
+        - {x: -61.5, y: -25.5}
+        - {x: -59.5, y: -27.5}
+        - {x: 59.5, y: -27.5}
+        - {x: 61.5, y: -25.5}
+        - {x: 61.5, y: 25.5}
+        - {x: 59.5, y: 27.5}
+    - name: gameCombatUI_9
+      rect:
+        serializedVersion: 2
+        x: 377
+        y: 67
+        width: 123
+        height: 55
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -59.5, y: 27.5}
+        - {x: -61.5, y: 25.5}
+        - {x: -61.5, y: -25.5}
+        - {x: -59.5, y: -27.5}
+        - {x: 59.5, y: -27.5}
+        - {x: 61.5, y: -25.5}
+        - {x: 61.5, y: 25.5}
+        - {x: 59.5, y: 27.5}
+    - name: gameCombatUI_10
+      rect:
+        serializedVersion: 2
+        x: 502
+        y: 92
+        width: 208
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: gameCombatUI_11
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 11
+        width: 411
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: gameCombatUI_12
+      rect:
+        serializedVersion: 2
+        x: 415
+        y: 35
+        width: 410
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: gameCombatUI_13
+      rect:
+        serializedVersion: 2
+        x: 415
+        y: 3
+        width: 208
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: gameCombatUI_14
+      rect:
+        serializedVersion: 2
+        x: 625
+        y: 3
+        width: 208
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
     outline: []
   spritePackingTag: 
   userData: 

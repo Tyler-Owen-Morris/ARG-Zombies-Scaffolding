@@ -1,0 +1,314 @@
+fileFormatVersion: 2
+guid: e9c8e37a9dec741d3a63fe293b121fab
+timeCreated: 1462118589
+licenseType: Free
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_0
+    21300002: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_1
+    21300004: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_2
+    21300006: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_3
+    21300008: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_6
+    21300010: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_5
+    21300012: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_6
+    21300014: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_7
+    21300016: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_8
+    21300018: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_6
+    21300020: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_7
+    21300022: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_1
+    21300024: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_12
+    21300026: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_3
+    21300028: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_14
+    21300030: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_15
+    21300032: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_9
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 1
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  cubemapConvolution: 0
+  cubemapConvolutionSteps: 7
+  cubemapConvolutionExponent: 1.5
+  seamlessCubemap: 0
+  textureFormat: -1
+  maxTextureSize: 1024
+  textureSettings:
+    filterMode: -1
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  rGBM: 0
+  compressionQuality: 50
+  allowsAlphaSplitting: 0
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 100
+  alphaIsTransparency: 1
+  textureType: 8
+  buildTargetSettings: []
+  spriteSheet:
+    sprites:
+    - name: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_2
+      rect:
+        serializedVersion: 2
+        x: 1040
+        y: 16
+        width: 97
+        height: 96
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 40.25, y: 32.75}
+        - {x: 39.25, y: 39.75}
+        - {x: -10.75, y: 39.75}
+        - {x: -16.75, y: 21.75}
+        - {x: -16.75, y: 19.75}
+        - {x: -16.75, y: 21.75}
+        - {x: -19.75, y: 27.75}
+        - {x: -36.75, y: 12.75}
+        - {x: -36.75, y: -2.25}
+        - {x: -25.75, y: -31.25}
+        - {x: -14.75, y: -38.25}
+        - {x: 17.25, y: -38.25}
+        - {x: 38.25, y: -27.25}
+        - {x: 40.25, y: -25.25}
+      - - {x: -36.75, y: -11.25}
+        - {x: -34.75, y: -13.25}
+        - {x: -31.75, y: -12.25}
+        - {x: -31.75, y: -9.25}
+        - {x: -33.75, y: -7.25}
+        - {x: -36.75, y: -8.25}
+      - - {x: -9.75, y: 39.75}
+        - {x: -10.75, y: 38.75}
+        - {x: -10.75, y: 35.75}
+        - {x: -8.75, y: 33.75}
+        - {x: -5.75, y: 34.75}
+        - {x: -4.75, y: 38.75}
+        - {x: -5.75, y: 39.75}
+    - name: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_9
+      rect:
+        serializedVersion: 2
+        x: 1169
+        y: 16
+        width: 96
+        height: 96
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 17.546875, y: 35.75}
+        - {x: 20.546875, y: 37.75}
+        - {x: 20.546875, y: 39.75}
+        - {x: -10.453125, y: 39.75}
+        - {x: -36.453125, y: 15.75}
+        - {x: -36.453125, y: -8.25}
+        - {x: -26.453125, y: -38.25}
+        - {x: 39.546875, y: -38.25}
+        - {x: 39.546875, y: 31.75}
+        - {x: 20.546875, y: 35.75}
+      - - {x: -36.453125, y: -11.25}
+        - {x: -34.453125, y: -13.25}
+        - {x: -31.453125, y: -12.25}
+        - {x: -31.453125, y: -9.25}
+        - {x: -33.453125, y: -7.25}
+        - {x: -36.453125, y: -8.25}
+      - - {x: -10.453125, y: 39.75}
+        - {x: -11.453125, y: 38.75}
+        - {x: -11.453125, y: 35.75}
+        - {x: -9.453125, y: 33.75}
+        - {x: -8.453125, y: 33.75}
+        - {x: -4.453125, y: 37.75}
+        - {x: -5.453125, y: 39.75}
+    - name: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_8
+      rect:
+        serializedVersion: 2
+        x: 671
+        y: 31
+        width: 67
+        height: 66
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -16.796875, y: 27.703125}
+        - {x: -25.796875, y: 19.703125}
+        - {x: -25.796875, y: -16.296875}
+        - {x: -14.796875, y: -26.296875}
+        - {x: 28.203125, y: -26.296875}
+        - {x: 28.203125, y: 27.703125}
+    - name: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_6
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 16
+        width: 81
+        height: 81
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -18.5, y: -27.25}
+        - {x: -18.5, y: -31.25}
+        - {x: -17.5, y: -32.25}
+        - {x: -11.5, y: -32.25}
+        - {x: -10.5, y: -31.25}
+        - {x: -12.5, y: -26.25}
+        - {x: -16.5, y: -25.25}
+      - - {x: -24.5, y: 33.75}
+        - {x: -31.5, y: 22.75}
+        - {x: -31.5, y: -26.25}
+        - {x: -15.5, y: -32.25}
+        - {x: 21.5, y: -32.25}
+        - {x: 33.5, y: -17.25}
+        - {x: 33.5, y: 32.75}
+        - {x: 30.5, y: 33.75}
+    - name: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_7
+      rect:
+        serializedVersion: 2
+        x: 912
+        y: 16
+        width: 97
+        height: 89
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -16.75, y: 36.75}
+        - {x: -36.75, y: 26.75}
+        - {x: -36.75, y: -3.25}
+        - {x: -16.75, y: -35.25}
+        - {x: 40.25, y: -35.25}
+        - {x: 40.25, y: 36.75}
+      - - {x: 36.25, y: 28.75}
+        - {x: 36.25, y: 26.75}
+        - {x: 39.25, y: 23.75}
+        - {x: 40.25, y: 23.75}
+        - {x: 40.25, y: 31.75}
+        - {x: 39.25, y: 31.75}
+      - - {x: -23.75, y: 28.75}
+        - {x: -23.75, y: 26.75}
+        - {x: -21.75, y: 24.75}
+        - {x: -17.75, y: 24.75}
+        - {x: -14.75, y: 27.75}
+        - {x: -15.75, y: 30.75}
+        - {x: -21.75, y: 30.75}
+    - name: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_1
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 19
+        width: 81
+        height: 81
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 10.8125, y: 18.640625}
+        - {x: -18.1875, y: 18.640625}
+        - {x: -18.1875, y: -9.359375}
+        - {x: -17.1875, y: -12.359375}
+        - {x: 10.8125, y: -12.359375}
+        - {x: 12.8125, y: -11.359375}
+        - {x: 12.8125, y: 17.640625}
+    - name: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_12
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 26
+        width: 74
+        height: 69
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -17.5, y: 16.71875}
+        - {x: -18.5, y: 9.71875}
+        - {x: -18.5, y: -10.28125}
+        - {x: -4.5, y: -23.28125}
+        - {x: 22.5, y: -23.28125}
+        - {x: 25.5, y: -13.28125}
+        - {x: 25.5, y: 19.71875}
+        - {x: -6.5, y: 19.71875}
+        - {x: -16.5, y: 18.71875}
+    - name: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_3
+      rect:
+        serializedVersion: 2
+        x: 421
+        y: 29
+        width: 66
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 25.484375, y: 16.109375}
+        - {x: 16.484375, y: 26.109375}
+        - {x: -6.515625, y: 26.109375}
+        - {x: -18.515625, y: 15.109375}
+        - {x: -20.515625, y: 2.109375}
+        - {x: -18.515625, y: -19.890625}
+        - {x: -16.515625, y: -25.890625}
+        - {x: 17.484375, y: -25.890625}
+        - {x: 25.484375, y: -23.890625}
+      - - {x: -9.515625, y: 18.109375}
+        - {x: -6.515625, y: 19.109375}
+        - {x: -6.515625, y: 22.109375}
+        - {x: -9.515625, y: 23.109375}
+        - {x: -11.515625, y: 21.109375}
+    - name: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_14
+      rect:
+        serializedVersion: 2
+        x: 556
+        y: 31
+        width: 53
+        height: 58
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -21.4375, y: 24.203125}
+        - {x: -21.4375, y: -22.796875}
+        - {x: 21.5625, y: -22.796875}
+        - {x: 21.5625, y: 23.203125}
+        - {x: 18.5625, y: 24.203125}
+      - - {x: -9.4375, y: 20.203125}
+        - {x: -6.4375, y: 21.203125}
+        - {x: -6.4375, y: 24.203125}
+        - {x: -10.4375, y: 24.203125}
+        - {x: -11.4375, y: 23.203125}
+    - name: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_0
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 19
+        width: 81
+        height: 79
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    outline: []
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

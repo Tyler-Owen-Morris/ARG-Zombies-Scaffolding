@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class PlayerPrefsManager : MonoBehaviour {
 
@@ -21,7 +22,7 @@ public class PlayerPrefsManager : MonoBehaviour {
 	}
 	
 	public static void UnlockLevel (int level) {
-		 if (level <= Application.levelCount - 1) {
+		if (level <= SceneManager.sceneCountInBuildSettings - 1) {
 		 	PlayerPrefs.SetInt (LEVEL_KEY_ + level.ToString(), 1); // Use 1 for true
 		 	//Debug.Log ("successfully unlocked level"+ level);
 		 } else {
@@ -30,7 +31,7 @@ public class PlayerPrefsManager : MonoBehaviour {
 	}
 	
 	public static void LockLevel (int level) {
-		if (level <= Application.levelCount - 1) {
+		if (level <= SceneManager.sceneCountInBuildSettings - 1) {
 			PlayerPrefs.SetInt (LEVEL_KEY_ + level.ToString(), 0); // Use 1 for true
 			//Debug.Log ("successfully locked level"+ level);
 		} else {
@@ -42,7 +43,7 @@ public class PlayerPrefsManager : MonoBehaviour {
 		int levelValue = PlayerPrefs.GetInt (LEVEL_KEY_ + level.ToString());
 		bool isLevelUnlocked = (levelValue == 1);
 		
-		if (level <= Application.levelCount -1) {
+		if (level <= SceneManager.sceneCountInBuildSettings -1) {
 			return isLevelUnlocked;
 		} else {
 			Debug.LogError ("Trying to look up access to a level that does not exist");

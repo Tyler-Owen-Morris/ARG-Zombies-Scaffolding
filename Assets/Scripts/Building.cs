@@ -6,17 +6,24 @@ public class Building : MonoBehaviour {
 
 	public int zombiePopulation;
 
-	private bool buildingClear;
+	[SerializeField]
+	private Text myText;
+
+	private bool buildingClear = false;
 	
 	// Use this for initialization
 	void Start () {
-			GenerateZombies();
-			buildingClear = false;
+		 	CheckIfThisBuildingIsClear();
+			
+	}
 
+	private void updateTheText () {
+		myText.text = this.zombiePopulation.ToString();
 	}
 
 	void OnLevelWasLoaded () {
-		CheckIfThisBuildingIsClear();
+		GenerateZombies();
+		updateTheText();
 	}
 	
 	public void BuildingPressed () {
@@ -42,12 +49,23 @@ public class Building : MonoBehaviour {
 	}
 
 	public void DeactivateMe () {
+		this.zombiePopulation = 0;
+		myText.text = "0";
 		this.buildingClear = true;
-		this.GetComponent<BoxCollider2D>().enabled = false;
-		this.GetComponent<Image>().color = Color.gray;
-		this.GetComponent<Button>().enabled = false;
+		GetComponent<BoxCollider2D>().enabled = false;
+		GetComponent<Image>().color = Color.gray;
 
+		//Debug.Log ("Deactivate function has completed for " + this.gameObject.name + " and currently has " + this.zombiePopulation.ToString() + " zombies");
 		//still need to write the code to change appearance, turn on transparent panel? indicate that it's clear.
+	}
+
+	public void ReactivateMe () {
+		GenerateZombies();
+		this.buildingClear = false;
+		GetComponent<BoxCollider2D>().enabled = true;
+		GetComponent<Image>().color = Color.white;
+		updateTheText();
+		Debug.Log (this.gameObject.name.ToString() + " has completed the reactivation instructions");
 	}
 
 	void GenerateZombies () {

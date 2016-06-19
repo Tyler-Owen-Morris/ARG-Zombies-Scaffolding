@@ -25,12 +25,14 @@ public class Zombie : MonoBehaviour {
 	}
 
 	public int Hit () {
-		int attk = attack;
+		int attk = (attack + Random.Range(-1, 4));
 		return attk;
 	}
 
 	public void GetHit (int dmg) {
 		int tmp = health - dmg;
+
+		FloatingTextController.CreateFloatingText( dmg.ToString(), gameObject.transform, false);
 		health = tmp;
 		if (this.health <= 0) {
 			combatManager.ZombieIsKilled(); // 
