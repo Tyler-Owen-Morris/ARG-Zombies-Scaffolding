@@ -20,6 +20,7 @@ public class MapLevelManager : MonoBehaviour {
 	private int zombieCount;
 	private string bldgName;
 	private string updateHomebaseURL = "http://www.argzombie.com/ARGZ_SERVER/UpdateHomebaseLocation.php";
+	private string dropoffAndResupplyURL = "http://www.argzombie.com/ARGZ_SERVER/DropoffAndResupply.php";
 
 	public void InventoryButtonPressed () {
 		if (inventoryPanel.activeInHierarchy == false ) {
@@ -169,10 +170,10 @@ public class MapLevelManager : MonoBehaviour {
 			SurvivorPlayCard SurvPlayCard = survivor.GetComponent<SurvivorPlayCard>();
 			totalMaxStam += SurvPlayCard.survivor.baseStamina;
 			totalCurrStam += SurvPlayCard.survivor.curStamina;
-			Debug.Log ("adding "+SurvPlayCard.survivor.baseStamina+" to base of stam counter, and "+SurvPlayCard.survivor.curStamina+" to the current stamina");
+			//Debug.Log ("adding "+SurvPlayCard.survivor.baseStamina+" to base of stam counter, and "+SurvPlayCard.survivor.curStamina+" to the current stamina");
 		}
 		float value = (float)totalCurrStam/(float)totalMaxStam;
-		Debug.Log ("The value of the slider has been calculated to be: "+value);
+		//Debug.Log ("The value of the slider has been calculated to be: "+value);
 		return value;
 	}
 
@@ -180,29 +181,29 @@ public class MapLevelManager : MonoBehaviour {
 	//later it should return a boolean, and if true, start the coroutine to send the transaction signal to the server, and get updated results.
 	//for now we're just going to change the button color to confirm it works with current GPS coordinates
 	public void AmIHomeTest () {
-		
-		//We are going to start with testing if stored homebase is within a certain range 
-		// the phone appears to return 5 decimal places.  We are going to try 3 of the smallest unit as a range test
-
-		float range = 0.003f;
-
 		if (Input.location.status == LocationServiceStatus.Running) {
+			//calculate the distance from current location to stored home location.
+			float myLat = Input.location.lastData.latitude;
+			float myLon = Input.location.lastData.longitude;
+			float homeLat = GameManager.instance.homebaseLat;
+			float homeLon = GameManager.instance.homebaseLong;
 
-			if ( Input.location.lastData.longitude >= (GameManager.instance.homebaseLong - range)  && Input.location.lastData.longitude <= (GameManager.instance.homebaseLong + range)  ) {
+			float latMid = (myLat + homeLat)/2f;
+			double m_per_deg_lat = 111132.954 - 559.822 * Mathf.Cos( 2 * latMid ) + 1.175 * Mathf.Cos( 4 * latMid);
+			double m_per_deg_lon = 111132.954 * Mathf.Cos( latMid );
 
-				if ( Input.location.lastData.latitude >= (GameManager.instance.homebaseLat - range)  && Input.location.lastData.latitude <= (GameManager.instance.homebaseLat + range) ) {
-					//player is within range of home, and transaction can take place
-					StartCoroutine(PostTempLocationText("CONFIRMED"));
+			double deltaLatitude = (myLat - homeLat);
+			double deltaLongitude = (myLon - homeLon);
+			double latDistMeters = deltaLatitude * m_per_deg_lat;
+			double lonDistMeters = deltaLongitude * m_per_deg_lon;
+			double directDistMeters = Mathf.Sqrt(Mathf.Pow((float)latDistMeters, 2f)+Mathf.Pow((float)lonDistMeters, 2f));
 
-				}else {
-					Debug.Log ("Lattitude does not fall within range of homebase");
-					StartCoroutine(PostTempLocationText("You are not in range of homebase (lat)"));
-				}
+			if (directDistMeters <= 100.0f) {
+				//player is within range of home- attempt to drop all supply to homebase client.
+				StartCoroutine(DropoffAndResupply());
 
-
-			}else {
-				Debug.Log ("Logitude does not fall within range of homebase");
-				StartCoroutine(PostTempLocationText("You are not in range of homebase (long)"));
+			} else {
+				StartCoroutine(PostTempLocationText("You are more than 100m from home"));
 			}
 
 		} else {
@@ -269,7 +270,9 @@ public class MapLevelManager : MonoBehaviour {
 			JsonData replyJson = JsonMapper.ToObject(jsonString);
 
 			if (replyJson[0].ToString() == "Success") {
-				Debug.Log (replyJson[0].ToString());
+				Debug.Log (replyJson[1].ToString());
+				GameManager.instance.homebaseLat = newLat;
+				GameManager.instance.homebaseLong = newLon;
 			} else {
 				//this will handle any error responses from the server when attempting to set new homebase
 				//I expect there will be a time delay, or cost associated with multiple changes, so this  is
@@ -280,7 +283,38 @@ public class MapLevelManager : MonoBehaviour {
 		}
 		UpdateTheUI();
 	}
+
+
+	// this coroutine currently only handles dropoff, but is planned to handle pickup as well in the future.
+	IEnumerator DropoffAndResupply () {
+		WWWForm form = new WWWForm();
+		form.AddField("id", GameManager.instance.userId);
+		form.AddField("supply", GameManager.instance.supply);
+
+		WWW www = new WWW(dropoffAndResupplyURL ,form);
+		yield return www;
+		Debug.Log(www.text);
+
+		if (www.error == null) {
+			string dropoffReturnString = www.text;
+			JsonData dropoffJson = JsonMapper.ToObject(dropoffReturnString);
+
+			if (dropoffJson[0].ToString() == "Success") {
+				GameManager.instance.supply = 0;
+				UpdateTheUI();
+				StartCoroutine(PostTempLocationText("Dropoff Success!"));
+			} else if (dropoffJson[0].ToString() == "Failed") {
+				StartCoroutine(PostTempLocationText(dropoffJson[1].ToString()));
+				Debug.Log(dropoffJson[1].ToString());
+			}
+
+		} else {
+			Debug.Log("www error: "+ www.error);
+		}
+	}
+
 	private bool textPosted = false;
+
 	IEnumerator PostTempLocationText (string text) {
 		if (textPosted == false) {
 			textPosted = true;

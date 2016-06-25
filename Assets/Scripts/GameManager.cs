@@ -203,7 +203,7 @@ public class GameManager : MonoBehaviour {
 		if (FB.IsLoggedIn == true) {
 			form.AddField("id", GameManager.instance.userId);
 		} else {
-			GameManager.instance.userId = "10154194346243929";
+			GameManager.instance.userId = "10154194346243928";
 			form.AddField("id", GameManager.instance.userId);
 		}
 

@@ -15,9 +15,9 @@ public class BuildingSpawner : MonoBehaviour {
 	private double m_per_deg_lat, m_per_deg_lon;
 
 	//the screenCenter is used to set the building locations around.
-	private Vector3 screenCenter = new Vector3(485, 363, 0); //this is best used for pc 
+	//private Vector3 screenCenter = new Vector3(485, 363, 0); //this is best used for pc 
 	//private Vector3 screenCenter = new Vector3(1024, 768, 0); //this works better on tablet
-	//private Vector3 screenCenter = new Vector3(666, 375, 0); //this is the center for iPhone
+	private Vector3 screenCenter = new Vector3(666, 375, 0); //this is the center for iPhone
 
 	private string googlePlacesAPIURL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json";
     private string foursquareAPIURL = "https://api.foursquare.com/v2/venues/search";
@@ -95,18 +95,6 @@ public class BuildingSpawner : MonoBehaviour {
 			}
 			double xDistMeters = deltaLongitude * m_per_deg_lon;
 			double yDistMeters = deltaLatitude * m_per_deg_lat;
-
-			//Debug.Log ("for "+myName+" change in lat/lng is "+deltaLatitude+" "+deltaLongitude+" and x/y dist calculated to be: "+ xDistMeters+" "+yDistMeters);
-			/*
-			float earthRadius = 6378.137f; // in KM
-			double dLat = (lat - Input.location.lastData.latitude) * Mathf.Deg2Rad; //convert angular difference to radians
-			double dLng = (lng - Input.location.lastData.longitude) * Mathf.Deg2Rad;
-			double xDistKm = dLng * earthRadius;
-			double yDistKm = dLat * earthRadius;
-			float xDistM = (float)(xDistKm * 1000);
-			float yDistM = (float)(yDistKm * 1000);
-			*/
-			//this was my first pass at the math.  Deg2Rad is not solid enough, nor does it take into account lat-long characteristics
 			
 			//Debug.Log ("The building named "+ name +" should be appearing " + xDistMeters+" meters in the x direction and " + yDistMeters + " meters in the y direction");
 			//now we have the realive distance in meters translated to x,y offsets from our origin.
@@ -120,7 +108,6 @@ public class BuildingSpawner : MonoBehaviour {
 			float yCoord = (float)(screenCenter.y - (yDistMeters));
 			Vector3 pos = new Vector3 (xCoord, yCoord, 0);
 
-			//instance.transform.SetParent(gameCanvas.transform);
 			instance.transform.SetParent(bldgHolder.transform);
 			instance.transform.position = pos;
 				
