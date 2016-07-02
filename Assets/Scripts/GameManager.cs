@@ -474,6 +474,7 @@ public class GameManager : MonoBehaviour {
 
     	WWW www = new WWW(clearedBuildingDataURL, myForm);
     	yield return www;
+    	Debug.Log(www.text);
 
     	if (www.error == null) {
     		//Debug.Log ("the cleared building call returned raw text of: "+www.text);
@@ -491,9 +492,15 @@ public class GameManager : MonoBehaviour {
 	    		//if the building is still considered inactive by the server
 	    		if (clearedJson[i]["active"].ToString() == "0") {
 	    			//Debug.Log ("Coroutine has found "+ clearedJson[i]["bldg_name"].ToString()+" to be inactive");
-	    			PopulatedBuilding populatedBldg = GameObject.Find(clearedJson[i]["bldg_name"].ToString()).GetComponent<PopulatedBuilding>();
-	    			//Debug.Log ("GameManager is attempting to deactivate "+populatedBldg.gameObject.name);
-	    			populatedBldg.DeactivateMe();
+					GameObject thisBuilding = GameObject.Find(clearedJson[i]["bldg_name"].ToString());
+					if (thisBuilding != null) {
+	    				PopulatedBuilding populatedBldg = thisBuilding.GetComponent<PopulatedBuilding>();
+						//Debug.Log ("GameManager is attempting to deactivate "+populatedBldg.gameObject.name);
+						populatedBldg.DeactivateMe();
+	    			} else {
+	    				continue;
+	    			}
+
 	    		} else if (clearedJson[i]["active"].ToString() == "1") {
 					//Debug.Log (clearedJson[i]["bldg_name"].ToString()+" has been reactivated by the server, but remains on player DB. Last cleared DateTime: "+clearedJson[i]["time_cleared"].ToString());
 	    		}

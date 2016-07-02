@@ -209,6 +209,9 @@ public class MapLevelManager : MonoBehaviour {
 		} else {
 			Debug.Log ("location services not running");
 			StartCoroutine(PostTempLocationText("location services not running"));
+
+			//remove this for live version- this is for testing only.
+			StartCoroutine(DropoffAndResupply());
 		}
 
 	}
@@ -301,6 +304,14 @@ public class MapLevelManager : MonoBehaviour {
 
 			if (dropoffJson[0].ToString() == "Success") {
 				GameManager.instance.supply = 0;
+
+				if (dropoffJson[2].ToString() != "none") {
+						GameManager.instance.shivCount = GameManager.instance.shivCount + (int)dropoffJson[2]["knife_for_pickup"];
+						GameManager.instance.clubCount = GameManager.instance.clubCount + (int)dropoffJson[2]["club_for_pickup"];
+						GameManager.instance.gunCount = GameManager.instance.gunCount + (int)dropoffJson[2]["ammo_for_pickup"];
+						GameManager.instance.survivorsActive = GameManager.instance.survivorsActive + (int)dropoffJson[2]["active_survivor_for_pickup"];
+				}
+
 				UpdateTheUI();
 				StartCoroutine(PostTempLocationText("Dropoff Success!"));
 			} else if (dropoffJson[0].ToString() == "Failed") {

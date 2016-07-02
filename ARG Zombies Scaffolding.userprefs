@@ -1,8 +1,10 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/MapLevelManager.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/BuildingSpawner.cs">
     <Files>
-      <File FileName="Assets/Scripts/MapLevelManager.cs" Line="273" Column="27" NotebookId="2" />
+      <File FileName="Assets/Scripts/MapLevelManager.cs" Line="312" Column="135" NotebookId="2" />
+      <File FileName="Assets/Scripts/GameManager.cs" Line="497" Column="56" NotebookId="2" />
+      <File FileName="Assets/Scripts/BuildingSpawner.cs" Line="20" Column="2" NotebookId="2" />
       <File FileName="Assets/Scripts/MusicManager.cs" Line="1" Column="1" NotebookId="2" />
       <File FileName="Assets/Scripts/Button.cs" Line="1" Column="1" NotebookId="2" />
       <File FileName="Assets/Scripts/SetStartVolume.cs" Line="1" Column="1" NotebookId="2" />
@@ -20,21 +22,19 @@
       <File FileName="Assets/Scripts/Zombie.cs" Line="1" Column="1" NotebookId="2" />
       <File FileName="Assets/Scripts/5man Combat Scripts/BaseWeapon.cs" Line="1" Column="1" NotebookId="2" />
       <File FileName="Assets/Scripts/5man Combat Scripts/WeaponManager.cs" Line="1" Column="1" NotebookId="2" />
-      <File FileName="Assets/Scripts/GameManager.cs" Line="227" Column="75" NotebookId="2" />
       <File FileName="Assets/FacebookSDK/SDK/Scripts/FacebookBase.cs" Line="1" Column="1" NotebookId="2" />
-      <File FileName="Assets/QRcode/Scripts/DeviceCameraController.cs" Line="22" Column="6" NotebookId="2" />
+      <File FileName="Assets/QRcode/Scripts/DeviceCameraController.cs" Line="1" Column="1" NotebookId="2" />
     </Files>
     <FloatingWindows>
       <FloatingWindow WindowId="1" X="30" Y="23" Width="2118" Height="1459">
         <Files>
-          <File FileName="Assets/Scripts/QRPanelController.cs" Line="96" Column="129" />
-          <File FileName="Assets/Scripts/LoginManager.cs" Line="81" Column="51" />
+          <File FileName="Assets/Scripts/QRPanelController.cs" Line="102" Column="3" />
+          <File FileName="Assets/Scripts/LoginManager.cs" Line="1" Column="1" />
           <File FileName="Assets/Scripts/5man Combat Scripts/BaseZombie.cs" Line="1" Column="1" />
           <File FileName="Assets/Scripts/5man Combat Scripts/BaseSurvivor.cs" Line="1" Column="1" />
           <File FileName="Assets/Scripts/5man Combat Scripts/SurvivorStateMachine.cs" Line="1" Column="1" />
           <File FileName="Assets/Scripts/CombatManager.cs" Line="1" Column="1" />
-          <File FileName="Assets/Scripts/BuildingSpawner.cs" Line="18" Column="4" NotebookId="1" />
-          <File FileName="Assets/Scripts/5man Combat Scripts/BattleStateMachine.cs" Line="1" Column="1" NotebookId="1" />
+          <File FileName="Assets/Scripts/5man Combat Scripts/BattleStateMachine.cs" Line="70" Column="28" NotebookId="1" />
           <File FileName="Assets/Scripts/TMP_locationplaceholder.cs" Line="1" Column="1" NotebookId="1" />
         </Files>
       </FloatingWindow>
