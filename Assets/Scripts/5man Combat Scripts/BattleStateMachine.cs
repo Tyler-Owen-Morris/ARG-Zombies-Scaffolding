@@ -52,6 +52,17 @@ public class BattleStateMachine : MonoBehaviour {
 
 		UpdateZombieCount();
 	}
+
+	void AdjustForLessThan5Zombies () {
+		if (GameManager.instance.zombiesToFight < 5) {
+			int removeNum = 5 - GameManager.instance.zombiesToFight;
+			for (int i = 0; i < removeNum; i++) {
+				zombieList[0].SetActive(false);
+				zombieList[0].GetComponent<ZombieStateMachine>().myTypeText.text = "";
+				zombieList.RemoveAt(0);
+			} 
+		}
+	}
 	
 	// Update is called once per frame
 	void Update () {
@@ -127,16 +138,7 @@ public class BattleStateMachine : MonoBehaviour {
 	
 	}
 
-	void AdjustForLessThan5Zombies () {
-		if (GameManager.instance.zombiesToFight < 5) {
-			int removeNum = 5 - GameManager.instance.zombiesToFight;
-			for (int i = 0; i < removeNum; i++) {
-				zombieList[0].SetActive(false);
-				zombieList[0].GetComponent<ZombieStateMachine>().myTypeText.text = "";
-				zombieList.RemoveAt(0);
-			} 
-		}
-	}
+
 
 	public void CollectAction (TurnHandler myTurn) {
 		TurnList.Add (myTurn);
@@ -254,7 +256,51 @@ public class BattleStateMachine : MonoBehaviour {
 		if (playerTarget != null) {
 			myAttack.TargetsGameObject = playerTarget;
 		} else {
-			myAttack.TargetsGameObject = zombieList[Random.Range(0, zombieList.Count)];
+			//pick a random zombie
+			//myAttack.TargetsGameObject = zombieList[Random.Range(0, zombieList.Count)];
+
+			//based on player weapon type find the most vulnerable type zombie to attack
+			SurvivorStateMachine attackingSSM = survivorTurnList[0].GetComponent<SurvivorStateMachine>();
+//			Debug.Log(attackingSSM.survivor.weaponEquipped.name);
+			if (attackingSSM.survivor.weaponEquipped.name == "Knife") {
+				foreach (GameObject zombie in zombieList) {
+					//Debug.Log(zombie.GetComponent<ZombieStateMachine>().zombie.zombieType.ToString());
+					if (zombie.GetComponent<ZombieStateMachine>().zombie.zombieType.ToString() == "SKINNY") {
+						myAttack.TargetsGameObject = zombie;
+						break;
+					}
+					Debug.Log("did not find a matching zombie to select for auto-attack");
+					//if the foreach completes without finding a match- pick randomly
+					myAttack.TargetsGameObject = zombieList[Random.Range(0, zombieList.Count)];
+				}
+
+			} else if (attackingSSM.survivor.weaponEquipped.name == "Club") {
+				foreach (GameObject zombie in zombieList) {
+					//Debug.Log(zombie.GetComponent<ZombieStateMachine>().zombie.zombieType.ToString());
+					if (zombie.GetComponent<ZombieStateMachine>().zombie.zombieType.ToString() == "NORMAL") {
+						myAttack.TargetsGameObject = zombie;
+						break;
+					}
+					Debug.Log("did not find a matching zombie to select for auto-attack");
+					//if the foreach completes without finding a match- pick randomly
+					myAttack.TargetsGameObject = zombieList[Random.Range(0, zombieList.Count)];
+				}
+
+			} else if (attackingSSM.survivor.weaponEquipped.name == "Gun") {
+				foreach (GameObject zombie in zombieList) {
+					//Debug.Log(zombie.GetComponent<ZombieStateMachine>().zombie.zombieType.ToString());
+					if (zombie.GetComponent<ZombieStateMachine>().zombie.zombieType.ToString() == "FAT") {
+						myAttack.TargetsGameObject = zombie;
+						break;
+					}
+					Debug.Log("did not find a matching zombie to select for auto-attack");
+					//if the foreach completes without finding a match- pick randomly
+					myAttack.TargetsGameObject = zombieList[Random.Range(0, zombieList.Count)];
+				}
+
+			} else {
+
+			}
 		}
 
 		CollectAction(myAttack);

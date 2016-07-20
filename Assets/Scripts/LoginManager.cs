@@ -19,6 +19,7 @@ public class LoginManager : MonoBehaviour {
 //	private string loginUrl = "http://localhost/ARGZ_SERVER/login.php";
 
 	private string newSurvivorUrl = "http://argzombie.com/ARGZ_SERVER/create_new_survivor.php";
+	private string findUserAcctURL = "http://argzombie.com/ARGZ_SERV";
 	
 	// Use this for initialization
 	void Start () { 
@@ -36,6 +37,12 @@ public class LoginManager : MonoBehaviour {
         FB.ActivateApp();
         if (FB.IsLoggedIn) {
             Debug.Log ("FB is logged in");
+
+            //fetch the name and ID from the FB API.
+			FB.API ("/me?fields=id", HttpMethod.GET, UpdateUserId);
+		    FB.API ("/me?fields=first_name", HttpMethod.GET, UpdateUserFirstName);
+		    FB.API ("/me?fields=last_name", HttpMethod.GET, UpdateUserLastName);
+
             loggedInPanel.SetActive (true);
         } else {
             Debug.Log ("FB is not logged in");
@@ -144,7 +151,7 @@ public class LoginManager : MonoBehaviour {
 
 	IEnumerator SendNewSurvivorToServer (string name, string survivor_id, int stamina, int attack) {
 		WWWForm form = new WWWForm();
-		form.AddField("id", GameManager.instance.userId);
+		form.AddField("owner_id", GameManager.instance.userId);
 		form.AddField("survivor_id", survivor_id); //this will need to actually pull
 		form.AddField("name", name);
 		form.AddField("base_stam", stamina);

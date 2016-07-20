@@ -46,30 +46,30 @@ public class MapLevelManager : MonoBehaviour {
 		}
 	}
 
-	public void PlayerAttemptingPurchaseFullHealth () {
-		GameManager.instance.PlayerAttemptingPurchaseFullHealth();
-	}
-
-	public void PlayerAttemptingPurchaseNewSurvivor () {
-		GameManager.instance.PlayerAttemptingPurchaseNewSurvivor ();
-	}
-
-	public void PlayerAttemptingPurchaseShiv () {
-		GameManager.instance.PlayerAttemptingPurchaseShiv();
-	}
-
-	public void PlayerAttemptingPurchaseClub () {
-		GameManager.instance.PlayerAttemtpingPurchaseClub();
-	}
-
-	public void PlayerAttemptingPurchaseGun () {
-		GameManager.instance.PlayterAttemtptingPurchaseGun();
-	}
-
-
-	public void ResetBuildingsCalled () {
-		GameManager.instance.ResetAllBuildings();
-	}
+//	public void PlayerAttemptingPurchaseFullHealth () {
+//		GameManager.instance.PlayerAttemptingPurchaseFullHealth();
+//	}
+//
+//	public void PlayerAttemptingPurchaseNewSurvivor () {
+//		GameManager.instance.PlayerAttemptingPurchaseNewSurvivor ();
+//	}
+//
+//	public void PlayerAttemptingPurchaseShiv () {
+//		GameManager.instance.PlayerAttemptingPurchaseShiv();
+//	}
+//
+//	public void PlayerAttemptingPurchaseClub () {
+//		GameManager.instance.PlayerAttemtpingPurchaseClub();
+//	}
+//
+//	public void PlayerAttemptingPurchaseGun () {
+//		GameManager.instance.PlayterAttemtptingPurchaseGun();
+//	}
+//
+//
+//	public void ResetBuildingsCalled () {
+//		GameManager.instance.ResetAllBuildings();
+//	}
     
     void Awake () {
     	if (FB.IsLoggedIn == true)  {
@@ -94,13 +94,14 @@ public class MapLevelManager : MonoBehaviour {
         foodText.text = "Food: " + GameManager.instance.foodCount.ToString();
         waterText.text = "Water: " + GameManager.instance.waterCount.ToString();
 		daysAliveText.text = GameManager.instance.daysSurvived.ToString();
-		survivorsAliveText.text = "Survivors: " + GameManager.instance.survivorsActive.ToString();
+		//Debug.Log(GameManager.instance.survivorCardList.Count);
+		survivorsAliveText.text = "Survivors: " + (GameManager.instance.survivorCardList.Count + 1);
         
 
 		//inventory panel text updates
-		shivCountText.text = GameManager.instance.shivCount.ToString();
-		clubCountText.text = GameManager.instance.clubCount.ToString();
-		gunCountText.text = GameManager.instance.gunCount.ToString();
+//		shivCountText.text = GameManager.instance.shivCount.ToString();
+//		clubCountText.text = GameManager.instance.clubCount.ToString();
+//		gunCountText.text = GameManager.instance.gunCount.ToString();
 
 		//homebase panel updates
 		homebaseLatText.text = "Homebase Latitude: "+GameManager.instance.homebaseLat.ToString();
@@ -157,8 +158,8 @@ public class MapLevelManager : MonoBehaviour {
     }
 
 	private float CalculatePlayerHealthSliderValue (){
-		float health = GameManager.instance.playerCurrentHealth;
-		float value = health / 100.0f; 
+		float stamina = GameManager.instance.playerCurrentStamina;
+		float value = stamina / GameManager.instance.playerMaxStamina; 
 		//Debug.Log ("Calculating the players health slider value to be " + value );
 		return value;//the number 100 is a plceholder for total health possible.
 	}
@@ -306,10 +307,10 @@ public class MapLevelManager : MonoBehaviour {
 				GameManager.instance.supply = 0;
 
 				if (dropoffJson[2].ToString() != "none") {
-						GameManager.instance.shivCount = GameManager.instance.shivCount + (int)dropoffJson[2]["knife_for_pickup"];
-						GameManager.instance.clubCount = GameManager.instance.clubCount + (int)dropoffJson[2]["club_for_pickup"];
-						GameManager.instance.gunCount = GameManager.instance.gunCount + (int)dropoffJson[2]["ammo_for_pickup"];
-						GameManager.instance.survivorsActive = GameManager.instance.survivorsActive + (int)dropoffJson[2]["active_survivor_for_pickup"];
+//						GameManager.instance.shivCount = GameManager.instance.shivCount + (int)dropoffJson[2]["knife_for_pickup"];
+//						GameManager.instance.clubCount = GameManager.instance.clubCount + (int)dropoffJson[2]["club_for_pickup"];
+//						GameManager.instance.gunCount = GameManager.instance.gunCount + (int)dropoffJson[2]["ammo_for_pickup"];
+//						GameManager.instance.survivorsActive = GameManager.instance.survivorsActive + (int)dropoffJson[2]["active_survivor_for_pickup"];
 				}
 
 				UpdateTheUI();

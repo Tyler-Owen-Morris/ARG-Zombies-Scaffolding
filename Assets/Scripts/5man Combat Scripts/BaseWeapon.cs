@@ -4,8 +4,6 @@ using System.Collections;
 [System.Serializable]
 public class BaseWeapon : MonoBehaviour {
 
-	public string name;
-
 	public int topDmg;
 	public int botDmg;
 

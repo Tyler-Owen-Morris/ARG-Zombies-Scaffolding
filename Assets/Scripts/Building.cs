@@ -13,7 +13,6 @@ public class Building : MonoBehaviour {
 	
 	// Use this for initialization
 	void Start () {
-		 	CheckIfThisBuildingIsClear();
 			
 	}
 
@@ -36,17 +35,7 @@ public class Building : MonoBehaviour {
 		}
 	}
 
-	private void CheckIfThisBuildingIsClear () {
-		if (this.gameObject.name == "Building01" && GameManager.instance.buildingToggleStatusArray[0] == true) {
-			DeactivateMe();
-		} else if (this.gameObject.name == "Building02" && GameManager.instance.buildingToggleStatusArray[1] == true) {
-			DeactivateMe();
-		} else if (this.gameObject.name == "Building03" && GameManager.instance.buildingToggleStatusArray[2] == true) {
-			DeactivateMe();
-		} else if (this.gameObject.name == "Building04" && GameManager.instance.buildingToggleStatusArray[3] == true) {
-			DeactivateMe();
-		}
-	}
+
 
 	public void DeactivateMe () {
 		this.zombiePopulation = 0;

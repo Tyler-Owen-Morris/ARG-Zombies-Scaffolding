@@ -74,6 +74,7 @@ public class SurvivorStateMachine : MonoBehaviour {
 			yield break;
 		} else {
 			actionStarted = true;
+			//match the sprite layer to that of the target
 			int startRenderLayer = gameObject.GetComponent<SpriteRenderer>().sortingOrder;
 
 			//animate the hero to the target
@@ -82,8 +83,8 @@ public class SurvivorStateMachine : MonoBehaviour {
 			while (MoveTowardsTarget(targetPosition)) {yield return null;}
 			//animate weapon fx
 			yield return new WaitForSeconds(0.2f);
-			//do damage
 
+			//do damage
 			ZombieStateMachine targetZombie = plyrTarget.GetComponent<ZombieStateMachine>();
 			int myDmg = CalculateMyDamage();
 			Debug.Log ("Survivor hit the zombie for " +myDmg+ " damage");

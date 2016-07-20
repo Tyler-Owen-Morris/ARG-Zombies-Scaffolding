@@ -155,12 +155,14 @@ public class ZombieStateMachine : MonoBehaviour {
 				BSM.zombieList.Add(gameObject);
 				currentState = TurnState.WAITING;
 			} else {
+				myTypeText.text = "";
 				//do not reactivate or animate- just leave the zombie dead off screen and change its state.
 				foreach (GameObject zombie in BSM.zombieList) {
 					if (this.name == zombie.name) {
 						//remove from game list
 						zombie.GetComponent<ZombieStateMachine>().myTypeText.text = "";
 						BSM.zombieList.Remove(zombie);
+
 					}
 				}
 				currentState = TurnState.WAITING;

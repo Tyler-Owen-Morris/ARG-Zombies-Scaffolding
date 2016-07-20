@@ -7,4 +7,5 @@ public class SurvivorPlayCard : MonoBehaviour {
 
 	public int survivor_id;
 	public int entry_id;
+	public int team_pos;
 }

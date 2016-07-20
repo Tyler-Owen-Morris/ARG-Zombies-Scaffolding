@@ -61,20 +61,20 @@ public class FloatingTextController : MonoBehaviour {
 		}
 	}
 
-	public static void SendWeaponAnimation () {
-		//Vector3 origin = new Vector3(0,0,0);
-
-		if (GameManager.instance.weaponEquipped == "shiv" ) {
-			WeaponGFX instance = Instantiate(knifeStab);
-			instance.gameObject.SetActive(true);
-		} else if (GameManager.instance.weaponEquipped == "club" ) {
-			WeaponGFX instance = Instantiate(clubSwing);
-			instance.gameObject.SetActive(true);
-		} else if (GameManager.instance.weaponEquipped == "gun" ) {
-			WeaponGFX instance = Instantiate(gunBlast);
-			instance.gameObject.SetActive(true);
-		} else {
-			Debug.Log ("failed to send weapon FX animation call, no matching weapon found");
-		}
-	}
+//	public static void SendWeaponAnimation () {
+//		//Vector3 origin = new Vector3(0,0,0);
+//
+//		if (GameManager.instance.weaponEquipped == "shiv" ) {
+//			WeaponGFX instance = Instantiate(knifeStab);
+//			instance.gameObject.SetActive(true);
+//		} else if (GameManager.instance.weaponEquipped == "club" ) {
+//			WeaponGFX instance = Instantiate(clubSwing);
+//			instance.gameObject.SetActive(true);
+//		} else if (GameManager.instance.weaponEquipped == "gun" ) {
+//			WeaponGFX instance = Instantiate(gunBlast);
+//			instance.gameObject.SetActive(true);
+//		} else {
+//			Debug.Log ("failed to send weapon FX animation call, no matching weapon found");
+//		}
+//	}
 }
