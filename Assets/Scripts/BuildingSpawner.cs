@@ -26,6 +26,9 @@ public class BuildingSpawner : MonoBehaviour {
     private string foursquareClientSecret = "WPTC5HRUGQ5E02P0AME5UCSPUYXQTCBL0SX4LVK0WH4LIX1Q";
     private string foursquareJsonReturn;
     private string googleJsonReturn;
+
+    public bool googleBldgsNeedUpdate;
+    public float lastGoogleLat = 0, lastGoogleLng = 0;
     
     private static GameObject gameCanvas;
 
@@ -33,6 +36,7 @@ public class BuildingSpawner : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		googleBldgsNeedUpdate = true;
         gameCanvas = GameObject.Find("Canvas");
 		//bldgHolder = GameObject.Find("Building Holder");
         populatedBuildingPrefab = Resources.Load<PopulatedBuilding>("Prefabs/Populated Building");
@@ -41,25 +45,39 @@ public class BuildingSpawner : MonoBehaviour {
         StartCoroutine(GetNearbyBuildingsGoogle());
 	}
 
-	IEnumerator GetNearbyBuildingsGoogle () {
-		string myWwwString = googlePlacesAPIURL;
-		myWwwString += "?location=";
-		if (Input.location.status == LocationServiceStatus.Running) {
-			myWwwString += Input.location.lastData.latitude +","+Input.location.lastData.longitude;
+	public void UpdateBuildings () {
+
+		if (googleBldgsNeedUpdate) {
+			StartCoroutine(GetNearbyBuildingsGoogle());
 		} else {
-			myWwwString += "37.70897,-122.4292";
-			//this is assuming my home location
+			TurnGoogleJsonIntoBuildings();
 		}
-		myWwwString += "&radius=500";
-		myWwwString += "&key="+ googleAPIKey;
+	}
 
-		WWW www = new WWW(myWwwString);
-		yield return www;
+	IEnumerator GetNearbyBuildingsGoogle () {
+		
+			string myWwwString = googlePlacesAPIURL;
+			myWwwString += "?location=";
+			if (Input.location.status == LocationServiceStatus.Running) {
+				myWwwString += Input.location.lastData.latitude +","+Input.location.lastData.longitude;
+				lastGoogleLat = Input.location.lastData.latitude;
+				lastGoogleLng = Input.location.lastData.longitude;
 
-		//File.WriteAllText(Application.dataPath + "/Resources/googlelocations.json", www.text.ToString());
-		googleJsonReturn = www.text;
-		GameManager.instance.locationJsonText = www.text;
-		TurnGoogleJsonIntoBuildings();
+			} else {
+				myWwwString += "37.70897,-122.4292";
+				//this is assuming my home location
+			}
+			myWwwString += "&radius=500";
+			myWwwString += "&key="+ googleAPIKey;
+
+			WWW www = new WWW(myWwwString);
+			yield return www;
+
+			//File.WriteAllText(Application.dataPath + "/Resources/googlelocations.json", www.text.ToString());
+			googleJsonReturn = www.text;
+			GameManager.instance.locationJsonText = www.text;
+			TurnGoogleJsonIntoBuildings();
+			googleBldgsNeedUpdate = false;
 
 	}
 
@@ -104,6 +122,8 @@ public class BuildingSpawner : MonoBehaviour {
 			PopulatedBuilding instance = Instantiate(populatedBuildingPrefab);
 			instance.name = myName;
 			instance.buildingName = myName;
+			instance.myLat = lat;
+			instance.myLng = lng;
 			float xCoord = (float)(screenCenter.x - (xDistMeters));
 			float yCoord = (float)(screenCenter.y - (yDistMeters));
 			Vector3 pos = new Vector3 (xCoord, yCoord, 0);

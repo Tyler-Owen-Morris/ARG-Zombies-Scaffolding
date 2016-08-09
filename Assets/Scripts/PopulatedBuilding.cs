@@ -7,6 +7,7 @@ public class PopulatedBuilding : MonoBehaviour {
 	public int zombiePopulation = 0 ;
 	public string buildingName;
 	public bool active;
+	public float myLat, myLng;
 
 
 	private MapLevelManager mapLevelManager;
@@ -25,7 +26,7 @@ public class PopulatedBuilding : MonoBehaviour {
 	public void ClickedOn () {
 		//GameManager.instance.LoadIntoCombat(zombiePopulation, buildingName);
 		if (this.active == true) {
-			mapLevelManager.ActivateBuildingInspector(zombiePopulation, buildingName);
+			mapLevelManager.ActivateBuildingInspector(zombiePopulation, buildingName, myLat, myLng);
 		} else {
 			Debug.Log (gameObject.name+" reports inactive, and will not launch bldg inspector");
 		}

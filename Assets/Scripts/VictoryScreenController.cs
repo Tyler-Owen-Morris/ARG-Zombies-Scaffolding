@@ -19,6 +19,12 @@ public class VictoryScreenController : MonoBehaviour {
 		outputText += GameManager.instance.reportedFood + " Food\n";
 		outputText += GameManager.instance.reportedWater + " water.\n";
 
+
+		if(GameManager.instance.survivorFound){
+			outputText += "\n\n You found a new survivor! Welcome "+GameManager.instance.foundSurvivorName;
+		}
+
+		/*
 		if (GameManager.instance.reportedTotalSurvivor == 0) {
 			return outputText;
 		} else {
@@ -29,8 +35,9 @@ public class VictoryScreenController : MonoBehaviour {
 			} else {
 				outputText += "but " + (GameManager.instance.reportedTotalSurvivor - GameManager.instance.reportedActiveSurvivor) + " can't fight." ;
 			}
-			return outputText;
-		}
 
+		}
+		*/
+		return outputText;
 	}
 }
