@@ -4,14 +4,8 @@ using System.Collections;
 [System.Serializable]
 public class BaseWeapon : MonoBehaviour {
 
-	public string name;
-
-	public int topDmg;
-	public int botDmg;
-
-	public int stamCost;
-
-	public int durability;
+	public int base_dmg, modifier, stam_cost, durability, weapon_id;
+	public int equipped_id;
 
 	public enum WeaponType {
 		KNIFE,

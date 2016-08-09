@@ -1,11 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using LitJson;
 
 public class SurvivorStateMachine : MonoBehaviour {
 
 	public bool isSelected;
 	public BaseSurvivor survivor;
+	public int teamPos;
 	public GameObject mySelectedIcon;
 	public Slider myStamSlider;
 	public GameObject[] myWepSprites;
@@ -28,6 +30,8 @@ public class SurvivorStateMachine : MonoBehaviour {
 		DEAD
 	}
 	public TurnState currentState;
+
+	private string sendAttackURL = "http://www.argzombie.com/ARGZ_SERVER/SendAttack.php";
 
 	void Start () {
 		BSM = FindObjectOfType<BattleStateMachine>();
@@ -74,25 +78,62 @@ public class SurvivorStateMachine : MonoBehaviour {
 			yield break;
 		} else {
 			actionStarted = true;
+			//match the sprite layer to that of the target
 			int startRenderLayer = gameObject.GetComponent<SpriteRenderer>().sortingOrder;
 
-			//animate the hero to the target
-			Vector3 targetPosition = new Vector3 (plyrTarget.transform.position.x - 0.3f, plyrTarget.transform.position.y, plyrTarget.transform.position.z);
-			gameObject.GetComponent<SpriteRenderer>().sortingOrder = plyrTarget.GetComponent<SpriteRenderer>().sortingOrder;
-			while (MoveTowardsTarget(targetPosition)) {yield return null;}
-			//animate weapon fx
-			yield return new WaitForSeconds(0.2f);
-			//do damage
 
-			ZombieStateMachine targetZombie = plyrTarget.GetComponent<ZombieStateMachine>();
-			int myDmg = CalculateMyDamage();
-			Debug.Log ("Survivor hit the zombie for " +myDmg+ " damage");
-			targetZombie.zombie.curHP = targetZombie.zombie.curHP - myDmg;
-			targetZombie.CheckForDeath();
-			survivor.curStamina -= survivor.weaponEquipped.GetComponent<BaseWeapon>().stamCost;
-			UpdateStaminaBar();
+			if (survivor.weaponEquipped != null){
+				//attack with a weapon
+				BaseWeapon myWeapon = survivor.weaponEquipped.GetComponent<BaseWeapon>();
 
-			//return to start position
+
+				//animate the hero to the target, unless you have a gun equipped and at least 1 bullet
+				if (myWeapon.weaponType == BaseWeapon.WeaponType.KNIFE || myWeapon.weaponType == BaseWeapon.WeaponType.CLUB || GameManager.instance.ammo < 1) {
+					Vector3 targetPosition = new Vector3 (plyrTarget.transform.position.x - 0.3f, plyrTarget.transform.position.y, plyrTarget.transform.position.z);
+					gameObject.GetComponent<SpriteRenderer>().sortingOrder = plyrTarget.GetComponent<SpriteRenderer>().sortingOrder;
+					while (MoveTowardsTarget(targetPosition)) {yield return null;}
+				}
+				//animate weapon fx
+				yield return new WaitForSeconds(0.2f);
+
+				//do damage
+				ZombieStateMachine targetZombie = plyrTarget.GetComponent<ZombieStateMachine>();
+				int myDmg = CalculateMyDamage();
+				Debug.Log ("Survivor hit the zombie for " +myDmg+ " damage");
+				targetZombie.zombie.curHP = targetZombie.zombie.curHP - myDmg;
+				targetZombie.CheckForDeath();
+				StartCoroutine(SendAttackToServer(survivor.survivor_id, myWeapon.weapon_id));
+				UpdateStaminaBar();
+				if (survivor.weaponEquipped != null) {
+					survivor.curStamina -= myWeapon.stam_cost;	
+				}
+				//Record the durability loss
+				myWeapon.durability = myWeapon.durability - 1;
+				if (myWeapon.durability < 1) {
+					Destroy(survivor.weaponEquipped.gameObject);
+					UpdateWeaponSprite();
+					Debug.Log("oh noes! weapon is broken beyond repair!");
+				}
+			} else {
+				//unequipped weapon attack.
+				Vector3 targetPosition = new Vector3 (plyrTarget.transform.position.x - 0.3f, plyrTarget.transform.position.y, plyrTarget.transform.position.z);
+				gameObject.GetComponent<SpriteRenderer>().sortingOrder = plyrTarget.GetComponent<SpriteRenderer>().sortingOrder;
+				while (MoveTowardsTarget(targetPosition)) {yield return null;}
+
+				//animate weapon fx
+				yield return new WaitForSeconds(0.2f);
+
+				//do damage
+				ZombieStateMachine targetZombie = plyrTarget.GetComponent<ZombieStateMachine>();
+				int myDmg = CalculateMyDamage();
+				Debug.Log ("Survivor hit the zombie for " +myDmg+ " damage");
+				targetZombie.zombie.curHP = targetZombie.zombie.curHP - myDmg;
+				targetZombie.CheckForDeath();
+				StartCoroutine(SendAttackToServer(survivor.survivor_id, 0));
+				UpdateStaminaBar();
+
+			}
+			//return to start position, gun shots should already be there.
 			while (MoveTowardsTarget(startPosition)) {yield return null;}
 			//remove from list
 			BSM.TurnList.RemoveAt(0);
@@ -111,87 +152,150 @@ public class SurvivorStateMachine : MonoBehaviour {
 		return goal != (transform.position = Vector3.MoveTowards(transform.position, goal, animSpeed * Time.deltaTime));
 	}
 
+	IEnumerator SendAttackToServer (int survivorID, int weaponID) {
+		WWWForm form = new WWWForm();
+		form.AddField("id", GameManager.instance.userId);
+		form.AddField("survivor_id", survivorID);
+		form.AddField("weapon_id", weaponID);
+
+		WWW www = new WWW(sendAttackURL, form);
+		yield return www;
+
+		if (www.error == null) {
+			Debug.Log(www.text);
+			JsonData attackReturn = JsonMapper.ToObject(www.text);
+
+			if (attackReturn[0].ToString() == "Success") {
+				Debug.Log(attackReturn[1].ToString());
+			} else {
+				Debug.Log(attackReturn[1].ToString());
+			}
+		} else {
+			Debug.Log(www.error);
+		}
+	}
+
 	private int CalculateMyDamage () {
 		ZombieStateMachine myTarget = plyrTarget.GetComponent<ZombieStateMachine>();
 		int myDmg = 0;
 		myDmg += survivor.baseAttack;
+		if (survivor.weaponEquipped != null) {
+			if (survivor.weaponEquipped.GetComponent<BaseWeapon>().weaponType == BaseWeapon.WeaponType.KNIFE) {
+				int wepDmg = survivor.weaponEquipped.GetComponent<BaseWeapon>().base_dmg + Random.Range(0, survivor.weaponEquipped.GetComponent<BaseWeapon>().modifier);
+				if (myTarget.zombie.zombieType == BaseZombie.Type.FAT) {
+					float multiplier = Random.Range(0.9f, 1.25f);
+					myDmg = Mathf.RoundToInt((myDmg + wepDmg) * multiplier);
+					Debug.Log ("KNIFE on FAT zombie is safe. multiplier is "+multiplier+" making final damage= " +myDmg);
+					return myDmg;
+				} else if (myTarget.zombie.zombieType == BaseZombie.Type.NORMAL) {
+					float multiplier = Random.Range(0.6f, 1.0f);
+					myDmg = Mathf.RoundToInt((myDmg + wepDmg) * multiplier);
+					Debug.Log ("KNIFE on NORMAL zombie is weak. multiplier is "+multiplier+" making final damage= " +myDmg);
+					return myDmg;
+				} else if (myTarget.zombie.zombieType == BaseZombie.Type.SKINNY) {
+					float multiplier = Random.Range(1.1f, 2.1f);
+					myDmg = Mathf.RoundToInt((myDmg + wepDmg) * multiplier);
+					Debug.Log ("KNIFE on SKINNY zombie is super strong. multiplier is "+multiplier+" making final damage= " +myDmg);
+					return myDmg;
+				}else {
+					myDmg = Mathf.RoundToInt((myDmg + wepDmg));
+					Debug.Log ("No Zombie type found- returning dmg without multiplier: "+ myDmg);
+					return myDmg;
+				}
 
-		if (survivor.weaponEquipped.GetComponent<BaseWeapon>().weaponType == BaseWeapon.WeaponType.KNIFE) {
-			int wepDmg = Random.Range(survivor.weaponEquipped.GetComponent<BaseWeapon>().botDmg, survivor.weaponEquipped.GetComponent<BaseWeapon>().topDmg);
-			if (myTarget.zombie.zombieType == BaseZombie.Type.FAT) {
-				float multiplier = Random.Range(0.9f, 1.25f);
-				myDmg = Mathf.RoundToInt((myDmg + wepDmg) * multiplier);
-				Debug.Log ("KNIFE on FAT zombie is safe. multiplier is "+multiplier+" making final damage= " +myDmg);
-				return myDmg;
-			} else if (myTarget.zombie.zombieType == BaseZombie.Type.NORMAL) {
-				float multiplier = Random.Range(0.6f, 1.0f);
-				myDmg = Mathf.RoundToInt((myDmg + wepDmg) * multiplier);
-				Debug.Log ("KNIFE on NORMAL zombie is weak. multiplier is "+multiplier+" making final damage= " +myDmg);
-				return myDmg;
-			} else if (myTarget.zombie.zombieType == BaseZombie.Type.SKINNY) {
-				float multiplier = Random.Range(1.1f, 2.1f);
-				myDmg = Mathf.RoundToInt((myDmg + wepDmg) * multiplier);
-				Debug.Log ("KNIFE on SKINNY zombie is super strong. multiplier is "+multiplier+" making final damage= " +myDmg);
-				return myDmg;
-			}else {
-				myDmg = Mathf.RoundToInt((myDmg + wepDmg));
-				Debug.Log ("No Zombie type found- returning dmg without multiplier: "+ myDmg);
-				return myDmg;
-			}
-
-		} else if (survivor.weaponEquipped.GetComponent<BaseWeapon>().weaponType == BaseWeapon.WeaponType.CLUB) {
-			int wepDmg = Random.Range(survivor.weaponEquipped.GetComponent<BaseWeapon>().botDmg, survivor.weaponEquipped.GetComponent<BaseWeapon>().topDmg);
-			if (myTarget.zombie.zombieType == BaseZombie.Type.FAT) {
-				float multiplier = Random.Range(0.6f, 1.0f);
-				myDmg = Mathf.RoundToInt((myDmg + wepDmg) * multiplier);
-				Debug.Log ("CLUB on FAT zombie is weak. multiplier is "+multiplier+" making final damage= " +myDmg);
-				return myDmg;
-			} else if (myTarget.zombie.zombieType == BaseZombie.Type.NORMAL) {
-				float multiplier = Random.Range(1.1f, 2.1f);
-				myDmg = Mathf.RoundToInt((myDmg + wepDmg) * multiplier);
-				Debug.Log ("CLUB on NORMAL zombie is super strong. multiplier is "+multiplier+" making final damage= " +myDmg);
-				return myDmg;
-			} else if (myTarget.zombie.zombieType == BaseZombie.Type.SKINNY) {
-				float multiplier = Random.Range(0.9f, 1.25f);
-				myDmg = Mathf.RoundToInt((myDmg + wepDmg) * multiplier);
-				Debug.Log ("CLUB on SKINNY zombie is safe. multiplier is "+multiplier+" making final damage= " +myDmg);
-				return myDmg;
-			}else {
-				myDmg = Mathf.RoundToInt((myDmg + wepDmg));
-				Debug.Log ("No Zombie type found- returning dmg without multiplier: "+ myDmg);
-				return myDmg;
-			}
-	
-		} else if (survivor.weaponEquipped.GetComponent<BaseWeapon>().weaponType == BaseWeapon.WeaponType.GUN) {
-			int wepDmg = Random.Range(survivor.weaponEquipped.GetComponent<BaseWeapon>().botDmg, survivor.weaponEquipped.GetComponent<BaseWeapon>().topDmg);
-			if (myTarget.zombie.zombieType == BaseZombie.Type.FAT) {
-				float multiplier = Random.Range(1.1f, 2.25f);
-				myDmg = Mathf.RoundToInt((myDmg + wepDmg) * multiplier);
-				Debug.Log ("GUN on FAT zombie is super strong. multiplier is "+multiplier+" making final damage= " +myDmg);
-				return myDmg;
-			} else if (myTarget.zombie.zombieType == BaseZombie.Type.NORMAL) {
-				float multiplier = Random.Range(0.9f, 1.25f);
-				myDmg = Mathf.RoundToInt((myDmg + wepDmg) * multiplier);
-				Debug.Log ("GUN on NORMAL zombie is safe. multiplier is "+multiplier+" making final damage= " +myDmg);
-				return myDmg;
-			} else if (myTarget.zombie.zombieType == BaseZombie.Type.SKINNY) {
-				float multiplier = Random.Range(0.6f, 1.0f);
-				myDmg = Mathf.RoundToInt((myDmg + wepDmg) * multiplier);
-				Debug.Log ("GUN on SKINNY zombie is weak. multiplier is "+multiplier+" making final damage= " +myDmg);
-				return myDmg;
+			} else if (survivor.weaponEquipped.GetComponent<BaseWeapon>().weaponType == BaseWeapon.WeaponType.CLUB) {
+				int wepDmg = survivor.weaponEquipped.GetComponent<BaseWeapon>().base_dmg + Random.Range(0, survivor.weaponEquipped.GetComponent<BaseWeapon>().modifier);
+				if (myTarget.zombie.zombieType == BaseZombie.Type.FAT) {
+					float multiplier = Random.Range(0.6f, 1.0f);
+					myDmg = Mathf.RoundToInt((myDmg + wepDmg) * multiplier);
+					Debug.Log ("CLUB on FAT zombie is weak. multiplier is "+multiplier+" making final damage= " +myDmg);
+					//return myDmg;
+				} else if (myTarget.zombie.zombieType == BaseZombie.Type.NORMAL) {
+					float multiplier = Random.Range(1.1f, 2.1f);
+					myDmg = Mathf.RoundToInt((myDmg + wepDmg) * multiplier);
+					Debug.Log ("CLUB on NORMAL zombie is super strong. multiplier is "+multiplier+" making final damage= " +myDmg);
+					//return myDmg;
+				} else if (myTarget.zombie.zombieType == BaseZombie.Type.SKINNY) {
+					float multiplier = Random.Range(0.9f, 1.25f);
+					myDmg = Mathf.RoundToInt((myDmg + wepDmg) * multiplier);
+					Debug.Log ("CLUB on SKINNY zombie is safe. multiplier is "+multiplier+" making final damage= " +myDmg);
+					//return myDmg;
+				}else {
+					myDmg = Mathf.RoundToInt((myDmg + wepDmg));
+					Debug.Log ("No Zombie type found- returning dmg without multiplier: "+ myDmg);
+					//return myDmg;
+				}
+		
+			} else if (survivor.weaponEquipped.GetComponent<BaseWeapon>().weaponType == BaseWeapon.WeaponType.GUN && GameManager.instance.ammo > 0) {
+				int wepDmg = survivor.weaponEquipped.GetComponent<BaseWeapon>().base_dmg + Random.Range(0, survivor.weaponEquipped.GetComponent<BaseWeapon>().modifier);
+				if (myTarget.zombie.zombieType == BaseZombie.Type.FAT) {
+					float multiplier = Random.Range(1.1f, 2.25f);
+					myDmg = Mathf.RoundToInt((myDmg + wepDmg) * multiplier);
+					Debug.Log ("GUN on FAT zombie is super strong. multiplier is "+multiplier+" making final damage= " +myDmg);
+					//return myDmg;
+				} else if (myTarget.zombie.zombieType == BaseZombie.Type.NORMAL) {
+					float multiplier = Random.Range(0.9f, 1.25f);
+					myDmg = Mathf.RoundToInt((myDmg + wepDmg) * multiplier);
+					Debug.Log ("GUN on NORMAL zombie is safe. multiplier is "+multiplier+" making final damage= " +myDmg);
+					//return myDmg;
+				} else if (myTarget.zombie.zombieType == BaseZombie.Type.SKINNY) {
+					float multiplier = Random.Range(0.6f, 1.0f);
+					myDmg = Mathf.RoundToInt((myDmg + wepDmg) * multiplier);
+					Debug.Log ("GUN on SKINNY zombie is weak. multiplier is "+multiplier+" making final damage= " +myDmg);
+					//return myDmg;
+				} else {
+					myDmg = Mathf.RoundToInt((myDmg + wepDmg));
+					Debug.Log ("No Zombie type found- returning dmg without multiplier: "+ myDmg);
+					//return myDmg;
+				}
+				//this is where we remove the ammo from the game. server should execute the amo reduction when the attack is sent
+				GameManager.instance.ammo--;
+				BSM.UpdateUINumbers();
 			} else {
-				myDmg = Mathf.RoundToInt((myDmg + wepDmg));
-				Debug.Log ("No Zombie type found- returning dmg without multiplier: "+ myDmg);
-				return myDmg;
+				Debug.Log ("MAJOR error, there's a weapon equipped without a type value. executing an unarmed swing, but this is broken");
+				int multiplier = Random.Range(0, 7);
+				myDmg += multiplier;
+				//return myDmg;
 			}
-
+		} else if (survivor.weaponEquipped.GetComponent<BaseWeapon>().weaponType == BaseWeapon.WeaponType.GUN && GameManager.instance.ammo < 1) {
+				int wepDmg = survivor.weaponEquipped.GetComponent<BaseWeapon>().base_dmg + Random.Range(0, survivor.weaponEquipped.GetComponent<BaseWeapon>().modifier);
+				if (myTarget.zombie.zombieType == BaseZombie.Type.FAT) {
+					float multiplier = Random.Range(1.1f, 2.25f);
+					myDmg = Mathf.RoundToInt((myDmg + wepDmg) * multiplier);
+					Debug.Log ("GUN on FAT zombie is super strong. multiplier is "+multiplier+" making final damage= " +myDmg);
+					//return myDmg;
+				} else if (myTarget.zombie.zombieType == BaseZombie.Type.NORMAL) {
+					float multiplier = Random.Range(0.9f, 1.25f);
+					myDmg = Mathf.RoundToInt((myDmg + wepDmg) * multiplier);
+					Debug.Log ("GUN on NORMAL zombie is safe. multiplier is "+multiplier+" making final damage= " +myDmg);
+					//return myDmg;
+				} else if (myTarget.zombie.zombieType == BaseZombie.Type.SKINNY) {
+					float multiplier = Random.Range(0.6f, 1.0f);
+					myDmg = Mathf.RoundToInt((myDmg + wepDmg) * multiplier);
+					Debug.Log ("GUN on SKINNY zombie is weak. multiplier is "+multiplier+" making final damage= " +myDmg);
+					//return myDmg;
+				} else {
+					myDmg = Mathf.RoundToInt((myDmg + wepDmg));
+					Debug.Log ("No Zombie type found- returning dmg without multiplier: "+ myDmg);
+					//return myDmg;
+				}
+				myDmg = Mathf.RoundToInt(myDmg * 0.6f);
 		} else {
 			Debug.Log ("!!PLAYER HAS NO WEAPON EQUIPPED!! this should set off alarms to the player");
-			return myDmg;
+			int multiplier = Random.Range(0, 7);
+			myDmg += multiplier;
+			//return myDmg;
 		}
+
+		//if player is out of stamina, their attack is halved
+		if (survivor.curStamina < 1) {
+			myDmg = Mathf.RoundToInt(myDmg/2);
+		}
+
+		return myDmg;
 	}
 
-	void UpdateStaminaBar () {
+	public void UpdateStaminaBar () {
 		float sliderValue = ((float)(survivor.curStamina) / (float)(survivor.baseStamina));
 		myStamSlider.value = sliderValue;
 		//Debug.Log ("Setting "+gameObject.name+" stamina slider to "+sliderValue);
@@ -202,13 +306,18 @@ public class SurvivorStateMachine : MonoBehaviour {
 		foreach (GameObject sprite in myWepSprites) {
 			sprite.SetActive(false);
 		}
-
-		if (this.survivor.weaponEquipped.name == "Knife") {
-			myWepSprites[0].SetActive(true);
-		} else if (this.survivor.weaponEquipped.name == "Club") {
-			myWepSprites[1].SetActive(true);
-		} else if (this.survivor.weaponEquipped.name == "Gun") {
-			myWepSprites[2].SetActive(true);
+		if (this.survivor.weaponEquipped != null) {
+			Debug.Log(this.survivor.name + " believes to have a weapon equipped , wep name: " + this.survivor.weaponEquipped.name);
+			if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().weaponType == BaseWeapon.WeaponType.KNIFE) {
+				myWepSprites[0].SetActive(true);
+				Debug.Log (this.survivor.name + " is equipping a knife sprite");
+			} else if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().weaponType == BaseWeapon.WeaponType.CLUB) {
+				myWepSprites[1].SetActive(true);
+				Debug.Log (this.survivor.name + " is equipping a club sprite");
+			} else if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().weaponType == BaseWeapon.WeaponType.GUN) {
+				myWepSprites[2].SetActive(true);
+				Debug.Log (this.survivor.name + " is equipping a gun sprite");
+			}
 		} else {
 			Debug.Log("Warning: No weapon equipped!!!");
 		}

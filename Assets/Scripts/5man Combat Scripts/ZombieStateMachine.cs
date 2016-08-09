@@ -31,6 +31,8 @@ public class ZombieStateMachine : MonoBehaviour {
 	private float animSpeed = 15.0f;
 	public GameObject target;
 
+	private string ZombieAttackURL = "http://www.argzombie.com/ARGZ_SERVER/ZombieAttack.php";
+
 
 	// Use this for initialization
 	void Start () {
@@ -103,9 +105,30 @@ public class ZombieStateMachine : MonoBehaviour {
 			//do damage
 			SurvivorStateMachine targetSurvivor = target.GetComponent<SurvivorStateMachine>();
 			int myDmg = CalculateMyDamage ();
+			StartCoroutine(SendZombieAttack(targetSurvivor.survivor.survivor_id, myDmg));
 			Debug.Log ("Zombie hit Survivor for "+myDmg+" damage");
 			targetSurvivor.survivor.curStamina -= myDmg;
-			//check for player *exhaustion*
+
+			//check for having bit the player
+			float odds = 0.0f;
+			bool survivorBit= false;
+			if (targetSurvivor.teamPos == 5) {
+				//this is player character, he has different odds than the team
+				odds = 3.0f;
+			} else {
+				odds = 7.0f;
+			}
+			if (targetSurvivor.survivor.curStamina < 1) {
+				//if player is exhausted, 2.5x the odds to get bitten
+				odds = odds*2.5f;
+			}
+			float roll = Random.Range(0.0f, 100.0f);
+			if (roll < odds) {
+				//TARGET HAS BEEN BITTEN
+				Debug.Log("Survivor "+targetSurvivor.survivor.name+" has been bitten!!!");
+				BSM.SurvivorHasBeenBit (targetSurvivor);
+				survivorBit = true;
+			}
 
 
 			//return to start position
@@ -116,11 +139,33 @@ public class ZombieStateMachine : MonoBehaviour {
 			BSM.TurnList.RemoveAt(0);
 
 			//reset BSM -> Wait
-			BSM.battleState = BattleStateMachine.PerformAction.WAIT;
+			if (survivorBit) {
+				BSM.battleState = BattleStateMachine.PerformAction.BITECASE;
+			} else {
+				BSM.battleState = BattleStateMachine.PerformAction.WAIT;
+			}
 
 			gameObject.GetComponent<SpriteRenderer>().sortingOrder = startRenderLayer;
 			actionStarted = false;
 			currentState = TurnState.WAITING;
+		}
+	}
+
+
+
+	IEnumerator SendZombieAttack (int survivorID, int dmg) {
+		WWWForm form = new WWWForm();
+		form.AddField("id", GameManager.instance.userId);
+		form.AddField("survivor_id", survivorID);
+		form.AddField("dmg", dmg);
+
+		WWW www = new WWW(ZombieAttackURL, form);
+		yield return www;
+
+		if (www.error == null) {
+			Debug.Log("zombie damage sent");
+		} else {
+			Debug.Log(www.error);
 		}
 	}
 
@@ -131,7 +176,7 @@ public class ZombieStateMachine : MonoBehaviour {
 			deathActionStarted = true;
 			BSM.zombieList.Remove(gameObject);
 			GameManager.instance.zombiesToFight --;
-			BSM.UpdateZombieCount();
+			BSM.UpdateUINumbers();
 			BSM.zombiesKilled ++;
 
 			if (BSM.playerTarget != null) {
@@ -155,12 +200,14 @@ public class ZombieStateMachine : MonoBehaviour {
 				BSM.zombieList.Add(gameObject);
 				currentState = TurnState.WAITING;
 			} else {
+				myTypeText.text = "";
 				//do not reactivate or animate- just leave the zombie dead off screen and change its state.
 				foreach (GameObject zombie in BSM.zombieList) {
 					if (this.name == zombie.name) {
 						//remove from game list
 						zombie.GetComponent<ZombieStateMachine>().myTypeText.text = "";
 						BSM.zombieList.Remove(zombie);
+
 					}
 				}
 				currentState = TurnState.WAITING;
