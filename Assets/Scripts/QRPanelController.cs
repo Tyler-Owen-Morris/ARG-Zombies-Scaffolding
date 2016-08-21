@@ -10,10 +10,15 @@ public class QRPanelController : MonoBehaviour {
 	public QRCodeEncodeController e_qrController;
 	public QRCodeDecodeController d_qrController;
 	public RawImage qrCodeImage;
-	public Text UItext;
+	public Text UItext, camera_on_text, result_text;
 	public string qrGeneratedString, qrScannedString;
+	public MapLevelManager mapLvlMgr;
 
 	private string qrScannedURL = "http://www.argzombie.com/ARGZ_SERVER/QR_FriendRequest.php";
+	private string outpostRequestURL = "http://www.argzombie.com/ARGZ_SERVER/QR_OutpostRequest.php";
+	private string homebaseRequestURL = "http://www.argzombie.com/ARGZ_SERVER/QR_HomebaseRequest.php";
+	private string playerJoinHomebaseURL = "http://www.argzombie.com/ARGZ_SERVER/QR_JoinHomebase.php";
+	private string homebaseCheckinURL = "http://www.argzombie.com/ARGZ_SERVER/QR_CheckinAtHome.php";
 
 	// Use this for initialization
 	void Start () {
@@ -26,6 +31,7 @@ public class QRPanelController : MonoBehaviour {
 		SetQrText();
 		Encode();
 		RequestButtonPressed();
+		mapLvlMgr = MapLevelManager.FindObjectOfType<MapLevelManager>();
 	}
 	
 	// Update is called once per frame
@@ -44,7 +50,9 @@ public class QRPanelController : MonoBehaviour {
 
 	public void Encode()
 	{
+		
 		if (e_qrController != null) {
+			e_qrController.e_QREncodeFinished += qrEncodeFinished;
 			string valueStr = qrGeneratedString;
 			e_qrController.Encode(valueStr);
 		}
@@ -58,15 +66,16 @@ public class QRPanelController : MonoBehaviour {
 
 	public void SetQrText () {
 		if (GameManager.instance.userId != null) {
-			string[] encodeArray = new string[4];
-			encodeArray[0] = GameManager.instance.userId.ToString();
-			encodeArray[1] = System.DateTime.Now.ToString();
+			string[] encodeArray = new string[5];
+			encodeArray[0] = "player";
+			encodeArray[1] = GameManager.instance.userId.ToString();
+			encodeArray[2] = System.DateTime.Now.ToString();
 			if (Input.location.status == LocationServiceStatus.Running) {
-				encodeArray[2] = Input.location.lastData.latitude.ToString();
-				encodeArray[3] = Input.location.lastData.longitude.ToString();
+				encodeArray[3] = Input.location.lastData.latitude.ToString();
+				encodeArray[4] = Input.location.lastData.longitude.ToString();
 			} else {
-				encodeArray[2] = "0";
 				encodeArray[3] = "0";
+				encodeArray[4] = "0";
 			}
 			string json = JsonMapper.ToJson(encodeArray);
 			Debug.Log(json);
@@ -74,10 +83,17 @@ public class QRPanelController : MonoBehaviour {
 		}
 	}
 
+	//this function is used entirely to send fake scan data to the server.
+	public void FakeCompleteScan () {
+		//this can be manually changed from the inspector
+		DetermineTypeOfScannedCode(qrScannedString);
+	}
+
 	void qrScanFinished(string dataText)
 	{
 		qrScannedString = dataText;
-		UItext.text = dataText;
+		//UItext.text = dataText; //We don't want to show the scan to our players
+		camera_on_text.gameObject.SetActive(false);
 
 		if (resetBtn != null) {
 			resetBtn.SetActive(true);
@@ -88,16 +104,99 @@ public class QRPanelController : MonoBehaviour {
 			scanLineObj.SetActive(false);
 		}
 
-		StartCoroutine(SendQRPairToServer(dataText));
+		//This needs to first verify the type of scan that it is.
+		DetermineTypeOfScannedCode(dataText);
+	}
+
+	void DetermineTypeOfScannedCode (string scannedText) {
+		JsonData scannedJson = JsonMapper.ToObject(scannedText);
+		Debug.Log(scannedText);
+
+		if (scannedJson[0].ToString() == "player") {
+			if(scannedJson[1].ToString() != GameManager.instance.userId) {
+				StartCoroutine(mapLvlMgr.PostTempLocationText("pairing with survivor"));
+				StartCoroutine(SendQRPairToServer(scannedText));
+			}else{
+				StartCoroutine(mapLvlMgr.PostTempLocationText("Players may not pair with themselves"));
+				Debug.Log("Player can not pair with themselves");
+			}
+		} else if (scannedJson[0].ToString() == "outpost") {
+			StartCoroutine(mapLvlMgr.PostTempLocationText("attempting to join outpost"));
+			StartCoroutine(SendOutpostRequestToServer(scannedJson));
+		} else if (scannedJson[0].ToString() == "homebase") {
+			//check if this homebase belongs to the player.
+			string base_owner_id = scannedJson[1].ToString();
+			float base_lat = float.Parse(scannedJson[2].ToString());
+			float base_lng = float.Parse(scannedJson[3].ToString());
+
+			if (base_owner_id.ToString() == GameManager.instance.userId) {
+				//start the coroutine to regenerate player stamina... or do nothing...
+				Debug.Log("Player has scanned their own homebase");
+				StartCoroutine(mapLvlMgr.PostTempLocationText("Checking in at homebase"));
+				StartCoroutine(PlayerCheckinToHomebase(base_lat, base_lng));
+			} else {
+				if (CalculateDistanceToTarget(base_lat, base_lng) <= 50.0f) {
+					StartCoroutine(mapLvlMgr.PostTempLocationText("adding players homebase as outpost"));
+					StartCoroutine(JoinHomebaseAsOutpost(base_owner_id, base_lat, base_lng));
+				} else {
+					StartCoroutine(mapLvlMgr.PostTempLocationText("out of range of homebase"));
+					Debug.Log("Player is not in range of the homebase they are attempting to join");
+				}
+			}
+
+		} else {
+			Debug.Log("json format does not meet with any known QR encoding");
+		}
+	}
+
+	IEnumerator JoinHomebaseAsOutpost (string baseOwnerID, float my_lat, float my_lng) {
+		WWWForm form = new WWWForm();
+		form.AddField("id", GameManager.instance.userId);
+		form.AddField("homebase_owner_id", baseOwnerID);
+		form.AddField("base_lat", my_lat.ToString());
+		form.AddField("base_lng", my_lng.ToString());
+
+		WWW www = new WWW(playerJoinHomebaseURL, form);
+		yield return www;
+
+		Debug.Log(www.text);
+		if (www.error == null) {
+
+		} else {
+			Debug.Log(www.error);
+		}
+	}
+
+	IEnumerator SendOutpostRequestToServer (JsonData outpostData) {
+		WWWForm form = new WWWForm();
+		form.AddField("id", GameManager.instance.userId);
+		form.AddField("owner_id", outpostData[1].ToString());
+		form.AddField("outpost_id", outpostData[2].ToString());
+
+		WWW www = new WWW(outpostRequestURL, form);
+		yield return www;
+		Debug.Log(www.text);
+
+		if (www.error == null) {
+			JsonData outpostReturnJson = JsonMapper.ToObject(www.text);
+			if(outpostReturnJson[0].ToString() == "Success") {
+				UItext.text = outpostReturnJson[1].ToString();
+			} else if (outpostReturnJson[0].ToString() == "Failed") {
+				Debug.Log (outpostReturnJson[1].ToString());
+				UItext.text = outpostReturnJson[1].ToString();
+			}
+		} else {
+			Debug.Log(www.error);
+		}
 	}
 
 	IEnumerator SendQRPairToServer(string requestingJSONtext) {
 			//parse the json, verify time is close enough, and GPS is close enough.
 			JsonData requestingJSON = JsonMapper.ToJson(requestingJSONtext);
 			//set the ID of the requester
-			string requestIDtext = requestingJSON[0].ToString();
+			string requestIDtext = requestingJSON[1].ToString();
 			//verify the QR is not expired
-			DateTime requestTime = DateTime.Parse(requestingJSON[1].ToString());
+			DateTime requestTime = DateTime.Parse(requestingJSON[2].ToString());
 			TimeSpan QRValidWindow = TimeSpan.FromMinutes(5);
 			DateTime upperLimit = requestTime + QRValidWindow;
 			DateTime lowerLimit = requestTime - QRValidWindow;
@@ -111,8 +210,8 @@ public class QRPanelController : MonoBehaviour {
 			// likewise the below GPS check does not currently fail the coroutine, but it should.
 
 			float distanceAllowedInMeters = 25.0f;
-			float requestLat = (float)requestingJSON[2];
-			float requestLng = (float)requestingJSON[3];
+			float requestLat = (float)requestingJSON[3];
+			float requestLng = (float)requestingJSON[4];
 			if (CalculateDistanceToTarget(requestLat, requestLng) <= distanceAllowedInMeters) {
 				Debug.Log("Players are in range of eachother");
 			} else {
@@ -143,6 +242,38 @@ public class QRPanelController : MonoBehaviour {
 			}
 	}
 
+	IEnumerator PlayerCheckinToHomebase (float lat, float lng) {
+		float baseLat = lat;
+		float baseLng = lng;
+
+		if (CalculateDistanceToTarget(baseLat, baseLng) <= 75.0f) {
+			WWWForm form = new WWWForm();
+			form.AddField("id", GameManager.instance.userId);
+
+			WWW www = new WWW(homebaseCheckinURL, form);
+			yield return www;
+
+			if (www.error == null) {
+				JsonData checkinResponse = JsonMapper.ToObject(www.text);
+
+				if(checkinResponse[0].ToString() == "Success") {
+					Debug.Log(checkinResponse[1].ToString());
+					GameManager.instance.updateWeaponAndSurvivorMapLevelUI = true;
+					StartCoroutine(GameManager.instance.FetchSurvivorData());
+				} else {
+					Debug.Log(checkinResponse[1].ToString());
+				}
+
+			} else {
+				Debug.Log(www.error);
+			}
+
+		} else {
+			Debug.Log("Player is not in range of their homebase, no stamina awarded");
+		}
+
+	}
+
 	/// <summary>
 	/// reset the QRScanner Controller 
 	/// </summary>
@@ -164,11 +295,14 @@ public class QRPanelController : MonoBehaviour {
 		{
 			scanLineObj.SetActive(true);
 		}
-
-		if(UItext != null) {
-			UItext.text = "Scan Another Players Device";
-		}
+		//resume scanning.
+		AcceptButtonPressed();
+//		if(UItext != null) {
+//			UItext.text = "Scan Another Players Device";
+//		}
 	}
+
+
 	/// <summary>
 	/// if you want to go to other scene ,you must call the QRCodeDecodeController.StopWork(),otherwise,the application will crashed on Mobile .
 	/// </summary>
@@ -191,12 +325,14 @@ public class QRPanelController : MonoBehaviour {
 		SetQrText();
 		Encode();
 		cameraUi.SetActive(false);
+		camera_on_text.gameObject.SetActive(false);
 		qrDisplayUi.SetActive(true);
 	}
 
 	public void AcceptButtonPressed () {
 		UItext.gameObject.SetActive(true);
 		cameraUi.SetActive(true);
+		camera_on_text.gameObject.SetActive(true);
 		qrDisplayUi.SetActive(false);
 	}
 
@@ -224,7 +360,7 @@ public class QRPanelController : MonoBehaviour {
 
 		} else {
 			Debug.Log ("Location services not running");
-			return 1000.0f;
+			return 50.0f;
 		}
 	}
 }

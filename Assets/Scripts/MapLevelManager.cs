@@ -7,7 +7,7 @@ using LitJson;
 public class MapLevelManager : MonoBehaviour {
 
 	[SerializeField]
-	private GameObject inventoryPanel, buildingPanel, qrPanel, homebasePanel, enterBldgButton, unequippedWeaponsPanel, mapLevelCanvas;
+	private GameObject inventoryPanel, buildingPanel, qrPanel, homebasePanel, homebaseConfirmationPanel, outpostConfirmationPanel, OutpostQRPanel, enterBldgButton, unequippedWeaponsPanel, mapLevelCanvas;
 
 	[SerializeField]
 	private Text supplyText, daysAliveText, survivorsAliveText, currentLatText, currentLonText, locationReportText, foodText, waterText, ammoText, playerNameText, bldgNameText, zombiePopText, homebaseLatText, homebaseLonText;
@@ -18,6 +18,9 @@ public class MapLevelManager : MonoBehaviour {
 	[SerializeField]
 	private BuildingSpawner bldgSpawner;
 
+	public Button confirmHomebaseButton;
+	public Text homebaseConfirmationText;
+
 	public WeaponListPopulator theWeaponListPopulator;
 	public SurvivorListPopulator theSurvivorListPopulator;
 
@@ -27,13 +30,17 @@ public class MapLevelManager : MonoBehaviour {
 	private int zombieCount;
 	private string bldgName;
 
-	public int active_gearing_survivor_id, to_equip_weapon_id;
+	public int active_gearing_survivor_id, to_equip_weapon_id, to_unequip_weapon_id;
+
+
 
 	private string updateHomebaseURL = "http://www.argzombie.com/ARGZ_SERVER/UpdateHomebaseLocation.php";
 	private string dropoffAndResupplyURL = "http://www.argzombie.com/ARGZ_SERVER/DropoffAndResupply.php";
 	private string equipWeaponURL = "http://www.argzombie.com/ARGZ_SERVER/EquipWeapon.php";
+	private string unequipWeaponURL = "http://www.argzombie.com/ARGZ_SERVER/UnequipWeapon.php";
 	private string promoteSurvivorURL = "http://www.argzombie.com/ARGZ_SERVER/PromoteSurvivor.php";
 	private string staminaUpdateURL = "http://www.argzombie.com/ARGZ_SERVER/StaminaRegen.php";
+	private string SendNewOutpostURL = "http://www.argzombie.com/ARGZ_SERVER/CreateOutpost.php";
 
 	public void InventoryButtonPressed () {
 		if (inventoryPanel.activeInHierarchy == false ) {
@@ -51,12 +58,29 @@ public class MapLevelManager : MonoBehaviour {
 		}
 	}
 
+	public void CancelHomebaseButtonPressed () {
+		homebaseConfirmationPanel.SetActive(false);
+	}
+	public void OutpostButtonPressed () {
+		if (outpostConfirmationPanel.activeInHierarchy == true) {
+			outpostConfirmationPanel.SetActive(false);
+		} else {
+			outpostConfirmationPanel.SetActive(true);
+		}
+	}
+
 	public void QrScanPressed () {
 		if (qrPanel.activeInHierarchy == true) {
 			qrPanel.SetActive(false);
 		} else {
 			qrPanel.SetActive(true);
 		}
+	}
+
+	public void OutpostPressed (int outpost_id) {
+		OutpostPanelController OPController = OutpostQRPanel.GetComponent<OutpostPanelController>();
+		OPController.SetQRtextAndEncode(outpost_id);
+		OutpostQRPanel.SetActive(true);
 	}
 
 //	public void PlayerAttemptingPurchaseFullHealth () {
@@ -96,7 +120,7 @@ public class MapLevelManager : MonoBehaviour {
     }
 
 	void OnLevelWasLoaded () {
-		UpdateTheUI();
+		//UpdateTheUI();
 		InvokeRepeating("CheckAndUpdateMap", 10.0f, 10.0f);
 		InvokeRepeating("RegenerateStamina", 30.0f, 60.0f);
 	}
@@ -148,6 +172,10 @@ public class MapLevelManager : MonoBehaviour {
 			if (lastStamUpdateLat != 0 && lastStamUpdateLng != 0) {
 				float distanceFromLastUpdate = CalculateDistanceToTarget(lastStamUpdateLat, lastStamUpdateLng);
 				if (distanceFromLastUpdate > 25) {
+					if(distanceFromLastUpdate > 295) {
+						distanceFromLastUpdate=295;
+					}
+
 					int intervals = Mathf.RoundToInt(distanceFromLastUpdate/25);
 					stamRegen += intervals;
 					lastStamUpdateLat = Input.location.lastData.latitude;
@@ -299,6 +327,7 @@ public class MapLevelManager : MonoBehaviour {
 			if (SPC.team_pos == 5) {
 				baseStam = SPC.survivor.baseStamina;
 				currStam = SPC.survivor.curStamina;
+				break;
 			}
 		}
 		//Debug.Log(baseStam.ToString()+" "+currStam.ToString());
@@ -359,6 +388,45 @@ public class MapLevelManager : MonoBehaviour {
 
 	}
 
+	public void AttemptToDropAndResupply () {
+		if (AmIInRangeOfValidOutpost()) {
+			StartCoroutine(DropoffAndResupply());
+		} else {
+			Debug.Log("Player not in range of homebase or active outpost");
+			StartCoroutine(PostTempLocationText("You are not in range of home or outpost"));
+		}
+	}
+
+	private bool AmIInRangeOfValidOutpost () {
+		//ensure location services are running
+		if (Input.location.status == LocationServiceStatus.Running) {
+			float myLat = Input.location.lastData.latitude;
+			float myLng = Input.location.lastData.longitude;
+
+			//first check the homebase
+			float dist_to_home = CalculateDistanceToTarget(GameManager.instance.homebaseLat, GameManager.instance.homebaseLong);
+			if(dist_to_home <= 100.0f) {
+				Debug.Log("player is within 100m of home, returning true to send ressupply");
+				return true;
+			}
+
+			//check all of the outposts.
+			GameObject[] outpostArray = GameObject.FindGameObjectsWithTag("outpost");
+			foreach (GameObject outpost in outpostArray) {
+				Outpost myOutpost = outpost.GetComponent<Outpost>();
+				float myRangeToOutpost = CalculateDistanceToTarget(myOutpost.outpost_lat, myOutpost.outpost_lng);
+				if (myRangeToOutpost <= 100.0f) {
+					return true;
+				} 
+			}
+			return false;
+		} else {
+			//I'm assuming this is only false inside the unity client, so i'm returning true for now, otherwise return false.
+			Debug.Log("Location services are off- GIVING APPROVAL FOR RANGE DESPITE THIS-- REMOVE BEFORE PUBLISHING!!");
+			return true;
+		}
+	}
+
 	public float CalculateDistanceToTarget (float lat, float lng) {
 		if (Input.location.status == LocationServiceStatus.Running) {
 			float myLat = Input.location.lastData.latitude;
@@ -415,16 +483,48 @@ public class MapLevelManager : MonoBehaviour {
 		}
 	}
 
+	public void ButtonPress_SetNewHomebase () {
+		//if a homebase has not been set.
+		if (GameManager.instance.homebaseLat != 0.0f && GameManager.instance.homebaseLong != 0.0f) {
+			//check that it has been more than ## of days since player last set their homebase
+			int days = 30;
+			System.TimeSpan moveHomebaseAllowedTimer = System.TimeSpan.FromDays(days);
+			if (GameManager.instance.lastHomebaseSetTime+moveHomebaseAllowedTimer <= System.DateTime.Now) {
+				//open the panel with the ability to send the data.
+				homebaseConfirmationText.text = "it has been more than "+days.ToString()+" days since you have set your homebase\n would you like to make your present location home?\n\n 2nd warning: you can only do this 1 time every "+days.ToString()+" days!!";
+				confirmHomebaseButton.interactable = true;
+				homebaseConfirmationPanel.SetActive(true);
+			} else {
+				//open the panel without the ability to send the homebase data.
+				homebaseConfirmationText.text = "it has not been "+days.ToString()+" days since you have set your homebase\n you must wait, or set up an outpost.";
+				confirmHomebaseButton.interactable = false;
+				homebaseConfirmationPanel.SetActive(true);
+			}
+		} else {
+			//open the warning panel notifying the player that this is their first time.
+			homebaseConfirmationText.text = "You have not yet set a homebase\n \nYour homebase in ARG Zombies is the location you return to in order to drop off supplies, and pick up gear";
+			confirmHomebaseButton.interactable = true;
+			homebaseConfirmationPanel.SetActive(true);
+		}
+	}
+	private bool sendingNewHomebase = false;
 	public void SetNewHomebaseLocation () {
-		StartCoroutine(UpdateHomebaseLocation());
+		if (sendingNewHomebase == false) {
+			sendingNewHomebase = true;
+			StartCoroutine(UpdateHomebaseLocation());
+		}
 	}
 
 	IEnumerator UpdateHomebaseLocation () {
 		float newLat = 0f;
 		float newLon = 0f;
+		GameManager.instance.lastHomebaseSetTime = System.DateTime.Now;
+
+		//this allows the unity player to run without error or location services running
 		if (Input.location.status == LocationServiceStatus.Running) {
 			newLat = Input.location.lastData.latitude;
 			newLon = Input.location.lastData.longitude;
+
 		} else {
 			Debug.Log("Location services not running. Attempting to update the server with Dummy data");
 			newLat = 37.80897f;
@@ -435,6 +535,7 @@ public class MapLevelManager : MonoBehaviour {
 		form.AddField("id", GameManager.instance.userId);
 		form.AddField("lat", newLat.ToString());
 		form.AddField("lon", newLon.ToString());
+		form.AddField("homebase_set_time", GameManager.instance.lastHomebaseSetTime.ToString());
 
 		WWW www = new WWW(updateHomebaseURL, form);
 		yield return www;
@@ -456,9 +557,64 @@ public class MapLevelManager : MonoBehaviour {
 		} else {
 			Debug.Log(www.error);
 		}
+		homebaseConfirmationPanel.SetActive(false);
+		sendingNewHomebase = false;
 		UpdateTheUI();
 	}
 
+	public bool sendingOutpost = false;
+	public void CreateOutpost () {
+		if (sendingOutpost == false) {
+			sendingOutpost = true;
+			StartCoroutine(SendNewOutpost());
+		}
+	}
+
+	IEnumerator SendNewOutpost() {
+		float newLat = 0f;
+		float newLon = 0f;
+
+		//this allows the unity player to run without error or location services running
+		if (Input.location.status == LocationServiceStatus.Running) {
+			newLat = Input.location.lastData.latitude;
+			newLon = Input.location.lastData.longitude;
+
+		} else {
+			Debug.Log("Location services not running. Attempting to update the server with Dummy data");
+			newLat = 37.80897f;
+			newLon = -122.4292f;
+		}
+
+		WWWForm form = new WWWForm();
+		form.AddField("id", GameManager.instance.userId);
+		form.AddField("outpost_lat", newLat.ToString());
+		form.AddField("outpost_lng", newLon.ToString());
+		//duration and capacity are set on server side.
+
+		WWW www = new WWW(SendNewOutpostURL, form);
+		yield return www;
+		Debug.Log(www.text);
+
+		if (www.error == null) {
+			if (www.text != "") {
+				JsonData outpostResult = JsonMapper.ToObject(www.text);
+
+				if(outpostResult[0].ToString() == "Success" ) {
+					Debug.Log(outpostResult[1].ToString());
+					homebaseConfirmationPanel.SetActive(false);
+					homebasePanel.SetActive(false);
+					bldgSpawner.SpawnOutpostsToMap();
+				} else if (outpostResult[0].ToString() == "Failed") {
+					Debug.Log(outpostResult[1].ToString());
+				}
+			} else {
+				Debug.Log("outpost creation returning blank");
+			}
+		} else {
+			Debug.Log(www.error);
+		}
+		sendingOutpost = false;
+	}
 
 	// this coroutine currently only handles dropoff, but is planned to handle pickup as well in the future.
 	IEnumerator DropoffAndResupply () {
@@ -499,6 +655,10 @@ public class MapLevelManager : MonoBehaviour {
 
 	public void SelectWeaponToEquip (int survivor_id) {
 		active_gearing_survivor_id = survivor_id;
+
+		//my calling this we should update the list each time the weapon equip button is pressed.
+		theWeaponListPopulator.PopulateWeaponsFromGameManager();
+
 		unequippedWeaponsPanel.SetActive(true);
 	}
 
@@ -509,10 +669,43 @@ public class MapLevelManager : MonoBehaviour {
 		StartCoroutine(EquipWeaponToSurvivor(active_gearing_survivor_id, to_equip_weapon_id));
 	}
 
+	public void UneqipThisWeapon(int weapon_id) {
+		to_unequip_weapon_id = weapon_id;
+
+		StartCoroutine(UnequipThisWeapon(active_gearing_survivor_id, to_unequip_weapon_id));
+	}
+
 	public void CloseWeaponSelectPanel () {
 		active_gearing_survivor_id = 0;
 		to_equip_weapon_id = 0;
 		unequippedWeaponsPanel.SetActive(false);
+	}
+
+	IEnumerator UnequipThisWeapon (int survivor_equipped, int weapon_id) {
+		WWWForm form = new WWWForm();
+		form.AddField("id", GameManager.instance.userId);
+		form.AddField("survivor_id", survivor_equipped);
+		form.AddField("weapon_id", weapon_id);
+
+		WWW www = new WWW(unequipWeaponURL, form);
+		yield return www;
+		Debug.Log(www.text);
+
+		if(www.error == null) {
+			JsonData unequipJson = JsonMapper.ToObject(www.text);
+			if (unequipJson[0].ToString() == "Success") {
+				Debug.Log(unequipJson[1].ToString());
+
+				GameManager.instance.updateWeaponAndSurvivorMapLevelUI = true;
+				GameManager.instance.RenewWeaponAndEquippedData();
+			} else if (unequipJson[0].ToString() == "Failed") {
+				Debug.Log(unequipJson[1].ToString());
+				GameManager.instance.updateWeaponAndSurvivorMapLevelUI = true;
+				GameManager.instance.RenewWeaponAndEquippedData();
+			}
+		} else {
+			Debug.Log(www.error);
+		}
 	}
 
 	IEnumerator EquipWeaponToSurvivor (int survivor_id, int weapon_id) {
@@ -579,7 +772,7 @@ public class MapLevelManager : MonoBehaviour {
 
 
 	private bool textPosted = false;
-	IEnumerator PostTempLocationText (string text) {
+	public IEnumerator PostTempLocationText (string text) {
 		if (textPosted == false) {
 			textPosted = true;
 			locationReportText.gameObject.SetActive(true);

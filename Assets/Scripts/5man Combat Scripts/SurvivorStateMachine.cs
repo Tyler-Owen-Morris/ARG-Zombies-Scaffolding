@@ -8,7 +8,7 @@ public class SurvivorStateMachine : MonoBehaviour {
 	public bool isSelected;
 	public BaseSurvivor survivor;
 	public int teamPos;
-	public GameObject mySelectedIcon;
+	public GameObject mySelectedIcon, myGunShot, myClubSlash, myKnifeStab;
 	public Slider myStamSlider;
 	public GameObject[] myWepSprites;
 
@@ -39,6 +39,10 @@ public class SurvivorStateMachine : MonoBehaviour {
 		currentState = TurnState.INITIALIZING;
 		startPosition = gameObject.transform.position;
 		UpdateWeaponSprite();
+
+		myGunShot = transform.FindChild("GunShot").gameObject;
+		myClubSlash = transform.FindChild("ClubSlash").gameObject;
+		myKnifeStab = transform.FindChild("KnifeStab").gameObject;
 	}
 	
 
@@ -92,9 +96,18 @@ public class SurvivorStateMachine : MonoBehaviour {
 					Vector3 targetPosition = new Vector3 (plyrTarget.transform.position.x - 0.3f, plyrTarget.transform.position.y, plyrTarget.transform.position.z);
 					gameObject.GetComponent<SpriteRenderer>().sortingOrder = plyrTarget.GetComponent<SpriteRenderer>().sortingOrder;
 					while (MoveTowardsTarget(targetPosition)) {yield return null;}
+					if (myWeapon.weaponType == BaseWeapon.WeaponType.KNIFE) {
+						//if player has a knife- activate the knife graphic game object
+						myKnifeStab.SetActive(true);
+					} else {
+						//Whether it's a club or gun, activate the club animation
+						myClubSlash.SetActive(true);
+					}
+				} else {
+					myGunShot.SetActive(true);
 				}
 				//animate weapon fx
-				yield return new WaitForSeconds(0.2f);
+				yield return new WaitForSeconds(0.5f);
 
 				//do damage
 				ZombieStateMachine targetZombie = plyrTarget.GetComponent<ZombieStateMachine>();
@@ -251,13 +264,7 @@ public class SurvivorStateMachine : MonoBehaviour {
 				//this is where we remove the ammo from the game. server should execute the amo reduction when the attack is sent
 				GameManager.instance.ammo--;
 				BSM.UpdateUINumbers();
-			} else {
-				Debug.Log ("MAJOR error, there's a weapon equipped without a type value. executing an unarmed swing, but this is broken");
-				int multiplier = Random.Range(0, 7);
-				myDmg += multiplier;
-				//return myDmg;
-			}
-		} else if (survivor.weaponEquipped.GetComponent<BaseWeapon>().weaponType == BaseWeapon.WeaponType.GUN && GameManager.instance.ammo < 1) {
+			} else if (survivor.weaponEquipped.GetComponent<BaseWeapon>().weaponType == BaseWeapon.WeaponType.GUN && GameManager.instance.ammo < 1) {
 				int wepDmg = survivor.weaponEquipped.GetComponent<BaseWeapon>().base_dmg + Random.Range(0, survivor.weaponEquipped.GetComponent<BaseWeapon>().modifier);
 				if (myTarget.zombie.zombieType == BaseZombie.Type.FAT) {
 					float multiplier = Random.Range(1.1f, 2.25f);
@@ -280,6 +287,12 @@ public class SurvivorStateMachine : MonoBehaviour {
 					//return myDmg;
 				}
 				myDmg = Mathf.RoundToInt(myDmg * 0.6f);
+			} else {
+				Debug.Log ("MAJOR error, there's a weapon equipped without a type value. executing an unarmed swing, but this is broken");
+				int multiplier = Random.Range(0, 7);
+				myDmg += multiplier;
+				//return myDmg;
+			}
 		} else {
 			Debug.Log ("!!PLAYER HAS NO WEAPON EQUIPPED!! this should set off alarms to the player");
 			int multiplier = Random.Range(0, 7);
@@ -301,6 +314,13 @@ public class SurvivorStateMachine : MonoBehaviour {
 		//Debug.Log ("Setting "+gameObject.name+" stamina slider to "+sliderValue);
 	}
 
+	public void DisableAllWeaponSprites () {
+		foreach (GameObject sprite in myWepSprites) {
+			sprite.SetActive(false);
+		}
+		mySelectedIcon.SetActive(false);
+	}
+
 	public void UpdateWeaponSprite () {
 		//first turn all of the sprites off.
 		foreach (GameObject sprite in myWepSprites) {
@@ -308,15 +328,26 @@ public class SurvivorStateMachine : MonoBehaviour {
 		}
 		if (this.survivor.weaponEquipped != null) {
 			Debug.Log(this.survivor.name + " believes to have a weapon equipped , wep name: " + this.survivor.weaponEquipped.name);
-			if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().weaponType == BaseWeapon.WeaponType.KNIFE) {
+
+			//this should change to get the name
+			if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name == "crude shiv") {
 				myWepSprites[0].SetActive(true);
-				Debug.Log (this.survivor.name + " is equipping a knife sprite");
-			} else if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().weaponType == BaseWeapon.WeaponType.CLUB) {
+				//Debug.Log (this.survivor.name + " is equipping a knife sprite");
+			} else if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name == "baseball bat") {
 				myWepSprites[1].SetActive(true);
-				Debug.Log (this.survivor.name + " is equipping a club sprite");
-			} else if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().weaponType == BaseWeapon.WeaponType.GUN) {
+				//Debug.Log (this.survivor.name + " is equipping a club sprite");
+			} else if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name == ".22 Revolver" ) {
 				myWepSprites[2].SetActive(true);
-				Debug.Log (this.survivor.name + " is equipping a gun sprite");
+				//Debug.Log (this.survivor.name + " is equipping a gun sprite");
+			}else if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name == "hunting knife" ) {
+				myWepSprites[3].SetActive(true);
+				//Debug.Log (this.survivor.name + " is equipping a gun sprite");
+			}else if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name == "sledgehammer" ) {
+				myWepSprites[4].SetActive(true);
+				//Debug.Log (this.survivor.name + " is equipping a gun sprite");
+			}else if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name == "shotgun" ) {
+				myWepSprites[5].SetActive(true);
+				//Debug.Log (this.survivor.name + " is equipping a gun sprite");
 			}
 		} else {
 			Debug.Log("Warning: No weapon equipped!!!");

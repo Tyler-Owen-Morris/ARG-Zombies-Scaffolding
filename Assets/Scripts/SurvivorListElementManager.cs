@@ -20,6 +20,24 @@ public class SurvivorListElementManager : MonoBehaviour {
 		entry_id = survPlayCard.entry_id;
 		team_pos = survPlayCard.team_pos;
 		mapLevelManager = GameObject.Find("Map Level Manager").GetComponent<MapLevelManager>();
+		StartCoroutine(UpdateMyProfilePic());
+		this.transform.localScale = new Vector3(1,1,1);
+	}
+
+	IEnumerator UpdateMyProfilePic() {
+		if (survPlayCard.profilePicURL != "") {
+			WWW www = new WWW(survPlayCard.profilePicURL);
+			yield return www;
+
+			if (www.error == null) {
+
+				Image survivorPic = survivorPortraitSprite;
+				survivorPic.sprite = Sprite.Create(www.texture, new Rect(0, 0, 200, 200), new Vector2());
+
+			}else {
+				Debug.Log(www.error);
+			}
+		}
 	}
 
 	public void equipButtonPressed () {

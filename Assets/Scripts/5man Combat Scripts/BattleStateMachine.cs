@@ -439,6 +439,7 @@ public class BattleStateMachine : MonoBehaviour {
 			//we have to turn off all the zombie and player sprite renderers, or they will be on top of the panel, because of render order.
 			foreach (GameObject survivor in survivorList) {
 				survivor.GetComponent<SpriteRenderer>().enabled = false;
+				survivor.GetComponent<SurvivorStateMachine>().DisableAllWeaponSprites();
 			}
 			foreach (GameObject zombie in zombieList) {
 				zombie.GetComponent<SpriteRenderer>().enabled = false;
@@ -450,31 +451,43 @@ public class BattleStateMachine : MonoBehaviour {
 	}
 
 	public void PlayerChooseKillSurvivor () {
-		//disable the survivor panel
-		survivorBitPanel.SetActive(false);
+		
 		//send survivor ID to the server to destoy the record on the server.
 		int survivorIDtoDestroy = survivorWithBite.survivor.survivor_id;
 		StartCoroutine(SendDeadSurvivorToServer(survivorIDtoDestroy));
 
 		//turn on all disabled survivors + zombies.
+		GameObject destroyMe = null;
 		foreach (GameObject survivor in survivorList)  {
 			survivor.GetComponent<SpriteRenderer>().enabled = true;
+			survivor.GetComponent<SurvivorStateMachine>().UpdateWeaponSprite();
 			//destroy the gameobject of the survivor that has died in the scene
 			if (survivor.GetComponent<SurvivorStateMachine>().survivor.survivor_id == survivorIDtoDestroy) {
-				Destroy(survivor.gameObject);
+				destroyMe = survivor.gameObject;
 			}
 		}
+		survivorTurnList.Remove(destroyMe);
+		survivorList.Remove(destroyMe);
+		Destroy(destroyMe);
+
 		foreach (GameObject zombie in zombieList) {
 			zombie.GetComponent<SpriteRenderer>().enabled = true;
 		}
 
 		//destroy the survivor record on the GameManager.
+		GameObject destroyMe2 = null;
 		foreach (GameObject surv in GameManager.instance.survivorCardList) {
-			surv.GetComponent<SpriteRenderer>().enabled = true;
-			if (surv.GetComponent<BaseSurvivor>().survivor_id == survivorIDtoDestroy) {
-				Destroy(surv.gameObject);
+			if (surv.GetComponent<SurvivorPlayCard>().survivor.survivor_id == survivorIDtoDestroy) {
+				destroyMe2 = surv;
 			}
 		}
+		GameManager.instance.survivorCardList.Remove(destroyMe2);
+		Destroy(destroyMe2);
+		//remove from the survivorlist on battlestatemachine
+
+
+		//disable the survivor panel
+		survivorBitPanel.SetActive(false);
 
 		//resume combat
 		battleState = PerformAction.WAIT;
@@ -515,6 +528,7 @@ public class BattleStateMachine : MonoBehaviour {
 		}
 		foreach (GameObject surv in survivorList) {
 			surv.GetComponent<SpriteRenderer>().enabled = true;
+			surv.GetComponent<SurvivorStateMachine>().UpdateWeaponSprite();
 		}
 
 

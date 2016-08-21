@@ -12,12 +12,12 @@ public class BuildingSpawner : MonoBehaviour {
 	public GameObject bldgHolder;
 
 	private float minX, maxX, minY, maxY;
-	private double m_per_deg_lat, m_per_deg_lon;
+	public double m_per_deg_lat, m_per_deg_lon;
 
 	//the screenCenter is used to set the building locations around.
 	//private Vector3 screenCenter = new Vector3(485, 363, 0); //this is best used for pc 
 	//private Vector3 screenCenter = new Vector3(1024, 768, 0); //this works better on tablet
-	private Vector3 screenCenter = new Vector3(666, 375, 0); //this is the center for iPhone
+	private Vector3 screenCenter = new Vector3((Screen.width*0.5f), (Screen.height*0.5f), 0.0f); //this is the center for iPhone
 
 	private string googlePlacesAPIURL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json";
     private string foursquareAPIURL = "https://api.foursquare.com/v2/venues/search";
@@ -33,6 +33,7 @@ public class BuildingSpawner : MonoBehaviour {
     private static GameObject gameCanvas;
 
     private static PopulatedBuilding populatedBuildingPrefab;
+    public GameObject outpostPrefab;
 
 	// Use this for initialization
 	void Start () {
@@ -40,7 +41,8 @@ public class BuildingSpawner : MonoBehaviour {
         gameCanvas = GameObject.Find("Canvas");
 		//bldgHolder = GameObject.Find("Building Holder");
         populatedBuildingPrefab = Resources.Load<PopulatedBuilding>("Prefabs/Populated Building");
-		CreateBuildings();
+
+		//CreateBuildings();
         //StartCoroutine(GetNearbyBuildingsFoursquare());
         StartCoroutine(GetNearbyBuildingsGoogle());
 	}
@@ -135,6 +137,7 @@ public class BuildingSpawner : MonoBehaviour {
       	}
 
       	PlaceHomebaseGraphic();
+      	SpawnOutpostsToMap();
       	StartCoroutine(GameManager.instance.DeactivateClearedBuildings());
         
     }
@@ -155,6 +158,7 @@ public class BuildingSpawner : MonoBehaviour {
 				}
 				double xDistMeters = deltaLongitude * m_per_deg_lon;
 				double yDistMeters = deltaLatitude * m_per_deg_lat;
+				Debug.Log("homebase calculated to be: "+xDistMeters+"m in theX and "+yDistMeters+"m in the Y direction");
 
 				float xCoord = (float)(screenCenter.x - (xDistMeters));
 				float yCoord = (float)(screenCenter.y - (yDistMeters));
@@ -162,8 +166,81 @@ public class BuildingSpawner : MonoBehaviour {
 				homebase.gameObject.SetActive(true);
 				homebase.transform.SetParent(bldgHolder.transform);
 				homebase.transform.position = pos;
+				//Debug.Log("Placing homebase graphic at location: "+pos.ToString());
 		} else {
 			Debug.Log("Homebase location not set");
+			homebase.gameObject.SetActive(false);
+		}
+    }
+
+    public void SpawnOutpostsToMap () {
+    	//find and destroy any existing outposts
+    	GameObject[] expiredOutposts = GameObject.FindGameObjectsWithTag("outpost");
+    	foreach(GameObject outpost in expiredOutposts) {
+    		Destroy(outpost.gameObject);
+    	}
+
+    	//pull the json text from the game manager
+    	string outpostJsonText = GameManager.instance.outpostJsonText;
+
+    	/*
+    	//initialize the m_per_deg variables.
+    	if (Input.location.status == LocationServiceStatus.Running) {
+			//calculate the average latitude between the two locations, and then calculate the meters/DEGREE lat/lon
+			float latMid =Input.location.lastData.latitude;
+			m_per_deg_lat = 111132.954 - 559.822 * Mathf.Cos( 2 * latMid ) + 1.175 * Mathf.Cos( 4 * latMid);
+			m_per_deg_lon = 111132.954 * Mathf.Cos( latMid );
+    	} else {
+			//calculate the average latitude between the two locations, and then calculate the meters/DEGREE lat/lon
+			float latMid = 37.70883f;
+			m_per_deg_lat = 111132.954 - 559.822 * Mathf.Cos( 2 * latMid ) + 1.175 * Mathf.Cos( 4 * latMid);
+			m_per_deg_lon = 111132.954 * Mathf.Cos( latMid );
+    	}
+    	*/
+
+		JsonData outpostJSON = JsonMapper.ToObject(outpostJsonText);
+		if(outpostJSON[0].ToString() == "Success") {
+			//plot outposts to game space
+			for (int i=0; i < outpostJSON[1].Count; i++) {
+				float outpostLat = float.Parse(outpostJSON[1][i]["outpost_lat"].ToString());
+				float outpostLng = float.Parse(outpostJSON[1][i]["outpost_lng"].ToString());
+				int outpost_id = (int)outpostJSON[1][i]["outpost_id"];
+				int capacity = (int)outpostJSON[1][i]["capacity"];
+				float myLat = float.Parse(outpostJSON[1][i]["outpost_lat"].ToString());
+				float myLng = float.Parse(outpostJSON[1][i]["outpost_lng"].ToString());
+
+				double deltaLat = 0;
+				double deltaLng = 0;
+
+				if (Input.location.status == LocationServiceStatus.Running) {
+					//legit math
+					deltaLat = (Input.location.lastData.latitude - outpostLat);
+					deltaLng = (Input.location.lastData.longitude - outpostLng);
+				} else {
+					//dummy math for unity client
+					deltaLat = (37.70883f - outpostLat);
+					deltaLng = (-122.4293f - outpostLng);
+				}
+
+				//Debug.Log("change in lat: "+deltaLat+" change in lng: "+deltaLng);
+				//Debug.Log(m_per_deg_lat.ToString()+" "+m_per_deg_lon.ToString());
+				double xDistMeters = deltaLat * m_per_deg_lat;
+				double yDistMeters = deltaLng * m_per_deg_lon;
+				//Debug.Log("outpost located at "+xDistMeters.ToString()+" away in the X, and "+yDistMeters+" meters away in the Y");
+
+
+				float xCoord = (float)(screenCenter.x - xDistMeters);
+				float yCoord = (float)(screenCenter.y - yDistMeters);
+				Vector3 pos = new Vector3(xCoord, yCoord, 0);
+				GameObject instance = Instantiate(outpostPrefab);
+				instance.transform.SetParent(this.gameObject.transform);
+				instance.transform.position = pos;
+				Outpost myOutpost = instance.GetComponent<Outpost>();
+				myOutpost.SetMyOutpostData(capacity, outpost_id, myLat, myLng);
+				Debug.Log("Placing outpost at map position: "+pos.ToString());
+			}
+		} else {
+			Debug.Log("Attempt to populate outposts failed: "+outpostJSON[1].ToString());
 		}
     }
 

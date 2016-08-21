@@ -174,12 +174,15 @@
      <Compile Include="Assets\Scripts\MusicManager.cs" />
      <Compile Include="Assets\Scripts\MusicPlayer.cs" />
      <Compile Include="Assets\Scripts\OptionsController.cs" />
+     <Compile Include="Assets\Scripts\Outpost.cs" />
+     <Compile Include="Assets\Scripts\OutpostPanelController.cs" />
      <Compile Include="Assets\Scripts\PlayerPrefsManager.cs" />
      <Compile Include="Assets\Scripts\PopulatedBuilding.cs" />
      <Compile Include="Assets\Scripts\PurchaseManager.cs" />
      <Compile Include="Assets\Scripts\QRPanelController.cs" />
      <Compile Include="Assets\Scripts\SetStartVolume.cs" />
      <Compile Include="Assets\Scripts\StaminaText.cs" />
+     <Compile Include="Assets\Scripts\StoryDrag.cs" />
      <Compile Include="Assets\Scripts\SurvivorListElementManager.cs" />
      <Compile Include="Assets\Scripts\SurvivorListPopulator.cs" />
      <Compile Include="Assets\Scripts\SurvivorPlayCard.cs" />
@@ -189,6 +192,7 @@
      <Compile Include="Assets\Scripts\WeaponGFX.cs" />
      <Compile Include="Assets\Scripts\WeaponListElementManager.cs" />
      <Compile Include="Assets\Scripts\WeaponListPopulator.cs" />
+     <Compile Include="Assets\Scripts\WeaponSelectManager.cs" />
      <None Include="Assets\FacebookSDK\SDK\Editor\android\DefaultAndroidManifest.xml" />
      <None Include="Assets\QRcode\CamMat\WebCam.shader" />
      <None Include="Assets\Plugins\Android\AndroidManifest.xml" />

@@ -12,11 +12,10 @@ public class GameManager : MonoBehaviour {
 
 	public static GameManager instance;
 
-	public bool gameDataInitialized = false, updateWeaponAndSurvivorMapLevelUI = false, survivorFound = false;
+	public bool gameDataInitialized = false, updateWeaponAndSurvivorMapLevelUI = false, survivorFound = false, playerInTutorial = false, weaponHasBeenSelected = false;
 	public int daysSurvived, supply, ammo, reportedSupply, reportedWater, reportedFood, playerCurrentStamina, playerMaxStamina, zombiesToFight, foodCount, waterCount, distanceCoveredThisSession;
-	public DateTime timeCharacterStarted;
+	public DateTime timeCharacterStarted, lastHomebaseSetTime;
 	public float homebaseLat, homebaseLong;
-//	public bool[] buildingToggleStatusArray;
 	public string foundSurvivorName;
 	[SerializeField]
 	private GameObject[] weaponOptionsArray;
@@ -29,7 +28,7 @@ public class GameManager : MonoBehaviour {
 	private Scene activeScene;
 	//made this public while working on the server "cleared list" data retention. it should go back to private
 	public string activeBldg;
-	public string locationJsonText, clearedBldgJsonText;
+	public string locationJsonText, clearedBldgJsonText, outpostJsonText;
 
 	public string userId;
 	public string userFirstName;
@@ -38,12 +37,13 @@ public class GameManager : MonoBehaviour {
 
 	private string startNewCharURL = "http://www.argzombie.com/ARGZ_SERVER/StartNewCharacter.php";
 	private string resumeCharacterUrl = "http://www.argzombie.com/ARGZ_SERVER/ResumeCharacter.php";
-	//private string updateAllStatsURL = "http://www.argzombie.com/ARGZ_SERVER/UpdateAllPlayerStats.php"; //this was a big nono- letting clients update server with any game data they want.
 	private string buildingClearedURL = "http://www.argzombie.com/ARGZ_SERVER/NewBuildingCleared.php";
 	private string clearedBuildingDataURL = "http://www.argzombie.com/ARGZ_SERVER/ClearedBuildingData.php";
 	private string fetchSurvivorDataURL = "http://www.argzombie.com/ARGZ_SERVER/FetchSurvivorData.php";
 	private string fetchWeaponDataURL = "http://www.argzombie.com/ARGZ_SERVER/FetchWeaponData.php";
 	private string clearSurvivorDataURL = "http://www.argzombie.com/ARGZ_SERVER/DeleteMySurvivorData.php";
+	private string fetchOutpostDataURL = "http://www.argzombie.com/ARGZ_SERVER/FetchOutpostData.php";
+	public string myProfilePicURL = "";
 
 	private bool eatDrikCounterIsOn;
 
@@ -69,7 +69,7 @@ public class GameManager : MonoBehaviour {
 
 		activeScene = SceneManager.GetActiveScene();
 		if (activeScene.name.ToString() == "02a Map Level"){
-			Debug.Log ("Time character started set to: " + timeCharacterStarted);
+			//Debug.Log ("Time character started set to: " + timeCharacterStarted);
 			SetDaysSurvived();
 			
 			MapLevelManager mapManager = FindObjectOfType<MapLevelManager>();
@@ -178,7 +178,9 @@ public class GameManager : MonoBehaviour {
 		form.AddField("food", GameManager.instance.foodCount);
 		form.AddField("water", GameManager.instance.waterCount);
 		form.AddField("ammo", GameManager.instance.ammo);
+		form.AddField("profile_pic_url", GameManager.instance.myProfilePicURL);
 		form.AddField("char_created_DateTime", GameManager.instance.timeCharacterStarted.ToString());
+		form.AddField("homebase_set_time", "");
 
 		WWW www = new WWW(startNewCharURL, form);
 		yield return www;
@@ -199,7 +201,7 @@ public class GameManager : MonoBehaviour {
 	/// Fetchs the resume player data.
 	/// </summary>
 	/// <returns>The resume player data.</returns>
-	IEnumerator FetchResumePlayerData () {
+	public IEnumerator FetchResumePlayerData () {
 		WWWForm form = new WWWForm();
 		if (FB.IsLoggedIn == true) {
 			form.AddField("id", GameManager.instance.userId);
@@ -242,6 +244,10 @@ public class GameManager : MonoBehaviour {
 				Debug.Log ("server returned a date time string of: " + playerJson[1]["char_created_DateTime"]);
 				DateTime oDate = Convert.ToDateTime(playerJson[1]["char_created_DateTime"].ToString());
 				GameManager.instance.timeCharacterStarted = oDate;
+				if (playerJson[1]["homebase_set_time"].ToString() != "") {
+					DateTime pDate = Convert.ToDateTime(playerJson[1]["homebase_set_time"].ToString());
+					GameManager.instance.lastHomebaseSetTime = pDate;
+				}
 
 				//before any survivor records or player records are created the core data is initialized, and the boolean needs to be flipped to true.
 				gameDataInitialized = true;
@@ -250,6 +256,7 @@ public class GameManager : MonoBehaviour {
 			}
 
 			StartCoroutine (FetchWeaponData());
+			StartCoroutine (FetchOutpostData());
 			yield break;
 		} else {
 			Debug.Log ("WWW error" + www.error);
@@ -257,7 +264,7 @@ public class GameManager : MonoBehaviour {
 
 	}
 
-	IEnumerator FetchWeaponData () {
+	public IEnumerator FetchWeaponData () {
 		//wipe all old data clean.
 		GameObject[] oldWeapons = GameObject.FindGameObjectsWithTag("weaponcard");
 		foreach (GameObject weaponCard in oldWeapons) {
@@ -319,17 +326,32 @@ public class GameManager : MonoBehaviour {
 		foreach (GameObject weapon in weaponCardList) {
 			BaseWeapon myWeapon = weapon.GetComponent<BaseWeapon>();
 
-			//now loop through the player cards, and find a matching player card ID.
-			foreach (GameObject survivorCard in survivorCardList) {
-				SurvivorPlayCard SPC = survivorCard.GetComponent<SurvivorPlayCard>();
+			//if the weapon is assigned.
+			if (myWeapon.equipped_id != 0) {
 
-				if (SPC.entry_id == myWeapon.equipped_id) {
-					//This weapon has been previously assigned to this player- add the game object to the card
-					SPC.survivor.weaponEquipped = weapon.gameObject;
-					break;
-				} else {
-					continue;
+				int count = 0;
+				//now loop through the player cards, and find a matching player card ID.
+				foreach (GameObject survivorCard in survivorCardList) {
+					SurvivorPlayCard SPC = survivorCard.GetComponent<SurvivorPlayCard>();
+
+					if (SPC.entry_id == myWeapon.equipped_id) {
+						//This weapon has been previously assigned to this player- add the game object to the card
+						SPC.survivor.weaponEquipped = weapon.gameObject;
+						break;
+					} else {
+						count++;
+					}
+
+					if (count >= survivorCardList.Count) {
+						myWeapon.equipped_id = 0;
+					}
 				}
+
+				//if you have gone through every survivor, and not found a match
+
+
+			} else {
+				continue;
 			}
 		}
 	}
@@ -339,7 +361,7 @@ public class GameManager : MonoBehaviour {
 	/// Fetchs the survivor data.
 	/// </summary>
 	/// <returns>The survivor data.</returns>
-	IEnumerator FetchSurvivorData () {
+	public IEnumerator FetchSurvivorData () {
 		//delete all previous data from the gamemanager
 		GameObject[] oldSurvivorCards = GameObject.FindGameObjectsWithTag("survivorcard");
 		//Debug.Log(oldSurvivorCards.Length);
@@ -383,14 +405,7 @@ public class GameManager : MonoBehaviour {
 					instance.entry_id = (int)survivorJson[1][i]["entry_id"];
 					//instance.survivor_id = (int)survivorJson[1][i]["survivor_id"];
 					instance.team_pos = (int)survivorJson[1][i]["team_pos"];
-
-//					if (survivorJson[1][i]["weapon_equipped"].ToString() == "knife") {
-//						instance.survivor.weaponEquipped = GameManager.instance.weaponOptionsArray[0];
-//					} else if (survivorJson[1][i]["weapon_equipped"].ToString() == "club") {
-//						instance.survivor.weaponEquipped = GameManager.instance.weaponOptionsArray[1];
-//					} else if (survivorJson[1][i]["weapon_equipped"].ToString() == "gun") {
-//						instance.survivor.weaponEquipped = GameManager.instance.weaponOptionsArray[2];
-//					}
+					instance.profilePicURL = survivorJson[1][i]["pic_url"].ToString();
 
 					instance.transform.SetParent(GameManager.instance.survivorCardHolder.transform);
 				}
@@ -399,24 +414,54 @@ public class GameManager : MonoBehaviour {
 			}
 
 			survivorCardList.AddRange (GameObject.FindGameObjectsWithTag("survivorcard"));
-			//do not load the next scene if you are on victory screen, or already on the map level.
-			if (SceneManager.GetActiveScene().buildIndex != 2 && SceneManager.GetActiveScene().buildIndex != 4) {
+			//auto-load map level from login(1) , if on map level stay there, if on victory screen, let the user press the button to load map level.
+			if (SceneManager.GetActiveScene().buildIndex != 2 && SceneManager.GetActiveScene().buildIndex != 4 && playerInTutorial==false) {
 				SceneManager.LoadScene("02a Map Level");
 			}
 
 			//We need a function to match the weapons to the correct players, and equip them- if they are equipped.
 			MergeWeaponAndSurvivorRecords ();
+
+
 			if (updateWeaponAndSurvivorMapLevelUI == true) {
 				MapLevelManager mapLvlMgr = GameObject.Find("Map Level Manager").GetComponent<MapLevelManager>();
 				mapLvlMgr.theWeaponListPopulator.PopulateWeaponsFromGameManager();
 				mapLvlMgr.theSurvivorListPopulator.RefreshFromGameManagerList();
+				mapLvlMgr.UpdateTheUI();
 				updateWeaponAndSurvivorMapLevelUI = false;
 			}
+
+			if (playerInTutorial == true && weaponHasBeenSelected == true) {
+				string tut = "tutorial";
+				LoadIntoCombat(1, tut);
+			}
+
 		} else {
 			Debug.LogWarning(www.error);
 		}
 	}
 
+
+	public IEnumerator FetchOutpostData () {
+		WWWForm form = new WWWForm();
+		form.AddField("id", GameManager.instance.userId);
+
+		WWW www = new WWW(fetchOutpostDataURL, form);
+		yield return www;
+		Debug.Log(www.text);
+
+		if (www.error == null) {
+			JsonData outpostJson = JsonMapper.ToObject(www.text);
+
+			if (outpostJson[0].ToString() == "Success") {
+				GameManager.instance.outpostJsonText = www.text;
+			} else if (outpostJson[0].ToString() == "Failed") {
+				Debug.Log(outpostJson[1].ToString());
+			}
+		} else {
+			Debug.Log(www.error);
+		}
+	}
 
 	
 	public void SetDaysSurvived () {
@@ -447,7 +492,9 @@ public class GameManager : MonoBehaviour {
 		GameManager.instance.ammo = UnityEngine.Random.Range(0,20);
 		GameManager.instance.playerMaxStamina = 100;
 		GameManager.instance.playerCurrentStamina = 100;
-
+		GameManager.instance.homebaseLat = 0.0f;
+		GameManager.instance.homebaseLong = 0.0f;
+		playerInTutorial = true;
 
 		StartCoroutine (NewCharacterUpdateServer());
 
@@ -486,7 +533,7 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void PaidRestartOfTheGame () {
-		int survivors = UnityEngine.Random.Range(4, 8);
+		
 
 		int newSupply = Mathf.RoundToInt(this.supply * 0.75f);
 		this.supply = newSupply;
@@ -630,53 +677,58 @@ public class GameManager : MonoBehaviour {
 //			buildingToggleStatusArray[3]=true;
 //		}
 //
-		string jsonString = GameManager.instance.locationJsonText;
-		JsonData bldgJson = JsonMapper.ToObject(jsonString);
-		string bldg_id = "";
+		if (GameManager.instance.activeBldg != "tutorial") {
+			string jsonString = GameManager.instance.locationJsonText;
+			JsonData bldgJson = JsonMapper.ToObject(jsonString);
+			string bldg_id = "";
 
-		for (int i = 0; i < bldgJson["results"].Count; i++) {
-			if (bldgJson["results"][i]["name"].ToString() == GameManager.instance.activeBldg) {
-				bldg_id = bldgJson["results"][i]["id"].ToString();
-			}
-		}
-
-		WWWForm wwwForm = new WWWForm();
-		wwwForm.AddField("id", GameManager.instance.userId);
-		wwwForm.AddField("bldg_name", GameManager.instance.activeBldg);
-		wwwForm.AddField("bldg_id", bldg_id);
-		wwwForm.AddField("supply", GameManager.instance.reportedSupply);
-		wwwForm.AddField("food" , GameManager.instance.reportedFood);
-		wwwForm.AddField("water", GameManager.instance.reportedWater);
-		if (survivorFound) {
-			wwwForm.AddField("survivor_found", "1");
-		} else {
-			wwwForm.AddField("survivor_found", "0");
-		}
-
-		Debug.Log ("sending cleared building message to the server- bldg_name: "+GameManager.instance.activeBldg+" and id: "+bldg_id);
-		WWW www = new WWW(buildingClearedURL, wwwForm);
-		yield return www;
-
-		if (www.error == null) {
-			Debug.Log(www.text);
-
-			JsonData buildingClearReturn = JsonMapper.ToObject(www.text);
-
-			if (buildingClearReturn[0].ToString() == "Success") {
-				Debug.Log(buildingClearReturn[1].ToString());
-
-				//if there has been a survivor added to the players team.
-				if (buildingClearReturn[2].ToString() == "1") {
-					foundSurvivorName = buildingClearReturn[3].ToString();
+			for (int i = 0; i < bldgJson["results"].Count; i++) {
+				if (bldgJson["results"][i]["name"].ToString() == GameManager.instance.activeBldg) {
+					bldg_id = bldgJson["results"][i]["id"].ToString();
 				}
 			}
 
+			WWWForm wwwForm = new WWWForm();
+			wwwForm.AddField("id", GameManager.instance.userId);
+			wwwForm.AddField("bldg_name", GameManager.instance.activeBldg);
+			wwwForm.AddField("bldg_id", bldg_id);
+			wwwForm.AddField("supply", GameManager.instance.reportedSupply);
+			wwwForm.AddField("food" , GameManager.instance.reportedFood);
+			wwwForm.AddField("water", GameManager.instance.reportedWater);
+			if (survivorFound) {
+				wwwForm.AddField("survivor_found", "1");
+			} else {
+				wwwForm.AddField("survivor_found", "0");
+			}
 
-			yield return new WaitForSeconds(3.0f);
-			StartCoroutine(FetchResumePlayerData());
-		} else {
+			Debug.Log ("sending cleared building message to the server- bldg_name: "+GameManager.instance.activeBldg+" and id: "+bldg_id);
+			WWW www = new WWW(buildingClearedURL, wwwForm);
+			yield return www;
+
+			if (www.error == null) {
+				Debug.Log(www.text);
+
+				JsonData buildingClearReturn = JsonMapper.ToObject(www.text);
+
+				if (buildingClearReturn[0].ToString() == "Success") {
+					Debug.Log(buildingClearReturn[1].ToString());
+
+					//if there has been a survivor added to the players team.
+					if (buildingClearReturn[2].ToString() == "1") {
+						foundSurvivorName = buildingClearReturn[3].ToString();
+					}
+				}
+			} else {
 			Debug.Log(www.error);
+			}
+		} else {
+			//if player is trying to send the tutorial building for reward- skip it, load game data, and load into map level.
+			playerInTutorial = false;
+			weaponHasBeenSelected = false;
 		}
+		yield return new WaitForSeconds(3.0f);
+		StartCoroutine(FetchResumePlayerData());
+		
 
 		StartCoroutine(GameManager.instance.DeactivateClearedBuildings());
 	}
@@ -848,6 +900,7 @@ public class GameManager : MonoBehaviour {
 	}
 
 */
+
 	public void PublicStartLocationServices () {
 		StartCoroutine(StartLocationServices());
 	}

@@ -9,6 +9,13 @@ public class TMP_locationplaceholder : MonoBehaviour {
 		ReportPosition();
 	}
 
+	void SetPosToCenter () {
+		float xPos = Screen.width*0.5f;
+		float yPos = Screen.height*0.5f;
+		Vector3 myPos = new Vector3(xPos, yPos, 0.0f);
+		transform.position = myPos;
+	}
+
 	void ReportPosition () {
 		
 		Vector3 myPos = gameObject.transform.position;

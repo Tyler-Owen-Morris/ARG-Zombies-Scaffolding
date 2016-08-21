@@ -11,4 +11,5 @@ public class SurvivorPlayCard : MonoBehaviour {
 	public int team_pos;
 	public Image profilePic;
 	public Text displayText;
+	public string profilePicURL;
 }

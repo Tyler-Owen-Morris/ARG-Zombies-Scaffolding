@@ -1,26 +1,27 @@
 fileFormatVersion: 2
 guid: e9c8e37a9dec741d3a63fe293b121fab
-timeCreated: 1462118589
+timeCreated: 1470868741
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
     21300000: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_0
     21300002: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_1
-    21300004: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_2
+    21300004: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_5
     21300006: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_3
     21300008: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_6
     21300010: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_5
     21300012: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_6
     21300014: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_7
-    21300016: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_8
+    21300016: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_5
     21300018: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_6
     21300020: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_7
     21300022: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_1
-    21300024: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_12
+    21300024: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_2
     21300026: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_3
-    21300028: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_14
+    21300028: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_4
     21300030: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_15
     21300032: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_9
+    21300034: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_8
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -67,7 +68,7 @@ TextureImporter:
   buildTargetSettings: []
   spriteSheet:
     sprites:
-    - name: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_2
+    - name: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_8
       rect:
         serializedVersion: 2
         x: 1040
@@ -139,7 +140,7 @@ TextureImporter:
         - {x: -8.453125, y: 33.75}
         - {x: -4.453125, y: 37.75}
         - {x: -5.453125, y: 39.75}
-    - name: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_8
+    - name: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_5
       rect:
         serializedVersion: 2
         x: 671
@@ -230,7 +231,7 @@ TextureImporter:
         - {x: 10.8125, y: -12.359375}
         - {x: 12.8125, y: -11.359375}
         - {x: 12.8125, y: 17.640625}
-    - name: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_12
+    - name: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_2
       rect:
         serializedVersion: 2
         x: 288
@@ -275,7 +276,7 @@ TextureImporter:
         - {x: -6.515625, y: 22.109375}
         - {x: -9.515625, y: 23.109375}
         - {x: -11.515625, y: 21.109375}
-    - name: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_14
+    - name: explosion_spritesheet_for_games_by_gintasdx-d5r28q5_4
       rect:
         serializedVersion: 2
         x: 556

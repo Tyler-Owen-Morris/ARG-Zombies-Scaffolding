@@ -28,7 +28,7 @@ public class ZombieStateMachine : MonoBehaviour {
 	//timeforaction variables
 	private bool actionStarted = false;
 	private bool deathActionStarted = false;
-	private float animSpeed = 15.0f;
+	private float animSpeed = 25.0f;
 	public GameObject target;
 
 	private string ZombieAttackURL = "http://www.argzombie.com/ARGZ_SERVER/ZombieAttack.php";
@@ -39,7 +39,7 @@ public class ZombieStateMachine : MonoBehaviour {
 		myTargetGraphic.SetActive(false);
 		startPosition = gameObject.transform.position;
 		startRotation = gameObject.transform.rotation;
-		spawnPoint = new Vector3 (startPosition.x + 2.5f, startPosition.y, startPosition.z);
+		spawnPoint = new Vector3 (startPosition.x + 4.5f, startPosition.y, startPosition.z);
 		currentState = TurnState.WAITING;
 		BSM = FindObjectOfType<BattleStateMachine>();
 		myTypeText.text = zombie.zombieType.ToString();
@@ -186,7 +186,7 @@ public class ZombieStateMachine : MonoBehaviour {
 			}
 
 			//animate zombie to the ground.
-			Quaternion downPos = new Quaternion (0,0,-90,0);
+			Quaternion downPos = new Quaternion (0,0,-160,0);
 			while (RotateToTarget(downPos)) {yield return null;}
 			//move to off screen Death/Spawn target
 			while (MoveTowardsEnemy(spawnPoint)) {yield return null;}

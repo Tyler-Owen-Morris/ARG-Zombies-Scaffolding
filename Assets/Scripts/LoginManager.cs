@@ -12,16 +12,21 @@ public class LoginManager : MonoBehaviour {
 	private Text loginPasswordText, loginEmailText, registerEmail, registerPassword, registerPassword2;
 	private int survivorsDrafted = 0;
 
-	public GameObject registrationPanel, loggedInPanel, survivorDraftPanel;
+	public GameObject registrationPanel, loggedInPanel, survivorDraftPanel, newCharConfirmationPanel;
 	public IGraphResult fbFriendsResult;
+	public JsonData staticSurvivorData, facebookSurvivorData;
 	public SurvivorPlayCard[] survivorDraftCardArray;
+	public Sprite genericSurvivorPortrait;
+
+
 
 //	private string registerUrl = "http://localhost/ARGZ_SERVER/register.php";
 //	private string playerDataUrl = "http://localhost/ARGZ_SERVER/PlayerData.php";
 //	private string loginUrl = "http://localhost/ARGZ_SERVER/login.php";
 
-	private string newSurvivorUrl = "http://argzombie.com/ARGZ_SERVER/create_new_survivor.php";
-	private string findUserAcctURL = "http://argzombie.com/ARGZ_SERV";
+	private string newSurvivorUrl = "http://www.argzombie.com/ARGZ_SERVER/create_new_survivor.php";
+	private string findUserAcctURL = "http://www.argzombie.com/ARGZ_SERVER/UserAcctLookup.php";
+	private string fetchStaticSurvivorURL = "http://www.argzombie.com/ARGZ_SERVER/FetchStaticSurvivor.php";
 	
 	// Use this for initialization
 	void Start () { 
@@ -46,6 +51,15 @@ public class LoginManager : MonoBehaviour {
 				}
             }
     }
+
+    public void ConfirmStartNewCharacter () {
+    	if(newCharConfirmationPanel.activeInHierarchy) {
+    		newCharConfirmationPanel.SetActive(false);
+    	} else {
+    		newCharConfirmationPanel.SetActive(true);
+    	}
+    }
+
     
     void SetInit () {
         FB.ActivateApp();
@@ -57,6 +71,7 @@ public class LoginManager : MonoBehaviour {
 		    FB.API ("/me?fields=first_name", HttpMethod.GET, UpdateUserFirstName);
 		    FB.API ("/me?fields=last_name", HttpMethod.GET, UpdateUserLastName);
 		    FB.API ("/me", HttpMethod.GET, UpdateUserName);
+			FB.API ("me?fields=picture.width(200).height(200)", HttpMethod.GET, UpdateProfilePicURL);
 
             loggedInPanel.SetActive (true);
 
@@ -101,6 +116,7 @@ public class LoginManager : MonoBehaviour {
 		        FB.API ("/me?fields=first_name", HttpMethod.GET, UpdateUserFirstName);
 		        FB.API ("/me?fields=last_name", HttpMethod.GET, UpdateUserLastName);
 				FB.API ("/me", HttpMethod.GET, UpdateUserName);
+				FB.API ("me?fields=picture.width(200).height(200)", HttpMethod.GET, UpdateProfilePicURL);
             } else {
                 Debug.Log ("FB is NOT logged in");
                 loggedInPanel.SetActive (false);
@@ -142,6 +158,17 @@ public class LoginManager : MonoBehaviour {
 		}
 	}
 
+	private void UpdateProfilePicURL (IResult result) {
+		if (result.Error == null) {
+			string rawResult = result.RawResult;
+			JsonData picJson = JsonMapper.ToObject(rawResult);
+
+			GameManager.instance.myProfilePicURL = picJson["picture"]["data"]["url"].ToString();
+		}else{
+			Debug.Log(result.Error);
+		}
+	}
+
 	private void UpdateSurvivorDraftWindow (IGraphResult result) {
 		if (result.Error == null) {
 			//store the data object for later use in next friend being updated.
@@ -149,10 +176,12 @@ public class LoginManager : MonoBehaviour {
 			Debug.Log(result.ToString());
 			string data = result.RawResult as string;
 			Debug.Log(data);
-			JsonData jsonData = JsonMapper.ToJson(data);
+			JsonData jsonData = JsonMapper.ToObject(data);
+			facebookSurvivorData = jsonData;
 
+			/*
 			//fill the player data into the play card objects on the draft window.
-			for (int i=0; i<3; i++) {
+			for (int i=0; i< jsonData.Count; i++) {
 				//set the name from the result.
 				survivorDraftCardArray[i].survivor.name = jsonData[i]["name"].ToString();
 				// roll and load random stats
@@ -175,37 +204,129 @@ public class LoginManager : MonoBehaviour {
 				myText += "attack: " +survivorDraftCardArray[i].survivor.baseAttack.ToString(); 
 				survivorDraftCardArray[i].displayText.text = myText;
 			}
+			*/
+
+			StartCoroutine(FetchStaticSurvivors());
+
 		}else{
 			Debug.Log(result.Error);
 		}
 	}
 
-	//this is a temporary function to test sending characters to the server.  eventually these choices will be auto-populated from friends, and cycle choices on each pick- creating a Zombie Apocalypse Draft.
-	public void ChooseSurvivorToSend (int choice) {
+	IEnumerator FetchStaticSurvivors() {
+		WWWForm form = new WWWForm();
+		form.AddField("id", GameManager.instance.userId);
 
-		
-		if (survivorsDrafted <= 4){
-			if (choice == 1) {
-				int teamPos = 4 - survivorsDrafted;
-				StartCoroutine(SendNewSurvivorToServer("Bill", 140, 8, teamPos));
-			} else if (choice == 2) {
-				int teamPos = 4 - survivorsDrafted;
-				StartCoroutine(SendNewSurvivorToServer("Sally", 100, 10, teamPos));
-			} else if (choice == 3) {
-				int teamPos = 4 - survivorsDrafted;
-				StartCoroutine(SendNewSurvivorToServer("Jacob", 90, 12, teamPos));
-			}
-			survivorsDrafted ++;
-			if (survivorsDrafted == 4) {
-				GameManager.instance.ResumeCharacter();
-			}
+		WWW www = new WWW(fetchStaticSurvivorURL, form);
+		yield return www;
+
+		if (www.error == null) {
+			Debug.Log(www.text);
+			JsonData staticSurvData = JsonMapper.ToObject(www.text);
+
+			staticSurvivorData = staticSurvData;
+
+			LoadNextSetofSurvivorsToSelect();
 		} else {
-			GameManager.instance.ResumeCharacter();
-
+			Debug.Log(www.error);
 		}
 	}
 
-	IEnumerator SendNewSurvivorToServer (string name, int stamina, int attack, int teamPosition) {
+	//This retains the total number selected between refreshes, so we know to quit at 12 (3 slots x 4 picks)
+	public int survivorSelectCounter = 0;
+	private void LoadNextSetofSurvivorsToSelect () {
+		int facebookSurvivorCount = facebookSurvivorData["data"].Count;
+
+		//cycle through the core loop 3 times loading new data in each position
+		for (int i = 0; i < 3; i++) {
+			if (survivorSelectCounter >= facebookSurvivorCount) {
+				//we've selected all the FB returns already, use static entries.
+				int fbAdjustedCounter = survivorSelectCounter - facebookSurvivorCount;
+
+				survivorDraftCardArray[i].survivor.name = staticSurvivorData[1][fbAdjustedCounter]["name"].ToString();
+				survivorDraftCardArray[i].survivor.baseAttack = (int)staticSurvivorData[1][fbAdjustedCounter]["base_attack"];
+				survivorDraftCardArray[i].survivor.baseStamina = (int)staticSurvivorData[1][fbAdjustedCounter]["base_stam"];
+				survivorDraftCardArray[i].survivor.curStamina = (int)staticSurvivorData[1][fbAdjustedCounter]["base_stam"];
+				survivorDraftCardArray[i].profilePicURL = "";
+				if (4-survivorsDrafted >= 0) {
+					survivorDraftCardArray[i].team_pos = 4-survivorsDrafted;
+				} else {
+					survivorDraftCardArray[i].team_pos = 0;
+				}
+
+				//for now leave the generic sprite- later I can add custom sprites to load for each character.
+				Image survivorPic = survivorDraftCardArray[i].profilePic;
+				survivorPic.sprite = genericSurvivorPortrait;
+
+				//update the UI text
+				string myText = "";
+				myText += "name: " + survivorDraftCardArray[i].survivor.name.ToString()+"\n";
+				myText += "stamina: " + survivorDraftCardArray[i].survivor.baseStamina.ToString()+"\n";
+				myText += "attack: " +survivorDraftCardArray[i].survivor.baseAttack.ToString(); 
+				survivorDraftCardArray[i].displayText.text = myText;
+
+			} else {
+				//we have FB entries still available.
+				//roll for the random stats
+				int stam = Random.Range(90, 140);
+				int attk = Random.Range(9, 25);
+				//set up the survivor play card data
+				survivorDraftCardArray[i].survivor.name = facebookSurvivorData["data"][survivorSelectCounter]["name"].ToString();
+				survivorDraftCardArray[i].survivor.baseAttack = attk;
+				survivorDraftCardArray[i].survivor.baseStamina = stam;
+				survivorDraftCardArray[i].survivor.curStamina = stam;
+				survivorDraftCardArray[i].profilePicURL = facebookSurvivorData["data"][survivorSelectCounter]["picture"]["data"]["url"].ToString();
+				Debug.Log(facebookSurvivorData["data"][survivorSelectCounter]["picture"]["data"]["url"].ToString());
+				if (4-survivorSelectCounter >= 0) {
+					survivorDraftCardArray[i].team_pos = 4-survivorSelectCounter;
+				} else {
+					survivorDraftCardArray[i].team_pos = 0;
+				}
+
+				//fetch and update the image
+				string imgURL = facebookSurvivorData["data"][survivorSelectCounter]["picture"]["data"]["url"].ToString();
+				StartCoroutine(SetSurvivorImageFromURL(imgURL, i));
+
+
+				//update the UI text
+				string myText = "";
+				myText += "name: " + survivorDraftCardArray[i].survivor.name.ToString()+"\n";
+				myText += "stamina: " + survivorDraftCardArray[i].survivor.baseStamina.ToString()+"\n";
+				myText += "attack: " +survivorDraftCardArray[i].survivor.baseAttack.ToString(); 
+				survivorDraftCardArray[i].displayText.text = myText;
+			}
+
+			survivorSelectCounter++;
+		}
+
+	}
+
+	IEnumerator SetSurvivorImageFromURL(string URL, int arrayPos) {
+				WWW www = new WWW(URL);
+				yield return www;
+
+				Image survivorPic = survivorDraftCardArray[arrayPos].profilePic;	
+				survivorPic.sprite = Sprite.Create(www.texture, new Rect(0, 0, 200, 200), new Vector2());
+	}
+
+
+	//this is a temporary function to test sending characters to the server.  eventually these choices will be auto-populated from friends, and cycle choices on each pick- creating a Zombie Apocalypse Draft.
+	public bool sendInProgress = false;
+	public void ChooseSurvivorToSend (int arrayPos) {
+		if(sendInProgress == false){
+		sendInProgress = true;
+			//load the name and stats from the correct survivor
+			string nm = survivorDraftCardArray[arrayPos].survivor.name;
+			int stam = survivorDraftCardArray[arrayPos].survivor.baseStamina;
+			int attk = survivorDraftCardArray[arrayPos].survivor.baseAttack;
+			int team_pos = survivorDraftCardArray[arrayPos].team_pos;
+			string pic_url = survivorDraftCardArray[arrayPos].profilePicURL;
+
+			StartCoroutine(SendNewSurvivorToServer(nm, stam, attk, team_pos, pic_url));
+		} 
+	}
+
+	IEnumerator SendNewSurvivorToServer (string name, int stamina, int attack, int teamPosition, string picture_url) {
 		WWWForm form = new WWWForm();
 		form.AddField("owner_id", GameManager.instance.userId);
 		form.AddField("team_position", teamPosition); //this will need to actually pull
@@ -213,6 +334,7 @@ public class LoginManager : MonoBehaviour {
 		form.AddField("base_stam", stamina);
 		form.AddField("curr_stam", stamina);
 		form.AddField("base_attack", attack);
+		form.AddField("picture_url", picture_url);
 		form.AddField("weapon_equipped", "none");
 
 		WWW www = new WWW(newSurvivorUrl, form);
@@ -222,21 +344,25 @@ public class LoginManager : MonoBehaviour {
 			string jsonReturn = www.text.ToString();
 			JsonData jsonResult = JsonMapper.ToObject(jsonReturn);
 
-			Debug.Log (jsonResult[0].ToString());
-
-			//at some point the client will need to recieve the json from the server and report a failed creation.
-//			if (jsonResult[0].ToString() == "Success") {
-//				Debug.Log(jsonResult[1].ToString());
-//			} else {
-//				Debug.LogError ("new survivor not added to server error: "+ jsonResult[1].ToString());
-//				survivorsDrafted --;
-//			}
+			if(jsonResult[0].ToString() == "Success") {
+				survivorsDrafted++;
+				Debug.Log(jsonResult[1].ToString());
+				if (survivorsDrafted >= 4) {
+					GameManager.instance.ResumeCharacter();
+					SceneManager.LoadScene("04a Weapon Select");
+				} else {
+					LoadNextSetofSurvivorsToSelect();
+				}
+			} else {
+				//failed to add survivor
+				Debug.Log(jsonResult[1].ToString());
+			}
 
 		}else{
-			survivorsDrafted --;
 			Debug.Log(www.error);
 		}
-
+		//regardless of succcess- you are ready to send another survivor up.
+		sendInProgress = false;
 	}
 
 
@@ -318,6 +444,7 @@ public class LoginManager : MonoBehaviour {
 
 			if (FB.IsLoggedIn == true) {
 				GameManager.instance.ResumeCharacter();
+
 			}
 
 		} else {
@@ -332,6 +459,9 @@ public class LoginManager : MonoBehaviour {
 	}
 
 	public void StartNewCharacter () {
+		//this should warn the  player that they are going to erase old game data, and verify before executing
+
+
 		survivorDraftPanel.SetActive(true);
 		FB.API("me/friends?fields=name,picture.width(200).height(200)", HttpMethod.GET, UpdateSurvivorDraftWindow);
 		GameManager.instance.StartNewCharacter();
