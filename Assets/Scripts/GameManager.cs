@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour {
 	public DateTime timeCharacterStarted, lastHomebaseSetTime;
 	public float homebaseLat, homebaseLong;
 	public string foundSurvivorName;
+	public int foundSurvivorCurStam, foundSurvivorMaxStam, foundSurvivorAttack, foundSurvivorEntryID;
 	[SerializeField]
 	private GameObject[] weaponOptionsArray;
 
@@ -37,7 +38,7 @@ public class GameManager : MonoBehaviour {
 
 	private string startNewCharURL = "http://www.argzombie.com/ARGZ_SERVER/StartNewCharacter.php";
 	private string resumeCharacterUrl = "http://www.argzombie.com/ARGZ_SERVER/ResumeCharacter.php";
-	private string buildingClearedURL = "http://www.argzombie.com/ARGZ_SERVER/NewBuildingCleared.php";
+	private string buildingClearedURL = "http://www.argzombie.com/ARGZ_SERVER/NewBuildingCleared1.php";
 	private string clearedBuildingDataURL = "http://www.argzombie.com/ARGZ_SERVER/ClearedBuildingData.php";
 	private string fetchSurvivorDataURL = "http://www.argzombie.com/ARGZ_SERVER/FetchSurvivorData.php";
 	private string fetchWeaponDataURL = "http://www.argzombie.com/ARGZ_SERVER/FetchWeaponData.php";
@@ -49,7 +50,7 @@ public class GameManager : MonoBehaviour {
 
 	private static SurvivorPlayCard survivorPlayCardPrefab;
 	private static BaseWeapon baseWeaponPrefab;
-	public static int DaysUntilOddsFlat = 30;
+	public static int DaysUntilOddsFlat = 15;
 	public static float FlatOddsToFind = 5.0f;
 
 	void Awake () {
@@ -105,7 +106,7 @@ public class GameManager : MonoBehaviour {
 //
 //	}
 
-	public void UpdateAllStatsToGameMemory () {
+	//public void UpdateAllStatsToGameMemory () {
 		//this is a big nono, hence it's disabled
 
 		//StartCoroutine(UpdateGameManagerToGameServer());
@@ -126,7 +127,7 @@ public class GameManager : MonoBehaviour {
 		GamePreferences.SetHomebaseLongitude (homebaseLong);
 		*/
 		//removed to update the server
-	}
+	//}
 
 //	IEnumerator UpdateGameManagerToGameServer() {
 ////		JsonData playerJsonData = CurrentPlayerDataIntoJson();
@@ -267,9 +268,8 @@ public class GameManager : MonoBehaviour {
 	public IEnumerator FetchWeaponData () {
 		//wipe all old data clean.
 		GameObject[] oldWeapons = GameObject.FindGameObjectsWithTag("weaponcard");
+		GameManager.instance.weaponCardList.Clear();
 		foreach (GameObject weaponCard in oldWeapons) {
-			int whereIsIt = GameManager.instance.weaponCardList.IndexOf (weaponCard);
-			GameManager.instance.weaponCardList.RemoveAt(whereIsIt);
 			Destroy(weaponCard.gameObject);
 		}
 
@@ -365,10 +365,9 @@ public class GameManager : MonoBehaviour {
 		//delete all previous data from the gamemanager
 		GameObject[] oldSurvivorCards = GameObject.FindGameObjectsWithTag("survivorcard");
 		//Debug.Log(oldSurvivorCards.Length);
+		GameManager.instance.survivorCardList.Clear();
 		if (oldSurvivorCards.Length > 0) {
 			foreach (GameObject survivorCard in oldSurvivorCards) {
-				int whereIsIt = GameManager.instance.survivorCardList.IndexOf (survivorCard);
-				GameManager.instance.survivorCardList.RemoveAt(whereIsIt);
 				Destroy(survivorCard.gameObject);
 			}
 		}
@@ -548,7 +547,7 @@ public class GameManager : MonoBehaviour {
 //		GamePreferences.SetActiveSurvivors (survivorsActive);
 //		GamePreferences.SetWaterCount (waterCount);
 //		GamePreferences.SetFoodCount (foodCount);
-		GameManager.instance.UpdateAllStatsToGameMemory();
+		//GameManager.instance.UpdateAllStatsToGameMemory();
 
 		SceneManager.LoadScene("02a Map Level");
 	}
@@ -556,7 +555,7 @@ public class GameManager : MonoBehaviour {
 	public void SetPublicPlayerHealth (int playerStamina) {
 		playerCurrentStamina = playerStamina;
 
-		GameManager.instance.UpdateAllStatsToGameMemory();
+		//GameManager.instance.UpdateAllStatsToGameMemory();
 //		GamePreferences.SetLastPlayerCurrentHealth(playerHealth);
 		//this is for external setting of the permenant game object GameManager.instance
 	}
@@ -565,7 +564,7 @@ public class GameManager : MonoBehaviour {
 		this.homebaseLat = lat;
 		this.homebaseLong = lon;
 
-		UpdateAllStatsToGameMemory();
+		//UpdateAllStatsToGameMemory();
 //		GamePreferences.SetHomebaseLattitude(lat);
 //		GamePreferences.SetHomebaseLongitude(lon);
 	}
@@ -582,7 +581,7 @@ public class GameManager : MonoBehaviour {
 //		GamePreferences.SetDayTimeCharacterCreated (timeCharacterStarted.ToString());
 
 		//right now this will not save to permenant memory- this should be handled in its own function/script- so it's not accidentally changed.
-		UpdateAllStatsToGameMemory();
+		//UpdateAllStatsToGameMemory();
 		SetDaysSurvived ();
 		Debug.Log ("1 Hour added to time started. New Datetime is: " + timeCharacterStarted.ToString() );
 	}
@@ -642,26 +641,30 @@ public class GameManager : MonoBehaviour {
 //		}
 //	}
 
-	public void BuildingIsCleared (int sup, int water, int food, bool survivorFound) {
-		//local updates for the running game variables
-		reportedSupply = sup;
-		supply += sup;
-		reportedWater = water;
-		waterCount += water;
-		reportedFood = food;
-		foodCount += food;
-		survivorFound = true;
+	public bool clearedBuildingSendInProgress = false;
+	public void BuildingIsCleared (int sup, int water, int food, bool survFound) {
+		if (clearedBuildingSendInProgress == false) {
+			clearedBuildingSendInProgress = true;
+			//local updates for the running game variables
+			reportedSupply = sup;
+			supply += sup;
+			reportedWater = water;
+			waterCount += water;
+			reportedFood = food;
+			foodCount += food;
+			survivorFound = survFound;
 
 
-		//this updates the long term memory, and will need to be changed to update the PHP server.  This is essentially saving the check-in.
-//		GamePreferences.SetFoodCount(foodCount);
-//		GamePreferences.SetWaterCount(waterCount);
-//		GamePreferences.SetSupply(supply);
-//		GamePreferences.SetTotalSurvivors(totalSurvivors);
-//		GamePreferences.SetActiveSurvivors(survivorsActive);
-		GameManager.instance.UpdateAllStatsToGameMemory();
+			//this updates the long term memory, and will need to be changed to update the PHP server.  This is essentially saving the check-in.
+	//		GamePreferences.SetFoodCount(foodCount);
+	//		GamePreferences.SetWaterCount(waterCount);
+	//		GamePreferences.SetSupply(supply);
+	//		GamePreferences.SetTotalSurvivors(totalSurvivors);
+	//		GamePreferences.SetActiveSurvivors(survivorsActive);
+			//GameManager.instance.UpdateAllStatsToGameMemory();
 
-		StartCoroutine(SendClearedBuilding(survivorFound));
+			StartCoroutine(SendClearedBuilding(survivorFound));
+		} 
 	}
 
 	IEnumerator SendClearedBuilding (bool survivorFound) {
@@ -685,6 +688,7 @@ public class GameManager : MonoBehaviour {
 			for (int i = 0; i < bldgJson["results"].Count; i++) {
 				if (bldgJson["results"][i]["name"].ToString() == GameManager.instance.activeBldg) {
 					bldg_id = bldgJson["results"][i]["id"].ToString();
+					Debug.Log("sending bldg_id: "+bldg_id);
 				}
 			}
 
@@ -715,21 +719,25 @@ public class GameManager : MonoBehaviour {
 
 					//if there has been a survivor added to the players team.
 					if (buildingClearReturn[2].ToString() == "1") {
-						foundSurvivorName = buildingClearReturn[3].ToString();
+						foundSurvivorName = buildingClearReturn[3]["name"].ToString();
+						foundSurvivorCurStam = (int)buildingClearReturn[3]["base_stam"];
+						foundSurvivorMaxStam = (int)buildingClearReturn[3]["base_stam"];
+						foundSurvivorAttack = (int)buildingClearReturn[3]["base_attack"];
+						foundSurvivorEntryID = (int)buildingClearReturn[3]["entry_id"];
 					}
 				}
 			} else {
 			Debug.Log(www.error);
 			}
+			SceneManager.LoadScene ("03a Win");
 		} else {
 			//if player is trying to send the tutorial building for reward- skip it, load game data, and load into map level.
 			playerInTutorial = false;
 			weaponHasBeenSelected = false;
 		}
 		yield return new WaitForSeconds(3.0f);
+		clearedBuildingSendInProgress=false;
 		StartCoroutine(FetchResumePlayerData());
-		
-
 		StartCoroutine(GameManager.instance.DeactivateClearedBuildings());
 	}
 

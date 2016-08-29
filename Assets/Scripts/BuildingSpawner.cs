@@ -87,6 +87,7 @@ public class BuildingSpawner : MonoBehaviour {
     	
 		//string jsonString = File.ReadAllText(Application.dataPath + "/Resources/googlelocations.json");
 		string jsonString = googleJsonReturn;
+		//Debug.Log(jsonString);
 		JsonData bldgJson = JsonMapper.ToObject(jsonString);
         //JsonData foursquareJson = JsonMapper.ToObject(jsonReturn);
 
@@ -182,6 +183,7 @@ public class BuildingSpawner : MonoBehaviour {
 
     	//pull the json text from the game manager
     	string outpostJsonText = GameManager.instance.outpostJsonText;
+    	Debug.Log("Outpost JsonData: "+GameManager.instance.outpostJsonText);
 
     	/*
     	//initialize the m_per_deg variables.

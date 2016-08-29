@@ -106,6 +106,7 @@ public class SurvivorStateMachine : MonoBehaviour {
 				} else {
 					myGunShot.SetActive(true);
 				}
+				BSM.PlayWeaponSound(myWeapon.weaponType, myWeapon.name);
 				//animate weapon fx
 				yield return new WaitForSeconds(0.5f);
 
@@ -123,8 +124,16 @@ public class SurvivorStateMachine : MonoBehaviour {
 				//Record the durability loss
 				myWeapon.durability = myWeapon.durability - 1;
 				if (myWeapon.durability < 1) {
+//					//remove from list first
+//					int whereIsIt = GameManager.instance.survivorCardList.IndexOf(survivor.weaponEquipped);
+//					Debug.Log(whereIsIt);
+//					GameManager.instance.survivorCardList.RemoveAt(whereIsIt);
+
+					//destoy game object, and update survivor sprite
 					Destroy(survivor.weaponEquipped.gameObject);
 					UpdateWeaponSprite();
+
+					//send message warning player.
 					Debug.Log("oh noes! weapon is broken beyond repair!");
 				}
 			} else {
@@ -134,6 +143,7 @@ public class SurvivorStateMachine : MonoBehaviour {
 				while (MoveTowardsTarget(targetPosition)) {yield return null;}
 
 				//animate weapon fx
+				BSM.PlayUnarmedSurvivorAttackSound();
 				yield return new WaitForSeconds(0.2f);
 
 				//do damage

@@ -101,6 +101,8 @@ public class ZombieStateMachine : MonoBehaviour {
 			gameObject.GetComponent<SpriteRenderer>().sortingOrder = target.GetComponent<SpriteRenderer>().sortingOrder;
 			while (MoveTowardsEnemy(targetPosition)) {yield return null;}
 			//animate weaponfx
+			BSM.PlayZombieAttackSound();
+
 			yield return new WaitForSeconds(0.25f);
 			//do damage
 			SurvivorStateMachine targetSurvivor = target.GetComponent<SurvivorStateMachine>();

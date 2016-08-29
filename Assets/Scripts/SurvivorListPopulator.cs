@@ -5,7 +5,7 @@ public class SurvivorListPopulator : MonoBehaviour {
 
 	private static GameObject listElementPrefab;
 
-	void Start () {
+	void Awake () {
 		//listElementPrefab = Resources.Load<GameObject>("Prefabs/SurvivorElementHolder");
 		listElementPrefab = Resources.Load<GameObject>("Prefabs/SurvivorListItemPanel");
 
@@ -32,17 +32,7 @@ public class SurvivorListPopulator : MonoBehaviour {
 			instance.transform.SetParent(gameObject.transform);
 
 			//set the list item data to match the card object data
-			SurvivorListElementManager  SLEM = instance.GetComponent<SurvivorListElementManager>();
-			SLEM.survivorNameText.text = survPlayCard.survivor.name;
-			string myStatsString = "";
-			myStatsString += survPlayCard.survivor.baseAttack +" Attk ";
-			myStatsString += survPlayCard.survivor.curStamina + " stam";
-			if (survPlayCard.survivor.weaponEquipped != null) {
-				myStatsString += " wielding a " + survPlayCard.survivor.weaponEquipped.name;
-			}else{
-				myStatsString += " and is Unarmed";
-			}
-			SLEM.survivorStatsText.text = myStatsString; 
+			SurvivorListElementManager  SLEM = instance.GetComponent<SurvivorListElementManager>(); 
 			SLEM.mySurvivorCard = survivorCard;
 
 			if (survPlayCard.team_pos >= 1 ) {

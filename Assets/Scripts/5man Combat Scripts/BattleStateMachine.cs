@@ -42,6 +42,10 @@ public class BattleStateMachine : MonoBehaviour {
 	public int zombiesKilled = 0;
 	public Text zombieCounter, ammmoCounter, survivorBitText;
 
+	public AudioClip knifeSound, clubSound, pistolSound, shotgunSound;
+	public AudioClip[] zombieSounds, survivorUnarmedSounds;
+	public AudioSource myAudioSource;
+
 	private SurvivorStateMachine survivorWithBite;
 	private string destroySurvivorURL = "http://www.argzombie.com/ARGZ_SERVER/DestroySurvivor.php";
 	private string restoreSurvivorURL = "http://www.argzombie.com/ARGZ_SERVER/RestoreSurvivor.php";
@@ -55,7 +59,8 @@ public class BattleStateMachine : MonoBehaviour {
 		battleState = PerformAction.WAIT;
 		playerGUI = PlayerInput.ACTIVATE;
 
-
+		myAudioSource = GetComponent<AudioSource>();
+		myAudioSource.playOnAwake = false;
 
 		survivorList.AddRange (GameObject.FindGameObjectsWithTag("survivor"));
 		zombieList.AddRange (GameObject.FindGameObjectsWithTag("zombie"));
@@ -159,8 +164,12 @@ public class BattleStateMachine : MonoBehaviour {
 				} else if (zombieList.Count < 1) {
 					// end of the building
 					Debug.Log ("End building called");
-					GameManager.instance.BuildingIsCleared(CalculateSupplyEarned(), CalculateWaterFound(), CalculateFoodFound(), CalculateSurvivorFound());
-					SceneManager.LoadScene ("03a Win");
+					int earned_supply = CalculateSupplyEarned();
+					int earned_water = CalculateWaterFound();
+					int earned_food = CalculateFoodFound();
+					bool found_survivor = CalculateSurvivorFound();
+					GameManager.instance.BuildingIsCleared(earned_supply, earned_water, earned_food, found_survivor);
+					battleState = PerformAction.COMPLETED;
 				}else if (autoAttackIsOn && survivorTurnList.Count > 0) {
 					//continue auto attack
 					AttackButtonPressed();
@@ -223,7 +232,35 @@ public class BattleStateMachine : MonoBehaviour {
 	
 	}
 
+	public void PlayWeaponSound (BaseWeapon.WeaponType myWepType, string wepName) {
+		if (myWepType == BaseWeapon.WeaponType.KNIFE) {
+			//play the knife stab
+			myAudioSource.PlayOneShot(knifeSound);
+		} else if (myWepType == BaseWeapon.WeaponType.CLUB) {
+			//play the club swing
+			myAudioSource.PlayOneShot(clubSound);
+		} else if (myWepType == BaseWeapon.WeaponType.GUN && GameManager.instance.ammo > 0) {
+			//play the correct gunshot noise
+			if (wepName == "shotgun") {
+				myAudioSource.PlayOneShot(shotgunSound);	
+			} else {
+				myAudioSource.PlayOneShot(pistolSound);
+			}
+		} else if (myWepType == BaseWeapon.WeaponType.GUN && GameManager.instance.ammo < 1){
+			//play the swing noise
+			myAudioSource.PlayOneShot(clubSound);
+		}
+	}
 
+	public void PlayZombieAttackSound () {
+		int audioPosition = UnityEngine.Random.Range(0, zombieSounds.Length-1);
+		myAudioSource.PlayOneShot(zombieSounds[audioPosition]);
+	}
+
+	public void PlayUnarmedSurvivorAttackSound () {
+		int audioPosition = UnityEngine.Random.Range(0, zombieSounds.Length-1);
+		myAudioSource.PlayOneShot(survivorUnarmedSounds[audioPosition]);
+	}
 
 	public void CollectAction (TurnHandler myTurn) {
 		TurnList.Add (myTurn);
@@ -254,7 +291,7 @@ public class BattleStateMachine : MonoBehaviour {
 		for (int i = 0; i < zombiesKilled; i++) {
 			int num = UnityEngine.Random.Range(0, 8);
 			sum += num;
-			Debug.Log ("adding "+ num +" supply to the list");
+			//Debug.Log ("adding "+ num +" supply to the list");
 		}
 		//Debug.Log ("calculating total supply earned yields: " + sum);
 		return sum;
@@ -300,6 +337,24 @@ public class BattleStateMachine : MonoBehaviour {
 
 	bool CalculateSurvivorFound () {
 		float odds =0.0f;
+
+		if (GameManager.instance.daysSurvived < GameManager.DaysUntilOddsFlat) {
+			DateTime now = System.DateTime.Now;
+			double days_alive = (now-GameManager.instance.timeCharacterStarted).TotalDays;
+
+			int exponent = 10;
+			float max_percentage = 0.5f; //this starts us at 50/50 odds.
+			double full_value = Mathf.Pow(GameManager.DaysUntilOddsFlat, exponent)/ max_percentage;
+
+			float inverse_day_value = (float)(GameManager.DaysUntilOddsFlat - days_alive);
+			float current_value = (float)(Mathf.Pow(inverse_day_value, exponent)/full_value);
+			Debug.Log("calculating players odds to be at "+current_value);
+			odds = current_value;
+		}
+		//else just let the odds remain 0.0f- nothing should be found.
+
+		/*  This section is the old way I was evaluating odds to find a survivor. Retaining for reference
+
 		if (GameManager.instance.daysSurvived < GameManager.DaysUntilOddsFlat) {
 			DateTime now = System.DateTime.Now;
 			Double days_alive = (now - GameManager.instance.timeCharacterStarted).TotalDays;
@@ -317,7 +372,7 @@ public class BattleStateMachine : MonoBehaviour {
 		} else {
 			odds = GameManager.FlatOddsToFind;
 		}
-
+		*/
 		float roll = UnityEngine.Random.Range(0.0f, 1.0f);
 		if (roll < odds) {
 			Debug.Log("survivor found!");

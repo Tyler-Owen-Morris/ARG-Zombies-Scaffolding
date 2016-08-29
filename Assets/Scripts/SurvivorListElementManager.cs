@@ -22,6 +22,7 @@ public class SurvivorListElementManager : MonoBehaviour {
 		mapLevelManager = GameObject.Find("Map Level Manager").GetComponent<MapLevelManager>();
 		StartCoroutine(UpdateMyProfilePic());
 		this.transform.localScale = new Vector3(1,1,1);
+		UpdateMyText();
 	}
 
 	IEnumerator UpdateMyProfilePic() {
@@ -38,6 +39,19 @@ public class SurvivorListElementManager : MonoBehaviour {
 				Debug.Log(www.error);
 			}
 		}
+	}
+
+	void UpdateMyText () {
+		survivorNameText.text = survPlayCard.survivor.name;
+		string myStatsString = "";
+		myStatsString += survPlayCard.survivor.baseAttack +" Attk ";
+		myStatsString += survPlayCard.survivor.curStamina + " stam";
+		if (survPlayCard.survivor.weaponEquipped != null) {
+			myStatsString += " wielding a " + survPlayCard.survivor.weaponEquipped.name;
+		}else{
+			myStatsString += " and is Unarmed";
+		}
+		survivorStatsText.text = myStatsString;
 	}
 
 	public void equipButtonPressed () {

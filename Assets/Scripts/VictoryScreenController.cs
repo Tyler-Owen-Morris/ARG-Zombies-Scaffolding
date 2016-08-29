@@ -1,14 +1,25 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class VictoryScreenController : MonoBehaviour {
 
 	[SerializeField]
 	private Text text;
 
+	public Button returnToMapButton, abandonTheSurvivorButton, recruitTheSurvivorButton;
+
+	private string destroySurvivorURL = "http://www.argzombie.com/ARGZ_SERVER/DestroySurvivor.php";
+
+	void Awake () {
+		returnToMapButton.gameObject.SetActive(true);
+		abandonTheSurvivorButton.gameObject.SetActive(false);
+		recruitTheSurvivorButton.gameObject.SetActive(false);
+	}
+
 	// Use this for initialization
-	void Start () {
+	void OnLevelWasLoaded () {
 		text.text = ConstructWinningTextString();
 	}
 
@@ -17,11 +28,16 @@ public class VictoryScreenController : MonoBehaviour {
 
 		outputText += "You earned " + GameManager.instance.reportedSupply + " supply\n";
 		outputText += GameManager.instance.reportedFood + " Food\n";
-		outputText += GameManager.instance.reportedWater + " water.\n";
+		outputText += GameManager.instance.reportedWater + " water.\n\n";
 
 
 		if(GameManager.instance.survivorFound){
-			outputText += "\n\n You found a new survivor! Welcome "+GameManager.instance.foundSurvivorName;
+			returnToMapButton.gameObject.SetActive(false);
+			abandonTheSurvivorButton.gameObject.SetActive(true);
+			recruitTheSurvivorButton.gameObject.SetActive(true);
+			outputText += "\n You found "+GameManager.instance.foundSurvivorName;
+			outputText += "\nthey have "+GameManager.instance.foundSurvivorAttack+" attack and "+GameManager.instance.foundSurvivorMaxStam+" stamina";
+			outputText += "\nWhat will you do?";
 		}
 
 		/*
@@ -39,5 +55,26 @@ public class VictoryScreenController : MonoBehaviour {
 		}
 		*/
 		return outputText;
+	}
+
+	public void AbandonTheSurvivor () {
+		SendDeadSurvivorToServer(GameManager.instance.foundSurvivorEntryID);
+	}
+
+	IEnumerator SendDeadSurvivorToServer(int idToDestroy) {
+		WWWForm form = new WWWForm();
+		form.AddField("id", GameManager.instance.userId);
+		form.AddField("survivor_id", idToDestroy);
+
+		WWW www = new WWW(destroySurvivorURL, form);
+		yield return www;
+		Debug.Log(www.text);
+
+		if (www.error == null) {
+			Debug.Log(www.text);
+			SceneManager.LoadScene("02a Map Level");
+		}else {
+			Debug.Log(www.error);
+		}
 	}
 }

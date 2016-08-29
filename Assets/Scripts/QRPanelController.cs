@@ -3,6 +3,8 @@ using System.Collections;
 using UnityEngine.UI;
 using LitJson;
 using System;
+using System.Text;
+using System.Security.Cryptography;
 
 public class QRPanelController : MonoBehaviour {
 
@@ -79,6 +81,7 @@ public class QRPanelController : MonoBehaviour {
 			}
 			string json = JsonMapper.ToJson(encodeArray);
 			Debug.Log(json);
+			json = encryptData(json.ToString());//this encrypts the QRto be encoded
 			qrGeneratedString = json;
 		}
 	}
@@ -90,7 +93,8 @@ public class QRPanelController : MonoBehaviour {
 	}
 
 	void qrScanFinished(string dataText)
-	{
+	{	
+		dataText = decryptData(dataText);//before the json can be read, it must be decrypted back into json.
 		qrScannedString = dataText;
 		//UItext.text = dataText; //We don't want to show the scan to our players
 		camera_on_text.gameObject.SetActive(false);
@@ -252,6 +256,7 @@ public class QRPanelController : MonoBehaviour {
 
 			WWW www = new WWW(homebaseCheckinURL, form);
 			yield return www;
+			Debug.Log(www.text);
 
 			if (www.error == null) {
 				JsonData checkinResponse = JsonMapper.ToObject(www.text);
@@ -363,4 +368,36 @@ public class QRPanelController : MonoBehaviour {
 			return 50.0f;
 		}
 	}
+
+	public string encryptData(string toEncrypt)
+	{
+		byte[] keyArray = UTF8Encoding.UTF8.GetBytes("12345678901234567890123456789012");
+		// 256 -AES key 
+		byte[] toEncryptArray = UTF8Encoding.UTF8.GetBytes(toEncrypt);
+		RijndaelManaged rDel = new RijndaelManaged();
+		rDel.Key = keyArray;
+		rDel.Mode = CipherMode.ECB;
+		rDel.Padding = PaddingMode.PKCS7;
+		ICryptoTransform cTransform = rDel.CreateEncryptor();
+		byte[] resultArray = cTransform.TransformFinalBlock(toEncryptArray, 0, toEncryptArray.Length);
+
+		return Convert.ToBase64String(resultArray, 0, resultArray.Length);
+	}
+
+public string decryptData(string toDecrypt)
+	{
+		byte[] keyArray = UTF8Encoding.UTF8.GetBytes("12345678901234567890123456789012");
+		// AES-256 key 
+		byte[] toEncryptArray = Convert.FromBase64String(toDecrypt);
+		RijndaelManaged rDel = new RijndaelManaged();
+		rDel.Key = keyArray;
+		rDel.Mode = CipherMode.ECB;
+		rDel.Padding = PaddingMode.PKCS7; // better lang support 
+		ICryptoTransform cTransform = rDel.CreateDecryptor();
+		byte[] resultArray = cTransform.TransformFinalBlock(toEncryptArray, 0, toEncryptArray.Length);
+
+		return UTF8Encoding.UTF8.GetString(resultArray);
+	}
+
+//Note: These hash functions may create + signs, which are not compatible with php varchar columns. These signs should be filtered for something that is not created by the hash, like underscores ( _ ). Simply:  encryptedString = encryptedString.Replace('+','_'); Don't forget to do the inverse *before* decrypting.
 }

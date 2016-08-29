@@ -10,7 +10,7 @@ public class MapLevelManager : MonoBehaviour {
 	private GameObject inventoryPanel, buildingPanel, qrPanel, homebasePanel, homebaseConfirmationPanel, outpostConfirmationPanel, OutpostQRPanel, enterBldgButton, unequippedWeaponsPanel, mapLevelCanvas;
 
 	[SerializeField]
-	private Text supplyText, daysAliveText, survivorsAliveText, currentLatText, currentLonText, locationReportText, foodText, waterText, ammoText, playerNameText, bldgNameText, zombiePopText, homebaseLatText, homebaseLonText;
+	private Text supplyText, daysAliveText, survivorsAliveText, currentLatText, currentLonText, locationReportText, foodText, waterText, ammoText, playerNameText, bldgNameText, zombieCountText, bldgDistText, homebaseLatText, homebaseLonText;
 
 	[SerializeField]
 	private Slider playerHealthSlider, playerHealthSliderDuplicate;
@@ -185,6 +185,11 @@ public class MapLevelManager : MonoBehaviour {
 				lastStamUpdateLat = Input.location.lastData.latitude;
 				lastStamUpdateLng = Input.location.lastData.longitude;
 			}
+
+			//if in range of valid outpost or homebase- double the regenerated stamina.
+			if (AmIInRangeOfValidOutpost()) {
+				stamRegen = stamRegen * 2;
+			}
 		} else {
 			Debug.Log("location services not running, no distance bonus for stamina regen");
 		}
@@ -268,7 +273,26 @@ public class MapLevelManager : MonoBehaviour {
 		zombieCount = zombiesInBldg;
 		float distToBldg = (int)CalculateDistanceToTarget(buildingLat, buildingLng);
 		int rand = Random.Range(1,3);
-		zombiePopText.text = "It looks like there are about "+(zombiesInBldg-rand)+"-"+(zombiesInBldg+rand)+" zombies in there, and the building is "+distToBldg.ToString()+" meters away.";
+		zombieCountText.text = (zombiesInBldg-rand)+"-"+(zombiesInBldg+rand);
+		bldgDistText.text = distToBldg.ToString();
+
+		//set the color of the text based on the zombie count, and the distance calculated.
+		if(distToBldg < 100f) {
+			bldgDistText.color = Color.green;
+		} else if (distToBldg < 150f) {
+			bldgDistText.color = Color.yellow;
+		} else {
+			bldgDistText.color = Color.red;
+		}
+		if (zombieCount < 6) {
+			zombieCountText.color = Color.green;
+		} else if (zombieCount < 13) {
+			zombieCountText.color = Color.yellow;
+		} else {
+			zombieCountText.color = Color.red;
+		}
+
+
 		//if location services are on
 		if (Input.location.status == LocationServiceStatus.Running){
 			//if player is too far from the building disable the enter option.
