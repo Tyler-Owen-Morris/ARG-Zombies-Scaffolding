@@ -75,6 +75,7 @@ public class ZombieStateMachine : MonoBehaviour {
 	public void CheckForDeath () {
 		if (zombie.curHP <= 0 ) {
 			currentState = TurnState.DEAD;
+			BSM.zombieList.Remove(this.gameObject);
 		}
 	}
 
@@ -96,9 +97,17 @@ public class ZombieStateMachine : MonoBehaviour {
 			actionStarted = true;
 			int startRenderLayer = gameObject.GetComponent<SpriteRenderer>().sortingOrder;
 
-			//animate the enemy near the hero to attack
-			Vector3 targetPosition = new Vector3(target.transform.position.x + 0.3f, target.transform.position.y, target.transform.position.z);
-			gameObject.GetComponent<SpriteRenderer>().sortingOrder = target.GetComponent<SpriteRenderer>().sortingOrder;
+			Vector3 targetPosition = new Vector3(0, 0, 0); //just called to initialize the variable.
+			if (target != null) {
+				//animate the enemy near the hero to attack
+				targetPosition = new Vector3(target.transform.position.x + 0.3f, target.transform.position.y, target.transform.position.z);
+				gameObject.GetComponent<SpriteRenderer>().sortingOrder = target.GetComponent<SpriteRenderer>().sortingOrder;
+			} else {
+				currentState = TurnState.CHOOSEACTION;
+				actionStarted = false;
+				StopCoroutine(TakeAction());
+			}
+
 			while (MoveTowardsEnemy(targetPosition)) {yield return null;}
 			//animate weaponfx
 			BSM.PlayZombieAttackSound();
@@ -212,6 +221,7 @@ public class ZombieStateMachine : MonoBehaviour {
 
 					}
 				}
+				Destroy(this.gameObject);
 				currentState = TurnState.WAITING;
 			}
 			deathActionStarted = false;

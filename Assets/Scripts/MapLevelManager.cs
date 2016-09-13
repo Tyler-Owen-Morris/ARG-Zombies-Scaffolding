@@ -3,14 +3,14 @@ using System.Collections;
 using UnityEngine.UI;
 using Facebook.Unity;
 using LitJson;
+using System;
 
 public class MapLevelManager : MonoBehaviour {
 
-	[SerializeField]
-	private GameObject inventoryPanel, buildingPanel, qrPanel, homebasePanel, homebaseConfirmationPanel, outpostConfirmationPanel, OutpostQRPanel, enterBldgButton, unequippedWeaponsPanel, mapLevelCanvas;
+	public GameObject inventoryPanel, buildingPanel, qrPanel, homebasePanel, homebaseConfirmationPanel, outpostConfirmationPanel, missionStartConfirmationPanel, OutpostQRPanel, enterBldgButton, unequippedWeaponsPanel, mapLevelCanvas;
 
 	[SerializeField]
-	private Text supplyText, daysAliveText, survivorsAliveText, currentLatText, currentLonText, locationReportText, foodText, waterText, ammoText, playerNameText, bldgNameText, zombieCountText, bldgDistText, homebaseLatText, homebaseLonText;
+	private Text supplyText, daysAliveText, survivorsAliveText, currentLatText, currentLonText, locationReportText, foodText, waterText, ammoText, playerNameText, bldgNameText, zombieCountText, bldgDistText, homebaseLatText, homebaseLonText, missionConfirmationText;
 
 	[SerializeField]
 	private Slider playerHealthSlider, playerHealthSliderDuplicate;
@@ -18,21 +18,23 @@ public class MapLevelManager : MonoBehaviour {
 	[SerializeField]
 	private BuildingSpawner bldgSpawner;
 
-	public Button confirmHomebaseButton;
+	public Button confirmHomebaseButton, sendATeamButton;
 	public Text homebaseConfirmationText;
 
 	public WeaponListPopulator theWeaponListPopulator;
 	public SurvivorListPopulator theSurvivorListPopulator;
+	public MissionListPopulator theMissionListPopulator;
+	public MissionCombatSimulator myMissionCombatSimulator;
 
 	private float lastUpdateLat = 0.0f, lastUpdateLng = 0.0f;
 	private float lastStamUpdateLat = 0.0f, lastStamUpdateLng = 0.0f;
 
 	private int zombieCount;
-	private string bldgName;
+	public string bldgName, active_bldg_id;
 
 	public int active_gearing_survivor_id, to_equip_weapon_id, to_unequip_weapon_id;
 
-
+	private static GameObject missionCompletePrefab;
 
 	private string updateHomebaseURL = "http://www.argzombie.com/ARGZ_SERVER/UpdateHomebaseLocation.php";
 	private string dropoffAndResupplyURL = "http://www.argzombie.com/ARGZ_SERVER/DropoffAndResupply.php";
@@ -109,6 +111,8 @@ public class MapLevelManager : MonoBehaviour {
 //	}
     
     void Awake () {
+    	missionCompletePrefab = Resources.Load<GameObject>("Prefabs/MissionCompletePanelPrefab");
+
     	if (FB.IsLoggedIn == true)  {
         	FB.API ("/me?fields=name", HttpMethod.GET, DisplayUsername);
         } else {
@@ -195,7 +199,7 @@ public class MapLevelManager : MonoBehaviour {
 		}
 
 		//Add the stamina regen to each player card that's not full.
-		foreach(GameObject survivor in GameManager.instance.survivorCardList) {
+		foreach(GameObject survivor in GameManager.instance.activeSurvivorCardList) {
 			SurvivorPlayCard mySurvivor = survivor.GetComponent<SurvivorPlayCard>();
 			if (mySurvivor.survivor.curStamina < mySurvivor.survivor.baseStamina) {
 				if (mySurvivor.survivor.curStamina+stamRegen > mySurvivor.survivor.baseStamina) {
@@ -245,7 +249,7 @@ public class MapLevelManager : MonoBehaviour {
         ammoText.text = "Ammo: " + GameManager.instance.ammo.ToString();
 		daysAliveText.text = GameManager.instance.daysSurvived.ToString();
 		//Debug.Log(GameManager.instance.survivorCardList.Count);
-		survivorsAliveText.text = "Survivors: " + (GameManager.instance.survivorCardList.Count);
+		survivorsAliveText.text = "Survivors: " + (GameManager.instance.activeSurvivorCardList.Count);
         
 
 		//inventory panel text updates
@@ -265,14 +269,17 @@ public class MapLevelManager : MonoBehaviour {
         StartCoroutine(SetCurrentLocationText());
 	}
 
-	public void ActivateBuildingInspector(int zombiesInBldg, string buildingName, float buildingLat, float buildingLng) {
+	private float distToActiveBldg = 0.0f;
+	public void ActivateBuildingInspector(int zombiesInBldg, string buildingName, string bldg_id, float buildingLat, float buildingLng) {
 
 		//this sets text, stores the int/string, and activates the panel.
 		bldgName = buildingName;
 		bldgNameText.text = buildingName;
+		active_bldg_id = bldg_id;
 		zombieCount = zombiesInBldg;
 		float distToBldg = (int)CalculateDistanceToTarget(buildingLat, buildingLng);
-		int rand = Random.Range(1,3);
+		distToActiveBldg = distToBldg;
+		int rand = UnityEngine.Random.Range(1,3);
 		zombieCountText.text = (zombiesInBldg-rand)+"-"+(zombiesInBldg+rand);
 		bldgDistText.text = distToBldg.ToString();
 
@@ -309,13 +316,75 @@ public class MapLevelManager : MonoBehaviour {
 			enterBldgButton.GetComponent<Button>().interactable = true;
 		}
 
+		//if there are less than 10 survivors active, you may not start a mission.
+		if (GameManager.instance.activeSurvivorCardList.Count < 10) {
+			sendATeamButton.interactable = false;
+		} else {
+			sendATeamButton.interactable = true;
+		}
+
 		buildingPanel.SetActive(true);
 
 	}
 
+	//opens and closes the mission confirmation panel.
+	public void ConfirmMissionStart () {
+		if (missionStartConfirmationPanel.activeInHierarchy == false) {
+			//construct panel text
+			string myConfirmationPanelString = "";
+			myConfirmationPanelString += "you pull 5 members of your team aside, and show them\n";
+			myConfirmationPanelString += bldgName+"\n\n";
+			myConfirmationPanelString += "after discussion, everyone agrees\n";
+			float movement_speed = 1.5f; //movement speed in m/s
+			float time_in_seconds = distToActiveBldg/movement_speed;
+			time_in_seconds = time_in_seconds*2; //doubled for there and back
+			time_in_seconds += 120;
+			TimeSpan duration = TimeSpan.FromSeconds(time_in_seconds);
+			string myClockText = "";
+			if (duration.Hours > 0) {
+				myClockText += duration.Hours.ToString().PadLeft(2, '0')+"h:";
+				duration = duration - TimeSpan.FromHours(duration.Hours);
+			}
+			if(duration.Minutes > 0){
+				myClockText += duration.Minutes.ToString().PadLeft(2, '0')+"m:";
+				duration = duration - TimeSpan.FromMinutes(duration.Minutes);
+			}
+			if(duration.Seconds > 0) {
+				myClockText += duration.Seconds.ToString().PadLeft(2, '0')+"s";
+			}
+			myConfirmationPanelString += "it will take at least "+myClockText+"\n";
+			if (zombieCount <= 5) {
+				myConfirmationPanelString += "we don't expect much action";
+			} else if (zombieCount <= 12) {
+				myConfirmationPanelString += "we're sure to run into something";
+			} else if (zombieCount > 12) {
+				myConfirmationPanelString += "we're expecting a decent fight";
+			}
+
+			//set text and activate panel
+			missionConfirmationText.text = myConfirmationPanelString;
+			missionStartConfirmationPanel.SetActive(true);
+
+		} else {
+			missionStartConfirmationPanel.SetActive(false);
+		}
+	}
+
+	//Send the relevant data into the MissionCombatSimulator, then send the result to the server.
+	public void StartMission () {
+		//load combat data into simulator
+		myMissionCombatSimulator.missionPlayCardList.Add(GameManager.instance.activeSurvivorCardList[5].GetComponent<SurvivorPlayCard>());
+		myMissionCombatSimulator.missionPlayCardList.Add(GameManager.instance.activeSurvivorCardList[6].GetComponent<SurvivorPlayCard>());
+		myMissionCombatSimulator.missionPlayCardList.Add(GameManager.instance.activeSurvivorCardList[7].GetComponent<SurvivorPlayCard>());
+		myMissionCombatSimulator.missionPlayCardList.Add(GameManager.instance.activeSurvivorCardList[8].GetComponent<SurvivorPlayCard>());
+		myMissionCombatSimulator.missionPlayCardList.Add(GameManager.instance.activeSurvivorCardList[9].GetComponent<SurvivorPlayCard>());
+
+		//call the funtion to generate combat results
+		myMissionCombatSimulator.SimulateCombat(zombieCount, distToActiveBldg, active_bldg_id, bldgName);
+	}
+
 	public void DeactivateBuildingInspector () {
 		buildingPanel.SetActive(false);
-
 	}
 
 	public void LoadIntoCombatFromBldgInspector () {
@@ -330,6 +399,63 @@ public class MapLevelManager : MonoBehaviour {
             Debug.Log (result.Error);
         }
         
+    }
+
+    public void NewMissionComplete (int mission_id) {
+    	//declare variables 
+    	string bldg_name = "";
+    	int dead = 0;
+    	int supply = 0;
+    	int water = 0;
+    	int food = 0;
+
+    	JsonData missionJson = JsonMapper.ToObject(GameManager.instance.missionJsonText);
+    	//find the mission in the jsondata object on GameManager
+    	for(int i=0; i < missionJson[1].Count; i++) {
+    		if (missionJson[1][i]["mission_id"].ToString() == mission_id.ToString()) {
+    			//load the matching data into variables with the correct scope
+    			bldg_name = missionJson[1][i]["building_name"].ToString();
+    			supply = (int)missionJson[1][i]["supply_found"];
+    			water = (int)missionJson[1][i]["water_found"];
+    			food = (int)missionJson[1][i]["food_found"];
+
+    			if (missionJson[1][i]["survivor1_dead"].ToString() == "1") {
+    				dead++;
+    			}
+				if (missionJson[1][i]["survivor2_dead"].ToString() == "1") {
+    				dead++;
+    			}
+				if (missionJson[1][i]["survivor3_dead"].ToString() == "1") {
+    				dead++;
+    			}
+				if (missionJson[1][i]["survivor4_dead"].ToString() == "1") {
+    				dead++;
+    			}
+				if (missionJson[1][i]["survivor5_dead"].ToString() == "1") {
+    				dead++;
+    			}
+    		}
+    	}
+
+    	//construct the text for the panel
+    	string mission_results_text = "";
+    	mission_results_text = "the team has returned from investigating "+bldg_name+"\n";
+    	mission_results_text += "they found "+supply+" supply\n";
+    	mission_results_text += water+" water\n";
+    	mission_results_text += food+" food\n";
+    	if (dead > 0) {
+    		mission_results_text += "at the cost of "+dead+" survivors lives";
+    	} else {
+    		mission_results_text += "and everyone returned safely";
+    	}
+
+    	//instantiate the panel, set it's ID and text
+    	GameObject instance = Instantiate(missionCompletePrefab);
+    	GameObject canvas = GameObject.Find("Canvas");
+    	instance.gameObject.transform.SetParent(canvas.transform);
+    	MissionCompletePanelManager missCompPanelMgr = instance.GetComponent<MissionCompletePanelManager>();
+    	missCompPanelMgr.missionInfoText.text = mission_results_text;
+    	missCompPanelMgr.mission_id = mission_id;
     }
     
     //this is to get the last location data coroutine, it's part of updating the UI.
@@ -346,7 +472,7 @@ public class MapLevelManager : MonoBehaviour {
 	private float CalculatePlayerHealthSliderValue (){
 		int currStam =0;
 		int baseStam =0;
-		foreach (GameObject survivorCard in GameManager.instance.survivorCardList) {
+		foreach (GameObject survivorCard in GameManager.instance.activeSurvivorCardList) {
 			SurvivorPlayCard SPC = survivorCard.GetComponent<SurvivorPlayCard>();
 			if (SPC.team_pos == 5) {
 				baseStam = SPC.survivor.baseStamina;
@@ -362,7 +488,7 @@ public class MapLevelManager : MonoBehaviour {
 	private float CalculateSurvivorStamina () {
 		int totalMaxStam = 0;
 		int totalCurrStam = 0;
-		foreach (GameObject survivor in GameManager.instance.survivorCardList) {
+		foreach (GameObject survivor in GameManager.instance.activeSurvivorCardList) {
 			SurvivorPlayCard SurvPlayCard = survivor.GetComponent<SurvivorPlayCard>();
 			totalMaxStam += SurvPlayCard.survivor.baseStamina;
 			totalCurrStam += SurvPlayCard.survivor.curStamina;
@@ -627,7 +753,7 @@ public class MapLevelManager : MonoBehaviour {
 					Debug.Log(outpostResult[1].ToString());
 					homebaseConfirmationPanel.SetActive(false);
 					homebasePanel.SetActive(false);
-					bldgSpawner.SpawnOutpostsToMap();
+					StartCoroutine(GameManager.instance.FetchOutpostData());
 				} else if (outpostResult[0].ToString() == "Failed") {
 					Debug.Log(outpostResult[1].ToString());
 				}

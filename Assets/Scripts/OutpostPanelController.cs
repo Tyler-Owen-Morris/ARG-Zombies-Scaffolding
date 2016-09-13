@@ -46,7 +46,7 @@ public class OutpostPanelController : MonoBehaviour {
 		encodeArray[2] = post_id.ToString();
 		string json = JsonMapper.ToJson(encodeArray);
 		string encryptedJson = encryptData(json);
-		qrGeneratedString = encryptedJson;
+		qrGeneratedString = json;
 
 		Encode();
 	}

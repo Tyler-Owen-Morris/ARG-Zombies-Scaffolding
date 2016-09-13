@@ -21,7 +21,8 @@ public class GameManager : MonoBehaviour {
 	[SerializeField]
 	private GameObject[] weaponOptionsArray;
 
-	public List <GameObject> survivorCardList = new List<GameObject>();
+	public List <GameObject> activeSurvivorCardList = new List<GameObject>();
+	public List <GameObject> onMissionSurvivorCardList = new List<GameObject>();
 	public List <GameObject> weaponCardList = new List<GameObject>();
 	public GameObject survivorCardHolder;
 	public GameObject weaponCardHolder;
@@ -29,7 +30,8 @@ public class GameManager : MonoBehaviour {
 	private Scene activeScene;
 	//made this public while working on the server "cleared list" data retention. it should go back to private
 	public string activeBldg;
-	public string locationJsonText, clearedBldgJsonText, outpostJsonText;
+	public string locationJsonText, survivorJsonText, weaponJsonText, clearedBldgJsonText, outpostJsonText, missionJsonText;
+	public JsonData missionData;
 
 	public string userId;
 	public string userFirstName;
@@ -42,16 +44,22 @@ public class GameManager : MonoBehaviour {
 	private string clearedBuildingDataURL = "http://www.argzombie.com/ARGZ_SERVER/ClearedBuildingData.php";
 	private string fetchSurvivorDataURL = "http://www.argzombie.com/ARGZ_SERVER/FetchSurvivorData.php";
 	private string fetchWeaponDataURL = "http://www.argzombie.com/ARGZ_SERVER/FetchWeaponData.php";
+	private string fetchMissionDataURL = "http://www.argzombie.com/ARGZ_SERVER/FetchMissionData.php";
 	private string clearSurvivorDataURL = "http://www.argzombie.com/ARGZ_SERVER/DeleteMySurvivorData.php";
 	private string fetchOutpostDataURL = "http://www.argzombie.com/ARGZ_SERVER/FetchOutpostData.php";
+	private string allGameDataURL = "http://www.argzombie.com/ARGZ_SERVER/FetchAllGameData.php";
 	public string myProfilePicURL = "";
 
 	private bool eatDrikCounterIsOn;
 
 	private static SurvivorPlayCard survivorPlayCardPrefab;
 	private static BaseWeapon baseWeaponPrefab;
-	public static int DaysUntilOddsFlat = 15;
+	public static int DaysUntilOddsFlat = 30;
 	public static float FlatOddsToFind = 5.0f;
+
+	/// <summary>
+	/// //////////////////
+	/// </summary>
 
 	void Awake () {
 		MakeSingleton();
@@ -75,6 +83,7 @@ public class GameManager : MonoBehaviour {
 			
 			MapLevelManager mapManager = FindObjectOfType<MapLevelManager>();
 			mapManager.UpdateTheUI();
+			mapManager.theMissionListPopulator.LoadMissionsFromGameManager();
 
 		} else if (activeScene.name.ToString() == "01a Login") {
 
@@ -197,6 +206,80 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
+	public IEnumerator LoadAllGameData () {
+		WWWForm form = new WWWForm();
+		form.AddField("id", GameManager.instance.userId);
+
+		WWW www = new WWW(allGameDataURL, form);
+		yield return www;
+		Debug.Log(www.text);
+
+		if (www.error == null) {
+			JsonData fullGameData = JsonMapper.ToObject(www.text);
+
+			//******* 0-success 1-player 2-survivor 3-weapon 4-cleared buildings 5-outposts 6-missions ******* THIS IS HOW THE INDEX IS ORGANIZED
+
+			if (fullGameData[0].ToString() =="Success") {
+				//***************
+				//update the GameManager.instance with all player data
+				GameManager.instance.userFirstName = fullGameData[1]["first_name"].ToString() ;
+				GameManager.instance.userLastName = fullGameData[1]["last_name"].ToString();
+				GameManager.instance.playerCurrentStamina = (int)fullGameData[1]["curr_stamina"];
+				GameManager.instance.playerMaxStamina = (int)fullGameData[1]["max_stamina"];
+				int sup = Convert.ToInt32(fullGameData[1]["supply"].ToString());
+				GameManager.instance.supply = sup;
+				int wat = Convert.ToInt32(fullGameData[1]["water"].ToString());
+				GameManager.instance.waterCount = wat;
+				int fud = Convert.ToInt32(fullGameData[1]["food"].ToString());
+				GameManager.instance.foodCount = fud;
+				GameManager.instance.ammo = (int)fullGameData[1]["ammo"];
+				float homeLat = (float)Convert.ToDouble(fullGameData[1]["homebase_lat"].ToString());
+				GameManager.instance.homebaseLat = homeLat;
+				float homeLon = (float)Convert.ToDouble(fullGameData[1]["homebase_lon"].ToString());
+				GameManager.instance.homebaseLong = homeLon;
+				DateTime oDate = Convert.ToDateTime(fullGameData[1]["char_created_DateTime"].ToString());
+				GameManager.instance.timeCharacterStarted = oDate;
+				if (fullGameData[1]["homebase_set_time"].ToString() != "") {
+					DateTime pDate = Convert.ToDateTime(fullGameData[1]["homebase_set_time"].ToString());
+					GameManager.instance.lastHomebaseSetTime = pDate;
+				}
+				//***************
+				//load the json text into their respective containers on GameManager.instance
+				survivorJsonText = JsonMapper.ToJson(fullGameData[2]);
+
+				Debug.Log(JsonMapper.ToJson(fullGameData[3]));
+				if (fullGameData[3] != null) {
+					weaponJsonText = JsonMapper.ToJson(fullGameData[3]);
+				}
+
+				if (fullGameData[4] != null) {
+					clearedBldgJsonText = JsonMapper.ToJson(fullGameData[4]);
+				}
+
+				if (fullGameData[5] != null) {
+					outpostJsonText = JsonMapper.ToJson(fullGameData[5]);
+				}
+
+				if (fullGameData[6] != null) {
+					missionJsonText = JsonMapper.ToJson(fullGameData[6]);
+				}
+
+				//***************
+				//load the survivor/weapon game objects into the GameManager, and then go to map level
+				CreateSurvivorsFromGameManagerJson();
+				yield return new WaitForSeconds(0.2f);
+				GameManager.instance.gameDataInitialized = true;
+
+				//auto-load map level from login(1) , if on map level stay there, if on victory screen, let the user press the button to load map level.
+				if (SceneManager.GetActiveScene().buildIndex != 2 && SceneManager.GetActiveScene().buildIndex != 4 && playerInTutorial==false) {
+					SceneManager.LoadScene("02a Map Level");
+				}
+			}	
+		} else {
+			Debug.Log(www.error);
+		}
+
+	}
 
 	/// <summary>
 	/// Fetchs the resume player data.
@@ -257,7 +340,7 @@ public class GameManager : MonoBehaviour {
 			}
 
 			StartCoroutine (FetchWeaponData());
-			StartCoroutine (FetchOutpostData());
+
 			yield break;
 		} else {
 			Debug.Log ("WWW error" + www.error);
@@ -321,7 +404,96 @@ public class GameManager : MonoBehaviour {
 
 	}
 
+	public void CreateSurvivorsFromGameManagerJson () {
+
+		//delete all previous data from the gamemanager
+		GameObject[] oldSurvivorCards = GameObject.FindGameObjectsWithTag("survivorcard");
+		//Debug.Log(oldSurvivorCards.Length);
+		GameManager.instance.activeSurvivorCardList.Clear();
+		GameManager.instance.onMissionSurvivorCardList.Clear();
+		if (oldSurvivorCards.Length > 0) {
+			foreach (GameObject survivorCard in oldSurvivorCards) {
+				Destroy(survivorCard.gameObject);
+			}
+		}
+
+		//instantiate survivorcard gameobjects into the scene, load data onto the component, and set the parent to the current instance of GameManager.instance.survivorcardholder
+		JsonData survivorJson = JsonMapper.ToObject(GameManager.instance.survivorJsonText);
+		for (int i = 0; i < survivorJson.Count; i++) {
+			SurvivorPlayCard instance = Instantiate(survivorPlayCardPrefab);
+			instance.survivor.name = survivorJson[i]["name"].ToString();
+			instance.gameObject.name = survivorJson[i]["name"].ToString();
+			//instance.survivor.weaponEquipped.name = survivorJson[i]["weapon_equipped"].ToString();
+			instance.survivor.baseAttack = (int)survivorJson[i]["base_attack"];
+			instance.survivor.baseStamina = (int)survivorJson[i]["base_stam"];
+			instance.survivor.curStamina = (int)survivorJson[i]["curr_stam"];
+			instance.survivor.survivor_id = (int)survivorJson[i]["entry_id"];
+			instance.entry_id = (int)survivorJson[i]["entry_id"];
+			//instance.survivor_id = (int)survivorJson[1][i]["survivor_id"];
+			instance.team_pos = (int)survivorJson[i]["team_pos"];
+			instance.profilePicURL = survivorJson[i]["pic_url"].ToString();
+			if (survivorJson[i]["onMission"].ToString() == "1") {
+				instance.onMission = true;
+				onMissionSurvivorCardList.Add(instance.gameObject);
+			} else if (survivorJson[i]["onMission"].ToString() == "0") {
+				instance.onMission = false;
+				activeSurvivorCardList.Add(instance.gameObject);
+			}
+			instance.transform.SetParent(GameManager.instance.survivorCardHolder.transform);
+		}
+
+		//continue to the weapons
+		CreateWeaponsFromGameManagerJson();
+	}
+
+	public void CreateWeaponsFromGameManagerJson () {
+		//wipe all old data clean.
+		GameObject[] oldWeapons = GameObject.FindGameObjectsWithTag("weaponcard");
+		Debug.Log(oldWeapons.Length+" weapons found to be destoyed");
+		Debug.Log("There are "+GameManager.instance.weaponCardList.Count+" items in the list before clearing");
+		GameManager.instance.weaponCardList.Clear();
+		//GameManager.instance.weaponCardList = new List<GameObject>();
+		Debug.Log("There are "+GameManager.instance.weaponCardList.Count+" items in the card list after clear");
+		//destroy the old weapons
+		foreach (GameObject weaponCard in oldWeapons) {
+			Destroy(weaponCard.gameObject);
+		}
+
+
+		if (GameManager.instance.weaponJsonText != null) {
+			JsonData weaponJson = JsonMapper.ToObject(GameManager.instance.weaponJsonText);
+			for (int i=0; i < weaponJson.Count; i++) {
+				BaseWeapon instance = Instantiate(baseWeaponPrefab);
+				instance.transform.SetParent(weaponCardHolder.gameObject.transform);
+				instance.weapon_id = (int)weaponJson[i]["weapon_id"];
+				instance.equipped_id = (int)weaponJson[i]["equipped_id"];
+				instance.gameObject.name = weaponJson[i]["name"].ToString();
+				instance.base_dmg = (int)weaponJson[i]["base_dmg"];
+				instance.modifier = (int)weaponJson[i]["modifier"];
+				instance.stam_cost = (int)weaponJson[i]["stam_cost"];
+				instance.durability = (int)weaponJson[i]["durability"];
+
+				if (weaponJson[i]["type"].ToString() == "knife") {
+					instance.weaponType = BaseWeapon.WeaponType.KNIFE;
+				} else if (weaponJson[i]["type"].ToString() == "club") {
+					instance.weaponType = BaseWeapon.WeaponType.CLUB;
+				} else if (weaponJson[i]["type"].ToString() == "gun") {
+					instance.weaponType = BaseWeapon.WeaponType.GUN;
+				}
+			}
+		} else {
+			Debug.Log("No weapons found in gamemanager json data");
+		}
+			
+		weaponCardList.AddRange(GameObject.FindGameObjectsWithTag("weaponcard"));
+
+		MergeWeaponAndSurvivorRecords();
+	}
+
 	void MergeWeaponAndSurvivorRecords () {
+		GameManager.instance.weaponCardList.Clear();
+		GameManager.instance.weaponCardList.AddRange(GameObject.FindGameObjectsWithTag("weaponcard"));
+
 		//for each weapon equipped- compare it's equipped ID with active survivor ID's
 		foreach (GameObject weapon in weaponCardList) {
 			BaseWeapon myWeapon = weapon.GetComponent<BaseWeapon>();
@@ -331,7 +503,7 @@ public class GameManager : MonoBehaviour {
 
 				int count = 0;
 				//now loop through the player cards, and find a matching player card ID.
-				foreach (GameObject survivorCard in survivorCardList) {
+				foreach (GameObject survivorCard in activeSurvivorCardList) {
 					SurvivorPlayCard SPC = survivorCard.GetComponent<SurvivorPlayCard>();
 
 					if (SPC.entry_id == myWeapon.equipped_id) {
@@ -342,7 +514,8 @@ public class GameManager : MonoBehaviour {
 						count++;
 					}
 
-					if (count >= survivorCardList.Count) {
+					if (count >= activeSurvivorCardList.Count) {
+						SPC.survivor.weaponEquipped = null;
 						myWeapon.equipped_id = 0;
 					}
 				}
@@ -365,7 +538,8 @@ public class GameManager : MonoBehaviour {
 		//delete all previous data from the gamemanager
 		GameObject[] oldSurvivorCards = GameObject.FindGameObjectsWithTag("survivorcard");
 		//Debug.Log(oldSurvivorCards.Length);
-		GameManager.instance.survivorCardList.Clear();
+		GameManager.instance.activeSurvivorCardList.Clear();
+		GameManager.instance.onMissionSurvivorCardList.Clear();
 		if (oldSurvivorCards.Length > 0) {
 			foreach (GameObject survivorCard in oldSurvivorCards) {
 				Destroy(survivorCard.gameObject);
@@ -405,6 +579,14 @@ public class GameManager : MonoBehaviour {
 					//instance.survivor_id = (int)survivorJson[1][i]["survivor_id"];
 					instance.team_pos = (int)survivorJson[1][i]["team_pos"];
 					instance.profilePicURL = survivorJson[1][i]["pic_url"].ToString();
+					if (survivorJson[1][i]["onMission"].ToString() == "1") {
+						instance.onMission = true;
+						onMissionSurvivorCardList.Add(instance.gameObject);
+					} else if (survivorJson[1][i]["onMission"].ToString() == "0") {
+						instance.onMission = false;
+						activeSurvivorCardList.Add(instance.gameObject);
+					}
+
 
 					instance.transform.SetParent(GameManager.instance.survivorCardHolder.transform);
 				}
@@ -412,7 +594,9 @@ public class GameManager : MonoBehaviour {
 				Debug.Log(survivorJson[1].ToString());
 			}
 
-			survivorCardList.AddRange (GameObject.FindGameObjectsWithTag("survivorcard"));
+			StartCoroutine (FetchOutpostData());
+			//survivorCardList.AddRange (GameObject.FindGameObjectsWithTag("survivorcard"));
+
 			//auto-load map level from login(1) , if on map level stay there, if on victory screen, let the user press the button to load map level.
 			if (SceneManager.GetActiveScene().buildIndex != 2 && SceneManager.GetActiveScene().buildIndex != 4 && playerInTutorial==false) {
 				SceneManager.LoadScene("02a Map Level");
@@ -450,18 +634,55 @@ public class GameManager : MonoBehaviour {
 		Debug.Log(www.text);
 
 		if (www.error == null) {
+			GameManager.instance.outpostJsonText = www.text;
 			JsonData outpostJson = JsonMapper.ToObject(www.text);
 
 			if (outpostJson[0].ToString() == "Success") {
-				GameManager.instance.outpostJsonText = www.text;
+				//store the text for later use
+
 			} else if (outpostJson[0].ToString() == "Failed") {
 				Debug.Log(outpostJson[1].ToString());
+
 			}
 		} else {
 			Debug.Log(www.error);
 		}
+		//if we are on the map level- place the graphic
+		if(activeScene.buildIndex == 2) {
+			BuildingSpawner myBldgSpwnr = BuildingSpawner.FindObjectOfType<BuildingSpawner>();
+			myBldgSpwnr.SpawnOutpostsToMap();
+		}
+		StartCoroutine (FetchMissionData());
 	}
 
+	public IEnumerator FetchMissionData () {
+		WWWForm form = new WWWForm();
+		form.AddField("id", GameManager.instance.userId);
+
+		WWW www = new WWW(fetchMissionDataURL, form);
+		yield return www;
+		Debug.Log(www.text);
+
+		if (www.error == null) {
+			missionJsonText = www.text;
+			JsonData wwwReturnJson = JsonMapper.ToObject(www.text);
+			GameManager.instance.missionData = wwwReturnJson;
+			if(wwwReturnJson[0].ToString() == "Success") {
+				//set the public game object
+				Debug.Log(wwwReturnJson[1].ToString());
+			} else {
+				Debug.Log(wwwReturnJson[1].ToString());
+			}
+		} else {
+			Debug.Log(www.error);
+		}	
+		//if we are on the map screen, update the mission UI
+		if(activeScene.buildIndex == 2){
+			MapLevelManager myMapLvlMgr = MapLevelManager.FindObjectOfType<MapLevelManager>();
+			myMapLvlMgr.theMissionListPopulator.LoadMissionsFromGameManager();
+				
+		}
+	}
 	
 	public void SetDaysSurvived () {
 		DateTime now = System.DateTime.Now;
@@ -518,7 +739,8 @@ public class GameManager : MonoBehaviour {
 
 	public void ResumeCharacter () {
 		//NOTE: This coroutine also calls FetchSurvivorData and FetchWeaponData- due to order of operations in associating the 2 databases, I placed the StartCoroutine at the end of each other coroutine
-		StartCoroutine (FetchResumePlayerData());
+		//StartCoroutine (FetchResumePlayerData());
+		StartCoroutine (LoadAllGameData());
 	}
 
 	public void RenewWeaponAndEquippedData () {
@@ -584,6 +806,35 @@ public class GameManager : MonoBehaviour {
 		//UpdateAllStatsToGameMemory();
 		SetDaysSurvived ();
 		Debug.Log ("1 Hour added to time started. New Datetime is: " + timeCharacterStarted.ToString() );
+	}
+
+	public void DeactivateClearedBuildingsFromJson () {
+
+		JsonData clearedBldgJson = JsonMapper.ToObject(GameManager.instance.clearedBldgJsonText);
+
+		//ensure there are more than 0 buildings returned
+    	if (clearedBldgJson.Count > 0) {
+			for (int i = 0; i < clearedBldgJson.Count; i++) {
+	    		//if the building is still considered inactive by the server
+				if (clearedBldgJson[i]["active"].ToString() == "0") {
+	    			//Debug.Log ("Coroutine has found "+ clearedJson[i]["bldg_name"].ToString()+" to be inactive");
+					GameObject thisBuilding = GameObject.Find(clearedBldgJson[i]["bldg_name"].ToString());
+					if (thisBuilding != null) {
+	    				PopulatedBuilding populatedBldg = thisBuilding.GetComponent<PopulatedBuilding>();
+						//Debug.Log ("GameManager is attempting to deactivate "+populatedBldg.gameObject.name);
+						populatedBldg.DeactivateMe();
+	    			} else {
+	    				continue;
+	    			}
+
+				} else if (clearedBldgJson[i]["active"].ToString() == "1") {
+					//Debug.Log (clearedJson[i]["bldg_name"].ToString()+" has been reactivated by the server, but remains on player DB. Last cleared DateTime: "+clearedJson[i]["time_cleared"].ToString());
+	    		}
+	    	}
+
+    	} else {
+    		Debug.Log ("Player has not cleared any buildings yet");
+    	}
 	}
 
 	public IEnumerator DeactivateClearedBuildings () {
@@ -737,7 +988,8 @@ public class GameManager : MonoBehaviour {
 		}
 		yield return new WaitForSeconds(3.0f);
 		clearedBuildingSendInProgress=false;
-		StartCoroutine(FetchResumePlayerData());
+		//StartCoroutine(FetchResumePlayerData());
+		StartCoroutine(LoadAllGameData());
 		StartCoroutine(GameManager.instance.DeactivateClearedBuildings());
 	}
 

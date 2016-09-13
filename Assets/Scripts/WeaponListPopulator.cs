@@ -32,7 +32,7 @@ public class WeaponListPopulator : MonoBehaviour {
 		*/
 
 		//if the player selected has a weapon equipped, spawn the unequip option first.
-		foreach (GameObject survivor in GameManager.instance.survivorCardList) {
+		foreach (GameObject survivor in GameManager.instance.activeSurvivorCardList) {
 			int myId = survivor.GetComponent<SurvivorPlayCard>().entry_id;
 
 			if (myId == myMapMgr.active_gearing_survivor_id) {
@@ -58,6 +58,9 @@ public class WeaponListPopulator : MonoBehaviour {
 				  
 			}
 		}
+
+		GameManager.instance.weaponCardList.Clear();
+		GameManager.instance.weaponCardList.AddRange(GameObject.FindGameObjectsWithTag("weaponcard"));
 
 		//for each weapon that is not assigned. create a game object 
 		foreach (GameObject weapon in GameManager.instance.weaponCardList) {

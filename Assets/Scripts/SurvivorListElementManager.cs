@@ -7,8 +7,8 @@ public class SurvivorListElementManager : MonoBehaviour {
 	public Text survivorNameText;
 	public Text survivorStatsText;
 	public Image survivorPortraitSprite;
-	public GameObject mySurvivorCard;
-	public Button teamButton;
+	public GameObject mySurvivorCard, myMissionText;
+	public Button teamButton, equipButton;
 	private MapLevelManager mapLevelManager;
 	private SurvivorPlayCard survPlayCard;
 
@@ -64,5 +64,11 @@ public class SurvivorListElementManager : MonoBehaviour {
 
 	public void PromoteThisSurvivorPressed () {
 		mapLevelManager.PromoteThisSurvivor(entry_id);
+	}
+
+	public void SetToOnMission () {
+		teamButton.gameObject.SetActive(false);
+		equipButton.gameObject.SetActive(false);
+		myMissionText.gameObject.SetActive(true);
 	}
 }

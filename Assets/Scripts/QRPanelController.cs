@@ -81,7 +81,7 @@ public class QRPanelController : MonoBehaviour {
 			}
 			string json = JsonMapper.ToJson(encodeArray);
 			Debug.Log(json);
-			json = encryptData(json.ToString());//this encrypts the QRto be encoded
+			//json = encryptData(json.ToString());//this encrypts the QRto be encoded
 			qrGeneratedString = json;
 		}
 	}
@@ -94,7 +94,7 @@ public class QRPanelController : MonoBehaviour {
 
 	void qrScanFinished(string dataText)
 	{	
-		dataText = decryptData(dataText);//before the json can be read, it must be decrypted back into json.
+		//dataText = decryptData(dataText);//before the json can be read, it must be decrypted back into json.
 		qrScannedString = dataText;
 		//UItext.text = dataText; //We don't want to show the scan to our players
 		camera_on_text.gameObject.SetActive(false);

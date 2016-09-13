@@ -17,7 +17,7 @@ public class SurvivorStateMachine : MonoBehaviour {
 
 	//stuff for taking a turn
 	private bool actionStarted = false;
-	private float animSpeed = 15.0f;
+	private float animSpeed = 30.0f;
 	public GameObject plyrTarget;
 
 	public enum TurnState 
@@ -153,6 +153,8 @@ public class SurvivorStateMachine : MonoBehaviour {
 				targetZombie.zombie.curHP = targetZombie.zombie.curHP - myDmg;
 				targetZombie.CheckForDeath();
 				StartCoroutine(SendAttackToServer(survivor.survivor_id, 0));
+				//adjust the local data and update the UI
+				survivor.curStamina -= 5;
 				UpdateStaminaBar();
 
 			}
@@ -167,6 +169,7 @@ public class SurvivorStateMachine : MonoBehaviour {
 
 			gameObject.GetComponent<SpriteRenderer>().sortingOrder = startRenderLayer;
 			actionStarted = false;
+			BlinkingSliderCheck();
 			currentState = TurnState.DONE;
 		}
 		
@@ -318,8 +321,24 @@ public class SurvivorStateMachine : MonoBehaviour {
 		return myDmg;
 	}
 
+	private void BlinkingSliderCheck () {
+		BlinkingSlider myBlinkingSlider = myStamSlider.gameObject.GetComponent<BlinkingSlider>();
+		if (survivor.curStamina < -50) {
+			myBlinkingSlider.StartBlinking(0.2f);
+		} else if (survivor.curStamina < -25) {
+			myBlinkingSlider.StartBlinking(0.6f);
+		} else if (survivor.curStamina < -10) {
+			myBlinkingSlider.StartBlinking(1.1f);
+		} else if (survivor.curStamina >= 0) {
+			myBlinkingSlider.StopBlinking();
+		}
+	}
+
 	public void UpdateStaminaBar () {
 		float sliderValue = ((float)(survivor.curStamina) / (float)(survivor.baseStamina));
+		if (sliderValue <=0) {
+			sliderValue=0;
+		}
 		myStamSlider.value = sliderValue;
 		//Debug.Log ("Setting "+gameObject.name+" stamina slider to "+sliderValue);
 	}

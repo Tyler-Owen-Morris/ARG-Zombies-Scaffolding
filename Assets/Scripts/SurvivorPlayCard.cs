@@ -6,7 +6,7 @@ public class SurvivorPlayCard : MonoBehaviour {
 
 	public BaseSurvivor survivor;
 
-
+	public bool onMission;
 	public int entry_id;
 	public int team_pos;
 	public Image profilePic;

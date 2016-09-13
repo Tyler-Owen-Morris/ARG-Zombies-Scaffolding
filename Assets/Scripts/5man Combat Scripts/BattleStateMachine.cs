@@ -72,7 +72,7 @@ public class BattleStateMachine : MonoBehaviour {
 	void LoadInSurvivorCardData () {
 
 		//find the survivor play card with position 5, and put that as player in position 1
-		foreach(GameObject survivorGameobject in GameManager.instance.survivorCardList) {
+		foreach(GameObject survivorGameobject in GameManager.instance.activeSurvivorCardList) {
 			//load in the card data off of current game object
 			SurvivorPlayCard myPlayCard = survivorGameobject.GetComponent<SurvivorPlayCard>();
 			//match corresponding players to their combat positions
@@ -125,8 +125,8 @@ public class BattleStateMachine : MonoBehaviour {
 		}
 
 		//if there are less than 5 survivors, remove the gameObjects starting with 5 and working up.
-		if (GameManager.instance.survivorCardList.Count < 5) {
-			int survivorsToDelete = 5 - GameManager.instance.survivorCardList.Count;
+		if (GameManager.instance.activeSurvivorCardList.Count < 5) {
+			int survivorsToDelete = 5 - GameManager.instance.activeSurvivorCardList.Count;
 			for (int i = 0; i < survivorsToDelete; i++) {
 				if (i == 0) {
 					Destroy(playerPos5);
@@ -271,6 +271,12 @@ public class BattleStateMachine : MonoBehaviour {
 	}
 
 	void ResetAllTurns () {
+		//clear and reset the lists
+		zombieList.Clear();
+		survivorList.Clear();
+		survivorList.AddRange (GameObject.FindGameObjectsWithTag("survivor"));
+		zombieList.AddRange (GameObject.FindGameObjectsWithTag("zombie"));
+
 		foreach (GameObject zombie in zombieList) {
 			ZombieStateMachine ZSM = zombie.GetComponent<ZombieStateMachine>();
 			ZSM.currentState = ZombieStateMachine.TurnState.CHOOSEACTION;
@@ -288,28 +294,35 @@ public class BattleStateMachine : MonoBehaviour {
 	int CalculateSupplyEarned () {
 		//Debug.Log ("Calculating the sum of supply earned from " + zombiesKilled + " zombies killed.");
 		int sum = 0;
+
 		for (int i = 0; i < zombiesKilled; i++) {
 			int num = UnityEngine.Random.Range(0, 8);
 			sum += num;
 			//Debug.Log ("adding "+ num +" supply to the list");
 		}
-		//Debug.Log ("calculating total supply earned yields: " + sum);
+		float odds = CalculateCoreFalloffOdds()+0.2f; //flat 20% odds added to the max 50% that comes from 
+
+		float roll = UnityEngine.Random.Range(0.0f, 1.0f);
+		//Roll being higher 
+		if (roll > odds) {
+			sum = 0;
+		}
+
 		return sum;
 	}
 
 	int CalculateWaterFound () {
-		float oddsToFind = 50.0f;
 		int sum = 0;
-
-		float roll = UnityEngine.Random.Range(0.0f, 100.0f);
 
 		for (int i = 0; i < zombiesKilled; i++) {
 				int amount = (int)UnityEngine.Random.Range( 1 , 4 );
 				sum += amount;
 		}
 
+		float oddsToFind = CalculateCoreFalloffOdds()+0.05f; //5% flat odds to find
+		float roll = UnityEngine.Random.Range(0.0f, 1.0f);
 		// this is so that you can find nothing
-		if (roll <= oddsToFind) {
+		if (roll > oddsToFind) {
 			sum = 0;
 		}
 
@@ -317,18 +330,18 @@ public class BattleStateMachine : MonoBehaviour {
 	}
 
 	int CalculateFoodFound () {
-		float oddsToFind = 50.0f;
 		int sum = 0;
 
-		float roll = UnityEngine.Random.Range(0.0f, 100.0f);
 
 		for (int i = 0; i < zombiesKilled; i++) {
 				int amount = (int)UnityEngine.Random.Range( 1 , 4 );
 				sum += amount;
 		}
 
+		float oddsToFind = CalculateCoreFalloffOdds()+0.05f; //%5 flat odds
+		float roll = UnityEngine.Random.Range(0.0f, 1.0f);
 		// this is so that you can find nothing
-		if (roll <= oddsToFind) {
+		if (roll > oddsToFind) {
 			sum = 0;
 		}
 
@@ -373,6 +386,7 @@ public class BattleStateMachine : MonoBehaviour {
 			odds = GameManager.FlatOddsToFind;
 		}
 		*/
+
 		float roll = UnityEngine.Random.Range(0.0f, 1.0f);
 		if (roll < odds) {
 			Debug.Log("survivor found!");
@@ -383,42 +397,25 @@ public class BattleStateMachine : MonoBehaviour {
 		}
 	}
 
-	/*
-	int CalculateFoundTotalSurvivors () {
+	float CalculateCoreFalloffOdds () {
+		float odds =0.0f;
 
-		float odds = 50.0f;
-		int sum = 0;
+		if (GameManager.instance.daysSurvived < GameManager.DaysUntilOddsFlat) {
+			DateTime now = System.DateTime.Now;
+			double days_alive = (now-GameManager.instance.timeCharacterStarted).TotalDays;
 
-		float roll = UnityEngine.Random.Range (0.0f, 100.0f);
+			int exponent = 8;
+			float max_percentage = 0.5f; //this starts us at 50/50 odds.
+			double full_value = Mathf.Pow(GameManager.DaysUntilOddsFlat, exponent)/ max_percentage;
 
-		if ( roll >= odds) {
-			sum += UnityEngine.Random.Range (0, 4);
-		}
-		totalSurvivorsFound = sum;
-		return sum;
-
-	}
-
-	int CalculateActiveSurvivorsFound () {
-		
-		float oddsOfBeingActive = 55.0f;
-		int activeSurvivors = 0;
-
-		if (totalSurvivorsFound <= 0 ) {
-			return activeSurvivors;
-		} else {
-			for (int i = 0; i < totalSurvivorsFound; i++ ) {
-				float roll = UnityEngine.Random.Range (0.0f, 100.0f);
-
-				if (roll <= oddsOfBeingActive) {
-					activeSurvivors++;
-				}
-			}
-			return activeSurvivors;
+			float inverse_day_value = (float)(GameManager.DaysUntilOddsFlat - days_alive);
+			float current_value = (float)(Mathf.Pow(inverse_day_value, exponent)/full_value);
+			Debug.Log("calculating players odds to be at "+current_value);
+			odds = current_value;
 		}
 
+		return odds;
 	}
-	*/
 
 	//this is activated on the GUI button press.
 	public void AttackButtonPressed () {
@@ -531,12 +528,12 @@ public class BattleStateMachine : MonoBehaviour {
 
 		//destroy the survivor record on the GameManager.
 		GameObject destroyMe2 = null;
-		foreach (GameObject surv in GameManager.instance.survivorCardList) {
+		foreach (GameObject surv in GameManager.instance.activeSurvivorCardList) {
 			if (surv.GetComponent<SurvivorPlayCard>().survivor.survivor_id == survivorIDtoDestroy) {
 				destroyMe2 = surv;
 			}
 		}
-		GameManager.instance.survivorCardList.Remove(destroyMe2);
+		GameManager.instance.activeSurvivorCardList.Remove(destroyMe2);
 		Destroy(destroyMe2);
 		//remove from the survivorlist on battlestatemachine
 

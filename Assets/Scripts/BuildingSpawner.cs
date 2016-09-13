@@ -44,6 +44,7 @@ public class BuildingSpawner : MonoBehaviour {
 
 		//CreateBuildings();
         //StartCoroutine(GetNearbyBuildingsFoursquare());
+
         StartCoroutine(GetNearbyBuildingsGoogle());
 	}
 
@@ -94,6 +95,7 @@ public class BuildingSpawner : MonoBehaviour {
         //this loop is currently only set to do 4 iterations. AKA- first 4 locations on the list.
         for (int i = 0; i < bldgJson["results"].Count; i++) {
 			string myName = (string)bldgJson["results"][i]["name"];
+			string myBldgID = (string)bldgJson["results"][i]["id"];
         	float lat = (float)(double)bldgJson["results"][i]["geometry"]["location"]["lat"];
 			float lng = (float)(double)bldgJson["results"][i]["geometry"]["location"]["lng"];
 			
@@ -125,6 +127,7 @@ public class BuildingSpawner : MonoBehaviour {
 			PopulatedBuilding instance = Instantiate(populatedBuildingPrefab);
 			instance.name = myName;
 			instance.buildingName = myName;
+			instance.buildingID = myBldgID;
 			instance.myLat = lat;
 			instance.myLng = lng;
 			float xCoord = (float)(screenCenter.x - (xDistMeters));
@@ -138,8 +141,9 @@ public class BuildingSpawner : MonoBehaviour {
       	}
 
       	PlaceHomebaseGraphic();
-      	SpawnOutpostsToMap();
+      	//SpawnOutpostsToMap();
       	StartCoroutine(GameManager.instance.DeactivateClearedBuildings());
+      	StartCoroutine(GameManager.instance.FetchOutpostData());
         
     }
 
@@ -200,7 +204,7 @@ public class BuildingSpawner : MonoBehaviour {
     	}
     	*/
 
-		JsonData outpostJSON = JsonMapper.ToObject(outpostJsonText);
+		JsonData outpostJSON = JsonMapper.ToObject(GameManager.instance.outpostJsonText);
 		if(outpostJSON[0].ToString() == "Success") {
 			//plot outposts to game space
 			for (int i=0; i < outpostJSON[1].Count; i++) {
