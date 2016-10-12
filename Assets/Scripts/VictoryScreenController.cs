@@ -10,7 +10,7 @@ public class VictoryScreenController : MonoBehaviour {
 
 	public Button returnToMapButton, abandonTheSurvivorButton, recruitTheSurvivorButton;
 
-	private string destroySurvivorURL = "http://www.argzombie.com/ARGZ_SERVER/DestroySurvivor.php";
+	private string destroySurvivorURL = GameManager.serverURL+"/DestroySurvivor.php";
 
 	void Awake () {
 		returnToMapButton.gameObject.SetActive(true);
@@ -64,6 +64,8 @@ public class VictoryScreenController : MonoBehaviour {
 	IEnumerator SendDeadSurvivorToServer(int idToDestroy) {
 		WWWForm form = new WWWForm();
 		form.AddField("id", GameManager.instance.userId);
+		form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+		form.AddField("client", "mob");
 		form.AddField("survivor_id", idToDestroy);
 
 		WWW www = new WWW(destroySurvivorURL, form);

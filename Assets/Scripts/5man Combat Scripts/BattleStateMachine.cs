@@ -47,8 +47,8 @@ public class BattleStateMachine : MonoBehaviour {
 	public AudioSource myAudioSource;
 
 	private SurvivorStateMachine survivorWithBite;
-	private string destroySurvivorURL = "http://www.argzombie.com/ARGZ_SERVER/DestroySurvivor.php";
-	private string restoreSurvivorURL = "http://www.argzombie.com/ARGZ_SERVER/RestoreSurvivor.php";
+	private string destroySurvivorURL = GameManager.serverURL+"/DestroySurvivor.php";
+	private string restoreSurvivorURL = GameManager.serverURL+"/RestoreSurvivor.php";
 
 	//private int totalSurvivorsFound = 0;
 	void Awake () {
@@ -548,6 +548,8 @@ public class BattleStateMachine : MonoBehaviour {
 	IEnumerator SendDeadSurvivorToServer(int idToDestroy) {
 		WWWForm form = new WWWForm();
 		form.AddField("id", GameManager.instance.userId);
+		form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+		form.AddField("client", "mob");
 		form.AddField("survivor_id", idToDestroy);
 
 		WWW www = new WWW(destroySurvivorURL, form);
@@ -591,6 +593,8 @@ public class BattleStateMachine : MonoBehaviour {
 	IEnumerator SendRestoreSurvivorToServer(int idToRestore) {
 		WWWForm form = new WWWForm();
 		form.AddField("id", GameManager.instance.userId);
+		form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+		form.AddField("client", "mob");
 		form.AddField("survivor_id", idToRestore);
 
 		WWW www = new WWW(restoreSurvivorURL, form);

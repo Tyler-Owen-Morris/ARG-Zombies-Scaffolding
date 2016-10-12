@@ -28,10 +28,10 @@ public class ZombieStateMachine : MonoBehaviour {
 	//timeforaction variables
 	private bool actionStarted = false;
 	private bool deathActionStarted = false;
-	private float animSpeed = 25.0f;
+	private float animSpeed = 3000.0f;
 	public GameObject target;
 
-	private string ZombieAttackURL = "http://www.argzombie.com/ARGZ_SERVER/ZombieAttack.php";
+	private string ZombieAttackURL = GameManager.serverURL+"/ZombieAttack.php";
 
 
 	// Use this for initialization
@@ -39,7 +39,7 @@ public class ZombieStateMachine : MonoBehaviour {
 		myTargetGraphic.SetActive(false);
 		startPosition = gameObject.transform.position;
 		startRotation = gameObject.transform.rotation;
-		spawnPoint = new Vector3 (startPosition.x + 4.5f, startPosition.y, startPosition.z);
+		spawnPoint = new Vector3 (startPosition.x + 600f, startPosition.y, startPosition.z);
 		currentState = TurnState.WAITING;
 		BSM = FindObjectOfType<BattleStateMachine>();
 		myTypeText.text = zombie.zombieType.ToString();
@@ -167,6 +167,8 @@ public class ZombieStateMachine : MonoBehaviour {
 	IEnumerator SendZombieAttack (int survivorID, int dmg) {
 		WWWForm form = new WWWForm();
 		form.AddField("id", GameManager.instance.userId);
+		form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+		form.AddField("client", "mob");
 		form.AddField("survivor_id", survivorID);
 		form.AddField("dmg", dmg);
 
@@ -197,7 +199,7 @@ public class ZombieStateMachine : MonoBehaviour {
 			}
 
 			//animate zombie to the ground.
-			Quaternion downPos = new Quaternion (0,0,-160,0);
+			Quaternion downPos = new Quaternion (0,0,-80,0);
 			while (RotateToTarget(downPos)) {yield return null;}
 			//move to off screen Death/Spawn target
 			while (MoveTowardsEnemy(spawnPoint)) {yield return null;}
@@ -230,7 +232,7 @@ public class ZombieStateMachine : MonoBehaviour {
 	}
 
 	private bool RefreshRotate (Quaternion goal) {
-		return goal != (transform.rotation = Quaternion.RotateTowards(transform.rotation, goal, 90 *Time.deltaTime));
+		return goal != (transform.rotation = Quaternion.RotateTowards(transform.rotation, goal, animSpeed *Time.deltaTime));
 	}
 
 	private bool RotateToTarget (Quaternion goal) {

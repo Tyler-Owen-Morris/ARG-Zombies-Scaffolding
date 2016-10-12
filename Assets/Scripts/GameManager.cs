@@ -12,11 +12,12 @@ public class GameManager : MonoBehaviour {
 
 	public static GameManager instance;
 
-	public bool gameDataInitialized = false, updateWeaponAndSurvivorMapLevelUI = false, survivorFound = false, playerInTutorial = false, weaponHasBeenSelected = false;
-	public int daysSurvived, supply, ammo, reportedSupply, reportedWater, reportedFood, playerCurrentStamina, playerMaxStamina, zombiesToFight, foodCount, waterCount, distanceCoveredThisSession;
+	public bool gameDataInitialized = false, updateWeaponAndSurvivorMapLevelUI = false, survivorFound = false, playerInTutorial = false, weaponHasBeenSelected = false, playerIsZombie = false;
+	public int daysSurvived, supply, ammo, reportedSupply, reportedWater, reportedFood, playerCurrentStamina, playerMaxStamina, zombiesToFight, foodCount, waterCount, mealCount, hunger, thirst, distanceCoveredThisSession;
 	public DateTime timeCharacterStarted, lastHomebaseSetTime;
 	public float homebaseLat, homebaseLong;
-	public string foundSurvivorName;
+	public string foundSurvivorName, lastLoginTime;
+	public TimeSpan high_score, my_score;
 	public int foundSurvivorCurStam, foundSurvivorMaxStam, foundSurvivorAttack, foundSurvivorEntryID;
 	[SerializeField]
 	private GameObject[] weaponOptionsArray;
@@ -30,7 +31,7 @@ public class GameManager : MonoBehaviour {
 	private Scene activeScene;
 	//made this public while working on the server "cleared list" data retention. it should go back to private
 	public string activeBldg;
-	public string locationJsonText, survivorJsonText, weaponJsonText, clearedBldgJsonText, outpostJsonText, missionJsonText;
+	public string locationJsonText, survivorJsonText, weaponJsonText, clearedBldgJsonText, outpostJsonText, missionJsonText, starvationHungerJsonText;
 	public JsonData missionData;
 
 	public string userId;
@@ -38,16 +39,19 @@ public class GameManager : MonoBehaviour {
 	public string userLastName;
 	public string userName;
 
-	private string startNewCharURL = "http://www.argzombie.com/ARGZ_SERVER/StartNewCharacter.php";
-	private string resumeCharacterUrl = "http://www.argzombie.com/ARGZ_SERVER/ResumeCharacter.php";
-	private string buildingClearedURL = "http://www.argzombie.com/ARGZ_SERVER/NewBuildingCleared1.php";
-	private string clearedBuildingDataURL = "http://www.argzombie.com/ARGZ_SERVER/ClearedBuildingData.php";
-	private string fetchSurvivorDataURL = "http://www.argzombie.com/ARGZ_SERVER/FetchSurvivorData.php";
-	private string fetchWeaponDataURL = "http://www.argzombie.com/ARGZ_SERVER/FetchWeaponData.php";
-	private string fetchMissionDataURL = "http://www.argzombie.com/ARGZ_SERVER/FetchMissionData.php";
-	private string clearSurvivorDataURL = "http://www.argzombie.com/ARGZ_SERVER/DeleteMySurvivorData.php";
-	private string fetchOutpostDataURL = "http://www.argzombie.com/ARGZ_SERVER/FetchOutpostData.php";
-	private string allGameDataURL = "http://www.argzombie.com/ARGZ_SERVER/FetchAllGameData.php";
+	public static string serverURL = "http://www.argzombie.com/ARGZ_DEV_SERVER";
+
+	private string startNewCharURL = serverURL+"/StartNewCharacter.php";
+	private string resumeCharacterUrl = serverURL+"/ResumeCharacter.php";
+	private string buildingClearedURL = serverURL+"/NewBuildingCleared1.php";
+	private string clearedBuildingDataURL = serverURL+"/ClearedBuildingData.php";
+	private string fetchSurvivorDataURL = serverURL+"/FetchSurvivorData.php";
+	private string fetchWeaponDataURL = serverURL+"/FetchWeaponData.php";
+	private string fetchMissionDataURL = serverURL+"/FetchMissionData.php";
+	private string clearSurvivorDataURL = serverURL+"/DeleteMySurvivorData.php";
+	private string fetchOutpostDataURL = serverURL+"/FetchOutpostData.php";
+	private string allGameDataURL = serverURL+"/FetchAllGameData.php";
+	private string newHighScoreURL = serverURL+"/NewHighScore.php";
 	public string myProfilePicURL = "";
 
 	private bool eatDrikCounterIsOn;
@@ -173,6 +177,8 @@ public class GameManager : MonoBehaviour {
 	IEnumerator NewCharacterUpdateServer () {
 		WWWForm form1 = new WWWForm();
 		form1.AddField("id", GameManager.instance.userId);
+		form1.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+		form1.AddField("client", "mob");
 
 		//this is now handled in the start new character php script
 		WWW www1 = new WWW(clearSurvivorDataURL, form1);
@@ -181,6 +187,8 @@ public class GameManager : MonoBehaviour {
 		
 		WWWForm form = new WWWForm();
 		form.AddField("id", GameManager.instance.userId );
+		form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+		form.AddField("client", "mob");
 		form.AddField("first_name", GameManager.instance.userFirstName);
 		form.AddField("last_name", GameManager.instance.userLastName);
 		form.AddField("name", GameManager.instance.userName);
@@ -209,6 +217,8 @@ public class GameManager : MonoBehaviour {
 	public IEnumerator LoadAllGameData () {
 		WWWForm form = new WWWForm();
 		form.AddField("id", GameManager.instance.userId);
+		form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+		form.AddField("client", "mob");
 
 		WWW www = new WWW(allGameDataURL, form);
 		yield return www;
@@ -217,7 +227,7 @@ public class GameManager : MonoBehaviour {
 		if (www.error == null) {
 			JsonData fullGameData = JsonMapper.ToObject(www.text);
 
-			//******* 0-success 1-player 2-survivor 3-weapon 4-cleared buildings 5-outposts 6-missions ******* THIS IS HOW THE INDEX IS ORGANIZED
+			//******* 0-success 1-player 2-survivor 3-weapon 4-cleared buildings 5-outposts 6-missions 7-eat/drink/starve ******* THIS IS HOW THE INDEX IS ORGANIZED
 
 			if (fullGameData[0].ToString() =="Success") {
 				//***************
@@ -243,9 +253,22 @@ public class GameManager : MonoBehaviour {
 					DateTime pDate = Convert.ToDateTime(fullGameData[1]["homebase_set_time"].ToString());
 					GameManager.instance.lastHomebaseSetTime = pDate;
 				}
+				//player has not gotten their zombie killed and is attempting to play.
+				if (fullGameData[1]["isZombie"].ToString() == "1") {
+					SceneManager.LoadScene("03b Game Over");
+				}
+				GameManager.instance.lastLoginTime =fullGameData[1]["mob_login_ts"].ToString();
+				if (fullGameData[1]["high_score"].ToString() != "") {
+					TimeSpan hi_score = TimeSpan.Parse(fullGameData[1]["high_score"].ToString());
+					GameManager.instance.high_score = hi_score;
+				}
 				//***************
 				//load the json text into their respective containers on GameManager.instance
-				survivorJsonText = JsonMapper.ToJson(fullGameData[2]);
+
+				if(fullGameData[2] != null){
+					survivorJsonText = JsonMapper.ToJson(fullGameData[2]);
+				} 
+				Debug.Log(survivorJsonText);
 
 				Debug.Log(JsonMapper.ToJson(fullGameData[3]));
 				if (fullGameData[3] != null) {
@@ -264,15 +287,29 @@ public class GameManager : MonoBehaviour {
 					missionJsonText = JsonMapper.ToJson(fullGameData[6]);
 				}
 
+				if (fullGameData[7] != null) {
+					starvationHungerJsonText = JsonMapper.ToJson(fullGameData[7]);
+				}
+
 				//***************
 				//load the survivor/weapon game objects into the GameManager, and then go to map level
 				CreateSurvivorsFromGameManagerJson();
 				yield return new WaitForSeconds(0.2f);
 				GameManager.instance.gameDataInitialized = true;
 
+				if (playerInTutorial == true && weaponHasBeenSelected == true) {
+					string tut = "tutorial";
+					LoadIntoCombat(1, tut);
+				}
+
 				//auto-load map level from login(1) , if on map level stay there, if on victory screen, let the user press the button to load map level.
-				if (SceneManager.GetActiveScene().buildIndex != 2 && SceneManager.GetActiveScene().buildIndex != 4 && playerInTutorial==false) {
+				if (SceneManager.GetActiveScene().buildIndex != 2 && SceneManager.GetActiveScene().buildIndex != 4 && playerInTutorial == false) {
 					SceneManager.LoadScene("02a Map Level");
+				} else if (SceneManager.GetActiveScene().name == "02a Map Level") {
+					//if we are on the map level, and game data update has been called/completed- update UI and mission list populator.
+					MapLevelManager mapManager = FindObjectOfType<MapLevelManager>();
+					mapManager.UpdateTheUI();
+					mapManager.theMissionListPopulator.LoadMissionsFromGameManager();
 				}
 			}	
 		} else {
@@ -280,6 +317,30 @@ public class GameManager : MonoBehaviour {
 		}
 
 	}
+
+	public IEnumerator PlayerDiedofStarvation () {
+		//calculate the players score 
+		DateTime time_dead = GameManager.instance.timeCharacterStarted + TimeSpan.FromHours(6 * GameManager.instance.mealCount);
+		TimeSpan final_score = time_dead - GameManager.instance.timeCharacterStarted;
+		my_score = final_score;
+		Debug.Log(final_score.ToString());
+
+		if (final_score > GameManager.instance.high_score) {
+			WWWForm form = new WWWForm();
+			form.AddField("id", GameManager.instance.userId);
+			form.AddField("login_ts", GameManager.instance.lastLoginTime);
+			form.AddField("final_score",final_score.ToString());
+
+			WWW www = new WWW(newHighScoreURL, form);
+			yield return www;
+			Debug.Log(www.text);
+		} else {
+			
+		}
+
+		SceneManager.LoadScene("03b Game Over");
+	}
+
 
 	/// <summary>
 	/// Fetchs the resume player data.
@@ -293,6 +354,8 @@ public class GameManager : MonoBehaviour {
 			GameManager.instance.userId = "10154194346243928";
 			form.AddField("id", GameManager.instance.userId);
 		}
+		form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+		form.AddField("client", "mob");
 
 		WWW www = new WWW(resumeCharacterUrl, form);
 		yield return www;
@@ -359,6 +422,9 @@ public class GameManager : MonoBehaviour {
 		//get the data from the server
 		WWWForm form = new WWWForm();
 		form.AddField("id", GameManager.instance.userId);
+		form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+		form.AddField("client", "mob");
+
 		WWW www = new WWW(fetchWeaponDataURL, form);
 		yield return www;
 		Debug.Log(www.text);
@@ -430,8 +496,8 @@ public class GameManager : MonoBehaviour {
 			instance.survivor.survivor_id = (int)survivorJson[i]["entry_id"];
 			instance.entry_id = (int)survivorJson[i]["entry_id"];
 			//instance.survivor_id = (int)survivorJson[1][i]["survivor_id"];
-			instance.team_pos = (int)survivorJson[i]["team_pos"];
-			instance.profilePicURL = survivorJson[i]["pic_url"].ToString();
+			instance.team_pos = (int)survivorJson[i]["team_position"];
+			instance.profilePicURL = survivorJson[i]["profile_pic_url"].ToString();
 			if (survivorJson[i]["onMission"].ToString() == "1") {
 				instance.onMission = true;
 				onMissionSurvivorCardList.Add(instance.gameObject);
@@ -554,6 +620,9 @@ public class GameManager : MonoBehaviour {
 			GameManager.instance.userId = "10154194346243929";
 			form.AddField("id", GameManager.instance.userId);
 		}
+		form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+		form.AddField("client", "mob");
+
 		//make www call
 		WWW www = new WWW(fetchSurvivorDataURL, form);
 		yield return www;
@@ -628,6 +697,8 @@ public class GameManager : MonoBehaviour {
 	public IEnumerator FetchOutpostData () {
 		WWWForm form = new WWWForm();
 		form.AddField("id", GameManager.instance.userId);
+		form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+		form.AddField("client", "mob");
 
 		WWW www = new WWW(fetchOutpostDataURL, form);
 		yield return www;
@@ -658,6 +729,8 @@ public class GameManager : MonoBehaviour {
 	public IEnumerator FetchMissionData () {
 		WWWForm form = new WWWForm();
 		form.AddField("id", GameManager.instance.userId);
+		form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+		form.AddField("client", "mob");
 
 		WWW www = new WWW(fetchMissionDataURL, form);
 		yield return www;
@@ -714,6 +787,7 @@ public class GameManager : MonoBehaviour {
 		GameManager.instance.playerCurrentStamina = 100;
 		GameManager.instance.homebaseLat = 0.0f;
 		GameManager.instance.homebaseLong = 0.0f;
+		GameManager.instance.lastLoginTime = "12/31/1999 11:59:59";
 		playerInTutorial = true;
 
 		StartCoroutine (NewCharacterUpdateServer());
@@ -738,6 +812,8 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void ResumeCharacter () {
+		GameManager.instance.lastLoginTime = "12/31/1999 11:59:59";
+		Debug.Log(GameManager.instance.lastLoginTime.ToString());
 		//NOTE: This coroutine also calls FetchSurvivorData and FetchWeaponData- due to order of operations in associating the 2 databases, I placed the StartCoroutine at the end of each other coroutine
 		//StartCoroutine (FetchResumePlayerData());
 		StartCoroutine (LoadAllGameData());
@@ -840,6 +916,10 @@ public class GameManager : MonoBehaviour {
 	public IEnumerator DeactivateClearedBuildings () {
 		WWWForm myForm = new WWWForm();
 		myForm.AddField("id", GameManager.instance.userId);
+		myForm.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+		myForm.AddField("client", "mob");
+
+		Debug.Log(GameManager.instance.lastLoginTime.ToString());
 
     	WWW www = new WWW(clearedBuildingDataURL, myForm);
     	yield return www;
@@ -945,6 +1025,9 @@ public class GameManager : MonoBehaviour {
 
 			WWWForm wwwForm = new WWWForm();
 			wwwForm.AddField("id", GameManager.instance.userId);
+			wwwForm.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+			wwwForm.AddField("client", "mob");
+
 			wwwForm.AddField("bldg_name", GameManager.instance.activeBldg);
 			wwwForm.AddField("bldg_id", bldg_id);
 			wwwForm.AddField("supply", GameManager.instance.reportedSupply);
@@ -978,7 +1061,7 @@ public class GameManager : MonoBehaviour {
 					}
 				}
 			} else {
-			Debug.Log(www.error);
+				Debug.Log(www.error);
 			}
 			SceneManager.LoadScene ("03a Win");
 		} else {

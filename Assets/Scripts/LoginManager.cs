@@ -24,9 +24,9 @@ public class LoginManager : MonoBehaviour {
 //	private string playerDataUrl = "http://localhost/ARGZ_SERVER/PlayerData.php";
 //	private string loginUrl = "http://localhost/ARGZ_SERVER/login.php";
 
-	private string newSurvivorUrl = "http://www.argzombie.com/ARGZ_SERVER/create_new_survivor.php";
-	private string findUserAcctURL = "http://www.argzombie.com/ARGZ_SERVER/UserAcctLookup.php";
-	private string fetchStaticSurvivorURL = "http://www.argzombie.com/ARGZ_SERVER/FetchStaticSurvivor.php";
+	private string newSurvivorUrl = GameManager.serverURL+"/create_new_survivor.php";
+	private string findUserAcctURL = GameManager.serverURL+"/UserAcctLookup.php";
+	private string fetchStaticSurvivorURL = GameManager.serverURL+"/FetchStaticSurvivor.php";
 	
 	// Use this for initialization
 	void Start () { 
@@ -117,14 +117,17 @@ public class LoginManager : MonoBehaviour {
 		        FB.API ("/me?fields=last_name", HttpMethod.GET, UpdateUserLastName);
 				FB.API ("/me", HttpMethod.GET, UpdateUserName);
 				FB.API ("me?fields=picture.width(200).height(200)", HttpMethod.GET, UpdateProfilePicURL);
+
             } else {
                 Debug.Log ("FB is NOT logged in");
                 loggedInPanel.SetActive (false);
             }
-            
+         
         }
-        
+
     }
+
+
     
 	private void UpdateUserId (IResult result) {
 		if (result.Error == null) {
@@ -216,6 +219,8 @@ public class LoginManager : MonoBehaviour {
 	IEnumerator FetchStaticSurvivors() {
 		WWWForm form = new WWWForm();
 		form.AddField("id", GameManager.instance.userId);
+		form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+		form.AddField("client", "mob");
 
 		WWW www = new WWW(fetchStaticSurvivorURL, form);
 		yield return www;
@@ -328,7 +333,9 @@ public class LoginManager : MonoBehaviour {
 
 	IEnumerator SendNewSurvivorToServer (string name, int stamina, int attack, int teamPosition, string picture_url) {
 		WWWForm form = new WWWForm();
-		form.AddField("owner_id", GameManager.instance.userId);
+		form.AddField("id", GameManager.instance.userId);
+		form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+		form.AddField("client", "mob");
 		form.AddField("team_position", teamPosition); //this will need to actually pull
 		form.AddField("name", name);
 		form.AddField("base_stam", stamina);

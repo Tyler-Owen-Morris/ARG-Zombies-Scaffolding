@@ -12,7 +12,7 @@ public class MissionCombatSimulator : MonoBehaviour {
 	public int ammo_used, zombies_killed, supply_earned, water_earned, food_earned;
 	public bool surv1Dead, surv2Dead, surv3Dead, surv4Dead, surv5Dead, survivor_found;
 
-	private string sendMissionURL = "http://www.argzombie.com/ARGZ_SERVER/StartNewMission.php";
+	private string sendMissionURL = GameManager.serverURL+"/StartNewMission.php";
 
 	public void SimulateCombat (int zombieCount, float distanceToBuilding, string bldg_id, string bldg_name) {
 		building_id = bldg_id;
@@ -80,6 +80,9 @@ public class MissionCombatSimulator : MonoBehaviour {
 	private IEnumerator SendMissionToServer() {
 		WWWForm form = new WWWForm();
 		form.AddField("id", GameManager.instance.userId);
+		form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+		form.AddField("client", "mob");
+
 		form.AddField("building_id", building_id);
 		form.AddField("building_name", building_name);
 		form.AddField("survivor1_id", missionPlayCardList[0].survivor.survivor_id);

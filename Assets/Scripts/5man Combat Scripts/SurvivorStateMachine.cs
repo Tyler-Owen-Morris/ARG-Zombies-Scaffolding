@@ -17,7 +17,7 @@ public class SurvivorStateMachine : MonoBehaviour {
 
 	//stuff for taking a turn
 	private bool actionStarted = false;
-	private float animSpeed = 30.0f;
+	private float animSpeed = 3000.0f;
 	public GameObject plyrTarget;
 
 	public enum TurnState 
@@ -31,7 +31,7 @@ public class SurvivorStateMachine : MonoBehaviour {
 	}
 	public TurnState currentState;
 
-	private string sendAttackURL = "http://www.argzombie.com/ARGZ_SERVER/SendAttack.php";
+	private string sendAttackURL = GameManager.serverURL+"/SendAttack.php";
 
 	void Start () {
 		BSM = FindObjectOfType<BattleStateMachine>();
@@ -181,6 +181,8 @@ public class SurvivorStateMachine : MonoBehaviour {
 	IEnumerator SendAttackToServer (int survivorID, int weaponID) {
 		WWWForm form = new WWWForm();
 		form.AddField("id", GameManager.instance.userId);
+		form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+		form.AddField("client", "mob");
 		form.AddField("survivor_id", survivorID);
 		form.AddField("weapon_id", weaponID);
 

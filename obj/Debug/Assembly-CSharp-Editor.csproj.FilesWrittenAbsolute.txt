@@ -42,3 +42,5 @@
 /Users/Owen/ARG Zombies Scaffolding/Temp/bin/Debug/Assembly-CSharp-firstpass.dll
 /Users/Owen/ARG Zombies Scaffolding/Temp/bin/Debug/Assembly-CSharp-firstpass.dll.mdb
 /Users/Owen/ARG Zombies Scaffolding/Temp/bin/Debug/UnityEngine.Analytics.dll
+/Users/Owen/ARG Zombies Scaffolding/Temp/bin/Debug/UnityEditor.iOS.Extensions.Common.dll.mdb
+/Users/Owen/ARG Zombies Scaffolding/Temp/bin/Debug/UnityEditor.iOS.Extensions.Xcode.dll.mdb

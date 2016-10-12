@@ -23,6 +23,7 @@ public class MissionListElementManager : MonoBehaviour {
 		if (time_complete != null && time_complete < DateTime.Now) {
 			//this mission is complete, spawn the popup window.
 			CompleteThisMission();
+
 		} else {
 			//this mission is active, calculate and set the slider and text.
 			TimeSpan to_complete = time_complete - DateTime.Now;
@@ -69,6 +70,7 @@ public class MissionListElementManager : MonoBehaviour {
 			//call the function to spawn mission completion confirmation.
 			myMapLvlMgr.NewMissionComplete(myMissionID);
 
+			Destroy(this.gameObject);
 		} 
 	}
 }

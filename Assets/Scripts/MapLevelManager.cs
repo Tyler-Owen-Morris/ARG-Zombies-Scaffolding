@@ -7,7 +7,7 @@ using System;
 
 public class MapLevelManager : MonoBehaviour {
 
-	public GameObject inventoryPanel, buildingPanel, qrPanel, homebasePanel, homebaseConfirmationPanel, outpostConfirmationPanel, missionStartConfirmationPanel, OutpostQRPanel, enterBldgButton, unequippedWeaponsPanel, mapLevelCanvas;
+	public GameObject inventoryPanel, buildingPanel, qrPanel, homebasePanel, homebaseConfirmationPanel, outpostConfirmationPanel, missionStartConfirmationPanel, OutpostQRPanel, enterBldgButton, unequippedWeaponsPanel, mapLevelCanvas, hungerThirstWarningPanel;
 
 	[SerializeField]
 	private Text supplyText, daysAliveText, survivorsAliveText, currentLatText, currentLonText, locationReportText, foodText, waterText, ammoText, playerNameText, bldgNameText, zombieCountText, bldgDistText, homebaseLatText, homebaseLonText, missionConfirmationText;
@@ -19,7 +19,7 @@ public class MapLevelManager : MonoBehaviour {
 	private BuildingSpawner bldgSpawner;
 
 	public Button confirmHomebaseButton, sendATeamButton;
-	public Text homebaseConfirmationText;
+	public Text homebaseConfirmationText, starvationWarningText;
 
 	public WeaponListPopulator theWeaponListPopulator;
 	public SurvivorListPopulator theSurvivorListPopulator;
@@ -36,13 +36,14 @@ public class MapLevelManager : MonoBehaviour {
 
 	private static GameObject missionCompletePrefab;
 
-	private string updateHomebaseURL = "http://www.argzombie.com/ARGZ_SERVER/UpdateHomebaseLocation.php";
-	private string dropoffAndResupplyURL = "http://www.argzombie.com/ARGZ_SERVER/DropoffAndResupply.php";
-	private string equipWeaponURL = "http://www.argzombie.com/ARGZ_SERVER/EquipWeapon.php";
-	private string unequipWeaponURL = "http://www.argzombie.com/ARGZ_SERVER/UnequipWeapon.php";
-	private string promoteSurvivorURL = "http://www.argzombie.com/ARGZ_SERVER/PromoteSurvivor.php";
-	private string staminaUpdateURL = "http://www.argzombie.com/ARGZ_SERVER/StaminaRegen.php";
-	private string SendNewOutpostURL = "http://www.argzombie.com/ARGZ_SERVER/CreateOutpost.php";
+	private string updateHomebaseURL = GameManager.serverURL+"/UpdateHomebaseLocation.php";
+	private string dropoffAndResupplyURL = GameManager.serverURL+"/DropoffAndResupply.php";
+	private string equipWeaponURL = GameManager.serverURL+"/EquipWeapon.php";
+	private string unequipWeaponURL = GameManager.serverURL+"/UnequipWeapon.php";
+	private string promoteSurvivorURL = GameManager.serverURL+"/PromoteSurvivor.php";
+	private string staminaUpdateURL = GameManager.serverURL+"/StaminaRegen.php";
+	private string SendNewOutpostURL = GameManager.serverURL+"/CreateOutpost.php";
+	private string clearDeadSurvivorsURL = GameManager.serverURL+"/ClearDead.php";
 
 	public void InventoryButtonPressed () {
 		if (inventoryPanel.activeInHierarchy == false ) {
@@ -127,7 +128,57 @@ public class MapLevelManager : MonoBehaviour {
 		//UpdateTheUI();
 		InvokeRepeating("CheckAndUpdateMap", 10.0f, 10.0f);
 		InvokeRepeating("RegenerateStamina", 30.0f, 60.0f);
+
+		CheckForStarvationDehydration();
 	}
+
+	void CheckForStarvationDehydration () {
+		//initialize data needed for funciton
+		JsonData eatDrinkJson = JsonMapper.ToObject(GameManager.instance.starvationHungerJsonText);
+		String starvationWarning = "";
+		bool openPanel =false;
+
+		//construct the text string, starting with smallest to largest threat- only displaying last warning found
+		if (GameManager.instance.foodCount <= 0 || GameManager.instance.waterCount <= 0) {
+			starvationWarning = "Warning! you are out of food and water. Your team will start dying within hours.";
+			openPanel = true;
+		}
+
+		if (eatDrinkJson != null) {
+			bool ded = false;
+			for (int i=0; i<eatDrinkJson.Count; i++) {
+				if ((int)eatDrinkJson[i]["team_position"] == 5) {
+					//game over condition.
+					Debug.Log("GAME OVER CONDITION!! ******PLAYER SUPPOSED TO DIE*******");
+					starvationWarning = "You have died of starvation and thirst, you are now a zombie!";
+					StartCoroutine(GameManager.instance.PlayerDiedofStarvation());
+					ded = true;
+					break;
+				}
+
+				starvationWarning += eatDrinkJson[i]["name"];
+				if (eatDrinkJson.Count > 1) {
+					starvationWarning += ",";
+					if (i == (eatDrinkJson.Count-2)) {
+						starvationWarning += " and ";
+					} else {
+						starvationWarning += " ";
+					}
+				} else {
+					starvationWarning += " ";
+				}
+
+			}
+			if (ded == false) starvationWarning += "died of starvation and/or dehydration. You must find food and water soon";
+				
+		}
+
+		if (openPanel == true) {
+			starvationWarningText.text = starvationWarning;
+			hungerThirstWarningPanel.SetActive(true);
+		}
+	}
+
 
 	void CheckAndUpdateMap () {
 		//check if location services are active
@@ -226,6 +277,8 @@ public class MapLevelManager : MonoBehaviour {
 	IEnumerator SendStaminaUpdate (int stam) {
 		WWWForm form = new WWWForm();
 		form.AddField("id", GameManager.instance.userId);
+		form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+		form.AddField("client", "mob");
 		form.AddField("stam_regen", stam);
 
 		WWW www = new WWW(staminaUpdateURL, form);
@@ -244,9 +297,17 @@ public class MapLevelManager : MonoBehaviour {
         
 		//left UI panel update
 		supplyText.text = "Supply: " + GameManager.instance.supply.ToString();
-        foodText.text = "Food: " + GameManager.instance.foodCount.ToString();
-        waterText.text = "Water: " + GameManager.instance.waterCount.ToString();
-        ammoText.text = "Ammo: " + GameManager.instance.ammo.ToString();
+		if (GameManager.instance.foodCount <=0) {
+        	foodText.text = "Food: 0";
+        }else{
+			foodText.text = "Food: " + GameManager.instance.foodCount.ToString();
+        }
+		if (GameManager.instance.waterCount <=0) {
+			waterText.text = "Water: 0";
+        }else{
+			waterText.text = "Water: " + GameManager.instance.waterCount.ToString();
+        }
+        ammoText.text = "Ammunition: " + GameManager.instance.ammo.ToString();
 		daysAliveText.text = GameManager.instance.daysSurvived.ToString();
 		//Debug.Log(GameManager.instance.survivorCardList.Count);
 		survivorsAliveText.text = "Survivors: " + (GameManager.instance.activeSurvivorCardList.Count);
@@ -263,7 +324,7 @@ public class MapLevelManager : MonoBehaviour {
 
 		//duplicate health slider updates
 		playerHealthSlider.value = (CalculatePlayerHealthSliderValue());
-		playerHealthSliderDuplicate.value = (CalculateSurvivorStamina());
+		playerHealthSliderDuplicate.value = (CalculateActiveTeamStamina());
 
 		bldgSpawner.PlaceHomebaseGraphic();
         StartCoroutine(SetCurrentLocationText());
@@ -325,6 +386,30 @@ public class MapLevelManager : MonoBehaviour {
 
 		buildingPanel.SetActive(true);
 
+	}
+
+	public void AcknowledgeStarvationWarning () {
+		StartCoroutine(AcknowledgeStarvation());
+	}
+
+	IEnumerator AcknowledgeStarvation () {
+		WWWForm form = new WWWForm();
+		form.AddField("id", GameManager.instance.userId);
+		form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+		form.AddField("client", "mob");
+
+		WWW www = new WWW(clearDeadSurvivorsURL, form);
+		yield return www;
+		Debug.Log(www.text);
+
+		if (www.error == null) {
+			JsonData clearDeadJSON = JsonMapper.ToObject(www.text);
+			if (clearDeadJSON[0].ToString() == "Success") {
+				Debug.Log(clearDeadJSON[1].ToString());
+			}
+		} else {
+			Debug.Log(www.error);
+		}
 	}
 
 	//opens and closes the mission confirmation panel.
@@ -483,6 +568,22 @@ public class MapLevelManager : MonoBehaviour {
 		//Debug.Log(baseStam.ToString()+" "+currStam.ToString());
 		float value = (float)currStam/(float)baseStam;
 		return value;//the number 100 is a plceholder for total health possible.
+	}
+
+	private float CalculateActiveTeamStamina () {
+		int totalMaxStam = 0;
+		int totalCurrStam = 0;
+		foreach (GameObject survivor in GameManager.instance.activeSurvivorCardList) {
+			SurvivorPlayCard SurvPlayCard = survivor.GetComponent<SurvivorPlayCard>();
+			if (SurvPlayCard.team_pos > 0) {
+				totalMaxStam += SurvPlayCard.survivor.baseStamina;
+				totalCurrStam += SurvPlayCard.survivor.curStamina;
+				//Debug.Log ("adding "+SurvPlayCard.survivor.baseStamina+" to base of stam counter, and "+SurvPlayCard.survivor.curStamina+" to the current stamina");
+			}
+		}
+		float value = (float)totalCurrStam/(float)totalMaxStam;
+		//Debug.Log ("The value of the slider has been calculated to be: "+value);
+		return value;
 	}
 
 	private float CalculateSurvivorStamina () {
@@ -683,6 +784,8 @@ public class MapLevelManager : MonoBehaviour {
 
 		WWWForm form = new WWWForm();
 		form.AddField("id", GameManager.instance.userId);
+		form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+		form.AddField("client", "mob");
 		form.AddField("lat", newLat.ToString());
 		form.AddField("lon", newLon.ToString());
 		form.AddField("homebase_set_time", GameManager.instance.lastHomebaseSetTime.ToString());
@@ -737,6 +840,8 @@ public class MapLevelManager : MonoBehaviour {
 
 		WWWForm form = new WWWForm();
 		form.AddField("id", GameManager.instance.userId);
+		form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+		form.AddField("client", "mob");
 		form.AddField("outpost_lat", newLat.ToString());
 		form.AddField("outpost_lng", newLon.ToString());
 		//duration and capacity are set on server side.
@@ -770,6 +875,8 @@ public class MapLevelManager : MonoBehaviour {
 	IEnumerator DropoffAndResupply () {
 		WWWForm form = new WWWForm();
 		form.AddField("id", GameManager.instance.userId);
+		form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+		form.AddField("client", "mob");
 
 		WWW www = new WWW(dropoffAndResupplyURL ,form);
 		yield return www;
@@ -834,6 +941,8 @@ public class MapLevelManager : MonoBehaviour {
 	IEnumerator UnequipThisWeapon (int survivor_equipped, int weapon_id) {
 		WWWForm form = new WWWForm();
 		form.AddField("id", GameManager.instance.userId);
+		form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+		form.AddField("client", "mob");
 		form.AddField("survivor_id", survivor_equipped);
 		form.AddField("weapon_id", weapon_id);
 
@@ -861,6 +970,8 @@ public class MapLevelManager : MonoBehaviour {
 	IEnumerator EquipWeaponToSurvivor (int survivor_id, int weapon_id) {
 		WWWForm form = new WWWForm();
 		form.AddField("id", GameManager.instance.userId);
+		form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+		form.AddField("client", "mob");
 		form.AddField("survivor_id", survivor_id);
 		form.AddField("weapon_id", weapon_id);
 
@@ -899,6 +1010,8 @@ public class MapLevelManager : MonoBehaviour {
 	IEnumerator PromoteSurvivorToTeam (int survivor_id) {
 		WWWForm form = new WWWForm();
 		form.AddField("id", GameManager.instance.userId);
+		form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+		form.AddField("client", "mob");
 		form.AddField("survivor_id", survivor_id);
 
 		WWW www = new WWW(promoteSurvivorURL, form);

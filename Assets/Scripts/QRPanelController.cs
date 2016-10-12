@@ -16,11 +16,11 @@ public class QRPanelController : MonoBehaviour {
 	public string qrGeneratedString, qrScannedString;
 	public MapLevelManager mapLvlMgr;
 
-	private string qrScannedURL = "http://www.argzombie.com/ARGZ_SERVER/QR_FriendRequest.php";
-	private string outpostRequestURL = "http://www.argzombie.com/ARGZ_SERVER/QR_OutpostRequest.php";
-	private string homebaseRequestURL = "http://www.argzombie.com/ARGZ_SERVER/QR_HomebaseRequest.php";
-	private string playerJoinHomebaseURL = "http://www.argzombie.com/ARGZ_SERVER/QR_JoinHomebase.php";
-	private string homebaseCheckinURL = "http://www.argzombie.com/ARGZ_SERVER/QR_CheckinAtHome.php";
+	private string qrScannedURL = GameManager.serverURL+"/QR_FriendRequest.php";
+	private string outpostRequestURL = GameManager.serverURL+"/QR_OutpostRequest.php";
+	private string homebaseRequestURL = GameManager.serverURL+"/QR_HomebaseRequest.php";
+	private string playerJoinHomebaseURL = GameManager.serverURL+"/QR_JoinHomebase.php";
+	private string homebaseCheckinURL = GameManager.serverURL+"/QR_CheckinAtHome.php";
 
 	// Use this for initialization
 	void Start () {
@@ -156,6 +156,9 @@ public class QRPanelController : MonoBehaviour {
 	IEnumerator JoinHomebaseAsOutpost (string baseOwnerID, float my_lat, float my_lng) {
 		WWWForm form = new WWWForm();
 		form.AddField("id", GameManager.instance.userId);
+		form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+		form.AddField("client", "mob");
+
 		form.AddField("homebase_owner_id", baseOwnerID);
 		form.AddField("base_lat", my_lat.ToString());
 		form.AddField("base_lng", my_lng.ToString());
@@ -174,6 +177,9 @@ public class QRPanelController : MonoBehaviour {
 	IEnumerator SendOutpostRequestToServer (JsonData outpostData) {
 		WWWForm form = new WWWForm();
 		form.AddField("id", GameManager.instance.userId);
+		form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+		form.AddField("client", "mob");
+
 		form.AddField("owner_id", outpostData[1].ToString());
 		form.AddField("outpost_id", outpostData[2].ToString());
 
@@ -224,7 +230,9 @@ public class QRPanelController : MonoBehaviour {
 
 			WWWForm form = new WWWForm();
 			form.AddField("request_id", requestIDtext);
-			form.AddField("accept_id", GameManager.instance.userId);
+			form.AddField("id", GameManager.instance.userId);
+			form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+			form.AddField("client", "mob");
 
 			WWW www = new WWW(qrScannedURL, form);
 			yield return www;
@@ -253,6 +261,8 @@ public class QRPanelController : MonoBehaviour {
 		if (CalculateDistanceToTarget(baseLat, baseLng) <= 75.0f) {
 			WWWForm form = new WWWForm();
 			form.AddField("id", GameManager.instance.userId);
+			form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+			form.AddField("client", "mob");
 
 			WWW www = new WWW(homebaseCheckinURL, form);
 			yield return www;
