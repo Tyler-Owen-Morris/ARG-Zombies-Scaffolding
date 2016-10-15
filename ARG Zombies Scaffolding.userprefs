@@ -1,14 +1,13 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/GameManager.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/5man Combat Scripts/AmputationButtonManager.cs">
     <Files>
-      <File FileName="Assets/Scripts/BackgroundRandomizer.cs" Line="12" Column="5" />
+      <File FileName="Assets/Scripts/BackgroundRandomizer.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/SurvivorPlayCard.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/5man Combat Scripts/BaseSurvivor.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/5man Combat Scripts/BaseWeapon.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/5man Combat Scripts/BaseZombie.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/MissionListElementManager.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/MissionCombatSimulator.cs" Line="82" Column="52" />
       <File FileName="Assets/Scripts/BuildingSpawner.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/SurvivorListElementManager.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/SurvivorListPopulator.cs" Line="1" Column="1" />
@@ -16,15 +15,14 @@
       <File FileName="Assets/Scripts/OutpostPanelController.cs" Line="1" Column="1" />
       <File FileName="Assets/QRcode/Scripts/QRCodeEncodeController.cs" Line="1" Column="1" />
       <File FileName="Assets/FacebookSDK/SDK/Scripts/FacebookBase.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/MissionListPopulator.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/MapLevelManager.cs" Line="974" Column="34" />
+      <File FileName="Assets/Scripts/MapLevelManager.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/BlinkingSlider.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/Building.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/CurrentLocationUpdater.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/FadeIn.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/FloatingText.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/FloatingTextController.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/MissionCompletePanelManager.cs" Line="21" Column="34" />
+      <File FileName="Assets/Scripts/MissionCompletePanelManager.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/MusicManager.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/MusicPlayer.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/OptionsController.cs" Line="1" Column="1" />
@@ -41,16 +39,18 @@
       <File FileName="Assets/Scripts/WeaponGFX.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/WeaponListElementManager.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/WeaponSelectManager.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/5man Combat Scripts/SurvivorStateMachine.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/5man Combat Scripts/SurvivorStateMachine.cs" Line="327" Column="4" />
       <File FileName="Assets/Scripts/5man Combat Scripts/TurnHandler.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/5man Combat Scripts/WeaponManager.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/5man Combat Scripts/ZombieStateMachine.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/GameManager.cs" Line="809" Column="2" />
       <File FileName="Assets/Scripts/GameOverLevelManager.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/GamePreferences.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/Health.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/LevelManager.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/LoginManager.cs" Line="464" Column="34" />
+      <File FileName="Assets/Scripts/LoginManager.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/5man Combat Scripts/AmputationButtonManager.cs" Line="30" Column="39" />
+      <File FileName="Assets/Scripts/5man Combat Scripts/BattleStateMachine.cs" Line="639" Column="1" NotebookId="1" />
+      <File FileName="Assets/Scripts/GameManager.cs" Line="315" Column="26" NotebookId="1" />
+      <File FileName="Assets/Scripts/5man Combat Scripts/ZombieStateMachine.cs" Line="125" Column="9" NotebookId="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

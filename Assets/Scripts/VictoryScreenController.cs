@@ -25,19 +25,31 @@ public class VictoryScreenController : MonoBehaviour {
 
 	string ConstructWinningTextString () {
 		string outputText = "";
+		if (GameManager.instance.activeBldg != "zomb") {
+			outputText += "You earned " + GameManager.instance.reportedSupply + " supply\n";
+			outputText += GameManager.instance.reportedFood + " Food\n";
+			outputText += GameManager.instance.reportedWater + " water.\n\n";
 
-		outputText += "You earned " + GameManager.instance.reportedSupply + " supply\n";
-		outputText += GameManager.instance.reportedFood + " Food\n";
-		outputText += GameManager.instance.reportedWater + " water.\n\n";
 
-
-		if(GameManager.instance.survivorFound){
-			returnToMapButton.gameObject.SetActive(false);
-			abandonTheSurvivorButton.gameObject.SetActive(true);
-			recruitTheSurvivorButton.gameObject.SetActive(true);
-			outputText += "\n You found "+GameManager.instance.foundSurvivorName;
-			outputText += "\nthey have "+GameManager.instance.foundSurvivorAttack+" attack and "+GameManager.instance.foundSurvivorMaxStam+" stamina";
-			outputText += "\nWhat will you do?";
+			if(GameManager.instance.survivorFound){
+				returnToMapButton.gameObject.SetActive(false);
+				abandonTheSurvivorButton.gameObject.SetActive(true);
+				recruitTheSurvivorButton.gameObject.SetActive(true);
+				outputText += "\n You found "+GameManager.instance.foundSurvivorName;
+				outputText += "\nthey have "+GameManager.instance.foundSurvivorAttack+" attack and "+GameManager.instance.foundSurvivorMaxStam+" stamina";
+				outputText += "\nWhat will you do?";
+			}
+		} else {
+			if (GameManager.instance.zombie_to_kill_id > 0) {
+				outputText += "You successfully killed another player's Zombie!\n";
+				outputText += "You earned 50 supply\n";
+				outputText += "20 food\n";
+				outputText += "and 20 water\n";
+			} else {
+				outputText += "That zombie has already been killed\n";
+				outputText += "You get nothing.\n\n";
+				outputText += "way to murder people needlessly...";
+			}
 		}
 
 		/*

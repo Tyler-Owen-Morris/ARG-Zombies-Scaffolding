@@ -32,13 +32,12 @@ public class MissionCompletePanelManager : MonoBehaviour {
 				//GameManager.instance.updateWeaponAndSurvivorMapLevelUI = true;
 				StartCoroutine(GameManager.instance.LoadAllGameData());
 
-				//give the gameManager a chance to start on the updates, and then destroy the entire panel.
-				yield return new WaitForSeconds(0.2f);
-				MapLevelManager myMapMgr = GameObject.Find("Map Level Manager").GetComponent<MapLevelManager>();
-				myMapMgr.UpdateTheUI();
+				//The gamemanager will update the map level UI, destroy this panel
+				yield return new WaitForSeconds(0.1f);
 				Destroy(this.gameObject);
 			} else {
 				Debug.Log(returnJson[1].ToString());
+				Destroy(this.gameObject);
 			}
 		}else{
 			Debug.Log(www.error);

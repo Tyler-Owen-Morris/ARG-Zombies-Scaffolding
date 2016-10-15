@@ -13,6 +13,8 @@ public class GameOverLevelManager : MonoBehaviour {
 		//pop the zombie panel above the UI before doing anything, if the player is a zombie
 		if (GameManager.instance.playerIsZombie) {
 			zombieQRpanel.SetActive(true);
+		} else {
+			zombieQRpanel.SetActive(false);
 		}
 	}
 
@@ -55,6 +57,7 @@ public class GameOverLevelManager : MonoBehaviour {
 		StartCoroutine(AttemptAtTrickyBullshit());
 	}
 
+	//good news, tricky bullshit works
 	IEnumerator AttemptAtTrickyBullshit () {
 		DontDestroyOnLoad(this.gameObject);
 		SceneManager.LoadScene("01a Login");

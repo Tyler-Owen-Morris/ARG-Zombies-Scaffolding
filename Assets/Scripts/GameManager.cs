@@ -18,12 +18,13 @@ public class GameManager : MonoBehaviour {
 	public float homebaseLat, homebaseLong;
 	public string foundSurvivorName, lastLoginTime;
 	public TimeSpan high_score, my_score;
-	public int foundSurvivorCurStam, foundSurvivorMaxStam, foundSurvivorAttack, foundSurvivorEntryID;
+	public int foundSurvivorCurStam, foundSurvivorMaxStam, foundSurvivorAttack, foundSurvivorEntryID, zombie_to_kill_id = 0;
 	[SerializeField]
 	private GameObject[] weaponOptionsArray;
 
 	public List <GameObject> activeSurvivorCardList = new List<GameObject>();
 	public List <GameObject> onMissionSurvivorCardList = new List<GameObject>();
+	public List <GameObject> injuredSurvivorCardList = new List<GameObject>();
 	public List <GameObject> weaponCardList = new List<GameObject>();
 	public GameObject survivorCardHolder;
 	public GameObject weaponCardHolder;
@@ -52,6 +53,7 @@ public class GameManager : MonoBehaviour {
 	private string fetchOutpostDataURL = serverURL+"/FetchOutpostData.php";
 	private string allGameDataURL = serverURL+"/FetchAllGameData.php";
 	private string newHighScoreURL = serverURL+"/NewHighScore.php";
+	private string zombieKillURL = serverURL+"/KilledZombie.php";
 	public string myProfilePicURL = "";
 
 	private bool eatDrikCounterIsOn;
@@ -254,7 +256,12 @@ public class GameManager : MonoBehaviour {
 					GameManager.instance.lastHomebaseSetTime = pDate;
 				}
 				//player has not gotten their zombie killed and is attempting to play.
-				if (fullGameData[1]["isZombie"].ToString() == "1") {
+				if (fullGameData[1]["isZombie"].ToString() == "1" || fullGameData[1]["isZombie"].ToString() == "2") {
+					if (fullGameData[1]["isZombie"].ToString() == "1") {
+						GameManager.instance.playerIsZombie = true;
+					} else {
+						GameManager.instance.playerIsZombie = false;
+					}
 					SceneManager.LoadScene("03b Game Over");
 				}
 				GameManager.instance.lastLoginTime =fullGameData[1]["mob_login_ts"].ToString();
@@ -303,13 +310,17 @@ public class GameManager : MonoBehaviour {
 				}
 
 				//auto-load map level from login(1) , if on map level stay there, if on victory screen, let the user press the button to load map level.
-				if (SceneManager.GetActiveScene().buildIndex != 2 && SceneManager.GetActiveScene().buildIndex != 4 && playerInTutorial == false) {
+				if (SceneManager.GetActiveScene().buildIndex == 1 && playerInTutorial == false) {
 					SceneManager.LoadScene("02a Map Level");
 				} else if (SceneManager.GetActiveScene().name == "02a Map Level") {
 					//if we are on the map level, and game data update has been called/completed- update UI and mission list populator.
 					MapLevelManager mapManager = FindObjectOfType<MapLevelManager>();
 					mapManager.UpdateTheUI();
 					mapManager.theMissionListPopulator.LoadMissionsFromGameManager();
+				} else if (SceneManager.GetActiveScene().name == "02c Combat-5") {
+					BattleStateMachine BSM = FindObjectOfType<BattleStateMachine>();
+					BSM.ResetAllTurns();
+					//game data is only refreshed from combat when a bit player turns zombie mid-combat. Resetting turns should stop zombies from targeting null gameobjects.
 				}
 			}	
 		} else {
@@ -334,8 +345,6 @@ public class GameManager : MonoBehaviour {
 			WWW www = new WWW(newHighScoreURL, form);
 			yield return www;
 			Debug.Log(www.text);
-		} else {
-			
 		}
 
 		SceneManager.LoadScene("03b Game Over");
@@ -502,8 +511,12 @@ public class GameManager : MonoBehaviour {
 				instance.onMission = true;
 				onMissionSurvivorCardList.Add(instance.gameObject);
 			} else if (survivorJson[i]["onMission"].ToString() == "0") {
-				instance.onMission = false;
-				activeSurvivorCardList.Add(instance.gameObject);
+				if (survivorJson[i]["injured"].ToString() == "0"){
+					instance.onMission = false;
+					activeSurvivorCardList.Add(instance.gameObject);
+				} else {
+					injuredSurvivorCardList.Add(instance.gameObject);
+				}
 			}
 			instance.transform.SetParent(GameManager.instance.survivorCardHolder.transform);
 		}
@@ -1012,64 +1025,98 @@ public class GameManager : MonoBehaviour {
 //		}
 //
 		if (GameManager.instance.activeBldg != "tutorial") {
-			string jsonString = GameManager.instance.locationJsonText;
-			JsonData bldgJson = JsonMapper.ToObject(jsonString);
-			string bldg_id = "";
+			if (GameManager.instance.activeBldg != "zomb") {
+				string jsonString = GameManager.instance.locationJsonText;
+				JsonData bldgJson = JsonMapper.ToObject(jsonString);
+				string bldg_id = "";
 
-			for (int i = 0; i < bldgJson["results"].Count; i++) {
-				if (bldgJson["results"][i]["name"].ToString() == GameManager.instance.activeBldg) {
-					bldg_id = bldgJson["results"][i]["id"].ToString();
-					Debug.Log("sending bldg_id: "+bldg_id);
-				}
-			}
-
-			WWWForm wwwForm = new WWWForm();
-			wwwForm.AddField("id", GameManager.instance.userId);
-			wwwForm.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
-			wwwForm.AddField("client", "mob");
-
-			wwwForm.AddField("bldg_name", GameManager.instance.activeBldg);
-			wwwForm.AddField("bldg_id", bldg_id);
-			wwwForm.AddField("supply", GameManager.instance.reportedSupply);
-			wwwForm.AddField("food" , GameManager.instance.reportedFood);
-			wwwForm.AddField("water", GameManager.instance.reportedWater);
-			if (survivorFound) {
-				wwwForm.AddField("survivor_found", "1");
-			} else {
-				wwwForm.AddField("survivor_found", "0");
-			}
-
-			Debug.Log ("sending cleared building message to the server- bldg_name: "+GameManager.instance.activeBldg+" and id: "+bldg_id);
-			WWW www = new WWW(buildingClearedURL, wwwForm);
-			yield return www;
-
-			if (www.error == null) {
-				Debug.Log(www.text);
-
-				JsonData buildingClearReturn = JsonMapper.ToObject(www.text);
-
-				if (buildingClearReturn[0].ToString() == "Success") {
-					Debug.Log(buildingClearReturn[1].ToString());
-
-					//if there has been a survivor added to the players team.
-					if (buildingClearReturn[2].ToString() == "1") {
-						foundSurvivorName = buildingClearReturn[3]["name"].ToString();
-						foundSurvivorCurStam = (int)buildingClearReturn[3]["base_stam"];
-						foundSurvivorMaxStam = (int)buildingClearReturn[3]["base_stam"];
-						foundSurvivorAttack = (int)buildingClearReturn[3]["base_attack"];
-						foundSurvivorEntryID = (int)buildingClearReturn[3]["entry_id"];
+				for (int i = 0; i < bldgJson["results"].Count; i++) {
+					if (bldgJson["results"][i]["name"].ToString() == GameManager.instance.activeBldg) {
+						bldg_id = bldgJson["results"][i]["id"].ToString();
+						Debug.Log("sending bldg_id: "+bldg_id);
 					}
 				}
+
+				WWWForm wwwForm = new WWWForm();
+				wwwForm.AddField("id", GameManager.instance.userId);
+				wwwForm.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+				wwwForm.AddField("client", "mob");
+
+				wwwForm.AddField("bldg_name", GameManager.instance.activeBldg);
+				wwwForm.AddField("bldg_id", bldg_id);
+				wwwForm.AddField("supply", GameManager.instance.reportedSupply);
+				wwwForm.AddField("food" , GameManager.instance.reportedFood);
+				wwwForm.AddField("water", GameManager.instance.reportedWater);
+				if (survivorFound) {
+					wwwForm.AddField("survivor_found", "1");
+				} else {
+					wwwForm.AddField("survivor_found", "0");
+				}
+
+				Debug.Log ("sending cleared building message to the server- bldg_name: "+GameManager.instance.activeBldg+" and id: "+bldg_id);
+				WWW www = new WWW(buildingClearedURL, wwwForm);
+				yield return www;
+
+				if (www.error == null) {
+					Debug.Log(www.text);
+
+					JsonData buildingClearReturn = JsonMapper.ToObject(www.text);
+
+					if (buildingClearReturn[0].ToString() == "Success") {
+						Debug.Log(buildingClearReturn[1].ToString());
+
+						//if there has been a survivor added to the players team.
+						if (buildingClearReturn[2].ToString() == "1") {
+							foundSurvivorName = buildingClearReturn[3]["name"].ToString();
+							foundSurvivorCurStam = (int)buildingClearReturn[3]["base_stam"];
+							foundSurvivorMaxStam = (int)buildingClearReturn[3]["base_stam"];
+							foundSurvivorAttack = (int)buildingClearReturn[3]["base_attack"];
+							foundSurvivorEntryID = (int)buildingClearReturn[3]["entry_id"];
+						}
+					}
+				} else {
+					Debug.Log(www.error);
+				}
+				SceneManager.LoadScene ("03a Win");
 			} else {
-				Debug.Log(www.error);
+				//player has killed another players zombie.
+				WWWForm form = new WWWForm();
+				form.AddField("id", GameManager.instance.userId);
+				form.AddField("login_ts", GameManager.instance.lastLoginTime);
+				form.AddField("client", "mob");
+
+				form.AddField("zombie_id", GameManager.instance.zombie_to_kill_id);
+
+				WWW www = new WWW(zombieKillURL, form);
+				yield return www;
+
+				if (www.error == null) {
+					Debug.Log(www.text);
+					JsonData zombie_json = JsonMapper.ToObject(www.text);
+
+					if (zombie_json[0].ToString() == "Success") {
+						if (zombie_json[1].ToString() == "reward") {
+							Debug.Log("Player Successfully killed another players zombie");
+
+						} else {
+							Debug.Log("This player was no longer a zombie");
+							GameManager.instance.zombie_to_kill_id = 0;
+						}
+					}
+
+				} else {
+					Debug.Log(www.error);
+				}
+				//this coroutine is called from Battlemanager. If player has killed a zombie- move to win screen.
+				SceneManager.LoadScene("03a Win");
 			}
-			SceneManager.LoadScene ("03a Win");
+
 		} else {
 			//if player is trying to send the tutorial building for reward- skip it, load game data, and load into map level.
 			playerInTutorial = false;
 			weaponHasBeenSelected = false;
 		}
-		yield return new WaitForSeconds(3.0f);
+		yield return new WaitForSeconds(2.0f);
 		clearedBuildingSendInProgress=false;
 		//StartCoroutine(FetchResumePlayerData());
 		StartCoroutine(LoadAllGameData());

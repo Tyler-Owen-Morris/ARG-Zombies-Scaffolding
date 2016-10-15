@@ -7,7 +7,7 @@ public class SurvivorStateMachine : MonoBehaviour {
 
 	public bool isSelected;
 	public BaseSurvivor survivor;
-	public int teamPos;
+	public int teamPos, turnsTillTurning;
 	public GameObject mySelectedIcon, myGunShot, myClubSlash, myKnifeStab;
 	public Slider myStamSlider;
 	public GameObject[] myWepSprites;
@@ -16,7 +16,7 @@ public class SurvivorStateMachine : MonoBehaviour {
 	private Vector3 startPosition;
 
 	//stuff for taking a turn
-	private bool actionStarted = false;
+	private bool actionStarted = false, iAmBit = false;
 	private float animSpeed = 3000.0f;
 	public GameObject plyrTarget;
 
@@ -115,8 +115,8 @@ public class SurvivorStateMachine : MonoBehaviour {
 				int myDmg = CalculateMyDamage();
 				Debug.Log ("Survivor hit the zombie for " +myDmg+ " damage");
 				targetZombie.zombie.curHP = targetZombie.zombie.curHP - myDmg;
-				targetZombie.CheckForDeath();
-				StartCoroutine(SendAttackToServer(survivor.survivor_id, myWeapon.weapon_id));
+				bool isDed = targetZombie.CheckForDeath();
+				StartCoroutine(SendAttackToServer(survivor.survivor_id, myWeapon.weapon_id, isDed));
 				UpdateStaminaBar();
 				if (survivor.weaponEquipped != null) {
 					survivor.curStamina -= myWeapon.stam_cost;	
@@ -151,8 +151,8 @@ public class SurvivorStateMachine : MonoBehaviour {
 				int myDmg = CalculateMyDamage();
 				Debug.Log ("Survivor hit the zombie for " +myDmg+ " damage");
 				targetZombie.zombie.curHP = targetZombie.zombie.curHP - myDmg;
-				targetZombie.CheckForDeath();
-				StartCoroutine(SendAttackToServer(survivor.survivor_id, 0));
+				bool isDed = targetZombie.CheckForDeath();
+				StartCoroutine(SendAttackToServer(survivor.survivor_id, 0, isDed));
 				//adjust the local data and update the UI
 				survivor.curStamina -= 5;
 				UpdateStaminaBar();
@@ -163,6 +163,12 @@ public class SurvivorStateMachine : MonoBehaviour {
 			//remove from list
 			BSM.TurnList.RemoveAt(0);
 
+			if (iAmBit == true) {
+				turnsTillTurning--;
+				if (turnsTillTurning < 1) {
+					TurnMeIntoAZombie();
+				}
+			}
 
 			//reset BSM ->
 			BSM.battleState = BattleStateMachine.PerformAction.WAIT;
@@ -178,13 +184,18 @@ public class SurvivorStateMachine : MonoBehaviour {
 		return goal != (transform.position = Vector3.MoveTowards(transform.position, goal, animSpeed * Time.deltaTime));
 	}
 
-	IEnumerator SendAttackToServer (int survivorID, int weaponID) {
+	IEnumerator SendAttackToServer (int survivorID, int weaponID, bool kill) {
 		WWWForm form = new WWWForm();
 		form.AddField("id", GameManager.instance.userId);
 		form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
 		form.AddField("client", "mob");
 		form.AddField("survivor_id", survivorID);
 		form.AddField("weapon_id", weaponID);
+		if (kill == true) {
+			form.AddField("zombie_kill", "1");
+		} else {
+			form.AddField("zombie_kill", "0");
+		}
 
 		WWW www = new WWW(sendAttackURL, form);
 		yield return www;
@@ -321,6 +332,26 @@ public class SurvivorStateMachine : MonoBehaviour {
 		}
 
 		return myDmg;
+	}
+
+	public void BiteTimerStart () {
+		//calculate how many turns you have left
+		int turns = Random.Range(1, 5);
+		turnsTillTurning = turns;
+		iAmBit = true;
+	}
+
+	private void TurnMeIntoAZombie () {
+		//count the zombies to kill up 1
+		GameManager.instance.zombiesToFight++;
+
+		//remove the survivor from the battlestate machine.
+		BSM.survivorList.Remove(this.gameObject);
+		BSM.survivorTurnList.Remove(this.gameObject);
+
+		//remove the survivor from the gamemanager
+		GameManager.instance.LoadAllGameData();
+		Destroy(this.gameObject);
 	}
 
 	private void BlinkingSliderCheck () {

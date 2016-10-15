@@ -148,6 +148,9 @@ public class QRPanelController : MonoBehaviour {
 				}
 			}
 
+		} else if (scannedJson[0].ToString() == "zombie") {
+			GameManager.instance.zombie_to_kill_id = Convert.ToInt32(scannedJson[1].ToString());
+			GameManager.instance.LoadIntoCombat(1, "zomb");
 		} else {
 			Debug.Log("json format does not meet with any known QR encoding");
 		}

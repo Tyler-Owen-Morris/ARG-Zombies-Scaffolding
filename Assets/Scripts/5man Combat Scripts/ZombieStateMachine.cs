@@ -72,10 +72,13 @@ public class ZombieStateMachine : MonoBehaviour {
 		}
 	}
 
-	public void CheckForDeath () {
+	public bool CheckForDeath () {
 		if (zombie.curHP <= 0 ) {
 			currentState = TurnState.DEAD;
 			BSM.zombieList.Remove(this.gameObject);
+			return true;
+		} else {
+			return false;
 		}
 	}
 
@@ -111,8 +114,8 @@ public class ZombieStateMachine : MonoBehaviour {
 			while (MoveTowardsEnemy(targetPosition)) {yield return null;}
 			//animate weaponfx
 			BSM.PlayZombieAttackSound();
-
 			yield return new WaitForSeconds(0.25f);
+
 			//do damage
 			SurvivorStateMachine targetSurvivor = target.GetComponent<SurvivorStateMachine>();
 			int myDmg = CalculateMyDamage ();
@@ -199,7 +202,7 @@ public class ZombieStateMachine : MonoBehaviour {
 			}
 
 			//animate zombie to the ground.
-			Quaternion downPos = new Quaternion (0,0,-80,0);
+			Quaternion downPos = new Quaternion (0,0,-40,0);
 			while (RotateToTarget(downPos)) {yield return null;}
 			//move to off screen Death/Spawn target
 			while (MoveTowardsEnemy(spawnPoint)) {yield return null;}
@@ -213,6 +216,7 @@ public class ZombieStateMachine : MonoBehaviour {
 				BSM.zombieList.Add(gameObject);
 				currentState = TurnState.WAITING;
 			} else {
+				this.gameObject.SetActive(false);
 				myTypeText.text = "";
 				//do not reactivate or animate- just leave the zombie dead off screen and change its state.
 				foreach (GameObject zombie in BSM.zombieList) {
@@ -223,6 +227,7 @@ public class ZombieStateMachine : MonoBehaviour {
 
 					}
 				}
+				//turn off in heirarchy- reset the turns- 
 				Destroy(this.gameObject);
 				currentState = TurnState.WAITING;
 			}

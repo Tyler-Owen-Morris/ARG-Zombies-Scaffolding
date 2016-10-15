@@ -7,7 +7,7 @@ using System;
 
 public class MapLevelManager : MonoBehaviour {
 
-	public GameObject inventoryPanel, buildingPanel, qrPanel, homebasePanel, homebaseConfirmationPanel, outpostConfirmationPanel, missionStartConfirmationPanel, OutpostQRPanel, enterBldgButton, unequippedWeaponsPanel, mapLevelCanvas, hungerThirstWarningPanel;
+	public GameObject inventoryPanel, buildingPanel, qrPanel, homebasePanel, homebaseConfirmationPanel, outpostSelectionPanel, outpostConfirmationPanel, missionStartConfirmationPanel, OutpostQRPanel, enterBldgButton, unequippedWeaponsPanel, mapLevelCanvas, hungerThirstWarningPanel;
 
 	[SerializeField]
 	private Text supplyText, daysAliveText, survivorsAliveText, currentLatText, currentLonText, locationReportText, foodText, waterText, ammoText, playerNameText, bldgNameText, zombieCountText, bldgDistText, homebaseLatText, homebaseLonText, missionConfirmationText;
@@ -29,7 +29,7 @@ public class MapLevelManager : MonoBehaviour {
 	private float lastUpdateLat = 0.0f, lastUpdateLng = 0.0f;
 	private float lastStamUpdateLat = 0.0f, lastStamUpdateLng = 0.0f;
 
-	private int zombieCount;
+	private int zombieCount, outpost_index;
 	public string bldgName, active_bldg_id;
 
 	public int active_gearing_survivor_id, to_equip_weapon_id, to_unequip_weapon_id;
@@ -65,10 +65,10 @@ public class MapLevelManager : MonoBehaviour {
 		homebaseConfirmationPanel.SetActive(false);
 	}
 	public void OutpostButtonPressed () {
-		if (outpostConfirmationPanel.activeInHierarchy == true) {
-			outpostConfirmationPanel.SetActive(false);
+		if (outpostSelectionPanel.activeInHierarchy == true) {
+			outpostSelectionPanel.SetActive(false);
 		} else {
-			outpostConfirmationPanel.SetActive(true);
+			outpostSelectionPanel.SetActive(true);
 		}
 	}
 
@@ -815,17 +815,39 @@ public class MapLevelManager : MonoBehaviour {
 		UpdateTheUI();
 	}
 
+	public void ConfirmOutpostSelection (int index) {
+		outpost_index = index;
+		if (outpostConfirmationPanel.activeInHierarchy == false) {
+			outpostConfirmationPanel.SetActive(true);
+		} else {
+			outpostConfirmationPanel.SetActive(false);
+		}
+	}
+
 	public bool sendingOutpost = false;
 	public void CreateOutpost () {
 		if (sendingOutpost == false) {
 			sendingOutpost = true;
-			StartCoroutine(SendNewOutpost());
+			StartCoroutine(SendNewOutpost(outpost_index));
 		}
 	}
 
-	IEnumerator SendNewOutpost() {
+	IEnumerator SendNewOutpost(int index) {
 		float newLat = 0f;
 		float newLon = 0f;
+		int duration = 0;//in hours
+		int capacity = 0;
+
+		if (index == 1) {
+			duration = 48;
+			capacity = 5;
+		} else if (index == 2) {
+			duration = (24*14);
+			capacity = 12;
+		} else if (index == 3) {
+			duration = (24*30);
+			capacity = 30;
+		}
 
 		//this allows the unity player to run without error or location services running
 		if (Input.location.status == LocationServiceStatus.Running) {
@@ -844,6 +866,8 @@ public class MapLevelManager : MonoBehaviour {
 		form.AddField("client", "mob");
 		form.AddField("outpost_lat", newLat.ToString());
 		form.AddField("outpost_lng", newLon.ToString());
+		form.AddField("capacity", capacity.ToString());
+		form.AddField("duration", duration.ToString());
 		//duration and capacity are set on server side.
 
 		WWW www = new WWW(SendNewOutpostURL, form);

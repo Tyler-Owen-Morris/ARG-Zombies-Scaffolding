@@ -150,6 +150,7 @@
      <Compile Include="Assets\QRcode\Scripts\QRCodeEncodeController.cs" />
      <Compile Include="Assets\QRcode\Scripts\QRDecodeTest.cs" />
      <Compile Include="Assets\QRcode\Scripts\QREncodeTest.cs" />
+     <Compile Include="Assets\Scripts\5man Combat Scripts\AmputationButtonManager.cs" />
      <Compile Include="Assets\Scripts\5man Combat Scripts\BaseSurvivor.cs" />
      <Compile Include="Assets\Scripts\5man Combat Scripts\BaseWeapon.cs" />
      <Compile Include="Assets\Scripts\5man Combat Scripts\BaseZombie.cs" />

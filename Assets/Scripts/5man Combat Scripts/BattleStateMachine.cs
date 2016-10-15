@@ -35,6 +35,7 @@ public class BattleStateMachine : MonoBehaviour {
 
 	public GameObject playerTarget;
 	public GameObject autoAttackToggle, survivorBitPanel;
+	public AmputationButtonManager amputationButton;
 	public GameObject playerPos1, playerPos2, playerPos3, playerPos4, playerPos5;
 	[SerializeField]
 	public bool autoAttackIsOn= false;
@@ -46,8 +47,9 @@ public class BattleStateMachine : MonoBehaviour {
 	public AudioClip[] zombieSounds, survivorUnarmedSounds;
 	public AudioSource myAudioSource;
 
-	private SurvivorStateMachine survivorWithBite;
+	public SurvivorStateMachine survivorWithBite;
 	private string destroySurvivorURL = GameManager.serverURL+"/DestroySurvivor.php";
+	private string injuredSurvivorURL = GameManager.serverURL+"/InjuredSurvivor.php";
 	private string restoreSurvivorURL = GameManager.serverURL+"/RestoreSurvivor.php";
 
 	//private int totalSurvivorsFound = 0;
@@ -180,18 +182,24 @@ public class BattleStateMachine : MonoBehaviour {
 			break;
 			case (PerformAction.SELECTACTION):
 				GameObject performer = GameObject.Find(TurnList[0].attacker);
-				if (TurnList [0].type == "zombie") {
-					ZombieStateMachine ZSM = performer.GetComponent<ZombieStateMachine>();
-					ZSM.target = TurnList[0].TargetsGameObject;
-					ZSM.currentState = ZombieStateMachine.TurnState.TAKEACTION;
+				if (performer != null) {
+					if (TurnList [0].type == "zombie") {
+						ZombieStateMachine ZSM = performer.GetComponent<ZombieStateMachine>();
+						ZSM.target = TurnList[0].TargetsGameObject;
+						ZSM.currentState = ZombieStateMachine.TurnState.TAKEACTION;
 
+					}
+					if (TurnList [0].type == "survivor") {
+						SurvivorStateMachine SSM = performer.GetComponent<SurvivorStateMachine>();
+						SSM.plyrTarget = TurnList[0].TargetsGameObject;
+						SSM.currentState = SurvivorStateMachine.TurnState.ACTION;
+					}
+					battleState = PerformAction.COMPLETED;
+				} else {
+					//attacker is dead, remove their turn, and go to wait mode
+					TurnList.RemoveAt(0);
+					battleState = PerformAction.WAIT;
 				}
-				if (TurnList [0].type == "survivor") {
-					SurvivorStateMachine SSM = performer.GetComponent<SurvivorStateMachine>();
-					SSM.plyrTarget = TurnList[0].TargetsGameObject;
-					SSM.currentState = SurvivorStateMachine.TurnState.ACTION;
-				}
-				battleState = PerformAction.COMPLETED;
 
 			break;
 			case (PerformAction.BITECASE):
@@ -270,8 +278,9 @@ public class BattleStateMachine : MonoBehaviour {
 		autoAttackIsOn = autoAttackToggle.GetComponent<Toggle>().isOn;
 	}
 
-	void ResetAllTurns () {
+	public void ResetAllTurns () {
 		//clear and reset the lists
+		TurnList.Clear();
 		zombieList.Clear();
 		survivorList.Clear();
 		survivorList.AddRange (GameObject.FindGameObjectsWithTag("survivor"));
@@ -286,6 +295,22 @@ public class BattleStateMachine : MonoBehaviour {
 			SSM.currentState = SurvivorStateMachine.TurnState.INITIALIZING;
 		}
 	}
+
+	/*
+	public void ReTargetSurvivors () {
+		//go through the survivors that have turns to come
+		foreach (TurnHandler turn in TurnList) {
+			//if the attacker is a survivor
+			SurvivorStateMachine mySSM = turn.AttackersGameObject.GetComponent<SurvivorStateMachine>();
+			if (mySSM != null) {
+				TurnList.Remove(turn);
+				//by removing the survivor from the turn list, but not the survivorturnlist, he should be added again, and re-pick his target.
+				//this is called by the dead zombie to remove inactive zombies from becoming/remaining player targets.
+			}
+		}
+	}
+	*/
+
 	public void UpdateUINumbers () {
 		zombieCounter.text = GameManager.instance.zombiesToFight.ToString();
 		ammmoCounter.text = "Ammo: "+GameManager.instance.ammo.ToString();
@@ -481,10 +506,10 @@ public class BattleStateMachine : MonoBehaviour {
 
 	public void SurvivorHasBeenBit (SurvivorStateMachine bitSurvivor) {
 		//if it's player character, startup the end-game panel, otherwise just the survivor panel.
-		if (bitSurvivor.teamPos == 5) {
+		if (bitSurvivor.teamPos == 5 && GameManager.instance.activeSurvivorCardList.Count == 1) {
 			//this is end game condition. the player character is bit.
 			Debug.Log ("PLAYER CHARACTER BIT!!!! END GAME SHOULD CALL HERE!~!!!");
-		} else {
+		} else if (bitSurvivor.teamPos != 5) {
 			//This is just a normal survivor dying.
 			//stop the battlestate machine
 
@@ -496,10 +521,48 @@ public class BattleStateMachine : MonoBehaviour {
 			foreach (GameObject zombie in zombieList) {
 				zombie.GetComponent<SpriteRenderer>().enabled = false;
 			}
+
+			//update and show the panel.
 			survivorBitText.text = bitSurvivor.survivor.name+" has been bit by the zombie!\nWhat will you do?";
+			float timer = UnityEngine.Random.Range(4.0f, 9.5f);
+			amputationButton.StartTheCountdown(timer);
 			survivorBitPanel.SetActive(true);
 			survivorWithBite = bitSurvivor;
 		}
+	}
+
+	public void SuccessfulAmputation () {
+
+		//send ID to server to add the survivor to the injured list.
+		int survivorIDamputated = survivorWithBite.survivor.survivor_id;
+		StartCoroutine(SendInjuredSurvivorToServer(survivorIDamputated));
+
+		//re-enable all the game objects, except the injured survivor
+		GameObject destroyMe = null;
+		foreach (GameObject survivor in survivorList)  {
+			survivor.GetComponent<SpriteRenderer>().enabled = true;
+			survivor.GetComponent<SurvivorStateMachine>().UpdateWeaponSprite();
+			//destroy the gameobject of the survivor that has been injured in the scene
+			if (survivor.GetComponent<SurvivorStateMachine>().survivor.survivor_id == survivorIDamputated) {
+				destroyMe = survivor.gameObject;
+			}
+		}
+		survivorTurnList.Remove(destroyMe);
+		survivorList.Remove(destroyMe);
+		Destroy(destroyMe);
+
+		foreach (GameObject zombie in zombieList) {
+			zombie.GetComponent<SpriteRenderer>().enabled = true;
+		}
+
+		//close the decision window & reset turns
+		survivorBitPanel.SetActive(false);
+		ResetAllTurns(); //this is to ensure the inactive player is not falsely targeted by a zombie. 
+
+		//pop up text to notify player
+
+		//resume combat
+		battleState = PerformAction.WAIT;
 	}
 
 	public void PlayerChooseKillSurvivor () {
@@ -540,9 +603,52 @@ public class BattleStateMachine : MonoBehaviour {
 
 		//disable the survivor panel
 		survivorBitPanel.SetActive(false);
+		ResetAllTurns();
 
 		//resume combat
 		battleState = PerformAction.WAIT;
+	}
+
+	public void PlayerChoosesToFightOn () {
+		//destroy survivor on the server
+		StartCoroutine(SendDeadSurvivorToServer(survivorWithBite.survivor.survivor_id));
+
+		//notify survivor state machine
+		survivorWithBite.BiteTimerStart();
+
+		//re-enable the UI
+		foreach (GameObject survivor in survivorList)  {
+			survivor.GetComponent<SpriteRenderer>().enabled = true;
+			survivor.GetComponent<SurvivorStateMachine>().UpdateWeaponSprite();
+		}
+
+		foreach (GameObject zombie in zombieList) {
+			zombie.GetComponent<SpriteRenderer>().enabled = true;
+		}
+
+		//close window
+		survivorBitPanel.SetActive(false);
+
+		//resume combat
+		battleState = PerformAction.WAIT;
+	}
+
+	IEnumerator SendInjuredSurvivorToServer (int idInjured) {
+		WWWForm form = new WWWForm();
+		form.AddField("id", GameManager.instance.userId);
+		form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+		form.AddField("client", "mob");
+		form.AddField("survivor_id", idInjured);
+
+		WWW www = new WWW(injuredSurvivorURL, form);
+		yield return www;
+
+		if (www.error == null) {
+			Debug.Log(www.text);
+		}else{
+			Debug.Log(www.error);
+		}
+		ResetAllTurns();
 	}
 
 	IEnumerator SendDeadSurvivorToServer(int idToDestroy) {
