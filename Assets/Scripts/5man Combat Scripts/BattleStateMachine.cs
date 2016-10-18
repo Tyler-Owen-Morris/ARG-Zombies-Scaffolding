@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using LitJson;
 
 public class BattleStateMachine : MonoBehaviour {
 
@@ -34,14 +35,14 @@ public class BattleStateMachine : MonoBehaviour {
 	public List<GameObject> zombieList = new List<GameObject>();
 
 	public GameObject playerTarget;
-	public GameObject autoAttackToggle, survivorBitPanel;
+	public GameObject autoAttackToggle, survivorBitPanel, playerBitPanel, failedRunAwayPanel, runButton, attackButton;
 	public AmputationButtonManager amputationButton;
 	public GameObject playerPos1, playerPos2, playerPos3, playerPos4, playerPos5;
 	[SerializeField]
 	public bool autoAttackIsOn= false;
 
 	public int zombiesKilled = 0;
-	public Text zombieCounter, ammmoCounter, survivorBitText;
+	public Text zombieCounter, ammmoCounter, survivorBitText, failedToRunText;
 
 	public AudioClip knifeSound, clubSound, pistolSound, shotgunSound;
 	public AudioClip[] zombieSounds, survivorUnarmedSounds;
@@ -51,6 +52,7 @@ public class BattleStateMachine : MonoBehaviour {
 	private string destroySurvivorURL = GameManager.serverURL+"/DestroySurvivor.php";
 	private string injuredSurvivorURL = GameManager.serverURL+"/InjuredSurvivor.php";
 	private string restoreSurvivorURL = GameManager.serverURL+"/RestoreSurvivor.php";
+	private string combatSuicideURL = GameManager.serverURL+"/CombatSuicide.php";
 
 	//private int totalSurvivorsFound = 0;
 	void Awake () {
@@ -69,6 +71,20 @@ public class BattleStateMachine : MonoBehaviour {
 		AdjustForLessThan5Zombies ();
 
 		UpdateUINumbers();
+	}
+
+	void OnLevelWasLoaded () {
+		if (GameManager.instance.blazeOfGloryActive == true) {
+			InitiateBlazeOfGlory();
+		}
+	}
+
+	void InitiateBlazeOfGlory () {
+		runButton.SetActive(false);
+		attackButton.SetActive(false);
+		autoAttackToggle.GetComponent<Toggle>().isOn = true;
+		autoAttackIsOn = true;
+		autoAttackToggle.SetActive(false);
 	}
 
 	void LoadInSurvivorCardData () {
@@ -508,6 +524,13 @@ public class BattleStateMachine : MonoBehaviour {
 		//if it's player character, startup the end-game panel, otherwise just the survivor panel.
 		if (bitSurvivor.teamPos == 5 && GameManager.instance.activeSurvivorCardList.Count == 1) {
 			//this is end game condition. the player character is bit.
+			if (GameManager.instance.blazeOfGloryActive == true) {
+				GameManager.instance.BuildingIsCleared(0,0,0,false);
+				//this will launch the coroutine, which reacts to the string of active building, and notifies the server of game over, then loads game over scene
+			} else {
+				StartCoroutine(GameManager.instance.PlayerBit());
+			}
+
 			Debug.Log ("PLAYER CHARACTER BIT!!!! END GAME SHOULD CALL HERE!~!!!");
 		} else if (bitSurvivor.teamPos != 5) {
 			//This is just a normal survivor dying.
@@ -529,6 +552,41 @@ public class BattleStateMachine : MonoBehaviour {
 			survivorBitPanel.SetActive(true);
 			survivorWithBite = bitSurvivor;
 		}
+	}
+
+	public void GameOverBiteCallback () {
+		battleState = PerformAction.BITECASE;
+		playerBitPanel.SetActive(true);
+		KillYourselfButtonManager KYBM = KillYourselfButtonManager.FindObjectOfType<KillYourselfButtonManager>();
+		float timer = UnityEngine.Random.Range(4.0f, 12.0f);
+		KYBM.StartTheCountdown(timer);
+	}
+
+	public void SuccessfulCombatSuicide () {
+		StartCoroutine(KillPlayerZombie());
+	}
+
+	public IEnumerator KillPlayerZombie() {
+		WWWForm form = new WWWForm();
+		form.AddField("id", GameManager.instance.userId);
+		form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+		form.AddField("client", "mob");
+
+		WWW www = new WWW(combatSuicideURL, form);
+		yield return www;
+		Debug.Log(www.text);
+
+		if (www.error == null) {
+			JsonData json = JsonMapper.ToObject(www.text);
+
+			if (json[0].ToString() == "Success") {
+				GameManager.instance.playerIsZombie = false;
+				SceneManager.LoadScene("03b Game Over");
+			}
+		} else {
+			Debug.Log(www.error);
+		}
+
 	}
 
 	public void SuccessfulAmputation () {
@@ -609,6 +667,7 @@ public class BattleStateMachine : MonoBehaviour {
 		battleState = PerformAction.WAIT;
 	}
 
+	//this handles a non-player survivor being bit
 	public void PlayerChoosesToFightOn () {
 		//destroy survivor on the server
 		StartCoroutine(SendDeadSurvivorToServer(survivorWithBite.survivor.survivor_id));
@@ -630,6 +689,16 @@ public class BattleStateMachine : MonoBehaviour {
 		survivorBitPanel.SetActive(false);
 
 		//resume combat
+		battleState = PerformAction.WAIT;
+	}
+
+	//This handles the player character being bit
+	public void PlayerChoosesToFightToTheBitterEnd () {
+		//server has already been updated with the zombie status. 
+		//changing these variables will allow combat to end, but GameOver/YouAreAZombie should load instead of a victory screen.
+		GameManager.instance.activeBldg = "bite_case";
+		GameManager.instance.playerIsZombie = true;
+		playerBitPanel.SetActive(false);
 		battleState = PerformAction.WAIT;
 	}
 
@@ -713,9 +782,55 @@ public class BattleStateMachine : MonoBehaviour {
 		}
 	}
 
-	public void PlayerChoosesRunAway () {
-		//later this will roll odds for their ability to get away, and cost the active team a stamina penalty 
+	//this is called from the run away failed panel
+	public void TurnAndFight () {
+		failedRunAwayPanel.SetActive(false);
+		battleState = PerformAction.WAIT;
+	}
 
-		SceneManager.LoadScene("02a Map Level");
+	public void PlayerChoosesRunAway () {
+		int got_away = 0;
+		int running_away = survivorList.Count;
+
+		foreach(GameObject survivor in survivorList) {
+			float odds = 0;
+			SurvivorPlayCard myPlayCard = survivor.GetComponent<SurvivorPlayCard>();
+			float healthPercent = 100*(myPlayCard.survivor.curStamina/myPlayCard.survivor.baseStamina);
+			if (healthPercent < 10) {
+				odds += 1;
+			}
+			if (myPlayCard.survivor.curStamina <=0) {
+				odds +=3;
+			}
+			if (myPlayCard.survivor.curStamina <= -1*myPlayCard.survivor.baseStamina) {
+				odds = odds * 5; //should =30%
+			}
+			if (myPlayCard.survivor.curStamina <= -2*myPlayCard.survivor.baseStamina) {
+				odds = odds * 2; //should =60%
+			}
+			if (myPlayCard.survivor.curStamina <= -3*myPlayCard.survivor.baseStamina) {
+				odds = odds + 30; //should total 90%
+			}
+
+			float roll = UnityEngine.Random.Range(0.0f, 100.0f);
+			if (roll <= odds) {
+				//this survivor has failed to run away.
+				StartCoroutine(SendDeadSurvivorToServer(myPlayCard.survivor.survivor_id));
+				failedToRunText.text = myPlayCard.survivor.name+" fell behind and was overcome by zombies. they didn't make it.\n what will you do?";
+				failedRunAwayPanel.SetActive(true);
+				ContinueRunningButtonManager myContRunButMgr = ContinueRunningButtonManager.FindObjectOfType<ContinueRunningButtonManager>();
+				float tmr = UnityEngine.Random.Range(8.0f, 25.0f);
+				myContRunButMgr.StartTheCountdown(tmr);
+				break;
+			} else {
+				got_away++;
+				continue;
+			}
+		}
+
+		//if everyone got away, go to map level. Otherwise the above loop has been broken with a dead survivor.
+		if (got_away == running_away) {
+			SceneManager.LoadScene("02a Map Level");
+		}
 	}
 }

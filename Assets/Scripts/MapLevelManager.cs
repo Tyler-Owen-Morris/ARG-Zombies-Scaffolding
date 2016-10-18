@@ -7,7 +7,7 @@ using System;
 
 public class MapLevelManager : MonoBehaviour {
 
-	public GameObject inventoryPanel, buildingPanel, qrPanel, homebasePanel, homebaseConfirmationPanel, outpostSelectionPanel, outpostConfirmationPanel, missionStartConfirmationPanel, OutpostQRPanel, enterBldgButton, unequippedWeaponsPanel, mapLevelCanvas, hungerThirstWarningPanel;
+	public GameObject inventoryPanel, buildingPanel, qrPanel, homebasePanel, homebaseConfirmationPanel, outpostSelectionPanel, outpostConfirmationPanel, missionStartConfirmationPanel, OutpostQRPanel, enterBldgButton, unequippedWeaponsPanel, mapLevelCanvas, hungerThirstWarningPanel, endGamePanel, endGameButton, bogConfirmationPanel;
 
 	[SerializeField]
 	private Text supplyText, daysAliveText, survivorsAliveText, currentLatText, currentLonText, locationReportText, foodText, waterText, ammoText, playerNameText, bldgNameText, zombieCountText, bldgDistText, homebaseLatText, homebaseLonText, missionConfirmationText;
@@ -72,6 +72,27 @@ public class MapLevelManager : MonoBehaviour {
 		}
 	}
 
+	public void EndGameButtonPressed () {
+		if (endGamePanel.activeInHierarchy == true) {
+			endGamePanel.SetActive(false);
+		} else {
+			endGamePanel.SetActive(true);
+		}
+	}
+
+	public void BlazeOfGloryPressed () {
+		if (bogConfirmationPanel.activeInHierarchy == true) {
+			bogConfirmationPanel.SetActive(false);
+		} else {
+			bogConfirmationPanel.SetActive(true);
+		}
+	}
+
+	public void ConfirmBLAZEOFGLORYgo () {
+		Debug.Log("activating blaze of glory! FOR VALHALA!!! WHAT A SHINY DAY!!!");
+		GameManager.instance.BlazeOfGloryActivate();
+	}
+
 	public void QrScanPressed () {
 		if (qrPanel.activeInHierarchy == true) {
 			qrPanel.SetActive(false);
@@ -130,6 +151,15 @@ public class MapLevelManager : MonoBehaviour {
 		InvokeRepeating("RegenerateStamina", 30.0f, 60.0f);
 
 		CheckForStarvationDehydration();
+
+		//if the player is the last one left alive, activate the gameover button.
+		JsonData survivorJson = JsonMapper.ToObject(GameManager.instance.survivorJsonText);
+		 if (survivorJson.Count > 1) {
+		 	endGameButton.SetActive(false);
+		 }else{
+		 	Debug.Log("Turning end game panel button on");
+		 	endGameButton.SetActive(true);
+		 }
 	}
 
 	void CheckForStarvationDehydration () {

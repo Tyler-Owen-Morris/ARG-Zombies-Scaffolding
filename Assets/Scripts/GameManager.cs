@@ -12,8 +12,8 @@ public class GameManager : MonoBehaviour {
 
 	public static GameManager instance;
 
-	public bool gameDataInitialized = false, updateWeaponAndSurvivorMapLevelUI = false, survivorFound = false, playerInTutorial = false, weaponHasBeenSelected = false, playerIsZombie = false;
-	public int daysSurvived, supply, ammo, reportedSupply, reportedWater, reportedFood, playerCurrentStamina, playerMaxStamina, zombiesToFight, foodCount, waterCount, mealCount, hunger, thirst, distanceCoveredThisSession;
+	public bool gameDataInitialized = false, updateWeaponAndSurvivorMapLevelUI = false, survivorFound = false, playerInTutorial = false, weaponHasBeenSelected = false, playerIsZombie = false, blazeOfGloryActive = false;
+	public int daysSurvived, supply, ammo, reportedSupply, reportedWater, reportedFood, playerCurrentStamina, playerMaxStamina, zombiesToFight, foodCount, waterCount, mealCount, hunger, thirst, distanceCoveredThisSession, zombieKill_HighScore, zombieKill_score;
 	public DateTime timeCharacterStarted, lastHomebaseSetTime;
 	public float homebaseLat, homebaseLong;
 	public string foundSurvivorName, lastLoginTime;
@@ -52,7 +52,11 @@ public class GameManager : MonoBehaviour {
 	private string clearSurvivorDataURL = serverURL+"/DeleteMySurvivorData.php";
 	private string fetchOutpostDataURL = serverURL+"/FetchOutpostData.php";
 	private string allGameDataURL = serverURL+"/FetchAllGameData.php";
-	private string newHighScoreURL = serverURL+"/NewHighScore.php";
+	//private string newHighScoreURL = serverURL+"/NewHighScore.php";
+	private string gameOverStarvationURL = serverURL+"/GameOver_Starvation.php";
+	private string gameOverSuicideURL = serverURL+"/GameOver_Suicide.php";
+	private string gameOverBiteURL = serverURL+"/GameOver_Bite.php";
+	private string gameOverBlazeOfGloryURL = serverURL+"/GameOver_BlazeOfGlory.php";
 	private string zombieKillURL = serverURL+"/KilledZombie.php";
 	public string myProfilePicURL = "";
 
@@ -264,11 +268,13 @@ public class GameManager : MonoBehaviour {
 					}
 					SceneManager.LoadScene("03b Game Over");
 				}
-				GameManager.instance.lastLoginTime =fullGameData[1]["mob_login_ts"].ToString();
+				GameManager.instance.lastLoginTime = fullGameData[1]["mob_login_ts"].ToString();
 				if (fullGameData[1]["high_score"].ToString() != "") {
 					TimeSpan hi_score = TimeSpan.Parse(fullGameData[1]["high_score"].ToString());
 					GameManager.instance.high_score = hi_score;
 				}
+				GameManager.instance.zombieKill_score = (int)fullGameData[1]["zombies_killed"];
+				GameManager.instance.zombieKill_HighScore = (int)fullGameData[1]["zombies_killed_high_score"];
 				//***************
 				//load the json text into their respective containers on GameManager.instance
 
@@ -329,6 +335,39 @@ public class GameManager : MonoBehaviour {
 
 	}
 
+	//this is only called from the BattleStateMachine in the Combat Scene
+	public IEnumerator PlayerBit () {
+		activeBldg = "bite_case";
+		DateTime time_dead = DateTime.Now + TimeSpan.FromMinutes(UnityEngine.Random.Range(5, 25));
+		TimeSpan final_score = time_dead - GameManager.instance.timeCharacterStarted;
+		my_score=final_score;
+		Debug.Log("Player bit, and will turn at "+time_dead.ToString()+" giving a final score of: "+final_score.ToString());
+
+		WWWForm form = new WWWForm();
+		form.AddField("id", GameManager.instance.userId);
+		form.AddField("login_ts", GameManager.instance.lastLoginTime);
+		form.AddField("client", "mob");
+		form.AddField("game_over_datetime", time_dead.ToString());
+
+		if (final_score > GameManager.instance.high_score) {
+			form.AddField("high_score",final_score.ToString());		
+		} else {
+			form.AddField("high_score", "");
+		}
+
+		WWW www= new WWW(gameOverBiteURL, form);
+		yield return www;
+		Debug.Log(www.text);
+
+		if (www.error == null) {
+			BattleStateMachine myBSM = BattleStateMachine.FindObjectOfType<BattleStateMachine>();
+			myBSM.GameOverBiteCallback();
+		} else {
+			Debug.Log(www.error);
+		}
+	
+	}
+
 	public IEnumerator PlayerDiedofStarvation () {
 		//calculate the players score 
 		DateTime time_dead = GameManager.instance.timeCharacterStarted + TimeSpan.FromHours(6 * GameManager.instance.mealCount);
@@ -336,18 +375,59 @@ public class GameManager : MonoBehaviour {
 		my_score = final_score;
 		Debug.Log(final_score.ToString());
 
-		if (final_score > GameManager.instance.high_score) {
-			WWWForm form = new WWWForm();
-			form.AddField("id", GameManager.instance.userId);
-			form.AddField("login_ts", GameManager.instance.lastLoginTime);
-			form.AddField("final_score",final_score.ToString());
+		WWWForm form = new WWWForm();
+		form.AddField("id", GameManager.instance.userId);
+		form.AddField("login_ts", GameManager.instance.lastLoginTime);
+		form.AddField("client", "mob");
+		form.AddField("game_over_datetime", time_dead.ToString());
 
-			WWW www = new WWW(newHighScoreURL, form);
-			yield return www;
-			Debug.Log(www.text);
+		if (final_score > GameManager.instance.high_score) {
+			form.AddField("high_score",final_score.ToString());		
+		} else {
+			form.AddField("high_score", "");
 		}
 
+		WWW www = new WWW(gameOverStarvationURL, form);
+		yield return www;
+		Debug.Log(www.text);
 		SceneManager.LoadScene("03b Game Over");
+	}
+
+	public IEnumerator KillUrself () {
+		int courageTimer = UnityEngine.Random.Range(1, 20);
+		DateTime game_over_time = DateTime.Now + TimeSpan.FromMinutes(courageTimer);
+		TimeSpan myScore = game_over_time - GameManager.instance.timeCharacterStarted;
+		my_score = myScore;
+
+		WWWForm form = new WWWForm();
+		form.AddField("id", GameManager.instance.userId);
+		form.AddField("login_ts", GameManager.instance.lastLoginTime);
+		form.AddField("client", "mob");
+		form.AddField("score", myScore.ToString());
+
+		if (myScore > GameManager.instance.high_score) {
+			form.AddField("high_score", myScore.ToString());
+		} else {
+			form.AddField("high_score", "");
+		}
+
+		WWW www = new WWW(gameOverSuicideURL, form);
+		yield return www;
+		Debug.Log(www.text);
+
+		if (www.error == null) {
+			SceneManager.LoadScene("03b Game Over");
+		} else {
+			Debug.Log(www.error);
+		}
+	}
+
+	public void BlazeOfGloryActivate () {
+		blazeOfGloryActive = true;
+		LoadIntoCombat(UnityEngine.Random.Range(50, 150), "blaze_of_glory");
+		//form + web call
+
+		
 	}
 
 
@@ -1026,58 +1106,101 @@ public class GameManager : MonoBehaviour {
 //
 		if (GameManager.instance.activeBldg != "tutorial") {
 			if (GameManager.instance.activeBldg != "zomb") {
-				string jsonString = GameManager.instance.locationJsonText;
-				JsonData bldgJson = JsonMapper.ToObject(jsonString);
-				string bldg_id = "";
+				if(GameManager.instance.activeBldg != "blaze_of_glory"){
+					if (GameManager.instance.activeBldg != "bite_case") {
 
-				for (int i = 0; i < bldgJson["results"].Count; i++) {
-					if (bldgJson["results"][i]["name"].ToString() == GameManager.instance.activeBldg) {
-						bldg_id = bldgJson["results"][i]["id"].ToString();
-						Debug.Log("sending bldg_id: "+bldg_id);
+						string jsonString = GameManager.instance.locationJsonText;
+						JsonData bldgJson = JsonMapper.ToObject(jsonString);
+						string bldg_id = "";
+
+						for (int i = 0; i < bldgJson["results"].Count; i++) {
+							if (bldgJson["results"][i]["name"].ToString() == GameManager.instance.activeBldg) {
+								bldg_id = bldgJson["results"][i]["id"].ToString();
+								Debug.Log("sending bldg_id: "+bldg_id);
+							}
+						}
+
+						WWWForm wwwForm = new WWWForm();
+						wwwForm.AddField("id", GameManager.instance.userId);
+						wwwForm.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+						wwwForm.AddField("client", "mob");
+
+						wwwForm.AddField("bldg_name", GameManager.instance.activeBldg);
+						wwwForm.AddField("bldg_id", bldg_id);
+						wwwForm.AddField("supply", GameManager.instance.reportedSupply);
+						wwwForm.AddField("food" , GameManager.instance.reportedFood);
+						wwwForm.AddField("water", GameManager.instance.reportedWater);
+						if (survivorFound) {
+							wwwForm.AddField("survivor_found", "1");
+						} else {
+							wwwForm.AddField("survivor_found", "0");
+						}
+
+						Debug.Log ("sending cleared building message to the server- bldg_name: "+GameManager.instance.activeBldg+" and id: "+bldg_id);
+						WWW www = new WWW(buildingClearedURL, wwwForm);
+						yield return www;
+
+						if (www.error == null) {
+							Debug.Log(www.text);
+
+							JsonData buildingClearReturn = JsonMapper.ToObject(www.text);
+
+							if (buildingClearReturn[0].ToString() == "Success") {
+								Debug.Log(buildingClearReturn[1].ToString());
+
+								//if there has been a survivor added to the players team.
+								if (buildingClearReturn[2].ToString() == "1") {
+									foundSurvivorName = buildingClearReturn[3]["name"].ToString();
+									foundSurvivorCurStam = (int)buildingClearReturn[3]["base_stam"];
+									foundSurvivorMaxStam = (int)buildingClearReturn[3]["base_stam"];
+									foundSurvivorAttack = (int)buildingClearReturn[3]["base_attack"];
+									foundSurvivorEntryID = (int)buildingClearReturn[3]["entry_id"];
+								}
+							}
+						} else {
+							Debug.Log(www.error);
+						}
+						SceneManager.LoadScene ("03a Win");
+					} else {
+						
+						//Player has been bit in combat. All end-game data has already been stored, but player played to the end of combat.
+						GameManager.instance.playerIsZombie = true;
+						SceneManager.LoadScene("03b Game Over");
+
 					}
-				}
-
-				WWWForm wwwForm = new WWWForm();
-				wwwForm.AddField("id", GameManager.instance.userId);
-				wwwForm.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
-				wwwForm.AddField("client", "mob");
-
-				wwwForm.AddField("bldg_name", GameManager.instance.activeBldg);
-				wwwForm.AddField("bldg_id", bldg_id);
-				wwwForm.AddField("supply", GameManager.instance.reportedSupply);
-				wwwForm.AddField("food" , GameManager.instance.reportedFood);
-				wwwForm.AddField("water", GameManager.instance.reportedWater);
-				if (survivorFound) {
-					wwwForm.AddField("survivor_found", "1");
 				} else {
-					wwwForm.AddField("survivor_found", "0");
-				}
 
-				Debug.Log ("sending cleared building message to the server- bldg_name: "+GameManager.instance.activeBldg+" and id: "+bldg_id);
-				WWW www = new WWW(buildingClearedURL, wwwForm);
-				yield return www;
+					//player has DIED in a BLAZE OF GLORY!!! game must be ended
 
-				if (www.error == null) {
+					DateTime game_over_time = DateTime.Now;
+					TimeSpan myScore = game_over_time - GameManager.instance.timeCharacterStarted;
+					Debug.Log("calculaing my score to be: "+myScore);
+					GameManager.instance.my_score = myScore;
+
+
+					WWWForm form = new WWWForm();
+					form.AddField("id", GameManager.instance.userId);
+					form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+					form.AddField("client", "mob");
+
+					form.AddField("game_over_datetime", game_over_time.ToString());
+					if (GameManager.instance.high_score < myScore) {
+						form.AddField("high_score", myScore.ToString());
+					} else {
+						form.AddField("high_score", "");
+					}
+
+					WWW www = new WWW(gameOverBlazeOfGloryURL, form);
+					yield return www;
 					Debug.Log(www.text);
 
-					JsonData buildingClearReturn = JsonMapper.ToObject(www.text);
-
-					if (buildingClearReturn[0].ToString() == "Success") {
-						Debug.Log(buildingClearReturn[1].ToString());
-
-						//if there has been a survivor added to the players team.
-						if (buildingClearReturn[2].ToString() == "1") {
-							foundSurvivorName = buildingClearReturn[3]["name"].ToString();
-							foundSurvivorCurStam = (int)buildingClearReturn[3]["base_stam"];
-							foundSurvivorMaxStam = (int)buildingClearReturn[3]["base_stam"];
-							foundSurvivorAttack = (int)buildingClearReturn[3]["base_attack"];
-							foundSurvivorEntryID = (int)buildingClearReturn[3]["entry_id"];
-						}
+					if (www.error == null) {
+						SceneManager.LoadScene("03b GameOver");
+					} else {
+						Debug.Log(www.error);
 					}
-				} else {
-					Debug.Log(www.error);
+
 				}
-				SceneManager.LoadScene ("03a Win");
 			} else {
 				//player has killed another players zombie.
 				WWWForm form = new WWWForm();

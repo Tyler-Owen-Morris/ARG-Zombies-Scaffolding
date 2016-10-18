@@ -155,6 +155,8 @@
      <Compile Include="Assets\Scripts\5man Combat Scripts\BaseWeapon.cs" />
      <Compile Include="Assets\Scripts\5man Combat Scripts\BaseZombie.cs" />
      <Compile Include="Assets\Scripts\5man Combat Scripts\BattleStateMachine.cs" />
+     <Compile Include="Assets\Scripts\5man Combat Scripts\ContinueRunningButtonManager.cs" />
+     <Compile Include="Assets\Scripts\5man Combat Scripts\KillYourselfButtonManager.cs" />
      <Compile Include="Assets\Scripts\5man Combat Scripts\SurvivorStateMachine.cs" />
      <Compile Include="Assets\Scripts\5man Combat Scripts\TurnHandler.cs" />
      <Compile Include="Assets\Scripts\5man Combat Scripts\WeaponManager.cs" />
@@ -164,6 +166,7 @@
      <Compile Include="Assets\Scripts\Building.cs" />
      <Compile Include="Assets\Scripts\BuildingSpawner.cs" />
      <Compile Include="Assets\Scripts\CurrentLocationUpdater.cs" />
+     <Compile Include="Assets\Scripts\EndGamePanelController.cs" />
      <Compile Include="Assets\Scripts\FadeIn.cs" />
      <Compile Include="Assets\Scripts\FloatingText.cs" />
      <Compile Include="Assets\Scripts\FloatingTextController.cs" />
