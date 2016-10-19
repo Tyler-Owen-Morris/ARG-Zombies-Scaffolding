@@ -789,40 +789,56 @@ public class BattleStateMachine : MonoBehaviour {
 	}
 
 	public void PlayerChoosesRunAway () {
+
+		survivorList.RemoveAll(GameObject => GameObject == null);
+
+		/*
+		//clean the list of any destroyed game-objects
+		for (int i = survivorList.Count; 0 < i ; i--) {
+			if (survivorList[i] != null) {
+				continue;
+			} else {
+				//since the list will collapse, we need to repeat the same position in the next loop
+				survivorList.RemoveAt(i);
+			}
+		}
+		*/
+
 		int got_away = 0;
 		int running_away = survivorList.Count;
 
 		foreach(GameObject survivor in survivorList) {
 			float odds = 0;
-			SurvivorPlayCard myPlayCard = survivor.GetComponent<SurvivorPlayCard>();
-			float healthPercent = 100*(myPlayCard.survivor.curStamina/myPlayCard.survivor.baseStamina);
+			SurvivorStateMachine mySSM = survivor.GetComponent<SurvivorStateMachine>();
+			float healthPercent = 100*(mySSM.survivor.curStamina/mySSM.survivor.baseStamina);
 			if (healthPercent < 10) {
 				odds += 1;
 			}
-			if (myPlayCard.survivor.curStamina <=0) {
+			if (mySSM.survivor.curStamina <=0) {
 				odds +=3;
 			}
-			if (myPlayCard.survivor.curStamina <= -1*myPlayCard.survivor.baseStamina) {
+			if (mySSM.survivor.curStamina <= -1*mySSM.survivor.baseStamina) {
 				odds = odds * 5; //should =30%
 			}
-			if (myPlayCard.survivor.curStamina <= -2*myPlayCard.survivor.baseStamina) {
+			if (mySSM.survivor.curStamina <= -2*mySSM.survivor.baseStamina) {
 				odds = odds * 2; //should =60%
 			}
-			if (myPlayCard.survivor.curStamina <= -3*myPlayCard.survivor.baseStamina) {
+			if (mySSM.survivor.curStamina <= -3*mySSM.survivor.baseStamina) {
 				odds = odds + 30; //should total 90%
 			}
 
 			float roll = UnityEngine.Random.Range(0.0f, 100.0f);
 			if (roll <= odds) {
 				//this survivor has failed to run away.
-				StartCoroutine(SendDeadSurvivorToServer(myPlayCard.survivor.survivor_id));
-				failedToRunText.text = myPlayCard.survivor.name+" fell behind and was overcome by zombies. they didn't make it.\n what will you do?";
+				StartCoroutine(SendDeadSurvivorToServer(mySSM.survivor.survivor_id));
+				failedToRunText.text = mySSM.survivor.name+" fell behind and was overcome by zombies. they didn't make it.\n what will you do?";
 				failedRunAwayPanel.SetActive(true);
 				ContinueRunningButtonManager myContRunButMgr = ContinueRunningButtonManager.FindObjectOfType<ContinueRunningButtonManager>();
 				float tmr = UnityEngine.Random.Range(8.0f, 25.0f);
 				myContRunButMgr.StartTheCountdown(tmr);
 				break;
 			} else {
+				Debug.Log(mySSM.survivor.name+" successfully ran away.");
 				got_away++;
 				continue;
 			}
