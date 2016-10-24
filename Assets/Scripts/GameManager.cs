@@ -40,7 +40,7 @@ public class GameManager : MonoBehaviour {
 	public string userLastName;
 	public string userName;
 
-	public static string serverURL = "http://www.argzombie.com/ARGZ_DEV_SERVER";
+	public static string serverURL = "http://www.argzombie.com/ARGZ_SERVER";
 
 	private string startNewCharURL = serverURL+"/StartNewCharacter.php";
 	private string resumeCharacterUrl = serverURL+"/ResumeCharacter.php";
