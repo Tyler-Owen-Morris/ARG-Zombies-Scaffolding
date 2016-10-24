@@ -151,6 +151,7 @@ public class MapLevelManager : MonoBehaviour {
 		InvokeRepeating("RegenerateStamina", 30.0f, 60.0f);
 
 		CheckForStarvationDehydration();
+		UpdateTheUI();
 
 		//if the player is the last one left alive, activate the gameover button.
 		JsonData survivorJson = JsonMapper.ToObject(GameManager.instance.survivorJsonText);
@@ -174,7 +175,7 @@ public class MapLevelManager : MonoBehaviour {
 			openPanel = true;
 		}
 
-		if (eatDrinkJson != null) {
+		if (GameManager.instance.starvationHungerJsonText != "") {
 			bool ded = false;
 			for (int i=0; i<eatDrinkJson.Count; i++) {
 				if ((int)eatDrinkJson[i]["team_position"] == 5) {
@@ -217,17 +218,11 @@ public class MapLevelManager : MonoBehaviour {
 			if (lastUpdateLat != 0 && lastUpdateLng != 0) {
 				//if you've moved enough, then do the update, otherwise do nothing
 				if (CalculateDistanceToTarget(lastUpdateLat, lastUpdateLng)>= 20.0f) {
-					//find and destroy all existing buildings
-					GameObject[] oldBldgs = GameObject.FindGameObjectsWithTag("building");
-					foreach (GameObject oldBldg in oldBldgs) {
-						Destroy(oldBldg.gameObject);
-					}
+					
 					//if player has traveled 250+meters since google api was last pinged, then change the boolean so that it hits the api for new json data.
 					if (CalculateDistanceToTarget(bldgSpawner.lastGoogleLat, bldgSpawner.lastGoogleLng) >= 250.0f) {
 						bldgSpawner.googleBldgsNeedUpdate = true;
 					}
-					//call the building creation function
-					bldgSpawner.UpdateBuildings();
 					//log the last location updated from
 					lastUpdateLat = Input.location.lastData.latitude;
 					lastUpdateLng = Input.location.lastData.longitude;
@@ -237,17 +232,9 @@ public class MapLevelManager : MonoBehaviour {
 				//store current location as last updated location and do the update
 				lastUpdateLat = Input.location.lastData.latitude;
 				lastUpdateLng = Input.location.lastData.longitude;
-
-				//destroy the existing buildings
-				GameObject[] oldBldgs = GameObject.FindGameObjectsWithTag("building");
-				foreach (GameObject oldBldg in oldBldgs) {
-					Destroy(oldBldg.gameObject);
-				}
-
-				//create new buildings 
-				bldgSpawner.UpdateBuildings();
 			}
 		}
+		bldgSpawner.UpdateBuildings();
 	}
 
 	public void RegenerateStamina () {
@@ -357,6 +344,7 @@ public class MapLevelManager : MonoBehaviour {
 		playerHealthSliderDuplicate.value = (CalculateActiveTeamStamina());
 
 		bldgSpawner.PlaceHomebaseGraphic();
+		bldgSpawner.UpdateBuildings();
         StartCoroutine(SetCurrentLocationText());
 	}
 
@@ -419,6 +407,7 @@ public class MapLevelManager : MonoBehaviour {
 	}
 
 	public void AcknowledgeStarvationWarning () {
+		hungerThirstWarningPanel.SetActive(false);
 		StartCoroutine(AcknowledgeStarvation());
 	}
 
@@ -862,14 +851,14 @@ public class MapLevelManager : MonoBehaviour {
 		}
 	}
 
-	IEnumerator SendNewOutpost(int index) {
+	public IEnumerator SendNewOutpost(int index) {
 		float newLat = 0f;
 		float newLon = 0f;
 		int duration = 0;//in hours
 		int capacity = 0;
 
 		if (index == 1) {
-			duration = 48;
+			duration = 72;
 			capacity = 5;
 		} else if (index == 2) {
 			duration = (24*14);
@@ -910,6 +899,8 @@ public class MapLevelManager : MonoBehaviour {
 
 				if(outpostResult[0].ToString() == "Success" ) {
 					Debug.Log(outpostResult[1].ToString());
+					outpostConfirmationPanel.SetActive(false);
+					outpostSelectionPanel.SetActive(false);
 					homebaseConfirmationPanel.SetActive(false);
 					homebasePanel.SetActive(false);
 					StartCoroutine(GameManager.instance.FetchOutpostData());

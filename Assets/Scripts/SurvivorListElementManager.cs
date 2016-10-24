@@ -1,11 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using LitJson;
+using System;
 
 public class SurvivorListElementManager : MonoBehaviour {
 
 	public Text survivorNameText;
 	public Text survivorStatsText;
+	public Text myInjuredText;
 	public Image survivorPortraitSprite;
 	public GameObject mySurvivorCard, myMissionText;
 	public Button teamButton, equipButton;
@@ -52,6 +55,35 @@ public class SurvivorListElementManager : MonoBehaviour {
 			myStatsString += " and is Unarmed";
 		}
 		survivorStatsText.text = myStatsString;
+	}
+
+	public void SetInjuryText (int injury_id) {
+		JsonData injury_json = JsonMapper.ToObject(GameManager.instance.injuryJsonText);
+
+
+		for (int i=0; i < injury_json.Count; i++) {
+			if ((int)injury_json[i]["entry_id"] == injury_id) {
+				DateTime healed_time = Convert.ToDateTime(injury_json[i]["expire_time"].ToString());
+				string myText = "Injured for ";
+				TimeSpan duration = healed_time - DateTime.Now;
+				if (duration > TimeSpan.FromDays(1)) {
+					myText += duration.Days.ToString()+" more Day";
+					if (duration.Days > 2) {
+						myText += "s";
+					}
+				} else if (duration > TimeSpan.FromHours(1)) {
+					myText += duration.Hours.ToString()+" more hour";
+					if (duration.Hours > 2) {
+						myText += "s";
+					}
+				} else {
+					myText = "recovering soon";
+				}
+				myInjuredText.text = myText;
+				myInjuredText.gameObject.SetActive(true);
+				myMissionText.SetActive(false);
+			}
+		}
 	}
 
 	public void equipButtonPressed () {

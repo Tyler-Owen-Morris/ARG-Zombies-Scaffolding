@@ -14,11 +14,11 @@ public class GameManager : MonoBehaviour {
 
 	public bool gameDataInitialized = false, updateWeaponAndSurvivorMapLevelUI = false, survivorFound = false, playerInTutorial = false, weaponHasBeenSelected = false, playerIsZombie = false, blazeOfGloryActive = false;
 	public int daysSurvived, supply, ammo, reportedSupply, reportedWater, reportedFood, playerCurrentStamina, playerMaxStamina, zombiesToFight, foodCount, waterCount, mealCount, hunger, thirst, distanceCoveredThisSession, zombieKill_HighScore, zombieKill_score;
-	public DateTime timeCharacterStarted, lastHomebaseSetTime;
+	public DateTime timeCharacterStarted, lastHomebaseSetTime, gameOverTime;
 	public float homebaseLat, homebaseLong;
 	public string foundSurvivorName, lastLoginTime;
 	public TimeSpan high_score, my_score;
-	public int foundSurvivorCurStam, foundSurvivorMaxStam, foundSurvivorAttack, foundSurvivorEntryID, zombie_to_kill_id = 0;
+	public int foundSurvivorCurStam, foundSurvivorMaxStam, foundSurvivorAttack, foundSurvivorEntryID;
 	[SerializeField]
 	private GameObject[] weaponOptionsArray;
 
@@ -31,8 +31,8 @@ public class GameManager : MonoBehaviour {
 
 	private Scene activeScene;
 	//made this public while working on the server "cleared list" data retention. it should go back to private
-	public string activeBldg;
-	public string locationJsonText, survivorJsonText, weaponJsonText, clearedBldgJsonText, outpostJsonText, missionJsonText, starvationHungerJsonText;
+	public string activeBldg, zombie_to_kill_id ="";
+	public string locationJsonText, survivorJsonText, weaponJsonText, clearedBldgJsonText, outpostJsonText, missionJsonText, starvationHungerJsonText, injuryJsonText;
 	public JsonData missionData;
 
 	public string userId;
@@ -92,7 +92,7 @@ public class GameManager : MonoBehaviour {
 			SetDaysSurvived();
 			
 			MapLevelManager mapManager = FindObjectOfType<MapLevelManager>();
-			mapManager.UpdateTheUI();
+			//mapManager.UpdateTheUI();
 			mapManager.theMissionListPopulator.LoadMissionsFromGameManager();
 
 		} else if (activeScene.name.ToString() == "01a Login") {
@@ -236,6 +236,7 @@ public class GameManager : MonoBehaviour {
 			//******* 0-success 1-player 2-survivor 3-weapon 4-cleared buildings 5-outposts 6-missions 7-eat/drink/starve ******* THIS IS HOW THE INDEX IS ORGANIZED
 
 			if (fullGameData[0].ToString() =="Success") {
+
 				//***************
 				//update the GameManager.instance with all player data
 				GameManager.instance.userFirstName = fullGameData[1]["first_name"].ToString() ;
@@ -259,6 +260,10 @@ public class GameManager : MonoBehaviour {
 					DateTime pDate = Convert.ToDateTime(fullGameData[1]["homebase_set_time"].ToString());
 					GameManager.instance.lastHomebaseSetTime = pDate;
 				}
+				if (fullGameData[1]["game_over_datetime"].ToString() != "") {
+					DateTime eDate = Convert.ToDateTime(fullGameData[1]["game_over_datetime"].ToString());
+					GameManager.instance.gameOverTime = eDate;
+				} 
 				//player has not gotten their zombie killed and is attempting to play.
 				if (fullGameData[1]["isZombie"].ToString() == "1" || fullGameData[1]["isZombie"].ToString() == "2") {
 					if (fullGameData[1]["isZombie"].ToString() == "1") {
@@ -278,30 +283,52 @@ public class GameManager : MonoBehaviour {
 				//***************
 				//load the json text into their respective containers on GameManager.instance
 
+
+
 				if(fullGameData[2] != null){
 					survivorJsonText = JsonMapper.ToJson(fullGameData[2]);
-				} 
+				} else {
+					survivorJsonText = "";
+				}
 				Debug.Log(survivorJsonText);
 
 				Debug.Log(JsonMapper.ToJson(fullGameData[3]));
 				if (fullGameData[3] != null) {
 					weaponJsonText = JsonMapper.ToJson(fullGameData[3]);
+				}else {
+					weaponJsonText = "";
 				}
 
 				if (fullGameData[4] != null) {
 					clearedBldgJsonText = JsonMapper.ToJson(fullGameData[4]);
+					Debug.Log(JsonMapper.ToJson(fullGameData[4]));
+				} else {
+					clearedBldgJsonText = "";
 				}
+
 
 				if (fullGameData[5] != null) {
 					outpostJsonText = JsonMapper.ToJson(fullGameData[5]);
+				}else {
+					outpostJsonText = "";
 				}
 
 				if (fullGameData[6] != null) {
 					missionJsonText = JsonMapper.ToJson(fullGameData[6]);
+				} else {
+					missionJsonText = "";
 				}
 
 				if (fullGameData[7] != null) {
 					starvationHungerJsonText = JsonMapper.ToJson(fullGameData[7]);
+				}else {
+					starvationHungerJsonText = "";
+				}
+
+				if (fullGameData[8] != null) {
+					injuryJsonText = JsonMapper.ToJson(fullGameData[8]);
+				}else {
+					injuryJsonText = "";
 				}
 
 				//***************
@@ -598,6 +625,8 @@ public class GameManager : MonoBehaviour {
 					injuredSurvivorCardList.Add(instance.gameObject);
 				}
 			}
+			instance.injury = (int)survivorJson[i]["injured"];
+
 			instance.transform.SetParent(GameManager.instance.survivorCardHolder.transform);
 		}
 
@@ -756,7 +785,7 @@ public class GameManager : MonoBehaviour {
 				Debug.Log(survivorJson[1].ToString());
 			}
 
-			StartCoroutine (FetchOutpostData());
+			//StartCoroutine (FetchOutpostData());
 			//survivorCardList.AddRange (GameObject.FindGameObjectsWithTag("survivorcard"));
 
 			//auto-load map level from login(1) , if on map level stay there, if on victory screen, let the user press the button to load map level.
@@ -816,7 +845,7 @@ public class GameManager : MonoBehaviour {
 			BuildingSpawner myBldgSpwnr = BuildingSpawner.FindObjectOfType<BuildingSpawner>();
 			myBldgSpwnr.SpawnOutpostsToMap();
 		}
-		StartCoroutine (FetchMissionData());
+		//StartCoroutine (FetchMissionData());
 	}
 
 	public IEnumerator FetchMissionData () {
@@ -906,7 +935,7 @@ public class GameManager : MonoBehaviour {
 
 	public void ResumeCharacter () {
 		GameManager.instance.lastLoginTime = "12/31/1999 11:59:59";
-		Debug.Log(GameManager.instance.lastLoginTime.ToString());
+		//Debug.Log(GameManager.instance.lastLoginTime.ToString());
 		//NOTE: This coroutine also calls FetchSurvivorData and FetchWeaponData- due to order of operations in associating the 2 databases, I placed the StartCoroutine at the end of each other coroutine
 		//StartCoroutine (FetchResumePlayerData());
 		StartCoroutine (LoadAllGameData());
@@ -977,6 +1006,7 @@ public class GameManager : MonoBehaviour {
 		Debug.Log ("1 Hour added to time started. New Datetime is: " + timeCharacterStarted.ToString() );
 	}
 
+	/*
 	public void DeactivateClearedBuildingsFromJson () {
 
 		JsonData clearedBldgJson = JsonMapper.ToObject(GameManager.instance.clearedBldgJsonText);
@@ -1006,64 +1036,8 @@ public class GameManager : MonoBehaviour {
     	}
 	}
 
-	public IEnumerator DeactivateClearedBuildings () {
-		WWWForm myForm = new WWWForm();
-		myForm.AddField("id", GameManager.instance.userId);
-		myForm.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
-		myForm.AddField("client", "mob");
+	*/
 
-		Debug.Log(GameManager.instance.lastLoginTime.ToString());
-
-    	WWW www = new WWW(clearedBuildingDataURL, myForm);
-    	yield return www;
-    	Debug.Log(www.text);
-
-    	if (www.error == null) {
-    		//Debug.Log ("the cleared building call returned raw text of: "+www.text);
-    		GameManager.instance.clearedBldgJsonText = www.text;
-			//File.WriteAllText(Application.dataPath + "/Resources/clearedBldg.json", www.text.ToString());
-    	} else {
-    		Debug.Log (www.error);
-    	}
-
-    	JsonData clearedJson = JsonMapper.ToObject(GameManager.instance.clearedBldgJsonText);
-
-    	//ensure there are more than 0 buildings returned
-    	if (clearedJson.Count > 0) {
-	    	for (int i = 0; i < clearedJson.Count; i++) {
-	    		//if the building is still considered inactive by the server
-	    		if (clearedJson[i]["active"].ToString() == "0") {
-	    			//Debug.Log ("Coroutine has found "+ clearedJson[i]["bldg_name"].ToString()+" to be inactive");
-					GameObject thisBuilding = GameObject.Find(clearedJson[i]["bldg_name"].ToString());
-					if (thisBuilding != null) {
-	    				PopulatedBuilding populatedBldg = thisBuilding.GetComponent<PopulatedBuilding>();
-						//Debug.Log ("GameManager is attempting to deactivate "+populatedBldg.gameObject.name);
-						populatedBldg.DeactivateMe();
-	    			} else {
-	    				continue;
-	    			}
-
-	    		} else if (clearedJson[i]["active"].ToString() == "1") {
-					//Debug.Log (clearedJson[i]["bldg_name"].ToString()+" has been reactivated by the server, but remains on player DB. Last cleared DateTime: "+clearedJson[i]["time_cleared"].ToString());
-	    		}
-	    	}
-
-    	} else {
-    		Debug.Log ("Player has not cleared any buildings yet");
-    	}
-    }
-
-
-//	public void ResetAllBuildings () {
-//		for (int i = 0 ; i < buildingToggleStatusArray.Length ; i++ ){
-//			buildingToggleStatusArray[i] = false;
-//		}
-//		Building[] arrayOfBuildings = FindObjectsOfType<Building>();
-//		for (int i = 0; i < arrayOfBuildings.Length; i++) {
-//			Debug.Log("Sending reactivation message to " + arrayOfBuildings[i].name );
-//			arrayOfBuildings[i].ReactivateMe();
-//		}
-//	}
 
 	public bool clearedBuildingSendInProgress = false;
 	public void BuildingIsCleared (int sup, int water, int food, bool survFound) {
@@ -1078,32 +1052,13 @@ public class GameManager : MonoBehaviour {
 			foodCount += food;
 			survivorFound = survFound;
 
-
-			//this updates the long term memory, and will need to be changed to update the PHP server.  This is essentially saving the check-in.
-	//		GamePreferences.SetFoodCount(foodCount);
-	//		GamePreferences.SetWaterCount(waterCount);
-	//		GamePreferences.SetSupply(supply);
-	//		GamePreferences.SetTotalSurvivors(totalSurvivors);
-	//		GamePreferences.SetActiveSurvivors(survivorsActive);
-			//GameManager.instance.UpdateAllStatsToGameMemory();
-
 			StartCoroutine(SendClearedBuilding(survivorFound));
 		} 
 	}
 
 	IEnumerator SendClearedBuilding (bool survivorFound) {
 
-		//This code was for the mock-up. using an array and strings to store data on 4 test buildings.
-//		if (activeBldg == "Building01") {
-//			buildingToggleStatusArray[0]=true;
-//		} else if (activeBldg == "Building02") {
-//			buildingToggleStatusArray[1]=true;
-//		} else if (activeBldg == "Building03") {
-//			buildingToggleStatusArray[2]=true;
-//		} else if (activeBldg == "Building04") {
-//			buildingToggleStatusArray[3]=true;
-//		}
-//
+
 		if (GameManager.instance.activeBldg != "tutorial") {
 			if (GameManager.instance.activeBldg != "zomb") {
 				if(GameManager.instance.activeBldg != "blaze_of_glory"){
@@ -1223,7 +1178,7 @@ public class GameManager : MonoBehaviour {
 
 						} else {
 							Debug.Log("This player was no longer a zombie");
-							GameManager.instance.zombie_to_kill_id = 0;
+							GameManager.instance.zombie_to_kill_id = "";
 						}
 					}
 
@@ -1238,181 +1193,16 @@ public class GameManager : MonoBehaviour {
 			//if player is trying to send the tutorial building for reward- skip it, load game data, and load into map level.
 			playerInTutorial = false;
 			weaponHasBeenSelected = false;
+			StartCoroutine(LoadAllGameData());
+			SceneManager.LoadScene("02a Map Level");
+			StopCoroutine(SendClearedBuilding(false));
 		}
 		yield return new WaitForSeconds(2.0f);
 		clearedBuildingSendInProgress=false;
-		//StartCoroutine(FetchResumePlayerData());
-		StartCoroutine(LoadAllGameData());
-		StartCoroutine(GameManager.instance.DeactivateClearedBuildings());
+		//StartCoroutine(FetchResumePlayerData());  //this is the old train of queries to load game data
+		StartCoroutine(LoadAllGameData()); //this is the consolodated cach-all data loader
+		//GameManager.instance.DeactivateClearedBuildings();  //this should be called from the map level manager on map level load
 	}
-
-
-
-	/*
-	public void PlayerAttemptingPurchaseFullHealth () {
-		if (playerCurrentHealth < 100) {
-			if (supply >= 20) {
-				supply -= 20;
-				SetPublicPlayerHealth(100);
-				//updating server side stats is called in the public player health function.
-
-				MapLevelManager mapLevelManager = FindObjectOfType<MapLevelManager>();  //only called from map level manager, and passed 
-				mapLevelManager.UpdateTheUI();
-			} else {
-				Debug.Log ("Player does not have enough supply to make the purchase");
-			}
-		} else {
-			Debug.Log ("Player Health already full");
-		}
-	}
-
-	public void PlayerAttemptingPurchaseNewSurvivor () {
-		if (supply >= 50) {
-			if (survivorsActive < totalSurvivors) {
-				//subtract the cost.
-				supply -= 50;
-//				GamePreferences.SetSupply(supply);
-
-				//add the survivor
-				survivorsActive ++;
-//				GamePreferences.SetActiveSurvivors(survivorsActive);
-//				GamePreferences.SetTotalSurvivors(totalSurvivors);
-				GameManager.instance.UpdateAllStatsToGameMemory();
-
-				//this can only be called from inventory on map level- so get that lvl manager, and update the UI elements.
-				MapLevelManager mapLevelManager = FindObjectOfType<MapLevelManager>();  //only called from map level manager, and passed 
-				mapLevelManager.UpdateTheUI();
-			} else {
-				Debug.Log("There are no inactive players to train");
-			}
-		} else {
-			Debug.Log ("Player does not have enough supply to make the purchase");
-		}
-	}
-
-	public void PlayerAttemptingPurchaseShiv () {
-		if ( supply >= 5 ) {
-
-			supply -= 5;
-//			GamePreferences.SetSupply(this.supply);
-
-			shivCount ++;
-//			GamePreferences.SetShivCount(shivCount);
-
-			GameManager.instance.UpdateAllStatsToGameMemory();
-
-			MapLevelManager mapLevelManager = FindObjectOfType<MapLevelManager>();  //only called from map level manager, and passed 
-			mapLevelManager.UpdateTheUI();
-		}
-	}
-
-	public void PlayerAttemtpingPurchaseClub () {
-		if (supply >= 15) {
-			supply -= 15;
-//			GamePreferences.SetSupply(supply);
-
-			clubCount ++;
-//			GamePreferences.SetClubCount(clubCount);
-
-			GameManager.instance.UpdateAllStatsToGameMemory();
-
-			MapLevelManager mapLevelManager = FindObjectOfType<MapLevelManager>();  //only called from map level manager, and passed 
-			mapLevelManager.UpdateTheUI();
-		}
-	}
-
-	public void PlayterAttemtptingPurchaseGun () {
-		if (supply >= 25) {
-			supply -= 25;
-//			GamePreferences.SetSupply(supply);
-
-			gunCount += 10;
-//			GamePreferences.SetGunCount(gunCount);
-
-			GameManager.instance.UpdateAllStatsToGameMemory();
-
-			MapLevelManager mapLevelManager = FindObjectOfType<MapLevelManager>();  //only called from map level manager, and passed 
-			mapLevelManager.UpdateTheUI();
-		}
-	}
-
-	public void ProcessDurability () {
-		if (weaponEquipped == "shiv") {
-			shivDurability --;
-
-			if (shivDurability <= 0) {
-				shivCount --;
-				shivDurability = 50;
-//				GamePreferences.SetShivCount (shivCount);
-//				GamePreferences.SetShivDurability (shivDurability);
-			} else {
-//				GamePreferences.SetShivDurability (shivDurability);
-			}
-
-			Debug.Log ("Shiv has successfully processed durability, it's now got " + shivDurability + " durability, and total shivs: " +shivCount);
-		} else if (weaponEquipped == "club") {
-			clubDurability --;
-
-			if (clubDurability <= 0) {
-				clubCount --;
-				clubDurability = 50;
-//				GamePreferences.SetClubCount (clubCount);
-//				GamePreferences.SetClubDurability (clubDurability);
-			} else {
-//				GamePreferences.SetClubDurability (clubDurability);
-			}
-
-			Debug.Log ("Club has successfully processed durability, it's now got " + clubDurability + " durability, and total clubs: " + clubCount);
-		} else if (weaponEquipped == "gun"){
-			gunCount --;
-
-//			GamePreferences.SetGunCount(gunCount);
-
-			Debug.Log ("Gun has successfully processed ammo spent, player now has " + gunCount +" amunition left");
-		} else {
-			Debug.Log ("Durability function failed to execute");
-		}
-	}
-
-	public void CheckEatingAndDrinking () {
-		StartCoroutine ( UpdatePlayersEatingAndDrinking () );
-	}
-
-	// the idea with this coroutine is to invokerepeating on awake, every 15-30, and execute the 'meal' as soon as it's time.
-	IEnumerator UpdatePlayersEatingAndDrinking () {
-		//Debug.Log ("Checking to update food / Water / Meal counts");
-
-		//if we have fewer meals than expected.
-		DateTime now = System.DateTime.Now;
-		Double days = (now - timeCharacterStarted).TotalDays;
-		int expected = (int)Mathf.Floor( (float)days * 2 );
-
-		if (mealCount < expected) {
-			mealCount ++;
-			foodCount = foodCount - totalSurvivors;
-			waterCount = waterCount - totalSurvivors;
-
-			Debug.Log ("a meal has been processed. Total meals eaten: " + mealCount + " Food Count: " + foodCount + " Water Count: "+ waterCount);
-
-//			GamePreferences.SetWaterCount(waterCount);
-//			GamePreferences.SetFoodCount(foodCount);
-//			GamePreferences.SetMealsCount(mealCount);
-
-			UpdateAllStatsToGameMemory();
-
-			//we need to restart the coroutine to ensure that we don't need to process multiple meals.  
-			if (mealCount != expected) {
-				StartCoroutine( UpdatePlayersEatingAndDrinking () );
-			} else {
-				yield break;
-			}
-		} else {
-			Debug.Log ("not time to eat or drink yet... but coroutine is checking @ days played: " + days + " and an expected meal count of " + expected);
-			yield break;
-		}
-	}
-
-*/
 
 	public void PublicStartLocationServices () {
 		StartCoroutine(StartLocationServices());

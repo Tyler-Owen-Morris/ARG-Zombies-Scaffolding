@@ -103,7 +103,7 @@ public class ZombieStateMachine : MonoBehaviour {
 			Vector3 targetPosition = new Vector3(0, 0, 0); //just called to initialize the variable.
 			if (target != null) {
 				//animate the enemy near the hero to attack
-				targetPosition = new Vector3(target.transform.position.x + 0.3f, target.transform.position.y, target.transform.position.z);
+				targetPosition = new Vector3(target.transform.position.x + 55.0f, target.transform.position.y, target.transform.position.z);
 				gameObject.GetComponent<SpriteRenderer>().sortingOrder = target.GetComponent<SpriteRenderer>().sortingOrder;
 			} else {
 				currentState = TurnState.CHOOSEACTION;

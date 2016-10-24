@@ -40,7 +40,7 @@ public class VictoryScreenController : MonoBehaviour {
 				outputText += "\nWhat will you do?";
 			}
 		} else {
-			if (GameManager.instance.zombie_to_kill_id > 0) {
+			if (GameManager.instance.zombie_to_kill_id != "") {
 				outputText += "You successfully killed another player's Zombie!\n";
 				outputText += "You earned 50 supply\n";
 				outputText += "20 food\n";

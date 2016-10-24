@@ -140,9 +140,9 @@ public class MissionCombatSimulator : MonoBehaviour {
 			MapLevelManager myMapLevelMgr = GameObject.Find("Map Level Manager").GetComponent<MapLevelManager>();
 			myMapLevelMgr.missionStartConfirmationPanel.gameObject.SetActive(false);
 			myMapLevelMgr.buildingPanel.gameObject.SetActive(false);
-			StartCoroutine(GameManager.instance.DeactivateClearedBuildings());
 			GameManager.instance.updateWeaponAndSurvivorMapLevelUI=true;
-			GameManager.instance.ResumeCharacter();
+			//GameManager.instance.ResumeCharacter();
+			StartCoroutine(GameManager.instance.LoadAllGameData());
 		} else {
 			Debug.Log(www.error);
 		}

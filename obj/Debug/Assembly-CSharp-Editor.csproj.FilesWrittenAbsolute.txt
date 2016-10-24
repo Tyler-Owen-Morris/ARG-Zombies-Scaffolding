@@ -44,3 +44,4 @@
 /Users/Owen/ARG Zombies Scaffolding/Temp/bin/Debug/UnityEngine.Analytics.dll
 /Users/Owen/ARG Zombies Scaffolding/Temp/bin/Debug/UnityEditor.iOS.Extensions.Common.dll.mdb
 /Users/Owen/ARG Zombies Scaffolding/Temp/bin/Debug/UnityEditor.iOS.Extensions.Xcode.dll.mdb
+/Users/Owen/ARG Zombies Scaffolding/Temp/bin/Debug/Tizen.dll

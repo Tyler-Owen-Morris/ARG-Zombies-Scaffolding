@@ -26,11 +26,13 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 	// Unity IAP objects 
 	private IStoreController m_Controller;
 	private IAppleExtensions m_AppleExtensions;
+	private ISamsungAppsExtensions m_SamsungExtensions;
 
 	private int m_SelectedItemIndex = -1; // -1 == no product
 	private bool m_PurchaseInProgress;
 
 	private Selectable m_InteractableSelectable; // Optimization used for UI state management
+	private bool m_IsSamsungAppsStoreSelected;
 
 	#if RECEIPT_VALIDATION
 	private CrossPlatformValidator validator;
@@ -43,6 +45,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 	{
 		m_Controller = controller;
 		m_AppleExtensions = extensions.GetExtension<IAppleExtensions> ();
+		m_SamsungExtensions = extensions.GetExtension<ISamsungAppsExtensions> ();
 
 		InitUI(controller.products.all);
 
@@ -126,6 +129,7 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 					AppleInAppPurchaseReceipt apple = productReceipt as AppleInAppPurchaseReceipt;
 					if (null != apple) {
 						Debug.Log(apple.originalTransactionIdentifier);
+						Debug.Log(apple.subscriptionExpirationDate);
 						Debug.Log(apple.cancellationDate);
 						Debug.Log(apple.quantity);
 					}
@@ -196,16 +200,22 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		builder.AddProduct("100.gold.coins", ProductType.Consumable, new IDs
 		{
 			{"100.gold.coins.mac", MacAppStore.Name},
+			{"000000596586", TizenStore.Name},
+
 		});
 
 		builder.AddProduct("500.gold.coins", ProductType.Consumable, new IDs
 		{
 			{"500.gold.coins.mac", MacAppStore.Name},
+			{"000000596581", TizenStore.Name},
+
 		});
 
 		builder.AddProduct("sword", ProductType.NonConsumable, new IDs
 		{
-			{"sword.mac", MacAppStore.Name}
+			{"sword.mac", MacAppStore.Name},
+			{"000000596583", TizenStore.Name},
+
 		});
 
 		builder.AddProduct("subscription", ProductType.Subscription, new IDs
@@ -216,6 +226,21 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		// Write Amazon's JSON description of our products to storage when using Amazon's local sandbox.
 		// This should be removed from a production build.
 		builder.Configure<IAmazonConfiguration>().WriteSandboxJSON(builder.products);
+
+		// This enables simulated purchase success for Samsung IAP.
+		// You would remove this, or set to SamsungAppsMode.Production, before building your release package.
+		builder.Configure<ISamsungAppsConfiguration>().SetMode(SamsungAppsMode.AlwaysSucceed);
+		// This records whether we are using Samsung IAP. Currently ISamsungAppsExtensions.RestoreTransactions
+		// displays a blocking Android Activity, so: 
+		// A) Unity IAP does not automatically restore purchases on Samsung Galaxy Apps
+		// B) IAPDemo (this) displays the "Restore" GUI button for Samsung Galaxy Apps
+		m_IsSamsungAppsStoreSelected = module.androidStore == AndroidStore.SamsungApps;
+
+
+		// This selects the GroupId that was created in the Tizen Store for this set of products
+		// An empty or non-matching GroupId here will result in no products available for purchase
+		builder.Configure<ITizenStoreConfiguration>().SetGroupId("100000085616");
+
 
 		#if RECEIPT_VALIDATION
 		validator = new CrossPlatformValidator(GooglePlayTangle.Data(), AppleTangle.Data(), Application.bundleIdentifier);
@@ -255,8 +280,9 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		m_InteractableSelectable = GetDropdown(); // References any one of the disabled components
 
 		// Show Restore button on Apple platforms
-		if (Application.platform != RuntimePlatform.IPhonePlayer && 
-			Application.platform != RuntimePlatform.OSXPlayer)
+		if (! (Application.platform == RuntimePlatform.IPhonePlayer || 
+			   Application.platform == RuntimePlatform.OSXPlayer ||
+			   m_IsSamsungAppsStoreSelected ) )
 		{
 			GetRestoreButton().gameObject.SetActive(false);
 		}
@@ -295,7 +321,14 @@ public class IAPDemo : MonoBehaviour, IStoreListener
 		{
 			GetRestoreButton().onClick.AddListener(() =>
 			{ 
-				m_AppleExtensions.RestoreTransactions(OnTransactionsRestored);
+				if (m_IsSamsungAppsStoreSelected)
+				{
+					m_SamsungExtensions.RestoreTransactions(OnTransactionsRestored);
+				}
+				else
+				{
+					m_AppleExtensions.RestoreTransactions(OnTransactionsRestored);
+				}
 			});
 		}
 	}

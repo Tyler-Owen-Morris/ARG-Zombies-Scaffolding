@@ -13,6 +13,7 @@ public class LoginManager : MonoBehaviour {
 	private int survivorsDrafted = 0;
 
 	public GameObject registrationPanel, loggedInPanel, survivorDraftPanel, newCharConfirmationPanel;
+	public Button continueButton;
 	public IGraphResult fbFriendsResult;
 	public JsonData staticSurvivorData, facebookSurvivorData;
 	public SurvivorPlayCard[] survivorDraftCardArray;
@@ -27,6 +28,7 @@ public class LoginManager : MonoBehaviour {
 	private string newSurvivorUrl = GameManager.serverURL+"/create_new_survivor.php";
 	private string findUserAcctURL = GameManager.serverURL+"/UserAcctLookup.php";
 	private string fetchStaticSurvivorURL = GameManager.serverURL+"/FetchStaticSurvivor.php";
+	private string zombieStatusURL = GameManager.serverURL+"/GetZombieStatus.php";
 	
 	// Use this for initialization
 	void Start () { 
@@ -127,7 +129,49 @@ public class LoginManager : MonoBehaviour {
 
     }
 
+    //checks if player is a zombie/dead
+    IEnumerator CheckZombieStatus() {
+    	
+    	WWWForm form = new WWWForm();
+		form.AddField("id", GameManager.instance.userId);
+		form.AddField("login_ts", "12/31/1999 11:59:59");
+		form.AddField("client", "mob");
 
+		WWW www = new WWW(zombieStatusURL, form);
+		yield return www;
+		Debug.Log(www.text);
+
+		if (www.error == null) {
+			JsonData zombStatJson = JsonMapper.ToObject(www.text);
+
+			if (zombStatJson[0].ToString() == "Success") {
+				int stat = (int)zombStatJson[1];
+	
+				if (stat == 0) {
+					//player is alive, and has a character active on server
+					Debug.Log("player is alive, and has an active character on the server");
+					continueButton.interactable = true;
+				} else if (stat == 1) {
+					Debug.Log("Player is a zombie ==> force loading game over scene");
+					GameManager.instance.playerIsZombie = true;
+					SceneManager.LoadScene("03b Game Over");
+				} else if (stat == 2) {
+					Debug.Log("Player is dead, but not a zombie");
+					continueButton.interactable = false;
+				} else {
+					Debug.Log("Zombie Check callback returned invalid status code");
+				}
+
+			} else if (zombStatJson[0].ToString() == "Failed") {
+				Debug.Log(zombStatJson[1].ToString());
+				continueButton.interactable = false;
+			}
+
+			
+		} else {
+			Debug.Log(www.error);
+		}
+    }
     
 	private void UpdateUserId (IResult result) {
 		if (result.Error == null) {
@@ -135,6 +179,9 @@ public class LoginManager : MonoBehaviour {
         } else {
             Debug.Log (result.Error);
         }
+
+		//ping the server for forced zombie status
+		StartCoroutine(CheckZombieStatus());
 	}
 
 	private void UpdateUserFirstName(IResult result) {

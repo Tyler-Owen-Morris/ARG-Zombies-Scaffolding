@@ -93,7 +93,7 @@ public class SurvivorStateMachine : MonoBehaviour {
 
 				//animate the hero to the target, unless you have a gun equipped and at least 1 bullet
 				if (myWeapon.weaponType == BaseWeapon.WeaponType.KNIFE || myWeapon.weaponType == BaseWeapon.WeaponType.CLUB || GameManager.instance.ammo < 1) {
-					Vector3 targetPosition = new Vector3 (plyrTarget.transform.position.x - 0.3f, plyrTarget.transform.position.y, plyrTarget.transform.position.z);
+					Vector3 targetPosition = new Vector3 (plyrTarget.transform.position.x - 55.0f, plyrTarget.transform.position.y, plyrTarget.transform.position.z);
 					gameObject.GetComponent<SpriteRenderer>().sortingOrder = plyrTarget.GetComponent<SpriteRenderer>().sortingOrder;
 					while (MoveTowardsTarget(targetPosition)) {yield return null;}
 					if (myWeapon.weaponType == BaseWeapon.WeaponType.KNIFE) {

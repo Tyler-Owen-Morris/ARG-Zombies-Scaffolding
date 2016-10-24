@@ -147,12 +147,16 @@ public class BattleStateMachine : MonoBehaviour {
 			int survivorsToDelete = 5 - GameManager.instance.activeSurvivorCardList.Count;
 			for (int i = 0; i < survivorsToDelete; i++) {
 				if (i == 0) {
+					playerPos5.GetComponent<SurvivorStateMachine>().myStamSlider.gameObject.SetActive(false);
 					Destroy(playerPos5);
 				} else if (i == 1) {
+					playerPos4.GetComponent<SurvivorStateMachine>().myStamSlider.gameObject.SetActive(false);
 					Destroy(playerPos4);
 				} else if (i == 2) {
+					playerPos3.GetComponent<SurvivorStateMachine>().myStamSlider.gameObject.SetActive(false);
 					Destroy(playerPos3);
 				} else if (i == 3) {
+					playerPos2.GetComponent<SurvivorStateMachine>().myStamSlider.gameObject.SetActive(false);
 					Destroy(playerPos2);
 				} else if (i == 4) {
 					Debug.Log("Major problem! you have no survivor cards to load into combat with");
@@ -838,7 +842,7 @@ public class BattleStateMachine : MonoBehaviour {
 				myContRunButMgr.StartTheCountdown(tmr);
 				break;
 			} else {
-				Debug.Log(mySSM.survivor.name+" successfully ran away.");
+			Debug.Log(mySSM.survivor.name+" successfully ran away.");
 				got_away++;
 				continue;
 			}
