@@ -12,7 +12,7 @@ public class QRPanelController : MonoBehaviour {
 	public QRCodeEncodeController e_qrController;
 	public QRCodeDecodeController d_qrController;
 	public RawImage qrCodeImage;
-	public Text UItext, camera_on_text, result_text;
+	public Text UItext, response_text, camera_on_text, result_text;
 	public string qrGeneratedString, qrScannedString;
 	public MapLevelManager mapLvlMgr;
 
@@ -102,6 +102,10 @@ public class QRPanelController : MonoBehaviour {
 		if (resetBtn != null) {
 			resetBtn.SetActive(true);
 		}
+
+		if (response_text != null) {
+			response_text.gameObject.SetActive(true);
+		}
 		
 		if(scanLineObj != null)
 		{
@@ -150,7 +154,7 @@ public class QRPanelController : MonoBehaviour {
 
 		} else if (scannedJson[0].ToString() == "zombie") {
 			GameManager.instance.zombie_to_kill_id = scannedJson[1].ToString();
-			GameManager.instance.LoadIntoCombat(1, "zomb");
+			GameManager.instance.LoadAltCombat(1, "zomb");
 		} else {
 			Debug.Log("json format does not meet with any known QR encoding");
 		}
@@ -193,10 +197,14 @@ public class QRPanelController : MonoBehaviour {
 		if (www.error == null) {
 			JsonData outpostReturnJson = JsonMapper.ToObject(www.text);
 			if(outpostReturnJson[0].ToString() == "Success") {
-				UItext.text = outpostReturnJson[1].ToString();
+
+				response_text.text = outpostReturnJson[1].ToString();
+
 			} else if (outpostReturnJson[0].ToString() == "Failed") {
+
 				Debug.Log (outpostReturnJson[1].ToString());
-				UItext.text = outpostReturnJson[1].ToString();
+				response_text.text = outpostReturnJson[1].ToString();
+
 			}
 		} else {
 			Debug.Log(www.error);
@@ -205,7 +213,7 @@ public class QRPanelController : MonoBehaviour {
 
 	IEnumerator SendQRPairToServer(string requestingJSONtext) {
 			//parse the json, verify time is close enough, and GPS is close enough.
-			JsonData requestingJSON = JsonMapper.ToJson(requestingJSONtext);
+			JsonData requestingJSON = JsonMapper.ToObject(requestingJSONtext);
 			//set the ID of the requester
 			string requestIDtext = requestingJSON[1].ToString();
 			//verify the QR is not expired
@@ -223,8 +231,8 @@ public class QRPanelController : MonoBehaviour {
 			// likewise the below GPS check does not currently fail the coroutine, but it should.
 
 			float distanceAllowedInMeters = 25.0f;
-			float requestLat = (float)requestingJSON[3];
-			float requestLng = (float)requestingJSON[4];
+			float requestLat = float.Parse(requestingJSON[3].ToString());
+			float requestLng = float.Parse(requestingJSON[4].ToString());
 			if (CalculateDistanceToTarget(requestLat, requestLng) <= distanceAllowedInMeters) {
 				Debug.Log("Players are in range of eachother");
 			} else {
@@ -242,18 +250,20 @@ public class QRPanelController : MonoBehaviour {
 
 			if (www.error == null) {
 				Debug.Log ("qr raw php return from web is: "+www.text);
-				string jsonReturn = www.text.ToString();
+				string jsonReturn = www.text;
 				JsonData qrJson = JsonMapper.ToObject(jsonReturn);
 
 				if (qrJson[0].ToString() == "Success") {
-					UItext.text = "You have successfully paired with "+qrJson[1]["first_name"].ToString()+" "+qrJson[1]["last_name"].ToString();
+					response_text.text = "You have successfully paired with "+qrJson[1]["name"].ToString();
 				} else {
-					Debug.Log ("server returned qr failure "+ jsonReturn);
+					string myString = jsonReturn[1].ToString();
+					response_text.text = myString;
+					Debug.Log ("server returned qr failure "+ myString);
 				}
 
 			} else {
 				Debug.Log (www.error);
-				UItext.text = "failed to contact webserver";
+				response_text.text = "failed to contact webserver";
 			}
 	}
 
@@ -308,6 +318,9 @@ public class QRPanelController : MonoBehaviour {
 		if (resetBtn != null) {
 			resetBtn.SetActive(false);
 		}
+		if (response_text != null) {
+			response_text.gameObject.SetActive(false);
+		}
 
 		if(scanLineObj != null)
 		{
@@ -348,7 +361,6 @@ public class QRPanelController : MonoBehaviour {
 	}
 
 	public void AcceptButtonPressed () {
-		UItext.gameObject.SetActive(true);
 		cameraUi.SetActive(true);
 		camera_on_text.gameObject.SetActive(true);
 		qrDisplayUi.SetActive(false);

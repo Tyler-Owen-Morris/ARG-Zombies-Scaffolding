@@ -103,6 +103,7 @@ public class BattleStateMachine : MonoBehaviour {
 				mySurvivorStateMachine.survivor.weaponEquipped = myPlayCard.survivor.weaponEquipped;
 				mySurvivorStateMachine.survivor.survivor_id = myPlayCard.entry_id;
 				mySurvivorStateMachine.teamPos = myPlayCard.team_pos;
+				mySurvivorStateMachine.sliderNameText.text = myPlayCard.survivor.name;
 			} else if (myPlayCard.team_pos == 4) {
 				SurvivorStateMachine mySurvivorStateMachine = playerPos2.GetComponent<SurvivorStateMachine>();
 				mySurvivorStateMachine.survivor.name = myPlayCard.survivor.name;
@@ -112,6 +113,7 @@ public class BattleStateMachine : MonoBehaviour {
 				mySurvivorStateMachine.survivor.weaponEquipped = myPlayCard.survivor.weaponEquipped;
 				mySurvivorStateMachine.survivor.survivor_id = myPlayCard.entry_id;
 				mySurvivorStateMachine.teamPos = myPlayCard.team_pos;
+				mySurvivorStateMachine.sliderNameText.text = myPlayCard.survivor.name;
 			} else if (myPlayCard.team_pos == 3) {
 				SurvivorStateMachine mySurvivorStateMachine = playerPos3.GetComponent<SurvivorStateMachine>();
 				mySurvivorStateMachine.survivor.name = myPlayCard.survivor.name;
@@ -121,6 +123,7 @@ public class BattleStateMachine : MonoBehaviour {
 				mySurvivorStateMachine.survivor.weaponEquipped = myPlayCard.survivor.weaponEquipped;
 				mySurvivorStateMachine.survivor.survivor_id = myPlayCard.entry_id;
 				mySurvivorStateMachine.teamPos = myPlayCard.team_pos;
+				mySurvivorStateMachine.sliderNameText.text = myPlayCard.survivor.name;
 			} else if (myPlayCard.team_pos == 2) {
 				SurvivorStateMachine mySurvivorStateMachine = playerPos4.GetComponent<SurvivorStateMachine>();
 				mySurvivorStateMachine.survivor.name = myPlayCard.survivor.name;
@@ -130,6 +133,7 @@ public class BattleStateMachine : MonoBehaviour {
 				mySurvivorStateMachine.survivor.weaponEquipped = myPlayCard.survivor.weaponEquipped;
 				mySurvivorStateMachine.survivor.survivor_id = myPlayCard.entry_id;
 				mySurvivorStateMachine.teamPos = myPlayCard.team_pos;
+				mySurvivorStateMachine.sliderNameText.text = myPlayCard.survivor.name;
 			} else if (myPlayCard.team_pos == 1) {
 				SurvivorStateMachine mySurvivorStateMachine = playerPos5.GetComponent<SurvivorStateMachine>();
 				mySurvivorStateMachine.survivor.name = myPlayCard.survivor.name;
@@ -139,6 +143,7 @@ public class BattleStateMachine : MonoBehaviour {
 				mySurvivorStateMachine.survivor.weaponEquipped = myPlayCard.survivor.weaponEquipped;
 				mySurvivorStateMachine.survivor.survivor_id = myPlayCard.entry_id;
 				mySurvivorStateMachine.teamPos = myPlayCard.team_pos;
+				mySurvivorStateMachine.sliderNameText.text = myPlayCard.survivor.name;
 			}
 		}
 
@@ -337,6 +342,15 @@ public class BattleStateMachine : MonoBehaviour {
 	}
 
 	int CalculateSupplyEarned () {
+		int supply_in_bldg = GameManager.instance.activeBldg_supply;
+
+		if (supply_in_bldg > 0) {
+			int supply_grabbed= UnityEngine.Random.Range(1, supply_in_bldg);
+			return supply_grabbed;
+		} else {
+			return 0;
+		}
+		/*
 		//Debug.Log ("Calculating the sum of supply earned from " + zombiesKilled + " zombies killed.");
 		int sum = 0;
 
@@ -354,9 +368,20 @@ public class BattleStateMachine : MonoBehaviour {
 		}
 
 		return sum;
+		*/
 	}
 
 	int CalculateWaterFound () {
+		int water_in_bldg = GameManager.instance.activeBldg_water;
+
+		if (water_in_bldg > 0) {
+			int water_found = UnityEngine.Random.Range(1, water_in_bldg);
+			return water_found;
+		} else {
+			return 0;
+		}
+	
+		/*
 		int sum = 0;
 
 		for (int i = 0; i < zombiesKilled; i++) {
@@ -372,9 +397,19 @@ public class BattleStateMachine : MonoBehaviour {
 		}
 
 		return sum;
+		*/
 	}
 
 	int CalculateFoodFound () {
+		int food_in_bldg = GameManager.instance.activeBldg_food;
+
+		if (food_in_bldg > 0) {
+			int food_found= UnityEngine.Random.Range(1, food_in_bldg);
+			return food_found;
+		} else {
+			return 0;
+		}
+		/*
 		int sum = 0;
 
 
@@ -391,6 +426,7 @@ public class BattleStateMachine : MonoBehaviour {
 		}
 
 		return sum;
+		*/
 	}
 
 	bool CalculateSurvivorFound () {
@@ -700,7 +736,7 @@ public class BattleStateMachine : MonoBehaviour {
 	public void PlayerChoosesToFightToTheBitterEnd () {
 		//server has already been updated with the zombie status. 
 		//changing these variables will allow combat to end, but GameOver/YouAreAZombie should load instead of a victory screen.
-		GameManager.instance.activeBldg = "bite_case";
+		GameManager.instance.activeBldg_name = "bite_case";
 		GameManager.instance.playerIsZombie = true;
 		playerBitPanel.SetActive(false);
 		battleState = PerformAction.WAIT;

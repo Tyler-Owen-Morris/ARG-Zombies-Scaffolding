@@ -1,36 +1,22 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/PopulatedBuilding.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/BuildingSpawner.cs">
     <Files>
       <File FileName="Assets/Scripts/BackgroundRandomizer.cs" Line="1" Column="1" NotebookId="1" />
       <File FileName="Assets/Scripts/5man Combat Scripts/BaseWeapon.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="Assets/Scripts/5man Combat Scripts/BaseZombie.cs" Line="1" Column="1" NotebookId="1" />
       <File FileName="Assets/Scripts/MissionListElementManager.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="Assets/Scripts/BuildingSpawner.cs" Line="82" Column="10" NotebookId="1" />
       <File FileName="Assets/Scripts/SurvivorListPopulator.cs" Line="1" Column="1" NotebookId="1" />
       <File FileName="Assets/Scripts/WeaponListPopulator.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="Assets/Scripts/OutpostPanelController.cs" Line="1" Column="1" NotebookId="1" />
       <File FileName="Assets/QRcode/Scripts/QRCodeEncodeController.cs" Line="1" Column="1" NotebookId="1" />
       <File FileName="Assets/FacebookSDK/SDK/Scripts/FacebookBase.cs" Line="1" Column="1" NotebookId="1" />
       <File FileName="Assets/Scripts/BlinkingSlider.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="Assets/Scripts/Building.cs" Line="1" Column="1" NotebookId="1" />
+      <File FileName="Assets/Scripts/Building.cs" Line="32" Column="32" NotebookId="1" />
       <File FileName="Assets/Scripts/CurrentLocationUpdater.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="Assets/Scripts/FadeIn.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="Assets/Scripts/FloatingText.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="Assets/Scripts/MissionCompletePanelManager.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="Assets/Scripts/MusicManager.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="Assets/Scripts/MusicPlayer.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="Assets/Scripts/OptionsController.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="Assets/Scripts/Outpost.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="Assets/Scripts/PlayerPrefsManager.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="Assets/Scripts/PopulatedBuilding.cs" Line="26" Column="9" NotebookId="1" />
-      <File FileName="Assets/Scripts/PurchaseManager.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="Assets/Scripts/SetStartVolume.cs" Line="1" Column="1" NotebookId="1" />
       <File FileName="Assets/Scripts/StaminaText.cs" Line="1" Column="1" NotebookId="1" />
       <File FileName="Assets/Scripts/StoryDrag.cs" Line="1" Column="1" NotebookId="1" />
       <File FileName="Assets/Scripts/TMP_locationplaceholder.cs" Line="1" Column="1" NotebookId="1" />
       <File FileName="Assets/Scripts/Util.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="Assets/Scripts/VictoryScreenController.cs" Line="1" Column="1" NotebookId="1" />
+      <File FileName="Assets/Scripts/VictoryScreenController.cs" Line="28" Column="43" NotebookId="1" />
       <File FileName="Assets/Scripts/WeaponGFX.cs" Line="1" Column="1" NotebookId="1" />
       <File FileName="Assets/Scripts/WeaponListElementManager.cs" Line="1" Column="1" NotebookId="1" />
       <File FileName="Assets/Scripts/WeaponSelectManager.cs" Line="1" Column="1" NotebookId="1" />
@@ -45,22 +31,27 @@
       <File FileName="Assets/Scripts/5man Combat Scripts/ZombieStateMachine.cs" Line="1" Column="1" NotebookId="1" />
       <File FileName="Assets/Scripts/ZombieQRController.cs" Line="1" Column="1" NotebookId="1" />
       <File FileName="Assets/Scripts/EndGamePanelController.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="Assets/Scripts/5man Combat Scripts/BattleStateMachine.cs" Line="1" Column="1" NotebookId="1" />
       <File FileName="Assets/Scripts/5man Combat Scripts/ContinueRunningButtonManager.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="Assets/Plugins/UnityPurchasing/script/IAPDemo.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="Assets/Scripts/IAPManager.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="Assets/Scripts/QRPanelController.cs" Line="1" Column="1" NotebookId="1" />
+      <File FileName="Assets/Scripts/IAPManager.cs" Line="36" Column="20" NotebookId="1" />
+      <File FileName="Assets/Scripts/QRPanelController.cs" Line="157" Column="32" NotebookId="1" />
+      <File FileName="../../../Applications/Unity5.4.1/MonoDevelop.app/Contents/Frameworks/Mono.framework/Versions/Current/lib/mono/4.5/Microsoft.Common.targets" Line="1" Column="1" NotebookId="1" />
+      <File FileName="Assets/Scripts/BuildingSpawner.cs" Line="83" Column="1" NotebookId="1" />
+      <File FileName="Assets/Scripts/PopulatedBuilding.cs" Line="59" Column="30" NotebookId="1" />
+      <File FileName="Assets/Scripts/GameManager.cs" Line="1232" Column="163" NotebookId="1" />
     </Files>
     <FloatingWindows>
-      <FloatingWindow WindowId="1" X="2302" Y="194" Width="1429" Height="1702">
+      <FloatingWindow WindowId="1" X="2046" Y="251" Width="1423" Height="1701">
         <Files>
-          <File FileName="Assets/Scripts/GameManager.cs" Line="35" Column="34" />
           <File FileName="Assets/Scripts/5man Combat Scripts/KillYourselfButtonManager.cs" Line="1" Column="1" />
           <File FileName="Assets/Scripts/5man Combat Scripts/AmputationButtonManager.cs" Line="1" Column="1" />
-          <File FileName="Assets/Scripts/MapLevelManager.cs" Line="236" Column="24" />
+          <File FileName="Assets/Scripts/MapLevelManager.cs" Line="399" Column="36" />
           <File FileName="Assets/Scripts/FloatingTextController.cs" Line="1" Column="1" />
-          <File FileName="Assets/Scripts/5man Combat Scripts/SurvivorStateMachine.cs" Line="1" Column="1" />
+          <File FileName="Assets/Scripts/5man Combat Scripts/SurvivorStateMachine.cs" Line="194" Column="55" />
           <File FileName="Assets/Scripts/5man Combat Scripts/BaseSurvivor.cs" Line="1" Column="1" />
+          <File FileName="Assets/Scripts/SurvivorListElementManager.cs" Line="1" Column="1" />
+          <File FileName="Assets/Plugins/UnityPurchasing/script/IAPDemo.cs" Line="1" Column="1" />
+          <File FileName="Assets/Plugins/Android/AndroidManifest.xml" Line="1" Column="1" />
+          <File FileName="Assets/Scripts/5man Combat Scripts/BattleStateMachine.cs" Line="343" Column="50" />
         </Files>
       </FloatingWindow>
     </FloatingWindows>

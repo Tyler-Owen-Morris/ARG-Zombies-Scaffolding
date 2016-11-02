@@ -29,7 +29,7 @@ public class Building : MonoBehaviour {
 		Debug.Log ("Building "+ gameObject.name +" has been triggered");
 		if (buildingClear == false) { //only load combat if the building is not clear
 			//combatManager.SetZombiesEncountered (zombiePopulation);
-			GameManager.instance.LoadIntoCombat(zombiePopulation, this.gameObject.name);
+			GameManager.instance.LoadAltCombat(zombiePopulation, this.gameObject.name);
 		} else {
 			Debug.Log("Building thinks it's already been cleared");
 		}

@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.IO;
 using LitJson;
+using System;
 
 
 public class BuildingSpawner : MonoBehaviour {
@@ -57,6 +58,7 @@ public class BuildingSpawner : MonoBehaviour {
 			myWwwString += "&radius=500";
 			myWwwString += "&key="+ googleAPIKey;
 
+			Debug.Log(myWwwString);
 			WWW www = new WWW(myWwwString);
 			yield return www;
 			//Debug.Log(www.text);
@@ -128,6 +130,22 @@ public class BuildingSpawner : MonoBehaviour {
 			instance.transform.SetParent(bldgHolder.transform);
 			instance.transform.position = pos;
 
+			//determine the loot class of the building
+			string type_bldg = bldgJson["results"][i]["types"][0].ToString();
+			if (type_bldg == "bakery" || type_bldg == "cafe" || type_bldg == "convenience_store" || type_bldg == "food" || type_bldg == "grocery_or_supermarket" || type_bldg == "restaurant") {
+				//food likely
+				instance.loot_code = "F";
+			} else if (type_bldg == "aquarium" || type_bldg == "bar" || type_bldg == "liquor_store" || type_bldg == "spa" || type_bldg == "zoo") {
+				//water likely
+				instance.loot_code = "W";
+			} else if (type_bldg == "bicycle_store" || type_bldg == "bowling_alley" || type_bldg == "car_repair" || type_bldg == "electrician" || type_bldg == "general_contractor" || type_bldg == "hardware_store" || type_bldg == "hospital" || type_bldg == "police" || type_bldg == "plumber") {
+				//supply likely
+				instance.loot_code = "S";
+			} else {
+				//generic loot class
+				instance.loot_code = "G";
+			}
+
 			//instance.CheckForDeactivation();
 			//Debug.Log("placed "+instance.name+" at coords: "+xCoord+" x and "+yCoord+" y");
 		}
@@ -140,17 +158,28 @@ public class BuildingSpawner : MonoBehaviour {
 			foreach (GameObject building in buildings) {
 				int cleared = 0;
 				PopulatedBuilding myBuilding = building.GetComponent<PopulatedBuilding>();
+				//Set all buildings to the "unentered" datetime
+				myBuilding.last_cleared = DateTime.Parse("11:59pm 12/31/1999");
 
 				for (int i=0; i<clearedJson.Count; i++) {
-					Debug.Log(myBuilding.buildingName+" comparing to "+clearedJson[i]["bldg_name"].ToString());
+					//Debug.Log(myBuilding.buildingName+" comparing to "+clearedJson[i]["bldg_name"].ToString());
 					if (myBuilding.buildingName == clearedJson[i]["bldg_name"].ToString()) {
-						Debug.Log(myBuilding.buildingName+" Matched buildings, Active: "+clearedJson[i]["active"].ToString());
+						//load in the saved building data
+						myBuilding.supply_inside = (int)clearedJson[i]["supply"];
+						myBuilding.food_inside = (int)clearedJson[i]["food"];
+						myBuilding.water_inside = (int)clearedJson[i]["water"];
+						myBuilding.zombiePopulation = (int)clearedJson[i]["zombies"];
+						myBuilding.last_cleared = DateTime.Parse(clearedJson[i]["time_cleared"].ToString());
+
+						//Debug.Log(myBuilding.buildingName+" Matched buildings, Active: "+clearedJson[i]["active"].ToString());
 						if (clearedJson[i]["active"].ToString()=="0") {
-							Debug.Log(myBuilding.buildingName+" has been found to be clear- not being activated");
+							//Debug.Log(myBuilding.buildingName+" has been found to be clear- not being activated");
 							cleared = 1;
 							break;
 						} 
-					} 
+					} else {
+						
+					}
 				}
 
 				if (cleared == 0) {
@@ -160,6 +189,7 @@ public class BuildingSpawner : MonoBehaviour {
 		} else {
 			foreach (GameObject building in buildings) {
 				PopulatedBuilding myBuilding = building.GetComponent<PopulatedBuilding>();
+				myBuilding.last_cleared = DateTime.Parse("11:59pm 12/31/1999");
 				myBuilding.ActivateMe();
 			}
 		}

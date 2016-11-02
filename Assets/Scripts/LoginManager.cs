@@ -366,7 +366,7 @@ public class LoginManager : MonoBehaviour {
 	public bool sendInProgress = false;
 	public void ChooseSurvivorToSend (int arrayPos) {
 		if(sendInProgress == false){
-		sendInProgress = true;
+			sendInProgress = true;
 			//load the name and stats from the correct survivor
 			string nm = survivorDraftCardArray[arrayPos].survivor.name;
 			int stam = survivorDraftCardArray[arrayPos].survivor.baseStamina;

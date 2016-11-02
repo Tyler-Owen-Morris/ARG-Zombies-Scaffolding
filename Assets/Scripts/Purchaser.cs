@@ -3,19 +3,36 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Purchasing;
 
+
 // Deriving the Purchaser class from IStoreListener enables it to receive messages from Unity Purchasing.
-public class IAPManager : MonoBehaviour, IStoreListener
+public class Purchaser : MonoBehaviour, IStoreListener
 {
     private static IStoreController m_StoreController;          // The Unity Purchasing system.
-	private IAppleExtensions m_AppleExtensions;
     private static IExtensionProvider m_StoreExtensionProvider; // The store-specific Purchasing subsystems.
     
+    // Product identifiers for all products capable of being purchased: 
+    // "convenience" general identifiers for use with Purchasing, and their store-specific identifier 
+    // counterparts for use with and outside of Unity Purchasing. Define store-specific identifiers 
+    // also on each platform's publisher dashboard (iTunes Connect, Google Play Developer Console, etc.)
 
-    public static string PRODUCT_SMALL_OUTPOST =    "small_outpost";   
-    public static string PRODUCT_MEDIUM_OUTPOST = "medium_outpost";
-    public static string PRODUCT_LARGE_OUTPOST =  "large_outpost"; 
+    // General product identifiers for the consumable, non-consumable, and subscription products.
+    // Use these handles in the code to reference which product to purchase. Also use these values 
+    // when defining the Product Identifiers on the store. Except, for illustration purposes, the 
+    // kProductIDSubscription - it has custom Apple and Google identifiers. We declare their store-
+    // specific mapping to Unity Purchasing's AddProduct, below.
+    public static string kProductIDSmallOutpost =    "small_outpost";   
+    public static string kProductIDMediumOutpost = "medium_outpost";
+    public static string kProductIDLargeOutpost =  "large_outpost"; 
      
-
+    // Apple App Store-specific product identifier for the subscription product.
+    private static string kProductNameAppleSmallOutpost =  "com.TandoProductions.ARGZombies.Purchasing.small_outpost";
+	private static string kProductNameAppleMediumOutpost =  "com.TandoProductions.ARGZombies.Purchasing.medium_outpost";
+	private static string kProductNameAppleLargeOutpost =  "com.TandoProductions.ARGZombies.Purchasing.large_outpost";
+    
+    // Google Play Store-specific product identifier subscription product.
+    private static string kProductNameGooglePlaySmallOutpost =  "com.TandoProductions.ARGZombies.Purchasing.small_outpost"; 
+	private static string kProductNameGooglePlayMediumOutpost =  "com.TandoProductions.ARGZombies.Purchasing.medium_outpost"; 
+	private static string kProductNameGooglePlayLargeOutpost =  "com.TandoProductions.ARGZombies.Purchasing.large_outpost"; 
     
     void Start()
     {
@@ -38,10 +55,26 @@ public class IAPManager : MonoBehaviour, IStoreListener
         
         // Create a builder, first passing in a suite of Unity provided stores.
         var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
-
-        builder.AddProduct(PRODUCT_SMALL_OUTPOST, ProductType.Consumable);
-        builder.AddProduct(PRODUCT_MEDIUM_OUTPOST, ProductType.NonConsumable);
-        builder.AddProduct(PRODUCT_LARGE_OUTPOST, ProductType.Consumable);
+        
+        // Add a product to sell / restore by way of its identifier, associating the general identifier
+        // with its store-specific identifiers.
+        builder.AddProduct(kProductIDSmallOutpost, ProductType.Consumable, new IDs(){
+        	{kProductNameAppleSmallOutpost, AppleAppStore.Name },
+        	{kProductNameGooglePlaySmallOutpost, GooglePlay.Name},
+        });
+        // Continue adding the non-consumable product.
+        builder.AddProduct(kProductIDMediumOutpost, ProductType.Consumable, new IDs(){
+        	{kProductNameAppleMediumOutpost, AppleAppStore.Name},
+        	{kProductNameGooglePlayMediumOutpost, GooglePlay.Name},
+        });
+        // And finish adding the subscription product. Notice this uses store-specific IDs, illustrating
+        // if the Product ID was configured differently between Apple and Google stores. Also note that
+        // one uses the general kProductIDSubscription handle inside the game - the store-specific IDs 
+        // must only be referenced here. 
+        builder.AddProduct(kProductIDLargeOutpost, ProductType.Consumable, new IDs(){
+            { kProductNameAppleLargeOutpost, AppleAppStore.Name },
+            { kProductNameGooglePlayLargeOutpost, GooglePlay.Name },
+        });
         
         // Kick off the remainder of the set-up with an asynchrounous call, passing the configuration 
         // and this class' instance. Expect a response either in OnInitialized or OnInitializeFailed.
@@ -58,18 +91,29 @@ public class IAPManager : MonoBehaviour, IStoreListener
     
     public void BuySmallOutpost()
     {
-        BuyProductID(PRODUCT_SMALL_OUTPOST);
+        // Buy the consumable product using its general identifier. Expect a response either 
+        // through ProcessPurchase or OnPurchaseFailed asynchronously.
+        BuyProductID(kProductIDSmallOutpost);
     }
     
-	public void BuyMediumOutpost()
+    
+    public void BuyMediumOutpost()
     {
-        BuyProductID(PRODUCT_MEDIUM_OUTPOST);
+        // Buy the non-consumable product using its general identifier. Expect a response either 
+        // through ProcessPurchase or OnPurchaseFailed asynchronously.
+        BuyProductID(kProductIDMediumOutpost);
     }
-
-	public void BuyLargeOutpost()
+    
+    
+    public void BuyLargeOutpost()
     {
-        BuyProductID(PRODUCT_LARGE_OUTPOST);
+        // Buy the subscription product using its the general identifier. Expect a response either 
+        // through ProcessPurchase or OnPurchaseFailed asynchronously.
+        // Notice how we use the general product identifier in spite of this ID being mapped to
+        // custom store-specific identifiers above.
+        BuyProductID(kProductIDLargeOutpost);
     }
+    
     
     void BuyProductID(string productId)
     {
@@ -154,7 +198,6 @@ public class IAPManager : MonoBehaviour, IStoreListener
         
         // Overall Purchasing system, configured with products for this application.
         m_StoreController = controller;
-		m_AppleExtensions = extensions.GetExtension<IAppleExtensions> ();
         // Store specific subsystem, for accessing device-specific store features.
         m_StoreExtensionProvider = extensions;
     }
@@ -168,36 +211,38 @@ public class IAPManager : MonoBehaviour, IStoreListener
     
     
     public PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs args) 
-    {
-
-		MapLevelManager myMapLvlMgr = MapLevelManager.FindObjectOfType<MapLevelManager>();
-
-
-        if (String.Equals(args.purchasedProduct.definition.id, PRODUCT_SMALL_OUTPOST, StringComparison.Ordinal))
+    {	
+    	MapLevelManager myMapMgr = MapLevelManager.FindObjectOfType<MapLevelManager>();
+        // A consumable product has been purchased by this user.
+        if (String.Equals(args.purchasedProduct.definition.id, kProductIDSmallOutpost, StringComparison.Ordinal))
         {
             Debug.Log(string.Format("ProcessPurchase: PASS. Product: '{0}'", args.purchasedProduct.definition.id));
-            StartCoroutine(myMapLvlMgr.SendNewOutpost(1));
+            // The consumable item has been successfully purchased, add 100 coins to the player's in-game score.
+            StartCoroutine(myMapMgr.SendNewOutpost(1));
         }
-
-        else if (String.Equals(args.purchasedProduct.definition.id, PRODUCT_MEDIUM_OUTPOST, StringComparison.Ordinal))
+        // Or ... a non-consumable product has been purchased by this user.
+        else if (String.Equals(args.purchasedProduct.definition.id, kProductIDMediumOutpost, StringComparison.Ordinal))
         {
             Debug.Log(string.Format("ProcessPurchase: PASS. Product: '{0}'", args.purchasedProduct.definition.id));
             // TODO: The non-consumable item has been successfully purchased, grant this item to the player.
-            StartCoroutine(myMapLvlMgr.SendNewOutpost(2));
+            StartCoroutine(myMapMgr.SendNewOutpost(2));
         }
-
-        else if (String.Equals(args.purchasedProduct.definition.id, PRODUCT_LARGE_OUTPOST, StringComparison.Ordinal))
+        // Or ... a subscription product has been purchased by this user.
+        else if (String.Equals(args.purchasedProduct.definition.id, kProductIDLargeOutpost, StringComparison.Ordinal))
         {
             Debug.Log(string.Format("ProcessPurchase: PASS. Product: '{0}'", args.purchasedProduct.definition.id));
             // TODO: The subscription item has been successfully purchased, grant this to the player.
-            StartCoroutine(myMapLvlMgr.SendNewOutpost(3));
+            StartCoroutine(myMapMgr.SendNewOutpost(3));
         }
-
+        // Or ... an unknown product has been purchased by this user. Fill in additional products here....
         else 
         {
             Debug.Log(string.Format("ProcessPurchase: FAIL. Unrecognized product: '{0}'", args.purchasedProduct.definition.id));
         }
 
+        // Return a flag indicating whether this product has completely been received, or if the application needs 
+        // to be reminded of this purchase at next app launch. Use PurchaseProcessingResult.Pending when still 
+        // saving purchased products to the cloud, and when that save is delayed. 
         return PurchaseProcessingResult.Complete;
     }
     

@@ -128,9 +128,15 @@ public class ZombieStateMachine : MonoBehaviour {
 			bool survivorBit= false;
 			if (targetSurvivor.teamPos == 5) {
 				//this is player character, he has different odds than the team
-				odds = 3.0f;
+				if (GameManager.instance.activeSurvivorCardList.Count > 1) {
+					//player character cannot get bit
+					odds = 0.0f;
+				} else {
+					odds = 3.0f;
+				}
+
 			} else {
-				odds = 7.0f;
+				odds = 4.0f;
 			}
 			if (targetSurvivor.survivor.curStamina < 1) {
 				//if player is exhausted, 2.5x the odds to get bitten

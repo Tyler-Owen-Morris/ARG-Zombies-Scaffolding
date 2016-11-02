@@ -6,8 +6,9 @@ using System;
 
 public class PopulatedBuilding : MonoBehaviour {
 
-	public int zombiePopulation = 0 ;
-	public string buildingName, buildingID;
+	public int zombiePopulation = 0, supply_inside, food_inside, water_inside ;
+	public DateTime last_cleared;
+	public string buildingName, buildingID, loot_code;
 	public Button button;
 	public bool active = false;
 	public float myLat, myLng;
@@ -23,7 +24,7 @@ public class PopulatedBuilding : MonoBehaviour {
 	public void GenerateZombies () {
 		int zombies = UnityEngine.Random.Range ( 1, 20);
 		zombiePopulation = zombies;
-		Debug.Log(buildingName+" has woken up and is generating "+zombies+" zombies; active: "+active.ToString());
+		//Debug.Log(buildingName+" has woken up and is generating "+zombies+" zombies; active: "+active.ToString());
 	}
 
 	void Start () {
@@ -55,7 +56,7 @@ public class PopulatedBuilding : MonoBehaviour {
 	public void ClickedOn () {
 		//GameManager.instance.LoadIntoCombat(zombiePopulation, buildingName);
 		if (this.active == true) {
-			mapLevelManager.ActivateBuildingInspector(zombiePopulation, buildingName, buildingID, myLat, myLng);
+			mapLevelManager.ActivateBuildingInspector(this.gameObject.GetComponent<PopulatedBuilding>());
 		} else {
 			Debug.Log (gameObject.name+" reports inactive, and will not launch bldg inspector");
 		}
@@ -71,7 +72,7 @@ public class PopulatedBuilding : MonoBehaviour {
 			button.interactable = true;
 		}
 
-		Debug.Log("Activation complete on: "+gameObject.name+" active status is: "+active.ToString()+" and zombie population: "+zombiePopulation.ToString());
+		//Debug.Log("Activation complete on: "+gameObject.name+" active status is: "+active.ToString()+" and zombie population: "+zombiePopulation.ToString());
 	}
 
 	public void DeactivateMe () {
@@ -80,19 +81,18 @@ public class PopulatedBuilding : MonoBehaviour {
 		active = false;
 		Image myImage = this.gameObject.GetComponent<Image>();
 		if (myImage != null) {
-			myImage.color = Color.gray;
-			Debug.Log(buildingName+" is turning it's color to "+myImage.color.ToString());
+			//Debug.Log(buildingName+" is turning it's color to "+myImage.color.ToString());
 		}else{
 			Debug.Log(buildingName+" unable to find Image component");
 		}
 
 		if (button != null) {
 			button.interactable = false;
-			Debug.Log(buildingName+" has set Button component interactable to: "+button.interactable.ToString());
+			//Debug.Log(buildingName+" has set Button component interactable to: "+button.interactable.ToString());
 		} else {
 			Debug.Log(buildingName+" unable to find Button component");
 		}
-		Debug.Log ("Deactivation complete on: "+gameObject.name+" active status is: "+active.ToString()+" and zombie population: "+zombiePopulation.ToString());
+		//Debug.Log ("Deactivation complete on: "+gameObject.name+" active status is: "+active.ToString()+" and zombie population: "+zombiePopulation.ToString());
 		//Debug.Log ("Deactivate function has completed for " + this.gameObject.name + " and currently has " + this.zombiePopulation.ToString() + " zombies");
 		//still need to write the code to change appearance, turn on transparent panel? indicate that it's clear.
 	}

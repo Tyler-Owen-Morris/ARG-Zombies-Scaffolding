@@ -11,6 +11,7 @@ public class SurvivorStateMachine : MonoBehaviour {
 	public GameObject mySelectedIcon, myGunShot, myClubSlash, myKnifeStab;
 	public Slider myStamSlider;
 	public GameObject[] myWepSprites;
+	public Text sliderNameText;
 
 	private BattleStateMachine BSM;
 	private Vector3 startPosition;
@@ -191,6 +192,7 @@ public class SurvivorStateMachine : MonoBehaviour {
 		form.AddField("client", "mob");
 		form.AddField("survivor_id", survivorID);
 		form.AddField("weapon_id", weaponID);
+		form.AddField("bldg_name", GameManager.instance.activeBldg_name);
 		if (kill == true) {
 			form.AddField("zombie_kill", "1");
 		} else {

@@ -13,8 +13,9 @@ public class GameManager : MonoBehaviour {
 	public static GameManager instance;
 
 	public bool gameDataInitialized = false, updateWeaponAndSurvivorMapLevelUI = false, survivorFound = false, playerInTutorial = false, weaponHasBeenSelected = false, playerIsZombie = false, blazeOfGloryActive = false;
-	public int daysSurvived, supply, ammo, reportedSupply, reportedWater, reportedFood, playerCurrentStamina, playerMaxStamina, zombiesToFight, foodCount, waterCount, mealCount, hunger, thirst, distanceCoveredThisSession, zombieKill_HighScore, zombieKill_score;
-	public DateTime timeCharacterStarted, lastHomebaseSetTime, gameOverTime;
+	public int daysSurvived, supply, ammo, reportedSupply, reportedWater, reportedFood, playerCurrentStamina, playerMaxStamina, zombiesToFight, foodCount, waterCount, mealCount, distanceCoveredThisSession, zombieKill_HighScore, zombieKill_score;
+	public DateTime timeCharacterStarted, lastHomebaseSetTime, gameOverTime, activeBldg_lastclear;
+	//public PopulatedBuilding active_building;
 	public float homebaseLat, homebaseLong;
 	public string foundSurvivorName, lastLoginTime;
 	public TimeSpan high_score, my_score;
@@ -31,7 +32,8 @@ public class GameManager : MonoBehaviour {
 
 	private Scene activeScene;
 	//made this public while working on the server "cleared list" data retention. it should go back to private
-	public string activeBldg, zombie_to_kill_id ="";
+	public string activeBldg_name, zombie_to_kill_id ="", activeBldg_lootcode, activeBldg_id;
+	public int activeBldg_supply, activeBldg_food, activeBldg_water, activeBldg_zombies;
 	public string locationJsonText, survivorJsonText, weaponJsonText, clearedBldgJsonText, outpostJsonText, missionJsonText, starvationHungerJsonText, injuryJsonText;
 	public JsonData missionData;
 
@@ -40,18 +42,19 @@ public class GameManager : MonoBehaviour {
 	public string userLastName;
 	public string userName;
 
-	public static string serverURL = "http://www.argzombie.com/ARGZ_SERVER";
+	public static string serverURL = "http://www.argzombie.com/ARGZ_DEV_SERVER";
 
 	private string startNewCharURL = serverURL+"/StartNewCharacter.php";
 	private string resumeCharacterUrl = serverURL+"/ResumeCharacter.php";
 	private string buildingClearedURL = serverURL+"/NewBuildingCleared1.php";
-	private string clearedBuildingDataURL = serverURL+"/ClearedBuildingData.php";
+	//private string clearedBuildingDataURL = serverURL+"/ClearedBuildingData.php";
 	private string fetchSurvivorDataURL = serverURL+"/FetchSurvivorData.php";
 	private string fetchWeaponDataURL = serverURL+"/FetchWeaponData.php";
 	private string fetchMissionDataURL = serverURL+"/FetchMissionData.php";
-	private string clearSurvivorDataURL = serverURL+"/DeleteMySurvivorData.php";
+	//private string clearSurvivorDataURL = serverURL+"/DeleteMySurvivorData.php";
 	private string fetchOutpostDataURL = serverURL+"/FetchOutpostData.php";
 	private string allGameDataURL = serverURL+"/FetchAllGameData.php";
+	private string newBuildingURL = serverURL+"/NewBuildingEntered.php";
 	//private string newHighScoreURL = serverURL+"/NewHighScore.php";
 	private string gameOverStarvationURL = serverURL+"/GameOver_Starvation.php";
 	private string gameOverSuicideURL = serverURL+"/GameOver_Suicide.php";
@@ -181,15 +184,15 @@ public class GameManager : MonoBehaviour {
 //	}
 
 	IEnumerator NewCharacterUpdateServer () {
-		WWWForm form1 = new WWWForm();
-		form1.AddField("id", GameManager.instance.userId);
-		form1.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
-		form1.AddField("client", "mob");
-
-		//this is now handled in the start new character php script
-		WWW www1 = new WWW(clearSurvivorDataURL, form1);
-		yield return www1;
-		Debug.Log (www1.text);
+//		WWWForm form1 = new WWWForm();
+//		form1.AddField("id", GameManager.instance.userId);
+//		form1.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+//		form1.AddField("client", "mob");
+//
+//		//this is now handled in the start new character php script
+//		WWW www1 = new WWW(clearSurvivorDataURL, form1);
+//		yield return www1;
+//		Debug.Log (www1.text);
 		
 		WWWForm form = new WWWForm();
 		form.AddField("id", GameManager.instance.userId );
@@ -339,7 +342,7 @@ public class GameManager : MonoBehaviour {
 
 				if (playerInTutorial == true && weaponHasBeenSelected == true) {
 					string tut = "tutorial";
-					LoadIntoCombat(1, tut);
+					LoadAltCombat(1, tut);
 				}
 
 				//auto-load map level from login(1) , if on map level stay there, if on victory screen, let the user press the button to load map level.
@@ -364,7 +367,7 @@ public class GameManager : MonoBehaviour {
 
 	//this is only called from the BattleStateMachine in the Combat Scene
 	public IEnumerator PlayerBit () {
-		activeBldg = "bite_case";
+		activeBldg_name = "bite_case";
 		DateTime time_dead = DateTime.Now + TimeSpan.FromMinutes(UnityEngine.Random.Range(5, 25));
 		TimeSpan final_score = time_dead - GameManager.instance.timeCharacterStarted;
 		my_score=final_score;
@@ -451,7 +454,7 @@ public class GameManager : MonoBehaviour {
 
 	public void BlazeOfGloryActivate () {
 		blazeOfGloryActive = true;
-		LoadIntoCombat(UnityEngine.Random.Range(50, 150), "blaze_of_glory");
+		LoadAltCombat(UnityEngine.Random.Range(50, 150), "blaze_of_glory");
 		//form + web call
 
 		
@@ -807,7 +810,7 @@ public class GameManager : MonoBehaviour {
 
 			if (playerInTutorial == true && weaponHasBeenSelected == true) {
 				string tut = "tutorial";
-				LoadIntoCombat(1, tut);
+				LoadAltCombat(1, tut);
 			}
 
 		} else {
@@ -891,12 +894,12 @@ public class GameManager : MonoBehaviour {
 		//Record the date and time the character is created- will be compared to get Days alive later.
 		timeCharacterStarted = System.DateTime.Now;
 
-		if (FB.IsLoggedIn == false) {
-			GameManager.instance.userId = "10154194346243929";
-			GameManager.instance.userFirstName = "Tanderson";
-			GameManager.instance.userLastName = "Flickinhausen";
-			GameManager.instance.userName = "Tanderson Flickenhausen";
-		}
+//		if (FB.IsLoggedIn == false) {
+//			GameManager.instance.userId = "10154194346243929";
+//			GameManager.instance.userFirstName = "Tanderson";
+//			GameManager.instance.userLastName = "Flickinhausen";
+//			GameManager.instance.userName = "Tanderson Flickenhausen";
+//		}
 
 
 		//roll a random number of survivors left alive and set both active and alive to that number.
@@ -989,11 +992,147 @@ public class GameManager : MonoBehaviour {
 //		GamePreferences.SetHomebaseLongitude(lon);
 	}
 
-	public void LoadIntoCombat (int zombies, string bldg) {
-		activeBldg = bldg;
-		zombiesToFight = zombies;
-		survivorFound = false;
+	public void LoadAltCombat (int zomb,string bldg_name) {
+		activeBldg_name = bldg_name;
+		zombiesToFight = zomb;
 		SceneManager.LoadScene ("02c Combat-5");
+	}
+
+	public void LoadBuildingCombat () {
+		survivorFound = false;
+
+		//if the building has not been visited before- roll it's contents before entering
+		if (GameManager.instance.activeBldg_lastclear == DateTime.Parse("11:59pm 12/31/1999")) {
+			StartCoroutine(RollNewBuildingContents());
+		} else {
+			//if player has been here before- the correct data should already be loaded
+			SceneManager.LoadScene ("02c Combat-5");
+		}
+
+
+	}
+
+	IEnumerator RollNewBuildingContents () {
+		WWWForm form = new WWWForm();
+		form.AddField ("id", GameManager.instance.userId);
+		form.AddField ("login_ts", GameManager.instance.lastLoginTime);
+		form.AddField ("client", "mob");
+
+		#region rss rolls
+		//roll the stats
+		int supply = 0;
+		int food = 0;
+		int water = 0;
+		if (GameManager.instance.activeBldg_lootcode == "S") {
+			int sup = UnityEngine.Random.Range(100, 250);
+			int fud = UnityEngine.Random.Range(0, 12);
+			int wat = UnityEngine.Random.Range(0, 12);
+
+			float odds = 0.5f;
+			float roll = UnityEngine.Random.Range(0.0f, 1.0f);
+			if (roll <= odds) {
+				fud =0;
+			}
+			roll = UnityEngine.Random.Range(0.0f, 1.0f);
+			if (roll <= odds) {
+				wat =0;
+			}
+			supply = sup;
+			food = fud;
+			water = wat;
+
+		} else if (GameManager.instance.activeBldg_lootcode == "F") {
+
+			int sup = UnityEngine.Random.Range(0, 20);
+			int fud = UnityEngine.Random.Range(50, 150);
+			int wat = UnityEngine.Random.Range(0, 30);
+
+			float odds = 0.5f;
+			float roll = UnityEngine.Random.Range(0.0f, 1.0f);
+			if (roll <= odds) {
+				sup =0;
+			}
+			roll = UnityEngine.Random.Range(0.0f, 1.0f);
+			if (roll <= odds) {
+				wat =0;
+			}
+			supply = sup;
+			food = fud;
+			water = wat;
+			
+		} else if (GameManager.instance.activeBldg_lootcode == "W") {
+
+			int sup = UnityEngine.Random.Range(0, 20);
+			int fud = UnityEngine.Random.Range(0, 20);
+			int wat = UnityEngine.Random.Range(50, 150);
+
+			float odds = 0.5f;
+			float roll = UnityEngine.Random.Range(0.0f, 1.0f);
+			if (roll <= odds) {
+				fud =0;
+			}
+			roll = UnityEngine.Random.Range(0.0f, 1.0f);
+			if (roll <= odds) {
+				sup =0;
+			}
+			supply = sup;
+			food = fud;
+			water = wat;
+
+		} else if (GameManager.instance.activeBldg_lootcode == "G") {
+
+			int sup = UnityEngine.Random.Range(0, 80);
+			int fud = UnityEngine.Random.Range(0, 45);
+			int wat = UnityEngine.Random.Range(0, 45);
+
+			float odds = 0.5f;
+			float roll = UnityEngine.Random.Range(0.0f, 1.0f);
+			if (roll <= odds) {
+				fud =0;
+			}
+			roll = UnityEngine.Random.Range(0.0f, 1.0f);
+			if (roll <= odds) {
+				wat =0;
+			}
+			supply = sup;
+			food = fud;
+			water = wat;
+
+		}
+		int zombie_pop = UnityEngine.Random.Range(5, 25);
+		//DateTime new_bldg_datetime = DateTime.Parse("12:01am 1/1/2000");
+		GameManager.instance.activeBldg_zombies = zombie_pop;
+		GameManager.instance.activeBldg_food = food;
+		GameManager.instance.activeBldg_water = water;
+		GameManager.instance.activeBldg_supply = supply;
+		GameManager.instance.zombiesToFight = zombie_pop;
+
+		Debug.Log("supply: "+supply.ToString()+" food: "+food.ToString()+" water: "+water.ToString()+" zombies: "+zombie_pop.ToString());
+		#endregion
+
+		form.AddField("supply", supply);
+		form.AddField("food", food);
+		form.AddField("water", water);
+		form.AddField("zombies", zombie_pop);
+		form.AddField("bldg_name", GameManager.instance.activeBldg_name);
+		form.AddField("bldg_id", GameManager.instance.activeBldg_id);
+
+		WWW www = new WWW(newBuildingURL, form);
+		yield return www;
+		Debug.Log(www.text);
+
+		if (www.error == null) {
+			JsonData newBldgJson = JsonMapper.ToObject(www.text);
+			if (newBldgJson[0].ToString() == "Success") {
+				clearedBldgJsonText = JsonMapper.ToJson(newBldgJson[1]);
+				Debug.Log(clearedBldgJsonText);
+				SceneManager.LoadScene("02c Combat-5");
+			} else {
+				Debug.Log(newBldgJson[1].ToString());
+			}
+		} else {
+			Debug.Log(www.error);
+		}
 	}
 
 	public void AddTimePlayed () {
@@ -1059,29 +1198,29 @@ public class GameManager : MonoBehaviour {
 	IEnumerator SendClearedBuilding (bool survivorFound) {
 
 
-		if (GameManager.instance.activeBldg != "tutorial") {
-			if (GameManager.instance.activeBldg != "zomb") {
-				if(GameManager.instance.activeBldg != "blaze_of_glory"){
-					if (GameManager.instance.activeBldg != "bite_case") {
+		if (GameManager.instance.activeBldg_name != "tutorial") {
+			if (GameManager.instance.activeBldg_name != "zomb") {
+				if(GameManager.instance.activeBldg_name != "blaze_of_glory"){
+					if (GameManager.instance.activeBldg_name != "bite_case") {
 
 						string jsonString = GameManager.instance.locationJsonText;
 						JsonData bldgJson = JsonMapper.ToObject(jsonString);
 						string bldg_id = "";
 
-						for (int i = 0; i < bldgJson["results"].Count; i++) {
-							if (bldgJson["results"][i]["name"].ToString() == GameManager.instance.activeBldg) {
-								bldg_id = bldgJson["results"][i]["id"].ToString();
-								Debug.Log("sending bldg_id: "+bldg_id);
-							}
-						}
+//						for (int i = 0; i < bldgJson["results"].Count; i++) {
+//							if (bldgJson["results"][i]["name"].ToString() == GameManager.instance.activeBldg_name) {
+//								bldg_id = bldgJson["results"][i]["id"].ToString();
+//								Debug.Log("sending bldg_id: "+bldg_id);
+//							}
+//						}
 
 						WWWForm wwwForm = new WWWForm();
 						wwwForm.AddField("id", GameManager.instance.userId);
 						wwwForm.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
 						wwwForm.AddField("client", "mob");
 
-						wwwForm.AddField("bldg_name", GameManager.instance.activeBldg);
-						wwwForm.AddField("bldg_id", bldg_id);
+						wwwForm.AddField("bldg_name", GameManager.instance.activeBldg_name);
+						wwwForm.AddField("bldg_id", GameManager.instance.activeBldg_id);
 						wwwForm.AddField("supply", GameManager.instance.reportedSupply);
 						wwwForm.AddField("food" , GameManager.instance.reportedFood);
 						wwwForm.AddField("water", GameManager.instance.reportedWater);
@@ -1091,7 +1230,7 @@ public class GameManager : MonoBehaviour {
 							wwwForm.AddField("survivor_found", "0");
 						}
 
-						Debug.Log ("sending cleared building message to the server- bldg_name: "+GameManager.instance.activeBldg+" and id: "+bldg_id);
+						Debug.Log ("sending cleared building message to the server- bldg_name: "+GameManager.instance.activeBldg_name+" and id: "+GameManager.instance.activeBldg_id);
 						WWW www = new WWW(buildingClearedURL, wwwForm);
 						yield return www;
 

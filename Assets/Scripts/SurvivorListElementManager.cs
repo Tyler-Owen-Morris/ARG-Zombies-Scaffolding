@@ -102,5 +102,6 @@ public class SurvivorListElementManager : MonoBehaviour {
 		teamButton.gameObject.SetActive(false);
 		equipButton.gameObject.SetActive(false);
 		myMissionText.gameObject.SetActive(true);
+		myInjuredText.gameObject.SetActive(false);
 	}
 }
