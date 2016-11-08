@@ -299,7 +299,7 @@ public class LoginManager : MonoBehaviour {
 				survivorDraftCardArray[i].survivor.baseAttack = (int)staticSurvivorData[1][fbAdjustedCounter]["base_attack"];
 				survivorDraftCardArray[i].survivor.baseStamina = (int)staticSurvivorData[1][fbAdjustedCounter]["base_stam"];
 				survivorDraftCardArray[i].survivor.curStamina = (int)staticSurvivorData[1][fbAdjustedCounter]["base_stam"];
-				survivorDraftCardArray[i].profilePicURL = "";
+				survivorDraftCardArray[i].profilePicURL = staticSurvivorData[1][fbAdjustedCounter]["profile_pic_url"].ToString();
 				if (4-survivorsDrafted >= 0) {
 					survivorDraftCardArray[i].team_pos = 4-survivorsDrafted;
 				} else {
@@ -307,8 +307,8 @@ public class LoginManager : MonoBehaviour {
 				}
 
 				//for now leave the generic sprite- later I can add custom sprites to load for each character.
-				Image survivorPic = survivorDraftCardArray[i].profilePic;
-				survivorPic.sprite = genericSurvivorPortrait;
+				//Image survivorPic = survivorDraftCardArray[i].profilePic;
+				//survivorPic.sprite = genericSurvivorPortrait;
 
 				//update the UI text
 				string myText = "";
@@ -316,6 +316,9 @@ public class LoginManager : MonoBehaviour {
 				myText += "stamina: " + survivorDraftCardArray[i].survivor.baseStamina.ToString()+"\n";
 				myText += "attack: " +survivorDraftCardArray[i].survivor.baseAttack.ToString(); 
 				survivorDraftCardArray[i].displayText.text = myText;
+				if (survivorDraftCardArray[i].profilePicURL != "") {
+					StartCoroutine(SetSurvivorImageFromURL(survivorDraftCardArray[i].profilePicURL, i));
+				}
 
 			} else {
 				//we have FB entries still available.

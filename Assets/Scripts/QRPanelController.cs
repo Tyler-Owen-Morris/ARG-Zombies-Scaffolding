@@ -32,7 +32,7 @@ public class QRPanelController : MonoBehaviour {
 		}
 		SetQrText();
 		Encode();
-		RequestButtonPressed();
+		AcceptButtonPressed();
 		mapLvlMgr = MapLevelManager.FindObjectOfType<MapLevelManager>();
 	}
 	
@@ -56,7 +56,9 @@ public class QRPanelController : MonoBehaviour {
 		if (e_qrController != null) {
 			e_qrController.e_QREncodeFinished += qrEncodeFinished;
 			string valueStr = qrGeneratedString;
+			valueStr = encryptData(valueStr);
 			e_qrController.Encode(valueStr);
+			Debug.Log("Unencrypted player string: "+qrGeneratedString+" || ENCRYPTED QR player string: "+valueStr);
 		}
 	}
 
@@ -117,8 +119,9 @@ public class QRPanelController : MonoBehaviour {
 	}
 
 	void DetermineTypeOfScannedCode (string scannedText) {
-		JsonData scannedJson = JsonMapper.ToObject(scannedText);
-		Debug.Log(scannedText);
+		string decrypted_text = decryptData(scannedText);
+		JsonData scannedJson = JsonMapper.ToObject(decrypted_text);
+		Debug.Log("Scanned Text: "+scannedText+" || DECRYPTED TEXT: "+decrypted_text);
 
 		if (scannedJson[0].ToString() == "player") {
 			if(scannedJson[1].ToString() != GameManager.instance.userId) {
@@ -223,48 +226,58 @@ public class QRPanelController : MonoBehaviour {
 			DateTime lowerLimit = requestTime - QRValidWindow;
 			if (DateTime.Now < upperLimit && DateTime.Now > lowerLimit) {
 				Debug.Log("The QR code contains a valid time");
+
+				float distanceAllowedInMeters = 25.0f;
+				float requestLat = float.Parse(requestingJSON[3].ToString());
+				float requestLng = float.Parse(requestingJSON[4].ToString());
+
+				if (CalculateDistanceToTarget(requestLat, requestLng) <= distanceAllowedInMeters) {
+
+					Debug.Log("Players are in range of eachother");
+
+					WWWForm form = new WWWForm();
+					form.AddField("request_id", requestIDtext);
+					form.AddField("id", GameManager.instance.userId);
+					form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+					form.AddField("client", "mob");
+
+					WWW www = new WWW(qrScannedURL, form);
+					yield return www;
+					Debug.Log (www.text);
+
+					if (www.error == null) {
+						
+						string jsonReturn = www.text;
+						JsonData qrJson = JsonMapper.ToObject(jsonReturn);
+
+						if (qrJson[0].ToString() == "Success") {
+							response_text.text = "You have successfully paired with "+qrJson[1]["name"].ToString();
+						} else {
+							string myString = jsonReturn[1].ToString();
+							response_text.text = myString;
+							Debug.Log ("server returned qr failure "+ myString);
+						}
+
+					} else {
+						Debug.Log (www.error);
+						response_text.text = "failed to contact webserver";
+					}
+
+				} else {
+					Debug.Log("Players are NOT in range of eachother");
+					response_text.text = "Players are not in range of eachother.";
+				}
+
+
 			} else {
-				Debug.Log("the QR code is expired, but I'ma let you go ahead anyway since this is a debug build");
+				Debug.Log("the QR code is expired");
+				response_text.text = "the QR code is expired";
 			}
 			// ********************** WARNING ************************ //
 			// The above DateTime check does not currently fail the coroutine.  This needs to give a fail message to the user and stop the coroutine.
 			// likewise the below GPS check does not currently fail the coroutine, but it should.
 
-			float distanceAllowedInMeters = 25.0f;
-			float requestLat = float.Parse(requestingJSON[3].ToString());
-			float requestLng = float.Parse(requestingJSON[4].ToString());
-			if (CalculateDistanceToTarget(requestLat, requestLng) <= distanceAllowedInMeters) {
-				Debug.Log("Players are in range of eachother");
-			} else {
-				Debug.Log("Players are NOT in range of eachother");
-			}
 
-			WWWForm form = new WWWForm();
-			form.AddField("request_id", requestIDtext);
-			form.AddField("id", GameManager.instance.userId);
-			form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
-			form.AddField("client", "mob");
-
-			WWW www = new WWW(qrScannedURL, form);
-			yield return www;
-
-			if (www.error == null) {
-				Debug.Log ("qr raw php return from web is: "+www.text);
-				string jsonReturn = www.text;
-				JsonData qrJson = JsonMapper.ToObject(jsonReturn);
-
-				if (qrJson[0].ToString() == "Success") {
-					response_text.text = "You have successfully paired with "+qrJson[1]["name"].ToString();
-				} else {
-					string myString = jsonReturn[1].ToString();
-					response_text.text = myString;
-					Debug.Log ("server returned qr failure "+ myString);
-				}
-
-			} else {
-				Debug.Log (www.error);
-				response_text.text = "failed to contact webserver";
-			}
 	}
 
 	IEnumerator PlayerCheckinToHomebase (float lat, float lng) {
@@ -396,7 +409,7 @@ public class QRPanelController : MonoBehaviour {
 
 	public string encryptData(string toEncrypt)
 	{
-		byte[] keyArray = UTF8Encoding.UTF8.GetBytes("12345678901234567890123456789012");
+		byte[] keyArray = UTF8Encoding.UTF8.GetBytes(GameManager.QR_encryption_key);
 		// 256 -AES key 
 		byte[] toEncryptArray = UTF8Encoding.UTF8.GetBytes(toEncrypt);
 		RijndaelManaged rDel = new RijndaelManaged();
@@ -411,7 +424,7 @@ public class QRPanelController : MonoBehaviour {
 
 public string decryptData(string toDecrypt)
 	{
-		byte[] keyArray = UTF8Encoding.UTF8.GetBytes("12345678901234567890123456789012");
+		byte[] keyArray = UTF8Encoding.UTF8.GetBytes(GameManager.QR_encryption_key);
 		// AES-256 key 
 		byte[] toEncryptArray = Convert.FromBase64String(toDecrypt);
 		RijndaelManaged rDel = new RijndaelManaged();

@@ -48,6 +48,8 @@ public class OutpostPanelController : MonoBehaviour {
 		string encryptedJson = encryptData(json);
 		qrGeneratedString = json;
 
+		Debug.Log("Outpost QR json: "+json+" encrypted Outpost QR string:"+encryptedJson);
+
 		Encode();
 	}
 
@@ -63,7 +65,7 @@ public class OutpostPanelController : MonoBehaviour {
 
 	public string encryptData(string toEncrypt)
 	{
-		byte[] keyArray = UTF8Encoding.UTF8.GetBytes("12345678901234567890123456789012");
+		byte[] keyArray = UTF8Encoding.UTF8.GetBytes(GameManager.QR_encryption_key);
 		// 256 -AES key 
 		byte[] toEncryptArray = UTF8Encoding.UTF8.GetBytes(toEncrypt);
 		RijndaelManaged rDel = new RijndaelManaged();

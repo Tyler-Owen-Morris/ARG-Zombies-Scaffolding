@@ -159,14 +159,17 @@ public class MapLevelManager : MonoBehaviour {
 		CheckForStarvationDehydration();
 		UpdateTheUI();
 
+		endGameButton.SetActive(true);
+		/* 
 		//if the player is the last one left alive, activate the gameover button.
 		JsonData survivorJson = JsonMapper.ToObject(GameManager.instance.survivorJsonText);
-		 if (survivorJson.Count > 1) {
-		 	endGameButton.SetActive(false);
-		 }else{
-		 	Debug.Log("Turning end game panel button on");
-		 	endGameButton.SetActive(true);
-		 }
+		if (survivorJson.Count > 1) {
+			endGameButton.SetActive(false);
+		}else{
+			Debug.Log("Turning end game panel button on");
+			endGameButton.SetActive(true);
+		}
+		*/
 	}
 
 	void CheckForStarvationDehydration () {
@@ -316,7 +319,9 @@ public class MapLevelManager : MonoBehaviour {
 
 
 	public void UpdateTheUI () {
-        
+
+		theWeaponListPopulator.PopulateWeaponsFromGameManager();
+		theSurvivorListPopulator.RefreshFromGameManagerList();
         
 		//left UI panel update
 		supplyText.text = "Supply: " + GameManager.instance.supply.ToString();
@@ -393,7 +398,19 @@ public class MapLevelManager : MonoBehaviour {
 
 		} else if (myBuilding.last_cleared == DateTime.Parse("12:01am 01/01/2000")) {
 			//this building has been entered, but not cleared
-			zombieCountText.text = myBuilding.zombiePopulation.ToString();
+			if (myBuilding.zombiePopulation < 0) {
+				//reroll zombie population before updating text
+				int zomb_pop = UnityEngine.Random.Range(5, 25);
+				GameManager.instance.zombiesToFight = zomb_pop;
+				zombieCount = zomb_pop;
+				myBuilding.zombiePopulation = zomb_pop;
+				StartCoroutine(ReRollZombiePopulation(zomb_pop));
+				zombieCountText.text = "??";
+				Debug.Log("reroll zombie population please");
+			} else {
+				//zombie population has already been re-rolled
+				zombieCountText.text = myBuilding.zombiePopulation.ToString();
+			}
 			bldgSupplyText.text = myBuilding.supply_inside.ToString();
 			bldgFoodText.text = myBuilding.food_inside.ToString();
 			bldgWaterText.text = myBuilding.water_inside.ToString();
@@ -406,6 +423,7 @@ public class MapLevelManager : MonoBehaviour {
 					//reroll zombie population before updating text
 					int zomb_pop = UnityEngine.Random.Range(5, 25);
 					GameManager.instance.zombiesToFight = zomb_pop;
+					zombieCount = zomb_pop;
 					myBuilding.zombiePopulation = zomb_pop;
 					StartCoroutine(ReRollZombiePopulation(zomb_pop));
 					zombieCountText.text = "??";
@@ -418,6 +436,7 @@ public class MapLevelManager : MonoBehaviour {
 				//Building is still overrun
 				zombieCountText.text = "OVER-RUN";
 				enterBldgButton.GetComponent<Button>().interactable = false;
+				sendATeamButton.interactable = false;
 			}
 			bldgSupplyText.text = myBuilding.supply_inside.ToString();
 			bldgFoodText.text = myBuilding.food_inside.ToString();
@@ -528,6 +547,10 @@ public class MapLevelManager : MonoBehaviour {
 	//opens and closes the mission confirmation panel.
 	public void ConfirmMissionStart () {
 		if (missionStartConfirmationPanel.activeInHierarchy == false) {
+			if (activeBuilding.last_cleared == DateTime.Parse("11:59pm 12/31/1999")) {
+				StartCoroutine(GameManager.instance.RollNewBuildingContents(true));
+			}
+
 			//construct panel text
 			string myConfirmationPanelString = "";
 			myConfirmationPanelString += "you pull 5 members of your team aside, and show them\n";
@@ -605,27 +628,27 @@ public class MapLevelManager : MonoBehaviour {
 
     	JsonData missionJson = JsonMapper.ToObject(GameManager.instance.missionJsonText);
     	//find the mission in the jsondata object on GameManager
-    	for(int i=0; i < missionJson[1].Count; i++) {
-    		if (missionJson[1][i]["mission_id"].ToString() == mission_id.ToString()) {
+    	for(int i=0; i < missionJson.Count; i++) {
+    		if (missionJson[i]["mission_id"].ToString() == mission_id.ToString()) {
     			//load the matching data into variables with the correct scope
-    			bldg_name = missionJson[1][i]["building_name"].ToString();
-    			supply = (int)missionJson[1][i]["supply_found"];
-    			water = (int)missionJson[1][i]["water_found"];
-    			food = (int)missionJson[1][i]["food_found"];
+    			bldg_name = missionJson[i]["building_name"].ToString();
+    			supply = (int)missionJson[i]["supply_found"];
+    			water = (int)missionJson[i]["water_found"];
+    			food = (int)missionJson[i]["food_found"];
 
-    			if (missionJson[1][i]["survivor1_dead"].ToString() == "1") {
+    			if (missionJson[i]["survivor1_dead"].ToString() == "1") {
     				dead++;
     			}
-				if (missionJson[1][i]["survivor2_dead"].ToString() == "1") {
+				if (missionJson[i]["survivor2_dead"].ToString() == "1") {
     				dead++;
     			}
-				if (missionJson[1][i]["survivor3_dead"].ToString() == "1") {
+				if (missionJson[i]["survivor3_dead"].ToString() == "1") {
     				dead++;
     			}
-				if (missionJson[1][i]["survivor4_dead"].ToString() == "1") {
+				if (missionJson[i]["survivor4_dead"].ToString() == "1") {
     				dead++;
     			}
-				if (missionJson[1][i]["survivor5_dead"].ToString() == "1") {
+				if (missionJson[i]["survivor5_dead"].ToString() == "1") {
     				dead++;
     			}
     		}

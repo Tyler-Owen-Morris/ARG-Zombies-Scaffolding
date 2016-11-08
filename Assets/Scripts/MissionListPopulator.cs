@@ -24,16 +24,16 @@ public class MissionListPopulator : MonoBehaviour {
 			//load in the json, and go through it creating, and populating the missions to the scroll list.
 			JsonData mission_json = JsonMapper.ToObject(GameManager.instance.missionJsonText);
 
-			for(int i=0; i < mission_json[1].Count; i++) {
+			for(int i=0; i < mission_json.Count; i++) {
 				//instantiate the prefab
 				GameObject instance = Instantiate(missionListElementPrefab);
 				instance.transform.SetParent(this.gameObject.transform);
 
 				//pull the data from json into C# variables
-				int mission_id = (int)mission_json[1][i]["mission_id"];
-				string building_name = mission_json[1][i]["building_name"].ToString();
-				float mission_duration = float.Parse(mission_json[1][i]["duration"].ToString());
-				DateTime complete_time = DateTime.Parse(mission_json[1][i]["time_complete"].ToString());
+				int mission_id = (int)mission_json[i]["mission_id"];
+				string building_name = mission_json[i]["building_name"].ToString();
+				float mission_duration = float.Parse(mission_json[i]["duration"].ToString());
+				DateTime complete_time = DateTime.Parse(mission_json[i]["time_complete"].ToString());
 
 				//call the function on the prefab to set it's data
 				instance.GetComponent<MissionListElementManager>().SetData(mission_id, mission_duration, complete_time, building_name);

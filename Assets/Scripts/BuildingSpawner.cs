@@ -56,6 +56,7 @@ public class BuildingSpawner : MonoBehaviour {
 				//this is assuming my home location
 			}
 			myWwwString += "&radius=500";
+			//myWwwString += "&keyword=things";
 			myWwwString += "&key="+ googleAPIKey;
 
 			Debug.Log(myWwwString);

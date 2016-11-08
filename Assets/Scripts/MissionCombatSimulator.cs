@@ -47,7 +47,7 @@ public class MissionCombatSimulator : MonoBehaviour {
 					missionPlayCardList[i].survivor.curStamina -= 5;
 
 					//check for having bit the player
-					float odds = 2.5f;
+					float odds = 1.5f;
 					if (missionPlayCardList[i].survivor.curStamina < 1) {
 						//if player is exhausted, 2.5x the odds to get bitten
 						odds = odds*2.5f;
@@ -201,6 +201,15 @@ public class MissionCombatSimulator : MonoBehaviour {
 	}
 
 	void CalculateSupplyEarned () {
+		int max_supply = GameManager.instance.activeBldg_supply;
+
+		if (max_supply >0 ) {
+			supply_earned = UnityEngine.Random.Range(1, max_supply);
+		} else {
+			supply_earned = 0;
+		}
+
+		/*
 		//Debug.Log ("Calculating the sum of supply earned from " + zombiesKilled + " zombies killed.");
 		int sum = 0;
 		for (int i = 0; i < zombies_killed; i++) {
@@ -210,9 +219,18 @@ public class MissionCombatSimulator : MonoBehaviour {
 		}
 		//Debug.Log ("calculating total supply earned yields: " + sum);
 		supply_earned = sum;
+		*/
 	}
 
 	void CalculateWaterFound () {
+		int max_water = GameManager.instance.activeBldg_water;
+
+		if (max_water > 0) {
+			water_earned = UnityEngine.Random.Range(1, max_water);
+		} else {
+			water_earned = 0;
+		}
+		/*
 		float oddsToFind = 50.0f;
 		int sum = 0;
 
@@ -229,9 +247,18 @@ public class MissionCombatSimulator : MonoBehaviour {
 		}
 
 		water_earned = sum;
+		*/
 	}
 
 	void CalculateFoodFound () {
+		int max_food = GameManager.instance.activeBldg_food;
+
+		if (max_food > 0) {
+			food_earned = UnityEngine.Random.Range(1, max_food);
+		} else {
+			food_earned =0;
+		}
+		/*
 		float oddsToFind = 50.0f;
 		int sum = 0;
 
@@ -248,6 +275,7 @@ public class MissionCombatSimulator : MonoBehaviour {
 		}
 
 		food_earned = sum;
+		*/
 	}
 
 	void CalculateSurvivorFound () {
@@ -257,7 +285,7 @@ public class MissionCombatSimulator : MonoBehaviour {
 			DateTime now = System.DateTime.Now;
 			double days_alive = (now-GameManager.instance.timeCharacterStarted).TotalDays;
 
-			int exponent = 10;
+			int exponent = 8;
 			float max_percentage = 0.5f; //this starts us at 50/50 odds.
 			double full_value = Mathf.Pow(GameManager.DaysUntilOddsFlat, exponent)/ max_percentage;
 

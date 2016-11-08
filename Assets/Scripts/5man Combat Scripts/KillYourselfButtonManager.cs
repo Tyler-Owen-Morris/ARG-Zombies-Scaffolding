@@ -29,7 +29,7 @@ public class KillYourselfButtonManager : MonoBehaviour {
 		if (roll > odds) {
 			//We need to notify the battlestate maschine that we can kill the players zombie (move isZombie from 1 to 2- allowing for restart, and stopping zombie lockout)
 			myBSM.SuccessfulCombatSuicide();
-			Debug.Log("Successful amputation");
+			Debug.Log("Successful combat suicide");
 		} else {
 			//failed suicide, ur a zombie now
 			//NOTE: Before the player is given this option, they are stored as a zombie on the server, and all final scores are tallied. we just need to load game over scene. the core data updater should have updated the GameManager boolean for isZombie to be set to true

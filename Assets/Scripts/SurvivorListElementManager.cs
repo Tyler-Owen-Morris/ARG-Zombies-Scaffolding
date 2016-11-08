@@ -6,12 +6,11 @@ using System;
 
 public class SurvivorListElementManager : MonoBehaviour {
 
-	public Text survivorNameText;
-	public Text survivorStatsText;
-	public Text myInjuredText;
+	public Text survivorNameText, survivorStatsText, myInjuredText, mySliderText;
 	public Image survivorPortraitSprite;
 	public GameObject mySurvivorCard, myMissionText;
 	public Button teamButton, equipButton;
+	public Slider myStamSlider;
 	private MapLevelManager mapLevelManager;
 	private SurvivorPlayCard survPlayCard;
 
@@ -48,13 +47,23 @@ public class SurvivorListElementManager : MonoBehaviour {
 		survivorNameText.text = survPlayCard.survivor.name;
 		string myStatsString = "";
 		myStatsString += survPlayCard.survivor.baseAttack +" Attk ";
-		myStatsString += survPlayCard.survivor.curStamina + " stam";
+		//myStatsString += survPlayCard.survivor.curStamina + " stam";
 		if (survPlayCard.survivor.weaponEquipped != null) {
 			myStatsString += " wielding a " + survPlayCard.survivor.weaponEquipped.name;
 		}else{
 			myStatsString += " and is Unarmed";
 		}
 		survivorStatsText.text = myStatsString;
+
+		int temp_stam = 0;
+		if (survPlayCard.survivor.curStamina >0) {
+			temp_stam = survPlayCard.survivor.curStamina;
+		}
+		string myStamString = temp_stam.ToString()+" / "+survPlayCard.survivor.baseStamina.ToString();
+		mySliderText.text = myStamString;
+		float val = (float)temp_stam / (float)survPlayCard.survivor.baseStamina;
+		myStamSlider.value = val;
+		Debug.Log(val.ToString());
 	}
 
 	public void SetInjuryText (int injury_id) {

@@ -14,6 +14,7 @@ public class SurvivorListPopulator : MonoBehaviour {
 
 	//moved this into a public function so it could be called externally upon changes to the list.
 	public void RefreshFromGameManagerList () {
+		listElementPrefab = Resources.Load<GameObject>("Prefabs/SurvivorListItemPanel");
 
 		//find any existing list game objects, and destroy them.
 		GameObject[] oldSurvivorListElements = GameObject.FindGameObjectsWithTag("survivorlistelement");

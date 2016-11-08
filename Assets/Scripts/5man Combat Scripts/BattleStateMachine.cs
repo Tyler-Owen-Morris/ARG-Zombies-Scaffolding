@@ -35,7 +35,7 @@ public class BattleStateMachine : MonoBehaviour {
 	public List<GameObject> zombieList = new List<GameObject>();
 
 	public GameObject playerTarget;
-	public GameObject autoAttackToggle, survivorBitPanel, playerBitPanel, failedRunAwayPanel, runButton, attackButton;
+	public GameObject autoAttackToggle, survivorBitPanel, playerBitPanel, failedRunAwayPanel, runButton, attackButton, cheatSaveButton;
 	public AmputationButtonManager amputationButton;
 	public GameObject playerPos1, playerPos2, playerPos3, playerPos4, playerPos5;
 	[SerializeField]
@@ -80,6 +80,7 @@ public class BattleStateMachine : MonoBehaviour {
 	}
 
 	void InitiateBlazeOfGlory () {
+		cheatSaveButton.SetActive(false);
 		runButton.SetActive(false);
 		attackButton.SetActive(false);
 		autoAttackToggle.GetComponent<Toggle>().isOn = true;
@@ -319,6 +320,8 @@ public class BattleStateMachine : MonoBehaviour {
 			SurvivorStateMachine SSM = survivor.GetComponent<SurvivorStateMachine>();
 			SSM.currentState = SurvivorStateMachine.TurnState.INITIALIZING;
 		}
+
+		battleState = PerformAction.WAIT;
 	}
 
 	/*
@@ -562,7 +565,8 @@ public class BattleStateMachine : MonoBehaviour {
 
 	public void SurvivorHasBeenBit (SurvivorStateMachine bitSurvivor) {
 		//if it's player character, startup the end-game panel, otherwise just the survivor panel.
-		if (bitSurvivor.teamPos == 5 && GameManager.instance.activeSurvivorCardList.Count == 1) {
+		GameObject[] battle_survivors = GameObject.FindGameObjectsWithTag("survivor");
+		if (bitSurvivor.teamPos == 5 && battle_survivors.Length == 1) {
 			//this is end game condition. the player character is bit.
 			if (GameManager.instance.blazeOfGloryActive == true) {
 				GameManager.instance.BuildingIsCleared(0,0,0,false);
@@ -660,7 +664,7 @@ public class BattleStateMachine : MonoBehaviour {
 		//pop up text to notify player
 
 		//resume combat
-		battleState = PerformAction.WAIT;
+		//battleState = PerformAction.WAIT;
 	}
 
 	public void PlayerChooseKillSurvivor () {
@@ -677,6 +681,7 @@ public class BattleStateMachine : MonoBehaviour {
 			//destroy the gameobject of the survivor that has died in the scene
 			if (survivor.GetComponent<SurvivorStateMachine>().survivor.survivor_id == survivorIDtoDestroy) {
 				destroyMe = survivor.gameObject;
+				break;
 			}
 		}
 		survivorTurnList.Remove(destroyMe);
@@ -704,7 +709,7 @@ public class BattleStateMachine : MonoBehaviour {
 		ResetAllTurns();
 
 		//resume combat
-		battleState = PerformAction.WAIT;
+		//battleState = PerformAction.WAIT;
 	}
 
 	//this handles a non-player survivor being bit

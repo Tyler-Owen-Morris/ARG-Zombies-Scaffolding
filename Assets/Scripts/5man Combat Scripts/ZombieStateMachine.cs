@@ -128,7 +128,8 @@ public class ZombieStateMachine : MonoBehaviour {
 			bool survivorBit= false;
 			if (targetSurvivor.teamPos == 5) {
 				//this is player character, he has different odds than the team
-				if (GameManager.instance.activeSurvivorCardList.Count > 1) {
+				GameObject[] survivorsInCombat = GameObject.FindGameObjectsWithTag("survivor");
+				if (survivorsInCombat.Length > 1) {
 					//player character cannot get bit
 					odds = 0.0f;
 				} else {
@@ -138,9 +139,14 @@ public class ZombieStateMachine : MonoBehaviour {
 			} else {
 				odds = 4.0f;
 			}
-			if (targetSurvivor.survivor.curStamina < 1) {
+			int cur_stam = targetSurvivor.survivor.curStamina;
+			if (cur_stam < 1) {
 				//if player is exhausted, 2.5x the odds to get bitten
 				odds = odds*2.5f;
+			}
+			int double_neg_stam = targetSurvivor.survivor.baseStamina * -2;
+			if (cur_stam < double_neg_stam) {
+				odds = (float)(odds*2.5f);
 			}
 			float roll = Random.Range(0.0f, 100.0f);
 			if (roll < odds) {

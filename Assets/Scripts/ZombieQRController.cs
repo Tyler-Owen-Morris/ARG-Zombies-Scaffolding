@@ -38,7 +38,9 @@ public class ZombieQRController : MonoBehaviour {
 	{
 		if (e_qrController != null) {
 			//string valueStr = m_inputfield.text;
-			e_qrController.Encode(qrGeneratedString);
+			string encrypted_qr_string = encryptData(qrGeneratedString);//encrypt
+			e_qrController.Encode(encrypted_qr_string);
+			Debug.Log("Encrypted Zombie QR string: "+encrypted_qr_string+"  pre-encrypted string: "+qrGeneratedString);
 		}
 	}
 
@@ -50,7 +52,7 @@ public class ZombieQRController : MonoBehaviour {
 
 	public string encryptData(string toEncrypt)
 	{
-		byte[] keyArray = UTF8Encoding.UTF8.GetBytes("12345678901234567890123456789012");
+		byte[] keyArray = UTF8Encoding.UTF8.GetBytes(GameManager.QR_encryption_key);
 		// 256 -AES key 
 		byte[] toEncryptArray = UTF8Encoding.UTF8.GetBytes(toEncrypt);
 		RijndaelManaged rDel = new RijndaelManaged();
@@ -63,7 +65,7 @@ public class ZombieQRController : MonoBehaviour {
 		return Convert.ToBase64String(resultArray, 0, resultArray.Length);
 	}
 
-	public string decryptData(string toDecrypt)
+	/*public string decryptData(string toDecrypt)
 	{
 		byte[] keyArray = UTF8Encoding.UTF8.GetBytes("12345678901234567890123456789012");
 		// AES-256 key 
@@ -76,5 +78,5 @@ public class ZombieQRController : MonoBehaviour {
 		byte[] resultArray = cTransform.TransformFinalBlock(toEncryptArray, 0, toEncryptArray.Length);
 
 		return UTF8Encoding.UTF8.GetString(resultArray);
-	}
+	}*/
 }

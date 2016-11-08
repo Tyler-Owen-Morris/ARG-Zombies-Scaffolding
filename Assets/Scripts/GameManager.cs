@@ -42,11 +42,12 @@ public class GameManager : MonoBehaviour {
 	public string userLastName;
 	public string userName;
 
-	public static string serverURL = "http://www.argzombie.com/ARGZ_DEV_SERVER";
+	public static string serverURL = "http://www.argzombie.com/ARGZ_SERVER";
+	public static string QR_encryption_key = "12345678901234567890123456789012";
 
 	private string startNewCharURL = serverURL+"/StartNewCharacter.php";
 	private string resumeCharacterUrl = serverURL+"/ResumeCharacter.php";
-	private string buildingClearedURL = serverURL+"/NewBuildingCleared1.php";
+	private string buildingClearedURL = serverURL+"/NewBuildingCleared.php";
 	//private string clearedBuildingDataURL = serverURL+"/ClearedBuildingData.php";
 	private string fetchSurvivorDataURL = serverURL+"/FetchSurvivorData.php";
 	private string fetchWeaponDataURL = serverURL+"/FetchWeaponData.php";
@@ -295,7 +296,7 @@ public class GameManager : MonoBehaviour {
 				}
 				Debug.Log(survivorJsonText);
 
-				Debug.Log(JsonMapper.ToJson(fullGameData[3]));
+				//Debug.Log(JsonMapper.ToJson(fullGameData[3]));
 				if (fullGameData[3] != null) {
 					weaponJsonText = JsonMapper.ToJson(fullGameData[3]);
 				}else {
@@ -426,8 +427,10 @@ public class GameManager : MonoBehaviour {
 	public IEnumerator KillUrself () {
 		int courageTimer = UnityEngine.Random.Range(1, 20);
 		DateTime game_over_time = DateTime.Now + TimeSpan.FromMinutes(courageTimer);
+		GameManager.instance.gameOverTime = game_over_time;
 		TimeSpan myScore = game_over_time - GameManager.instance.timeCharacterStarted;
 		my_score = myScore;
+		Debug.Log("My score: "+myScore.ToString()+" GameOverTime: "+gameOverTime.ToString());
 
 		WWWForm form = new WWWForm();
 		form.AddField("id", GameManager.instance.userId);
@@ -596,6 +599,7 @@ public class GameManager : MonoBehaviour {
 		//Debug.Log(oldSurvivorCards.Length);
 		GameManager.instance.activeSurvivorCardList.Clear();
 		GameManager.instance.onMissionSurvivorCardList.Clear();
+		GameManager.instance.injuredSurvivorCardList.Clear();
 		if (oldSurvivorCards.Length > 0) {
 			foreach (GameObject survivorCard in oldSurvivorCards) {
 				Destroy(survivorCard.gameObject);
@@ -632,6 +636,41 @@ public class GameManager : MonoBehaviour {
 
 			instance.transform.SetParent(GameManager.instance.survivorCardHolder.transform);
 		}
+
+
+		/*
+		//check for missing team positions...
+		for (int i=0; i < activeSurvivorCardList.Count; i++) {
+			int pos_expected = 5-i;
+			if (pos_expected <= 0) {
+				break;
+			}
+			bool found = false;
+			foreach (GameObject survivor in activeSurvivorCardList) {
+				SurvivorPlayCard myPlayCard = survivor.GetComponent<SurvivorPlayCard>();
+				if (myPlayCard.team_pos == pos_expected) {
+					found = true;
+					break;
+				}
+			}
+
+			if (found == false) {
+				//find a survivor at 0 and set them to the missing #
+				foreach (GameObject survivor in activeSurvivorCardList) {
+					SurvivorPlayCard thisPlayCard = survivor.GetComponent<SurvivorPlayCard>();
+					if (thisPlayCard.team_pos == 0) {
+						thisPlayCard.team_pos = pos_expected;
+						break;
+					} else {
+						continue;
+					}
+				}
+			} else if (found == true) {
+				continue;
+			}
+
+		}
+		*/
 
 		//continue to the weapons
 		CreateWeaponsFromGameManagerJson();
@@ -689,8 +728,42 @@ public class GameManager : MonoBehaviour {
 		foreach (GameObject weapon in weaponCardList) {
 			BaseWeapon myWeapon = weapon.GetComponent<BaseWeapon>();
 
-			//if the weapon is assigned.
+			if (myWeapon.equipped_id !=0) {
+				//ensure there is not a duplicate equipped ID
+				foreach (GameObject comp_weapon in weaponCardList) {
+					BaseWeapon comp_weapon_data = comp_weapon.GetComponent<BaseWeapon>();
+					if (comp_weapon_data.equipped_id == myWeapon.equipped_id && comp_weapon_data.weapon_id != myWeapon.weapon_id) {
+						//if a duplicate ID is found, that isn't the same weapon_id- unequip this weapon.
+						myWeapon.equipped_id = 0;
+						break;
+					}
+				}
+			}
+
+			if (myWeapon.equipped_id !=0) {
+				//ensure that the survivor exists
+				List <GameObject> allSurvivorList = new List<GameObject>();
+				allSurvivorList.AddRange(GameObject.FindGameObjectsWithTag("survivorcard"));
+				int count = 0;
+
+				foreach (GameObject survivor in allSurvivorList) {
+					SurvivorPlayCard surv = survivor.GetComponent<SurvivorPlayCard>();
+
+					if (surv != null && surv.survivor.survivor_id == myWeapon.equipped_id) {
+						break;
+					} else {
+						count ++;
+					}
+					//if all survivors ID's have been checked, and none match this weapon equipped ID
+					if (count >= allSurvivorList.Count) {
+						myWeapon.equipped_id = 0;
+					}
+				}
+			}
+
+			//if the weapon is assigned an equipped id- associate the gameobjects
 			if (myWeapon.equipped_id != 0) {
+
 
 				int count = 0;
 				//now loop through the player cards, and find a matching player card ID.
@@ -802,8 +875,8 @@ public class GameManager : MonoBehaviour {
 
 			if (updateWeaponAndSurvivorMapLevelUI == true) {
 				MapLevelManager mapLvlMgr = GameObject.Find("Map Level Manager").GetComponent<MapLevelManager>();
-				mapLvlMgr.theWeaponListPopulator.PopulateWeaponsFromGameManager();
-				mapLvlMgr.theSurvivorListPopulator.RefreshFromGameManagerList();
+				//mapLvlMgr.theWeaponListPopulator.PopulateWeaponsFromGameManager();
+				//mapLvlMgr.theSurvivorListPopulator.RefreshFromGameManagerList();
 				mapLvlMgr.UpdateTheUI();
 				updateWeaponAndSurvivorMapLevelUI = false;
 			}
@@ -1003,7 +1076,7 @@ public class GameManager : MonoBehaviour {
 
 		//if the building has not been visited before- roll it's contents before entering
 		if (GameManager.instance.activeBldg_lastclear == DateTime.Parse("11:59pm 12/31/1999")) {
-			StartCoroutine(RollNewBuildingContents());
+			StartCoroutine(RollNewBuildingContents(false));
 		} else {
 			//if player has been here before- the correct data should already be loaded
 			SceneManager.LoadScene ("02c Combat-5");
@@ -1012,7 +1085,7 @@ public class GameManager : MonoBehaviour {
 
 	}
 
-	IEnumerator RollNewBuildingContents () {
+	public IEnumerator RollNewBuildingContents (bool mission) {
 		WWWForm form = new WWWForm();
 		form.AddField ("id", GameManager.instance.userId);
 		form.AddField ("login_ts", GameManager.instance.lastLoginTime);
@@ -1126,7 +1199,11 @@ public class GameManager : MonoBehaviour {
 			if (newBldgJson[0].ToString() == "Success") {
 				clearedBldgJsonText = JsonMapper.ToJson(newBldgJson[1]);
 				Debug.Log(clearedBldgJsonText);
-				SceneManager.LoadScene("02c Combat-5");
+
+				//if the mission tab is triggering this, don't load player into combat
+				if (mission == false) {
+					SceneManager.LoadScene("02c Combat-5");
+				}
 			} else {
 				Debug.Log(newBldgJson[1].ToString());
 			}
@@ -1289,7 +1366,7 @@ public class GameManager : MonoBehaviour {
 					Debug.Log(www.text);
 
 					if (www.error == null) {
-						SceneManager.LoadScene("03b GameOver");
+						SceneManager.LoadScene("03b Game Over");
 					} else {
 						Debug.Log(www.error);
 					}

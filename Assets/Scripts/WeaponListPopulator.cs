@@ -59,6 +59,7 @@ public class WeaponListPopulator : MonoBehaviour {
 			}
 		}
 
+		//clear and repopluate the list of weaponcard gameobjects
 		GameManager.instance.weaponCardList.Clear();
 		GameManager.instance.weaponCardList.AddRange(GameObject.FindGameObjectsWithTag("weaponcard"));
 
