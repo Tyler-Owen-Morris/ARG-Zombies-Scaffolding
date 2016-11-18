@@ -119,6 +119,7 @@ public class BuildingSpawner : MonoBehaviour {
 			
 			PopulatedBuilding instance = Instantiate(populatedBuildingPrefab);
 			instance.GenerateZombies();
+            instance.SetToUnknown();
 			instance.name = myName;
 			instance.buildingName = myName;
 			instance.buildingID = myBldgID;
@@ -159,22 +160,60 @@ public class BuildingSpawner : MonoBehaviour {
 			foreach (GameObject building in buildings) {
 				int cleared = 0;
 				PopulatedBuilding myBuilding = building.GetComponent<PopulatedBuilding>();
-				//Set all buildings to the "unentered" datetime
+				//Set all buildings to the "unentered" datetime by default
 				myBuilding.last_cleared = DateTime.Parse("11:59pm 12/31/1999");
-
+                
+                //go through the player record of buildings they've cleared
 				for (int i=0; i<clearedJson.Count; i++) {
-					//Debug.Log(myBuilding.buildingName+" comparing to "+clearedJson[i]["bldg_name"].ToString());
-					if (myBuilding.buildingName == clearedJson[i]["bldg_name"].ToString()) {
-						//load in the saved building data
-						myBuilding.supply_inside = (int)clearedJson[i]["supply"];
-						myBuilding.food_inside = (int)clearedJson[i]["food"];
-						myBuilding.water_inside = (int)clearedJson[i]["water"];
-						myBuilding.zombiePopulation = (int)clearedJson[i]["zombies"];
-						myBuilding.last_cleared = DateTime.Parse(clearedJson[i]["time_cleared"].ToString());
+                    //Debug.Log(myBuilding.buildingName+" comparing to "+clearedJson[i]["bldg_name"].ToString());
+                    //if the spawned building matches the record, populate it
+                    if (myBuilding.buildingName == clearedJson[i]["bldg_name"].ToString()) {
+                        //load in the saved building data
+                        myBuilding.supply_inside = (int)clearedJson[i]["supply"];
+                        myBuilding.food_inside = (int)clearedJson[i]["food"];
+                        myBuilding.water_inside = (int)clearedJson[i]["water"];
+                        myBuilding.zombiePopulation = (int)clearedJson[i]["zombies"];
+                        myBuilding.last_cleared = DateTime.Parse(clearedJson[i]["time_cleared"].ToString());
+
+                        if (clearedJson[i]["last_looted_supply"].ToString() != "0000-00-00 00:00:00") //this is a blank entry in current DB config
+                        { 
+                            myBuilding.last_looted_supply = DateTime.Parse(clearedJson[i]["last_looted_supply"].ToString());
+                        }
+                        if (clearedJson[i]["last_looted_food"].ToString() != "0000-00-00 00:00:00") //this is a blank entry in current DB config
+                        {
+                            myBuilding.last_looted_food = DateTime.Parse(clearedJson[i]["last_looted_food"].ToString());
+                        }
+                        if (clearedJson[i]["last_looted_water"].ToString() != "0000-00-00 00:00:00") //this is a blank entry in current DB config
+                        {
+                            myBuilding.last_looted_water = DateTime.Parse(clearedJson[i]["last_looted_water"].ToString());
+                        }
+
+                        //CHECK ITEMS
+                        if (clearedJson[i]["has_trap"].ToString() == "1"){
+                            myBuilding.has_traps = true;
+                        }else
+                        {
+                            myBuilding.has_traps = false;
+                        }
+                        if (clearedJson[i]["has_barrel"].ToString() == "1")
+                        {
+                            myBuilding.has_barrel = true;
+                        }else
+                        {
+                            myBuilding.has_barrel = false;
+                        }
+                        if (clearedJson[i]["has_greenhouse"].ToString() == "1")
+                        {
+                            myBuilding.has_greenhouse = true;
+                        }else
+                        {
+                            myBuilding.has_greenhouse = false;
+                        }
 
 						//Debug.Log(myBuilding.buildingName+" Matched buildings, Active: "+clearedJson[i]["active"].ToString());
 						if (clearedJson[i]["active"].ToString()=="0") {
-							//Debug.Log(myBuilding.buildingName+" has been found to be clear- not being activated");
+                            //Debug.Log(myBuilding.buildingName+" has been found to be clear- not being activated");
+                            myBuilding.ActivateMe(); //all buildings should now be active
 							cleared = 1;
 							break;
 						} 

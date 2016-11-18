@@ -13,12 +13,13 @@ public class GameManager : MonoBehaviour {
 	public static GameManager instance;
 
 	public bool gameDataInitialized = false, updateWeaponAndSurvivorMapLevelUI = false, survivorFound = false, playerInTutorial = false, weaponHasBeenSelected = false, playerIsZombie = false, blazeOfGloryActive = false;
-	public int daysSurvived, supply, ammo, reportedSupply, reportedWater, reportedFood, playerCurrentStamina, playerMaxStamina, zombiesToFight, foodCount, waterCount, mealCount, distanceCoveredThisSession, zombieKill_HighScore, zombieKill_score;
+	public int daysSurvived, supply, ammo, trap, barrel, greenhouse, reportedSupply, reportedWater, reportedFood, playerCurrentStamina, playerMaxStamina, zombiesToFight, foodCount, waterCount, mealCount, distanceCoveredThisSession, zombieKill_HighScore, zombieKill_score;
 	public DateTime timeCharacterStarted, lastHomebaseSetTime, gameOverTime, activeBldg_lastclear;
 	//public PopulatedBuilding active_building;
 	public float homebaseLat, homebaseLong;
 	public string foundSurvivorName, lastLoginTime;
 	public TimeSpan high_score, my_score;
+    public Sprite my_profile_pic;
 	public int foundSurvivorCurStam, foundSurvivorMaxStam, foundSurvivorAttack, foundSurvivorEntryID;
 	[SerializeField]
 	private GameObject[] weaponOptionsArray;
@@ -42,7 +43,7 @@ public class GameManager : MonoBehaviour {
 	public string userLastName;
 	public string userName;
 
-	public static string serverURL = "http://www.argzombie.com/ARGZ_SERVER";
+	public static string serverURL = "http://www.argzombie.com/ARGZ_DEV_SERVER";
 	public static string QR_encryption_key = "12345678901234567890123456789012";
 
 	private string startNewCharURL = serverURL+"/StartNewCharacter.php";
@@ -68,7 +69,7 @@ public class GameManager : MonoBehaviour {
 
 	private static SurvivorPlayCard survivorPlayCardPrefab;
 	private static BaseWeapon baseWeaponPrefab;
-	public static int DaysUntilOddsFlat = 30;
+	public static int DaysUntilOddsFlat = 40;
 	public static float FlatOddsToFind = 5.0f;
 
 	/// <summary>
@@ -86,7 +87,17 @@ public class GameManager : MonoBehaviour {
 		//ResetAllBuildings();
 	}
 
-	void OnLevelWasLoaded () {
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnLevelFinishedLoading;
+    }
+
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnLevelFinishedLoading;
+    }
+
+    void OnLevelFinishedLoading (Scene scene, LoadSceneMode mode) {
 		//this is a catch all to slave the long term memory to the active GameManager.instance object- each load will update long term memory.
 
 
@@ -254,6 +265,9 @@ public class GameManager : MonoBehaviour {
 				int fud = Convert.ToInt32(fullGameData[1]["food"].ToString());
 				GameManager.instance.foodCount = fud;
 				GameManager.instance.ammo = (int)fullGameData[1]["ammo"];
+                GameManager.instance.trap = (int)fullGameData[1]["trap"];
+                GameManager.instance.barrel = (int)fullGameData[1]["barrel"];
+                GameManager.instance.greenhouse = (int)fullGameData[1]["greenhouse"];
 				float homeLat = (float)Convert.ToDouble(fullGameData[1]["homebase_lat"].ToString());
 				GameManager.instance.homebaseLat = homeLat;
 				float homeLon = (float)Convert.ToDouble(fullGameData[1]["homebase_lon"].ToString());
@@ -903,12 +917,12 @@ public class GameManager : MonoBehaviour {
 		Debug.Log(www.text);
 
 		if (www.error == null) {
-			GameManager.instance.outpostJsonText = www.text;
+			//GameManager.instance.outpostJsonText = www.text; //need to remove the "Success" from [0]
 			JsonData outpostJson = JsonMapper.ToObject(www.text);
 
 			if (outpostJson[0].ToString() == "Success") {
-				//store the text for later use
-
+                //store the text for later use
+                GameManager.instance.outpostJsonText = JsonMapper.ToJson(outpostJson[1]);//the results should all be in this array position
 			} else if (outpostJson[0].ToString() == "Failed") {
 				Debug.Log(outpostJson[1].ToString());
 
@@ -1073,6 +1087,11 @@ public class GameManager : MonoBehaviour {
 
 	public void LoadBuildingCombat () {
 		survivorFound = false;
+
+        //store the active building stats for win screen reporting.
+        GameManager.instance.reportedSupply = GameManager.instance.activeBldg_supply;
+        GameManager.instance.reportedFood = GameManager.instance.activeBldg_food;
+        GameManager.instance.reportedWater = GameManager.instance.activeBldg_water;
 
 		//if the building has not been visited before- roll it's contents before entering
 		if (GameManager.instance.activeBldg_lastclear == DateTime.Parse("11:59pm 12/31/1999")) {
@@ -1256,25 +1275,29 @@ public class GameManager : MonoBehaviour {
 
 
 	public bool clearedBuildingSendInProgress = false;
-	public void BuildingIsCleared (int sup, int water, int food, bool survFound) {
+	public void BuildingIsCleared (bool survFound) {
 		if (clearedBuildingSendInProgress == false) {
 			clearedBuildingSendInProgress = true;
-			//local updates for the running game variables
-			reportedSupply = sup;
-			supply += sup;
-			reportedWater = water;
-			waterCount += water;
-			reportedFood = food;
-			foodCount += food;
-			survivorFound = survFound;
 
 			StartCoroutine(SendClearedBuilding(survivorFound));
 		} 
 	}
 
 	IEnumerator SendClearedBuilding (bool survivorFound) {
+        //spawn building clear text and SFX
+        GameObject canvas = GameObject.Find("Canvas");
+        Vector3 center = new Vector3(Screen.width / 2, Screen.height / 2, 0);
+        BuildingClearTextController bldg_clear_text = Resources.Load<BuildingClearTextController>("Prefabs/Building Clear Notification Panel").GetComponent<BuildingClearTextController>();
+        BuildingClearTextController instance = Instantiate(bldg_clear_text);
+        instance.transform.SetParent(canvas.transform);
+        instance.transform.position = center;
+        AnimatorClipInfo[] clipinfo = instance.GetComponent<Animator>().GetCurrentAnimatorClipInfo(0);
+        float wait_for = clipinfo[0].clip.length;
+        Debug.Log("waiting for... " + wait_for.ToString());
+        yield return new WaitForSeconds(wait_for);
+        Debug.Log("done waiting...");
 
-
+        //determine the type of clear that's taken place
 		if (GameManager.instance.activeBldg_name != "tutorial") {
 			if (GameManager.instance.activeBldg_name != "zomb") {
 				if(GameManager.instance.activeBldg_name != "blaze_of_glory"){
@@ -1298,9 +1321,9 @@ public class GameManager : MonoBehaviour {
 
 						wwwForm.AddField("bldg_name", GameManager.instance.activeBldg_name);
 						wwwForm.AddField("bldg_id", GameManager.instance.activeBldg_id);
-						wwwForm.AddField("supply", GameManager.instance.reportedSupply);
-						wwwForm.AddField("food" , GameManager.instance.reportedFood);
-						wwwForm.AddField("water", GameManager.instance.reportedWater);
+						//wwwForm.AddField("supply", GameManager.instance.reportedSupply);
+						//wwwForm.AddField("food" , GameManager.instance.reportedFood);
+						//wwwForm.AddField("water", GameManager.instance.reportedWater);
 						if (survivorFound) {
 							wwwForm.AddField("survivor_found", "1");
 						} else {

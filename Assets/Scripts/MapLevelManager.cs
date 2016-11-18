@@ -4,13 +4,14 @@ using UnityEngine.UI;
 using Facebook.Unity;
 using LitJson;
 using System;
+using UnityEngine.SceneManagement;
 
 public class MapLevelManager : MonoBehaviour {
 
-	public GameObject inventoryPanel, buildingPanel, qrPanel, homebasePanel, homebaseConfirmationPanel, outpostSelectionPanel, outpostConfirmationPanel, missionStartConfirmationPanel, OutpostQRPanel, enterBldgButton, unequippedWeaponsPanel, mapLevelCanvas, hungerThirstWarningPanel, endGamePanel, endGameButton, bogConfirmationPanel;
+	public GameObject inventoryPanel, buildingPanel, clearedBuildingPanel, qrPanel, personelPanel, gearPanel, homebasePanel, homebaseConfirmationPanel, outpostSelectionPanel, outpostConfirmationPanel, missionStartConfirmationPanel, OutpostQRPanel, enterBldgButton, unequippedWeaponsPanel, mapLevelCanvas, hungerThirstWarningPanel, endGamePanel, endGameButton, bogConfirmationPanel;
 
 	[SerializeField]
-	private Text supplyText, daysAliveText, survivorsAliveText, currentLatText, currentLonText, locationReportText, zombieKillText, foodText, waterText, ammoText, playerNameText, bldgNameText, bldgSupplyText, bldgFoodText, bldgWaterText, zombieCountText, bldgDistText, homebaseLatText, homebaseLonText, missionConfirmationText;
+	public Text supplyText, daysAliveText, survivorsAliveText, currentLatText, currentLonText, locationReportText, zombieKillText, foodText, waterText, gearText, playerNameText, clearedBuildingNameText, bldgNameText, bldgSupplyText, bldgFoodText, bldgWaterText, clearedBldgSupplyText, clearedBldgFoodText, clearedBldgWaterText, zombieCountText, bldgDistText, homebaseLatText, homebaseLonText, missionConfirmationText;
 
 	[SerializeField]
 	private Slider playerHealthSlider, playerHealthSliderDuplicate;
@@ -28,6 +29,7 @@ public class MapLevelManager : MonoBehaviour {
 
 	private float lastUpdateLat = 0.0f, lastUpdateLng = 0.0f;
 	private float lastStamUpdateLat = 0.0f, lastStamUpdateLng = 0.0f;
+    private bool runGameClock = false;
 
 	private int zombieCount, outpost_index;
 	public string bldgName, active_bldg_id;
@@ -46,14 +48,30 @@ public class MapLevelManager : MonoBehaviour {
 	private string SendNewOutpostURL = GameManager.serverURL+"/CreateOutpost.php";
 	private string clearDeadSurvivorsURL = GameManager.serverURL+"/ClearDead.php";
 	private string reRollZombieURL = GameManager.serverURL+"/ReRollZombieCount.php";
+    private string transferLootURL = GameManager.serverURL + "/TransferLootFromBuilding.php";
+    public string placeGearURL = GameManager.serverURL + "/PlaceGear.php";
 
 	public void InventoryButtonPressed () {
 		if (inventoryPanel.activeInHierarchy == false ) {
 			inventoryPanel.SetActive(true);
+            personelPanel.gameObject.SetActive(true);
+            gearPanel.gameObject.SetActive(false);
 		} else if (inventoryPanel.activeInHierarchy == true) {
 			inventoryPanel.SetActive(false);
 		}
 	}
+
+    public void PersonelButtonPressed()
+    {
+        personelPanel.gameObject.SetActive(true);
+        gearPanel.gameObject.SetActive(false);
+    }
+
+    public void GearButtonPressed()
+    {
+        personelPanel.gameObject.SetActive(false);
+        gearPanel.gameObject.SetActive(true);
+    }
 
 	public void HomebaseButtonPressed () {
 		if (homebasePanel.activeInHierarchy == false ) {
@@ -151,7 +169,25 @@ public class MapLevelManager : MonoBehaviour {
         bldgSpawner = GameObject.Find("Building Populator").GetComponent<BuildingSpawner>();
     }
 
-	void OnLevelWasLoaded () {
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnLevelFinishedLoading;
+    }
+
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnLevelFinishedLoading;
+    }
+
+    void Update ()
+    {
+        if (runGameClock == true)
+        {
+            UpdateTimeAliveClock();
+        }
+    }
+
+	void OnLevelFinishedLoading (Scene scene, LoadSceneMode mode) {
 		//UpdateTheUI();
 		InvokeRepeating("CheckAndUpdateMap", 10.0f, 10.0f);
 		InvokeRepeating("RegenerateStamina", 30.0f, 60.0f);
@@ -324,24 +360,80 @@ public class MapLevelManager : MonoBehaviour {
 		theSurvivorListPopulator.RefreshFromGameManagerList();
         
 		//left UI panel update
-		supplyText.text = "Supply: " + GameManager.instance.supply.ToString();
-		if (GameManager.instance.foodCount <=0) {
-        	foodText.text = "Food: 0";
-        }else{
-			foodText.text = "Food: " + GameManager.instance.foodCount.ToString();
+        if (GameManager.instance.supply >0)
+        {
+            supplyText.text = "Supply: " + GameManager.instance.supply.ToString();
+        }else
+        {
+            supplyText.text = "Supply: 0";
         }
-		if (GameManager.instance.waterCount <=0) {
-			waterText.text = "Water: 0";
-        }else{
-			waterText.text = "Water: " + GameManager.instance.waterCount.ToString();
+		if(GameManager.instance.foodCount > 0)
+        {
+            foodText.text = "Food: " + GameManager.instance.foodCount.ToString();
+        }else
+        {
+            foodText.text = "Food: 0";
         }
-        if (GameManager.instance.zombieKill_score <=0) {
-        	zombieKillText.text = "zombie kills: 0";
-        } else {
-        	zombieKillText.text = "zombie kills: "+GameManager.instance.zombieKill_score.ToString();
+        if (GameManager.instance.waterCount > 0)
+        {
+            waterText.text = "Water: " + GameManager.instance.waterCount.ToString();
         }
-        ammoText.text = "Ammunition: " + GameManager.instance.ammo.ToString();
-		daysAliveText.text = ((float)((DateTime.Now-GameManager.instance.timeCharacterStarted).TotalDays)).ToString("F2");
+        else
+        {
+            waterText.text = "Water: 0";
+        }
+        zombieKillText.text = "zombie kills: "+GameManager.instance.zombieKill_score.ToString();
+
+        //gearText is the text object on the inventory panel that displays users inventory. Construst and set it.
+        string my_gear_string = "";
+        my_gear_string += "Ammunition: " + GameManager.instance.ammo.ToString()+"\n";
+        if (GameManager.instance.trap > 0)
+            my_gear_string += "Traps: " + GameManager.instance.trap.ToString() + "\n";
+        if(GameManager.instance.barrel>0)
+            my_gear_string += "Barrels: " + GameManager.instance.barrel.ToString() + "\n";
+        if(GameManager.instance.greenhouse>0)
+            my_gear_string += "Greenhouse: "+GameManager.instance.greenhouse.ToString()+"\n";
+        my_gear_string += "\n";
+        int shiv_count = 0;
+        int huntKnife_count = 0;
+        int bat_count = 0;
+        int hammer_count = 0;
+        int twentytwo_count = 0;
+        int shotty_count = 0;
+        foreach (GameObject weapon in GameManager.instance.weaponCardList)
+        {
+            BaseWeapon myWep = weapon.GetComponent<BaseWeapon>();
+            if (myWep.name == "crude shiv")
+                shiv_count++;
+            if (myWep.name == "hunting knife")
+                huntKnife_count++;
+            if (myWep.name == "baseball bat")
+                bat_count++;
+            if (myWep.name == "sledgehammer")
+                hammer_count++;
+            if (myWep.name == ".22 revolver")
+                twentytwo_count++;
+            if (myWep.name == "shotgun")
+                shotty_count++;
+        }
+        if (shiv_count > 0)
+            my_gear_string += "Shivs: " + shiv_count.ToString() + "\n";
+        if(huntKnife_count>0)
+            my_gear_string += "Hunting Knives: "+huntKnife_count+"\n";
+        if (bat_count > 0)
+            my_gear_string += "Baseball Bats: " + bat_count + "\n";
+        if (hammer_count > 0)
+            my_gear_string += "Sledgehammers: " + hammer_count + "\n";
+        if (twentytwo_count > 0)
+            my_gear_string += ".22 Revolvers: " + twentytwo_count + "\n";
+        if (shotty_count > 0)
+            my_gear_string += "Shotguns: " + shotty_count + "\n";
+        
+        gearText.text = my_gear_string;
+
+        //this runs the game clock on the map level instead of setting a static float for "time played"
+        //daysAliveText.text = ((float)((DateTime.Now-GameManager.instance.timeCharacterStarted).TotalDays)).ToString("F2");
+        runGameClock = true;
 		//Debug.Log(GameManager.instance.survivorCardList.Count);
 		survivorsAliveText.text = "Survivors: " + (GameManager.instance.activeSurvivorCardList.Count);
         
@@ -364,18 +456,75 @@ public class MapLevelManager : MonoBehaviour {
         StartCoroutine(SetCurrentLocationText());
 	}
 
-	private float distToActiveBldg = 0.0f;
+    private void UpdateTimeAliveClock() {
+        TimeSpan time_alive = (DateTime.Now - GameManager.instance.timeCharacterStarted);
+        //Debug.Log(time_alive.ToString());
+        string my_string = "";
+
+        //days
+        if (time_alive > TimeSpan.FromDays(1))
+        {
+            int total_days = Mathf.FloorToInt((float)time_alive.TotalDays);
+            my_string += total_days.ToString().PadLeft(2, '0') + "\n";
+            time_alive = time_alive - TimeSpan.FromDays(total_days);
+        }
+        else
+        {
+            my_string += "00\n";
+        }
+        //hours
+        if (time_alive > TimeSpan.FromHours(1))
+        {
+            int tot_hrs = Mathf.FloorToInt((float)time_alive.TotalHours);
+            my_string += tot_hrs.ToString().PadLeft(2, '0') + ":";
+            time_alive = time_alive - TimeSpan.FromHours((float)tot_hrs);
+        }
+        else
+        {
+            my_string += "00:";
+        }
+        //minutes
+        if (time_alive > TimeSpan.FromMinutes(1))
+        {
+            int tot_min = Mathf.FloorToInt((float)time_alive.TotalMinutes);
+            my_string += tot_min.ToString().PadLeft(2, '0') + ":";
+            time_alive = time_alive - TimeSpan.FromMinutes((float)tot_min);
+        }
+        else
+        {
+            my_string += "00:";
+        }
+        //seconds
+        if (time_alive > TimeSpan.FromSeconds(1))
+        {
+            int tot_sec = Mathf.FloorToInt((float)time_alive.TotalSeconds);
+            my_string += tot_sec.ToString().PadLeft(2, '0');
+        }
+        else
+        {
+            my_string += "00";
+        }
+
+        daysAliveText.text = my_string;
+        //Debug.Log(my_string);
+    }
+
+    private float distToActiveBldg = 0.0f;
 	public void ActivateBuildingInspector(PopulatedBuilding myBuilding) {
+        bool building_clear = false;
 		CancelInvoke("CheckAndUpdateMap");
 
-		//this sets text, stores the int/string, and activates the panel.
+		//load building data into MapLevelManager
 		activeBuilding = myBuilding;
 		bldgName = myBuilding.buildingName;
 		bldgNameText.text = myBuilding.buildingName;
+        clearedBuildingNameText.text = myBuilding.buildingName;
 		active_bldg_id = myBuilding.buildingID;
 		zombieCount = myBuilding.zombiePopulation;
 		float distToBldg = (int)CalculateDistanceToTarget(myBuilding.myLat, myBuilding.myLng);
 		distToActiveBldg = distToBldg;
+
+        //load building data into GameManager.instance
 		GameManager.instance.activeBldg_name = myBuilding.buildingName;
 		GameManager.instance.activeBldg_id = myBuilding.buildingID;
 		GameManager.instance.activeBldg_supply = myBuilding.supply_inside;
@@ -385,10 +534,15 @@ public class MapLevelManager : MonoBehaviour {
 		GameManager.instance.activeBldg_lootcode = myBuilding.loot_code;
 		GameManager.instance.activeBldg_lastclear = myBuilding.last_cleared;
 
+        //set the dist & zombie count text pieces
 		int rand = UnityEngine.Random.Range(-3,3);
 		zombieCountText.text = (zombieCount+rand-2)+"-"+(zombieCount+rand+2);
 		bldgDistText.text = distToBldg.ToString();
+        bldgSupplyText.text = myBuilding.supply_inside.ToString();
+        bldgFoodText.text = myBuilding.food_inside.ToString();
+        bldgWaterText.text = myBuilding.water_inside.ToString();
 
+        //check the building state based on timestamp stored on object.
 		if (myBuilding.last_cleared == DateTime.Parse("11:59pm 12/31/1999")) {
 			//this building has not been visited before
 			zombieCountText.text = "??";
@@ -398,74 +552,119 @@ public class MapLevelManager : MonoBehaviour {
 
 		} else if (myBuilding.last_cleared == DateTime.Parse("12:01am 01/01/2000")) {
 			//this building has been entered, but not cleared
-			if (myBuilding.zombiePopulation < 0) {
-				//reroll zombie population before updating text
-				int zomb_pop = UnityEngine.Random.Range(5, 25);
-				GameManager.instance.zombiesToFight = zomb_pop;
-				zombieCount = zomb_pop;
-				myBuilding.zombiePopulation = zomb_pop;
-				StartCoroutine(ReRollZombiePopulation(zomb_pop));
-				zombieCountText.text = "??";
-				Debug.Log("reroll zombie population please");
-			} else {
-				//zombie population has already been re-rolled
-				zombieCountText.text = myBuilding.zombiePopulation.ToString();
-			}
-			bldgSupplyText.text = myBuilding.supply_inside.ToString();
-			bldgFoodText.text = myBuilding.food_inside.ToString();
-			bldgWaterText.text = myBuilding.water_inside.ToString();
+			zombieCountText.text = myBuilding.zombiePopulation.ToString();
+			bldgSupplyText.text = "??";
+			bldgFoodText.text = "??";
+			bldgWaterText.text = "??";
 
 		} else {
-			if ((DateTime.Now - myBuilding.last_cleared) > TimeSpan.FromHours(6)) {
-				//building is eligible to be re:entered
+            //this building has been cleared before
+            TimeSpan time_since_cleared = (DateTime.Now - myBuilding.last_cleared);
+            if (time_since_cleared > TimeSpan.FromHours(4)) {
+				//zombies can appear after 4 hours- roll for zombies
 				enterBldgButton.GetComponent<Button>().interactable = true;
+
+                //when a building is cleared it stores zombie pop as -1
 				if (myBuilding.zombiePopulation < 0) {
-					//reroll zombie population before updating text
-					int zomb_pop = UnityEngine.Random.Range(5, 25);
-					GameManager.instance.zombiesToFight = zomb_pop;
-					zombieCount = zomb_pop;
-					myBuilding.zombiePopulation = zomb_pop;
-					StartCoroutine(ReRollZombiePopulation(zomb_pop));
-					zombieCountText.text = "??";
-					Debug.Log("reroll zombie population please");
+
+                    //reroll zombie population before updating text
+                    float odds = 80f;//start at 80% to find bldg still clear after 4hr
+                    int min_zombie = 0;
+                    int max_zombie = 5;
+                    if (time_since_cleared > TimeSpan.FromHours(6))
+                    {
+                        odds -= 10;//70%
+                        min_zombie += 1;//1
+                        max_zombie += 3;//8
+                    }
+                    if (time_since_cleared > TimeSpan.FromHours(12))
+                    {
+                        odds -= 10;//60%
+                        min_zombie += 2;//3
+                        max_zombie += 4;//12
+                    }
+                    if (time_since_cleared > TimeSpan.FromHours(24))
+                    {
+                        odds -= 10;//50%
+                        min_zombie += 2;//5
+                        max_zombie += 6;//18
+                    }
+                    if (time_since_cleared> TimeSpan.FromHours(48))
+                    {
+                        odds -= 20;//30%
+                        min_zombie += 1;//6
+                        max_zombie += 7;//25
+                    }
+                    int zomb_pop = UnityEngine.Random.Range(min_zombie, max_zombie);
+                    
+
+                    float roll = UnityEngine.Random.Range(0.0f,100.0f);
+                    if (roll <= odds)
+                    {
+                        zomb_pop = 0; //there is a chance that no zombies have entered the building.
+                    }
+                    building_clear = false;//this will load the "not clear" building panel
+
+                    GameManager.instance.zombiesToFight = zomb_pop;
+                    zombieCount = zomb_pop;
+                    myBuilding.zombiePopulation = zomb_pop;
+                    StartCoroutine(ReRollZombiePopulation(zomb_pop)); //set the building to populated on the server, even if it is a 0.
+                    zombieCountText.text = "??"; //set up the panel text.
+                    Debug.Log("reroll zombie population to: "+zomb_pop.ToString());
+
+                    //^^^^this whole section above allows the player to enter combat with 0 zombies, and roll for a survivor any time 4h after initial clear
+                    //the first time they click on it after this time window- it rolls and stores the roll.
+
+                    //this is to set up the un-cleared building text with the correct stats for generated resources
+                    ClearedBuildingPanelManager CBPM = clearedBuildingPanel.GetComponent<ClearedBuildingPanelManager>();
+                    CBPM.CalculateTrapStatus();
+                    CBPM.CalculateBarrelStatus();
+                    CBPM.CalculateGreenhouseStatus();
+                    bldgSupplyText.text = activeBuilding.supply_inside.ToString();
+                    bldgFoodText.text = activeBuilding.food_inside.ToString();
+                    bldgWaterText.text = activeBuilding.water_inside.ToString();
+
 				} else {
-					//zombie population has already been re-rolled
-					zombieCountText.text = myBuilding.zombiePopulation.ToString();
+					//zombie population has already been re-rolled, player has entered, but not cleared.
+					zombieCountText.text = "??"; 
+                    bldgSupplyText.text = myBuilding.supply_inside.ToString();
+                    bldgFoodText.text = myBuilding.food_inside.ToString();
+                    bldgWaterText.text = myBuilding.water_inside.ToString();
+                    building_clear = false;
 				}
 			} else {
-				//Building is still overrun
-				zombieCountText.text = "OVER-RUN";
-				enterBldgButton.GetComponent<Button>().interactable = false;
-				sendATeamButton.interactable = false;
-			}
-			bldgSupplyText.text = myBuilding.supply_inside.ToString();
-			bldgFoodText.text = myBuilding.food_inside.ToString();
-			bldgWaterText.text = myBuilding.water_inside.ToString();
+                //building is clear
+                building_clear = true; //this tells which panel to load at the end of this function
+                clearedBldgSupplyText.text = myBuilding.supply_inside.ToString();
+                clearedBldgFoodText.text = myBuilding.food_inside.ToString();
+                clearedBldgWaterText.text = myBuilding.water_inside.ToString();
+            }
+			
 		}
 
 
 		//set the color of the text based on the zombie count, and the distance calculated.
-		if(distToBldg < 100f) {
+		if(distToBldg < 150f) {
 			bldgDistText.color = Color.green;
-		} else if (distToBldg < 200f) {
+		} else if (distToBldg < 300f) {
 			bldgDistText.color = Color.yellow;
 		} else {
 			bldgDistText.color = Color.red;
 		}
-		if (zombieCount < 6) {
+		if (zombieCount < 8) {
 			zombieCountText.color = Color.green;
-		} else if (zombieCount < 13) {
+		} else if (zombieCount < 17) {
 			zombieCountText.color = Color.yellow;
 		} else {
 			zombieCountText.color = Color.red;
 		}
 
 
-		//if location services are on
+		//manage which buttons are available
 		if (Input.location.status == LocationServiceStatus.Running){
 			//if player is too far from the building disable the enter option.
 
-			if (distToBldg > 250.0f) {
+			if (distToBldg > 300.0f) {
 				//out of range, disable button
 				enterBldgButton.GetComponent<Button>().interactable = false;
 			} else {
@@ -484,9 +683,18 @@ public class MapLevelManager : MonoBehaviour {
 			sendATeamButton.interactable = true;
 		}
 
-		buildingPanel.SetActive(true);
+        //activate the correct building panel.
+        if (building_clear == false)
+        {
+            buildingPanel.SetActive(true);
+        }else
+        {
+            ClearedBuildingPanelManager CBPM = clearedBuildingPanel.GetComponent<ClearedBuildingPanelManager>();
+            CBPM.InitilizeMyText();
+            clearedBuildingPanel.SetActive(true);
+        }
 
-	}
+    }
 
 	IEnumerator ReRollZombiePopulation(int count) {
 		WWWForm form = new WWWForm();
@@ -605,8 +813,68 @@ public class MapLevelManager : MonoBehaviour {
 	}
 
 	public void DeactivateBuildingInspector () {
+        InvokeRepeating("CheckAndUpdateMap", 10f, 10f);
 		buildingPanel.SetActive(false);
+        clearedBuildingPanel.SetActive(false);
 	}
+
+    public void LootActiveBuilding() {
+        if (activeBuilding.supply_inside > 0 || activeBuilding.water_inside > 0 || activeBuilding.food_inside > 0)
+        {
+            StartCoroutine(TransferLoot());
+        }else
+        {
+            Debug.Log("There is nothing here to loot");
+        }
+    }
+
+    IEnumerator TransferLoot()
+    {
+        WWWForm form = new WWWForm();
+        form.AddField("id", GameManager.instance.userId);
+        form.AddField("login_ts", GameManager.instance.lastLoginTime);
+        form.AddField("client", "mob");
+
+        form.AddField("bldg_name", GameManager.instance.activeBldg_name);
+        form.AddField("bldg_id", GameManager.instance.activeBldg_id);
+
+        WWW www = new WWW(transferLootURL, form);
+        yield return www;
+
+        if (www.error == null)
+        {
+            JsonData lootTransferJson = JsonMapper.ToObject(www.text);
+            if (lootTransferJson[0].ToString() == "Success")
+            {
+                //manually update the game-state in order to avoid passing and loading JSON
+                GameManager.instance.supply += activeBuilding.supply_inside;
+                GameManager.instance.foodCount += activeBuilding.food_inside;
+                GameManager.instance.waterCount += activeBuilding.water_inside;
+                activeBuilding.supply_inside = 0;
+                activeBuilding.food_inside = 0;
+                activeBuilding.water_inside = 0;
+                GameManager.instance.activeBldg_food = 0;
+                GameManager.instance.activeBldg_supply = 0;
+                GameManager.instance.activeBldg_water = 0;
+                clearedBldgFoodText.text = "0";
+                clearedBldgSupplyText.text = "0";
+                clearedBldgWaterText.text = "0";
+                bldgFoodText.text = "0";
+                bldgWaterText.text = "0";
+                bldgSupplyText.text = "0";
+                
+
+                UpdateTheUI();
+                Debug.Log(lootTransferJson[1].ToString());
+            }else
+            {
+                Debug.Log(lootTransferJson[1].ToString());
+            }
+        }else
+        {
+            Debug.Log(www.error);
+        }
+    }
     
     void DisplayUsername (IResult result) {
         
@@ -1055,7 +1323,7 @@ public class MapLevelManager : MonoBehaviour {
 //				}
 
 				GameManager.instance.updateWeaponAndSurvivorMapLevelUI = true;
-				GameManager.instance.ResumeCharacter();
+				StartCoroutine(GameManager.instance.LoadAllGameData());
 
 				StartCoroutine(PostTempLocationText("Dropoff Success!"));
 			} else if (dropoffJson[0].ToString() == "Failed") {

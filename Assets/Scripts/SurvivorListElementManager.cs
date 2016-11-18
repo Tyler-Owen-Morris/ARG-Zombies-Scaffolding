@@ -28,7 +28,13 @@ public class SurvivorListElementManager : MonoBehaviour {
 	}
 
 	IEnumerator UpdateMyProfilePic() {
-		if (survPlayCard.profilePicURL != "") {
+        if (survPlayCard.team_pos == 5)
+        {
+            Image survivorPic = survivorPortraitSprite;
+            survivorPic.sprite = GameManager.instance.my_profile_pic;
+
+        }
+        else if (survPlayCard.profilePicURL != "") {
 			WWW www = new WWW(survPlayCard.profilePicURL);
 			yield return www;
 

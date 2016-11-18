@@ -6,7 +6,7 @@ using LitJson;
 public class WeaponSelectManager : MonoBehaviour {
 
 	public string weaponSelected;
-	public GameObject weaponConfirmationPanel;
+	public GameObject weaponConfirmationPanel, swipeIndicator;
 	public Text weaponPanelText;
 
 	private string sendWeaponChoiceURL = GameManager.serverURL+"/TutorialWeaponChoice.php";
@@ -14,9 +14,20 @@ public class WeaponSelectManager : MonoBehaviour {
 	private string clubText =  "The club can be easier to miss than a knife, but delivers a punch\neven the most hardened survivors can become exhaused swinging its weight all day\nWill you choose the club?";
 	private string gunText = "The gun keeps the safest distance between you and you're target\nbut it's the easiest to miss a kill shot, and it requires bullets to use\nWill you choose the gun?";
 
+    private int panel_count = 8;
+
 	void Start () {
 		
 	}
+
+    public void PanelDestroyed ()
+    {
+        panel_count--;
+        if (panel_count < 1)
+        {
+            swipeIndicator.SetActive(false);
+        }
+    }
 
 	public void OpenWeaponConfirmation (string weaponChoice) {
 		weaponSelected = weaponChoice;

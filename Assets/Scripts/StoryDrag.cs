@@ -5,10 +5,12 @@ using UnityEngine.EventSystems;
 public class StoryDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler {
 
 	private Vector2 startPosition;
+    private WeaponSelectManager myLevelManager;
 	//private Vector2 offset;
 
 	void Start () {
-		//store beginning location
+        //store beginning location
+        myLevelManager = GameManager.FindObjectOfType<WeaponSelectManager>();
 		startPosition = this.gameObject.transform.position;
 	}
 
@@ -32,7 +34,8 @@ public class StoryDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 	public void OnEndDrag(PointerEventData eventData) {
 		float dragDist = 3.0f;
 		if (transform.position.x <= (startPosition.x-dragDist)) {
-			Destroy(this.gameObject);
+            myLevelManager.PanelDestroyed();
+            Destroy(this.gameObject);
 		} 
 	}
 

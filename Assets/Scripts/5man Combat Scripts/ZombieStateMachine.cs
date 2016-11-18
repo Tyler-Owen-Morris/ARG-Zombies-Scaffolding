@@ -133,11 +133,11 @@ public class ZombieStateMachine : MonoBehaviour {
 					//player character cannot get bit
 					odds = 0.0f;
 				} else {
-					odds = 3.0f;
+					odds = 0.5f;
 				}
 
 			} else {
-				odds = 4.0f;
+				odds = 1.1f;//starting odds for a survivor to get bitten.
 			}
 			int cur_stam = targetSurvivor.survivor.curStamina;
 			if (cur_stam < 1) {

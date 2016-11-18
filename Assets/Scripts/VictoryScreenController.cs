@@ -18,8 +18,18 @@ public class VictoryScreenController : MonoBehaviour {
 		recruitTheSurvivorButton.gameObject.SetActive(false);
 	}
 
-	// Use this for initialization
-	void OnLevelWasLoaded () {
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnLevelFinishedLoading;
+    }
+
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnLevelFinishedLoading;
+    }
+
+    // Use this for initialization
+    void OnLevelFinishedLoading (Scene scene, LoadSceneMode mode) {
 		text.text = ConstructWinningTextString();
 	}
 

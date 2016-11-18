@@ -7,8 +7,10 @@ using System;
 public class PopulatedBuilding : MonoBehaviour {
 
 	public int zombiePopulation = 0, supply_inside, food_inside, water_inside ;
-	public DateTime last_cleared;
+    public bool has_traps, has_barrel, has_greenhouse;
+	public DateTime last_cleared, last_looted_supply, last_looted_food, last_looted_water;
 	public string buildingName, buildingID, loot_code;
+    public GameObject clear_bldg_image, populated_bldg_image, building_unknown_image, trap_indicator_image, barrel_indicator_image, greenhouse_indicator_image;
 	public Button button;
 	public bool active = false;
 	public float myLat, myLng;
@@ -55,12 +57,30 @@ public class PopulatedBuilding : MonoBehaviour {
 
 	public void ClickedOn () {
 		//GameManager.instance.LoadIntoCombat(zombiePopulation, buildingName);
-		if (this.active == true) {
-			mapLevelManager.ActivateBuildingInspector(this.gameObject.GetComponent<PopulatedBuilding>());
-		} else {
-			Debug.Log (gameObject.name+" reports inactive, and will not launch bldg inspector");
-		}
+	    mapLevelManager.ActivateBuildingInspector(this.gameObject.GetComponent<PopulatedBuilding>());
+		
 	}
+
+    public void SetToUnknown()
+    {
+        clear_bldg_image.SetActive(false);
+        populated_bldg_image.SetActive(false);
+        building_unknown_image.SetActive(true);
+    }
+    
+    public void SetToPopulated()
+    {
+        clear_bldg_image.SetActive(false);
+        populated_bldg_image.SetActive(true);
+        building_unknown_image.SetActive(false);
+    }
+
+    public void SetToClear ()
+    {
+        clear_bldg_image.SetActive(true);
+        populated_bldg_image.SetActive(false);
+        building_unknown_image.SetActive(false);
+    }
 
 	public void ActivateMe () {
 		active = true;
@@ -72,8 +92,45 @@ public class PopulatedBuilding : MonoBehaviour {
 			button.interactable = true;
 		}
 
-		//Debug.Log("Activation complete on: "+gameObject.name+" active status is: "+active.ToString()+" and zombie population: "+zombiePopulation.ToString());
-	}
+        //Handle which sprite is activated- based on last clear time- unknown is default from spawner
+        if ((DateTime.Now-last_cleared) < TimeSpan.FromHours(4f))
+        {
+            SetToClear();
+        }
+        //1201am Jan1 2000 is code for entered, but not cleared.
+        else if (last_cleared == DateTime.Parse("12:01am 01/01/2000"))
+        {
+            SetToPopulated();
+        }else if (last_cleared == DateTime.Parse("11:59pm 12/31/1999"))
+        {
+            SetToUnknown();
+        }
+
+        if (has_traps == true)
+        {
+            trap_indicator_image.SetActive(true);
+        }else
+        {
+            trap_indicator_image.SetActive(false);
+        }
+        if (has_barrel == true)
+        {
+            barrel_indicator_image.SetActive(true);
+        }else
+        {
+            barrel_indicator_image.SetActive(false);
+        }
+        if (has_greenhouse == true)
+        {
+            greenhouse_indicator_image.SetActive(true);
+        }
+        else
+        {
+            greenhouse_indicator_image.SetActive(false);
+        }
+
+        //Debug.Log("Activation complete on: "+gameObject.name+" active status is: "+active.ToString()+" and zombie population: "+zombiePopulation.ToString());
+    }
 
 	public void DeactivateMe () {
 		//StartCoroutine(DelayDeactivation());

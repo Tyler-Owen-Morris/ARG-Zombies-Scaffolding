@@ -18,6 +18,8 @@ public class Outpost : MonoBehaviour {
 		outpost_id = post_id;
 		outpost_lat = lat;
 		outpost_lng = lng;
+        this.gameObject.SetActive(true);
+        this.gameObject.transform.localScale = new Vector3(1.0f, 1.0f, 0.0f);
 	}
 
 	public void OutpostPressed () {

@@ -73,7 +73,17 @@ public class BattleStateMachine : MonoBehaviour {
 		UpdateUINumbers();
 	}
 
-	void OnLevelWasLoaded () {
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnLevelFinishedLoading;
+    }
+
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnLevelFinishedLoading;
+    }
+
+    void OnLevelFinishedLoading (Scene scene, LoadSceneMode mode) {
 		if (GameManager.instance.blazeOfGloryActive == true) {
 			InitiateBlazeOfGlory();
 		}
@@ -195,8 +205,9 @@ public class BattleStateMachine : MonoBehaviour {
 					int earned_supply = CalculateSupplyEarned();
 					int earned_water = CalculateWaterFound();
 					int earned_food = CalculateFoodFound();
-					bool found_survivor = CalculateSurvivorFound();
-					GameManager.instance.BuildingIsCleared(earned_supply, earned_water, earned_food, found_survivor);
+                    bool found_survivor = CalculateSurvivorFound();
+                    
+					GameManager.instance.BuildingIsCleared(found_survivor);
 					battleState = PerformAction.COMPLETED;
 				}else if (autoAttackIsOn && survivorTurnList.Count > 0) {
 					//continue auto attack
@@ -345,7 +356,10 @@ public class BattleStateMachine : MonoBehaviour {
 	}
 
 	int CalculateSupplyEarned () {
-		int supply_in_bldg = GameManager.instance.activeBldg_supply;
+        return GameManager.instance.activeBldg_supply;
+        
+        /*
+        int supply_in_bldg = GameManager.instance.activeBldg_supply;
 
 		if (supply_in_bldg > 0) {
 			int supply_grabbed= UnityEngine.Random.Range(1, supply_in_bldg);
@@ -353,7 +367,7 @@ public class BattleStateMachine : MonoBehaviour {
 		} else {
 			return 0;
 		}
-		/*
+		
 		//Debug.Log ("Calculating the sum of supply earned from " + zombiesKilled + " zombies killed.");
 		int sum = 0;
 
@@ -375,7 +389,9 @@ public class BattleStateMachine : MonoBehaviour {
 	}
 
 	int CalculateWaterFound () {
-		int water_in_bldg = GameManager.instance.activeBldg_water;
+        return GameManager.instance.activeBldg_water;
+        /*
+        int water_in_bldg = GameManager.instance.activeBldg_water;
 
 		if (water_in_bldg > 0) {
 			int water_found = UnityEngine.Random.Range(1, water_in_bldg);
@@ -404,6 +420,8 @@ public class BattleStateMachine : MonoBehaviour {
 	}
 
 	int CalculateFoodFound () {
+        return GameManager.instance.activeBldg_food;
+        /*
 		int food_in_bldg = GameManager.instance.activeBldg_food;
 
 		if (food_in_bldg > 0) {
@@ -439,7 +457,7 @@ public class BattleStateMachine : MonoBehaviour {
 			DateTime now = System.DateTime.Now;
 			double days_alive = (now-GameManager.instance.timeCharacterStarted).TotalDays;
 
-			int exponent = 10;
+			int exponent = 6; //the higher this exponent, the more rapid the falloff becomes.
 			float max_percentage = 0.5f; //this starts us at 50/50 odds.
 			double full_value = Mathf.Pow(GameManager.DaysUntilOddsFlat, exponent)/ max_percentage;
 
@@ -569,7 +587,7 @@ public class BattleStateMachine : MonoBehaviour {
 		if (bitSurvivor.teamPos == 5 && battle_survivors.Length == 1) {
 			//this is end game condition. the player character is bit.
 			if (GameManager.instance.blazeOfGloryActive == true) {
-				GameManager.instance.BuildingIsCleared(0,0,0,false);
+				GameManager.instance.BuildingIsCleared(false);
 				//this will launch the coroutine, which reacts to the string of active building, and notifies the server of game over, then loads game over scene
 			} else {
 				StartCoroutine(GameManager.instance.PlayerBit());

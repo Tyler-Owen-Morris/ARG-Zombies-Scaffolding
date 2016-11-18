@@ -5,14 +5,18 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Facebook.Unity;
 using LitJson;
+using System;
 
 public class LoginManager : MonoBehaviour {
 
 	[SerializeField]
 	private Text loginPasswordText, loginEmailText, registerEmail, registerPassword, registerPassword2;
 	private int survivorsDrafted = 0;
+    public bool runGameClock = false;
+    private DateTime time_game_start;
 
 	public GameObject registrationPanel, loggedInPanel, survivorDraftPanel, newCharConfirmationPanel;
+    public Text currentGameClock;
 	public Button continueButton;
 	public IGraphResult fbFriendsResult;
 	public JsonData staticSurvivorData, facebookSurvivorData;
@@ -39,10 +43,77 @@ public class LoginManager : MonoBehaviour {
             FB.Init(SetInit, OnHideUnity);
         }
         
-        
+        //if the game has already been loaded, then make sure the clock is running.
+        if (GameManager.instance.gameDataInitialized == true)
+        {
+            runGameClock = true;
+        }
     }
 
-    void OnLevelWasLoaded () {
+    void Update() {
+        if (runGameClock == true)
+        {
+            TimeSpan time_alive = (DateTime.Now - GameManager.instance.timeCharacterStarted);
+            //Debug.Log(time_alive.ToString());
+            string my_string = "";
+
+            //days
+            if (time_alive > TimeSpan.FromDays(1))
+            {
+                int total_days = Mathf.FloorToInt((float)time_alive.TotalDays);
+                my_string += total_days.ToString().PadLeft(2, '0')+" : ";
+                time_alive = time_alive - TimeSpan.FromDays(total_days);
+            }
+            else
+            {
+                my_string += "00 : ";
+            }
+            //hours
+            if (time_alive > TimeSpan.FromHours(1))
+            {
+                int tot_hrs = Mathf.FloorToInt((float)time_alive.TotalHours);
+                my_string += tot_hrs.ToString().PadLeft(2, '0') + " : ";
+                time_alive = time_alive - TimeSpan.FromHours((float)tot_hrs);
+            }else
+            {
+                my_string += "00 : ";
+            }
+            //minutes
+            if (time_alive > TimeSpan.FromMinutes(1))
+            {
+                int tot_min = Mathf.FloorToInt((float)time_alive.TotalMinutes);
+                my_string += tot_min.ToString().PadLeft(2, '0') + " : ";
+                time_alive = time_alive - TimeSpan.FromMinutes((float)tot_min);
+            }else
+            {
+                my_string += "00 : ";
+            }
+            //seconds
+            if (time_alive > TimeSpan.FromSeconds(1))
+            {
+                int tot_sec = Mathf.FloorToInt((float)time_alive.TotalSeconds);
+                my_string += tot_sec.ToString().PadLeft(2, '0');
+            }else
+            {
+                my_string += "00";
+            }
+
+            currentGameClock.text = my_string;
+            //Debug.Log(my_string);
+        }
+    }
+
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnLevelFinishedLoading;
+    }
+
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnLevelFinishedLoading;
+    }
+
+    void OnLevelFinishedLoading (Scene scene, LoadSceneMode mode) {
 			//if the game data hasn't been loaded, then attempt to resume character automatically.
             if (GameManager.instance.gameDataInitialized) {
 				Debug.Log("Why didn't this register as true?!?");
@@ -150,6 +221,10 @@ public class LoginManager : MonoBehaviour {
 				if (stat == 0) {
 					//player is alive, and has a character active on server
 					Debug.Log("player is alive, and has an active character on the server");
+                    time_game_start = DateTime.Parse(zombStatJson[2]["char_created_DateTime"].ToString());
+                    GameManager.instance.timeCharacterStarted = time_game_start;
+                    runGameClock = true;
+                    currentGameClock.gameObject.SetActive(true);
 					continueButton.interactable = true;
 				} else if (stat == 1) {
 					Debug.Log("Player is a zombie ==> force loading game over scene");
@@ -157,6 +232,7 @@ public class LoginManager : MonoBehaviour {
 					SceneManager.LoadScene("03b Game Over");
 				} else if (stat == 2) {
 					Debug.Log("Player is dead, but not a zombie");
+                    currentGameClock.gameObject.SetActive(false);
 					continueButton.interactable = false;
 				} else {
 					Debug.Log("Zombie Check callback returned invalid status code");
@@ -214,10 +290,29 @@ public class LoginManager : MonoBehaviour {
 			JsonData picJson = JsonMapper.ToObject(rawResult);
 
 			GameManager.instance.myProfilePicURL = picJson["picture"]["data"]["url"].ToString();
+
+            StartCoroutine(SetPlayerProfilePic(picJson["picture"]["data"]["url"].ToString()));
 		}else{
 			Debug.Log(result.Error);
 		}
 	}
+
+    IEnumerator SetPlayerProfilePic (string pic_url)
+    {
+        WWW www = new WWW(pic_url);
+        yield return www;
+
+        if (www.error == null)
+        {
+            Debug.Log("setting player Profile Pic");
+            GameManager.instance.my_profile_pic = Sprite.Create(www.texture, new Rect(0, 0, 200, 200), new Vector2());
+
+        }
+        else
+        {
+            Debug.Log(www.error);
+        }
+    }
 
 	private void UpdateSurvivorDraftWindow (IGraphResult result) {
 		if (result.Error == null) {
@@ -323,8 +418,8 @@ public class LoginManager : MonoBehaviour {
 			} else {
 				//we have FB entries still available.
 				//roll for the random stats
-				int stam = Random.Range(90, 140);
-				int attk = Random.Range(9, 25);
+				int stam = UnityEngine.Random.Range(90, 140);
+				int attk = UnityEngine.Random.Range(9, 25);
 				//set up the survivor play card data
 				survivorDraftCardArray[i].survivor.name = facebookSurvivorData["data"][survivorSelectCounter]["name"].ToString();
 				survivorDraftCardArray[i].survivor.baseAttack = attk;

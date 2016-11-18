@@ -22,17 +22,20 @@ public class Purchaser : MonoBehaviour, IStoreListener
     // specific mapping to Unity Purchasing's AddProduct, below.
     public static string kProductIDSmallOutpost =    "small_outpost";   
     public static string kProductIDMediumOutpost = "medium_outpost";
-    public static string kProductIDLargeOutpost =  "large_outpost"; 
+    public static string kProductIDLargeOutpost =  "large_outpost";
+    public static string kProductIDUnbiteSurvivor = "unbite_survivor";
      
     // Apple App Store-specific product identifier for the subscription product.
     private static string kProductNameAppleSmallOutpost =  "com.TandoProductions.ARGZombies.Purchasing.small_outpost";
 	private static string kProductNameAppleMediumOutpost =  "com.TandoProductions.ARGZombies.Purchasing.medium_outpost";
 	private static string kProductNameAppleLargeOutpost =  "com.TandoProductions.ARGZombies.Purchasing.large_outpost";
+    private static string kProductNameAppleUnbiteSurvivor = "com.TandoProductions.ARGZombies.Purchasing.unbite_survivor";
     
     // Google Play Store-specific product identifier subscription product.
     private static string kProductNameGooglePlaySmallOutpost =  "com.TandoProductions.ARGZombies.Purchasing.small_outpost"; 
 	private static string kProductNameGooglePlayMediumOutpost =  "com.TandoProductions.ARGZombies.Purchasing.medium_outpost"; 
-	private static string kProductNameGooglePlayLargeOutpost =  "com.TandoProductions.ARGZombies.Purchasing.large_outpost"; 
+	private static string kProductNameGooglePlayLargeOutpost =  "com.TandoProductions.ARGZombies.Purchasing.large_outpost";
+    private static string kProductNameGooglePlayUnbiteSurvivor = "com.TandoProductions.ARGZombies.Purchasing.unbite_survivor"; 
     
     void Start()
     {
@@ -112,6 +115,10 @@ public class Purchaser : MonoBehaviour, IStoreListener
         // Notice how we use the general product identifier in spite of this ID being mapped to
         // custom store-specific identifiers above.
         BuyProductID(kProductIDLargeOutpost);
+    }
+
+    public void BuyUnbiteSurvivor() {
+        BuyProductID(kProductIDUnbiteSurvivor);
     }
     
     

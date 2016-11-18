@@ -129,6 +129,7 @@ public class QRPanelController : MonoBehaviour {
 				StartCoroutine(SendQRPairToServer(scannedText));
 			}else{
 				StartCoroutine(mapLvlMgr.PostTempLocationText("Players may not pair with themselves"));
+                PostQRResultText("Players may not pair with themselves");
 				Debug.Log("Player can not pair with themselves");
 			}
 		} else if (scannedJson[0].ToString() == "outpost") {
@@ -143,15 +144,29 @@ public class QRPanelController : MonoBehaviour {
 			if (base_owner_id.ToString() == GameManager.instance.userId) {
 				//start the coroutine to regenerate player stamina... or do nothing...
 				Debug.Log("Player has scanned their own homebase");
-				StartCoroutine(mapLvlMgr.PostTempLocationText("Checking in at homebase"));
-				StartCoroutine(PlayerCheckinToHomebase(base_lat, base_lng));
+
+                if (CalculateDistanceToTarget(base_lat, base_lng) <= 50.0f)
+                {
+                    //player is in range of their homebase
+                    StartCoroutine(mapLvlMgr.PostTempLocationText("Checking in at homebase"));
+                    StartCoroutine(PlayerCheckinToHomebase(base_lat, base_lng));
+                }else
+                {
+                    StartCoroutine(mapLvlMgr.PostTempLocationText("not in range"));
+                    PostQRResultText("You must be within 50m of home to check in");
+                    Debug.Log("Player is not in range of their own Homebase");
+                }
+
+				
 			} else {
+                //player has scanned another players homebase
 				if (CalculateDistanceToTarget(base_lat, base_lng) <= 50.0f) {
 					StartCoroutine(mapLvlMgr.PostTempLocationText("adding players homebase as outpost"));
 					StartCoroutine(JoinHomebaseAsOutpost(base_owner_id, base_lat, base_lng));
 				} else {
 					StartCoroutine(mapLvlMgr.PostTempLocationText("out of range of homebase"));
 					Debug.Log("Player is not in range of the homebase they are attempting to join");
+                    PostQRResultText("You are not in range of this homebase");
 				}
 			}
 
@@ -162,6 +177,27 @@ public class QRPanelController : MonoBehaviour {
 			Debug.Log("json format does not meet with any known QR encoding");
 		}
 	}
+
+    private bool qrResultTextActive = false;
+    void PostQRResultText(string my_text) {
+        if (qrResultTextActive == false)
+        {
+            qrResultTextActive = true;
+            StartCoroutine(PostTempQRText(my_text));
+        }
+        
+    }
+
+    IEnumerator PostTempQRText (string text)
+    {
+        response_text.text = text;
+        response_text.gameObject.SetActive(true);
+        yield return new WaitForSeconds(3.5f);
+        response_text.text = "";
+        response_text.gameObject.SetActive(false);
+        qrResultTextActive = false;
+        
+    }
 
 	IEnumerator JoinHomebaseAsOutpost (string baseOwnerID, float my_lat, float my_lng) {
 		WWWForm form = new WWWForm();
@@ -178,7 +214,16 @@ public class QRPanelController : MonoBehaviour {
 
 		Debug.Log(www.text);
 		if (www.error == null) {
-
+            JsonData outpostJoinJSON = JsonMapper.ToObject(www.text);
+            if (outpostJoinJSON[0].ToString() == "Success")
+            {
+                Debug.Log(outpostJoinJSON[1].ToString());
+                PostQRResultText(outpostJoinJSON[1].ToString());
+            }else
+            {
+                Debug.Log(outpostJoinJSON[1].ToString());
+                PostQRResultText(outpostJoinJSON[1].ToString());
+            }
 		} else {
 			Debug.Log(www.error);
 		}
@@ -201,12 +246,12 @@ public class QRPanelController : MonoBehaviour {
 			JsonData outpostReturnJson = JsonMapper.ToObject(www.text);
 			if(outpostReturnJson[0].ToString() == "Success") {
 
-				response_text.text = outpostReturnJson[1].ToString();
+                PostQRResultText(outpostReturnJson[1].ToString());
 
 			} else if (outpostReturnJson[0].ToString() == "Failed") {
 
 				Debug.Log (outpostReturnJson[1].ToString());
-				response_text.text = outpostReturnJson[1].ToString();
+				PostQRResultText(outpostReturnJson[1].ToString());
 
 			}
 		} else {
@@ -251,27 +296,27 @@ public class QRPanelController : MonoBehaviour {
 						JsonData qrJson = JsonMapper.ToObject(jsonReturn);
 
 						if (qrJson[0].ToString() == "Success") {
-							response_text.text = "You have successfully paired with "+qrJson[1]["name"].ToString();
+							PostQRResultText("You have successfully paired with "+qrJson[1]["name"].ToString());
 						} else {
 							string myString = jsonReturn[1].ToString();
-							response_text.text = myString;
+                            PostQRResultText(myString);
 							Debug.Log ("server returned qr failure "+ myString);
 						}
 
 					} else {
 						Debug.Log (www.error);
-						response_text.text = "failed to contact webserver";
+						PostQRResultText("failed to contact webserver");
 					}
 
 				} else {
 					Debug.Log("Players are NOT in range of eachother");
-					response_text.text = "Players are not in range of eachother.";
+					PostQRResultText("Players are not in range of eachother.");
 				}
 
 
 			} else {
 				Debug.Log("the QR code is expired");
-				response_text.text = "the QR code is expired";
+				PostQRResultText("the QR code is expired");
 			}
 			// ********************** WARNING ************************ //
 			// The above DateTime check does not currently fail the coroutine.  This needs to give a fail message to the user and stop the coroutine.

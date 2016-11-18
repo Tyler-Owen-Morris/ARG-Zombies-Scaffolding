@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class Building : MonoBehaviour {
 
@@ -20,7 +21,16 @@ public class Building : MonoBehaviour {
 		myText.text = this.zombiePopulation.ToString();
 	}
 
-	void OnLevelWasLoaded () {
+    void OnEnable() {
+        SceneManager.sceneLoaded += OnLevelFinishedLoading;
+    }
+
+    void OnDisable ()
+    {
+        SceneManager.sceneLoaded -= OnLevelFinishedLoading;
+    }
+
+	void OnLevelFinishedLoading (Scene scene, LoadSceneMode mode) {
 		GenerateZombies();
 		updateTheText();
 	}
