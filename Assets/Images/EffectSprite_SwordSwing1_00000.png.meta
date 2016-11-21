@@ -1,0 +1,331 @@
+fileFormatVersion: 2
+guid: f789ca2e3ed894718bcc978fc35b8062
+timeCreated: 1471047686
+licenseType: Free
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: EffectSprite_SwordSwing1_00000_0
+    21300002: EffectSprite_SwordSwing1_00000_1
+    21300004: EffectSprite_SwordSwing1_00000_2
+    21300006: EffectSprite_SwordSwing1_00000_3
+    21300008: EffectSprite_SwordSwing1_00000_4
+    21300010: EffectSprite_SwordSwing1_00000_5
+    21300012: EffectSprite_SwordSwing1_00000_6
+    21300014: EffectSprite_SwordSwing1_00000_7
+    21300016: EffectSprite_SwordSwing1_00000_8
+    21300018: EffectSprite_SwordSwing1_00000_9
+    21300020: EffectSprite_SwordSwing1_00000_10
+    21300022: EffectSprite_SwordSwing1_00000_11
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 1
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  cubemapConvolution: 0
+  cubemapConvolutionSteps: 7
+  cubemapConvolutionExponent: 1.5
+  seamlessCubemap: 0
+  textureFormat: -1
+  maxTextureSize: 2048
+  textureSettings:
+    filterMode: -1
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  rGBM: 0
+  compressionQuality: 50
+  allowsAlphaSplitting: 0
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 100
+  alphaIsTransparency: 1
+  textureType: 8
+  buildTargetSettings: []
+  spriteSheet:
+    sprites:
+    - name: EffectSprite_SwordSwing1_00000_0
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 492
+        width: 169
+        height: 186
+      alignment: 1
+      pivot: {x: 0, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 140, y: -18}
+        - {x: 121, y: -18}
+        - {x: 112, y: -20}
+        - {x: 112, y: -45}
+        - {x: 145, y: -63}
+        - {x: 157, y: -63}
+        - {x: 158, y: -61}
+        - {x: 158, y: -51}
+        - {x: 144, y: -25}
+    - name: EffectSprite_SwordSwing1_00000_1
+      rect:
+        serializedVersion: 2
+        x: 191
+        y: 492
+        width: 191
+        height: 187
+      alignment: 1
+      pivot: {x: 0, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 123, y: -11}
+        - {x: 115, y: -18}
+        - {x: 115, y: -29}
+        - {x: 122, y: -54}
+        - {x: 167, y: -54}
+        - {x: 170, y: -51}
+        - {x: 170, y: -34}
+        - {x: 149, y: -11}
+    - name: EffectSprite_SwordSwing1_00000_2
+      rect:
+        serializedVersion: 2
+        x: 399
+        y: 495
+        width: 178
+        height: 182
+      alignment: 1
+      pivot: {x: 0, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 131, y: -10}
+        - {x: 119, y: -1}
+        - {x: 103, y: -1}
+        - {x: 86, y: -16}
+        - {x: 86, y: -20}
+        - {x: 99, y: -46}
+        - {x: 126, y: -46}
+        - {x: 154, y: -45}
+        - {x: 156, y: -42}
+        - {x: 156, y: -41}
+        - {x: 153, y: -33}
+    - name: EffectSprite_SwordSwing1_00000_3
+      rect:
+        serializedVersion: 2
+        x: 593
+        y: 496
+        width: 178
+        height: 182
+      alignment: 1
+      pivot: {x: 0, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 66, y: -8}
+        - {x: 48, y: -14}
+        - {x: 48, y: -52}
+        - {x: 117, y: -52}
+        - {x: 135, y: -49}
+        - {x: 135, y: -14}
+        - {x: 125, y: -8}
+    - name: EffectSprite_SwordSwing1_00000_4
+      rect:
+        serializedVersion: 2
+        x: 5
+        y: 266
+        width: 173
+        height: 207
+      alignment: 1
+      pivot: {x: 0, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 121, y: -12}
+        - {x: 120, y: -11}
+        - {x: 104, y: -4}
+        - {x: 60, y: -4}
+        - {x: 36, y: -12}
+        - {x: 14, y: -49}
+        - {x: 11, y: -53}
+        - {x: 4, y: -68}
+        - {x: 3, y: -72}
+        - {x: 3, y: -74}
+        - {x: 18, y: -93}
+        - {x: 23, y: -93}
+        - {x: 76, y: -74}
+        - {x: 110, y: -31}
+        - {x: 108, y: -26}
+        - {x: 121, y: -25}
+    - name: EffectSprite_SwordSwing1_00000_5
+      rect:
+        serializedVersion: 2
+        x: 198
+        y: 266
+        width: 168
+        height: 207
+      alignment: 1
+      pivot: {x: 0, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 96, y: -10}
+        - {x: 67, y: -10}
+        - {x: 41, y: -15}
+        - {x: 13, y: -55}
+        - {x: 10, y: -65}
+        - {x: 10, y: -113}
+        - {x: 15, y: -132}
+        - {x: 45, y: -132}
+        - {x: 91, y: -100}
+        - {x: 97, y: -61}
+        - {x: 97, y: -11}
+    - name: EffectSprite_SwordSwing1_00000_6
+      rect:
+        serializedVersion: 2
+        x: 381
+        y: 253
+        width: 183
+        height: 209
+      alignment: 1
+      pivot: {x: 0, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 71, y: -38}
+        - {x: 69, y: -39}
+        - {x: 63, y: -52}
+        - {x: 63, y: -60}
+        - {x: 62, y: -61}
+        - {x: 63, y: -58}
+        - {x: 63, y: -55}
+        - {x: 62, y: -51}
+        - {x: 69, y: -35}
+        - {x: 68, y: -30}
+        - {x: 64, y: -26}
+        - {x: 57, y: -26}
+        - {x: 34, y: -55}
+        - {x: 34, y: -113}
+        - {x: 50, y: -147}
+        - {x: 61, y: -158}
+        - {x: 76, y: -158}
+        - {x: 94, y: -149}
+        - {x: 111, y: -102}
+        - {x: 111, y: -94}
+        - {x: 76, y: -36}
+    - name: EffectSprite_SwordSwing1_00000_7
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 263
+        width: 181
+        height: 210
+      alignment: 1
+      pivot: {x: 0, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 42, y: -75}
+        - {x: 46, y: -49}
+        - {x: 42, y: -48}
+        - {x: 28, y: -48}
+        - {x: 21, y: -49}
+        - {x: 16, y: -81}
+        - {x: 16, y: -141}
+        - {x: 55, y: -171}
+        - {x: 65, y: -171}
+        - {x: 82, y: -163}
+        - {x: 88, y: -127}
+        - {x: 88, y: -110}
+        - {x: 45, y: -74}
+    - name: EffectSprite_SwordSwing1_00000_8
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 69
+        width: 174
+        height: 202
+      alignment: 1
+      pivot: {x: 0, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 24, y: -58}
+        - {x: 24, y: -151}
+        - {x: 31, y: -171}
+        - {x: 84, y: -171}
+        - {x: 89, y: -138}
+        - {x: 89, y: -100}
+        - {x: 43, y: -58}
+    - name: EffectSprite_SwordSwing1_00000_9
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 67
+        width: 172
+        height: 203
+      alignment: 1
+      pivot: {x: 0, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 31, y: -93}
+        - {x: 31, y: -167}
+        - {x: 50, y: -169}
+        - {x: 87, y: -169}
+        - {x: 97, y: -160}
+        - {x: 97, y: -124}
+        - {x: 44, y: -93}
+    - name: EffectSprite_SwordSwing1_00000_10
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 72
+        width: 170
+        height: 197
+      alignment: 1
+      pivot: {x: 0, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 62, y: -114}
+        - {x: 48, y: -114}
+        - {x: 46, y: -116}
+        - {x: 46, y: -128}
+        - {x: 47, y: -136}
+        - {x: 69, y: -159}
+        - {x: 94, y: -167}
+        - {x: 104, y: -167}
+        - {x: 113, y: -160}
+        - {x: 113, y: -158}
+        - {x: 97, y: -125}
+    - name: EffectSprite_SwordSwing1_00000_11
+      rect:
+        serializedVersion: 2
+        x: 579
+        y: 66
+        width: 190
+        height: 201
+      alignment: 1
+      pivot: {x: 0, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 92, y: -137}
+        - {x: 81, y: -144}
+        - {x: 81, y: -149}
+        - {x: 90, y: -160}
+        - {x: 107, y: -163}
+        - {x: 115, y: -163}
+        - {x: 119, y: -159}
+        - {x: 119, y: -153}
+        - {x: 113, y: -137}
+    outline: []
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

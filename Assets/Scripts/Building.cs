@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class Building : MonoBehaviour {
 
@@ -20,7 +21,16 @@ public class Building : MonoBehaviour {
 		myText.text = this.zombiePopulation.ToString();
 	}
 
-	void OnLevelWasLoaded () {
+    void OnEnable() {
+        SceneManager.sceneLoaded += OnLevelFinishedLoading;
+    }
+
+    void OnDisable ()
+    {
+        SceneManager.sceneLoaded -= OnLevelFinishedLoading;
+    }
+
+	void OnLevelFinishedLoading (Scene scene, LoadSceneMode mode) {
 		GenerateZombies();
 		updateTheText();
 	}
@@ -29,7 +39,7 @@ public class Building : MonoBehaviour {
 		Debug.Log ("Building "+ gameObject.name +" has been triggered");
 		if (buildingClear == false) { //only load combat if the building is not clear
 			//combatManager.SetZombiesEncountered (zombiePopulation);
-			GameManager.instance.LoadIntoCombat(zombiePopulation, this.gameObject.name);
+			GameManager.instance.LoadAltCombat(zombiePopulation, this.gameObject.name);
 		} else {
 			Debug.Log("Building thinks it's already been cleared");
 		}

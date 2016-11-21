@@ -7,17 +7,18 @@ public class SurvivorStateMachine : MonoBehaviour {
 
 	public bool isSelected;
 	public BaseSurvivor survivor;
-	public int teamPos;
-	public GameObject mySelectedIcon;
+	public int teamPos, turnsTillTurning;
+	public GameObject mySelectedIcon, myGunShot, myClubSlash, myKnifeStab;
 	public Slider myStamSlider;
 	public GameObject[] myWepSprites;
+	public Text sliderNameText;
 
 	private BattleStateMachine BSM;
 	private Vector3 startPosition;
 
 	//stuff for taking a turn
-	private bool actionStarted = false;
-	private float animSpeed = 15.0f;
+	private bool actionStarted = false, iAmBit = false;
+	private float animSpeed = 3000.0f;
 	public GameObject plyrTarget;
 
 	public enum TurnState 
@@ -31,7 +32,7 @@ public class SurvivorStateMachine : MonoBehaviour {
 	}
 	public TurnState currentState;
 
-	private string sendAttackURL = "http://www.argzombie.com/ARGZ_SERVER/SendAttack.php";
+	private string sendAttackURL = GameManager.serverURL+"/SendAttack.php";
 
 	void Start () {
 		BSM = FindObjectOfType<BattleStateMachine>();
@@ -39,6 +40,10 @@ public class SurvivorStateMachine : MonoBehaviour {
 		currentState = TurnState.INITIALIZING;
 		startPosition = gameObject.transform.position;
 		UpdateWeaponSprite();
+
+		myGunShot = transform.FindChild("GunShot").gameObject;
+		myClubSlash = transform.FindChild("ClubSlash").gameObject;
+		myKnifeStab = transform.FindChild("KnifeStab").gameObject;
 	}
 	
 
@@ -89,20 +94,30 @@ public class SurvivorStateMachine : MonoBehaviour {
 
 				//animate the hero to the target, unless you have a gun equipped and at least 1 bullet
 				if (myWeapon.weaponType == BaseWeapon.WeaponType.KNIFE || myWeapon.weaponType == BaseWeapon.WeaponType.CLUB || GameManager.instance.ammo < 1) {
-					Vector3 targetPosition = new Vector3 (plyrTarget.transform.position.x - 0.3f, plyrTarget.transform.position.y, plyrTarget.transform.position.z);
+					Vector3 targetPosition = new Vector3 (plyrTarget.transform.position.x - 55.0f, plyrTarget.transform.position.y, plyrTarget.transform.position.z);
 					gameObject.GetComponent<SpriteRenderer>().sortingOrder = plyrTarget.GetComponent<SpriteRenderer>().sortingOrder;
 					while (MoveTowardsTarget(targetPosition)) {yield return null;}
+					if (myWeapon.weaponType == BaseWeapon.WeaponType.KNIFE) {
+						//if player has a knife- activate the knife graphic game object
+						myKnifeStab.SetActive(true);
+					} else {
+						//Whether it's a club or gun, activate the club animation
+						myClubSlash.SetActive(true);
+					}
+				} else {
+					myGunShot.SetActive(true);
 				}
+				BSM.PlayWeaponSound(myWeapon.weaponType, myWeapon.name);
 				//animate weapon fx
-				yield return new WaitForSeconds(0.2f);
+				yield return new WaitForSeconds(0.5f);
 
 				//do damage
 				ZombieStateMachine targetZombie = plyrTarget.GetComponent<ZombieStateMachine>();
 				int myDmg = CalculateMyDamage();
 				Debug.Log ("Survivor hit the zombie for " +myDmg+ " damage");
 				targetZombie.zombie.curHP = targetZombie.zombie.curHP - myDmg;
-				targetZombie.CheckForDeath();
-				StartCoroutine(SendAttackToServer(survivor.survivor_id, myWeapon.weapon_id));
+				bool isDed = targetZombie.CheckForDeath();
+				StartCoroutine(SendAttackToServer(survivor.survivor_id, myWeapon.weapon_id, isDed));
 				UpdateStaminaBar();
 				if (survivor.weaponEquipped != null) {
 					survivor.curStamina -= myWeapon.stam_cost;	
@@ -110,8 +125,16 @@ public class SurvivorStateMachine : MonoBehaviour {
 				//Record the durability loss
 				myWeapon.durability = myWeapon.durability - 1;
 				if (myWeapon.durability < 1) {
+//					//remove from list first
+//					int whereIsIt = GameManager.instance.survivorCardList.IndexOf(survivor.weaponEquipped);
+//					Debug.Log(whereIsIt);
+//					GameManager.instance.survivorCardList.RemoveAt(whereIsIt);
+
+					//destoy game object, and update survivor sprite
 					Destroy(survivor.weaponEquipped.gameObject);
 					UpdateWeaponSprite();
+
+					//send message warning player.
 					Debug.Log("oh noes! weapon is broken beyond repair!");
 				}
 			} else {
@@ -121,6 +144,7 @@ public class SurvivorStateMachine : MonoBehaviour {
 				while (MoveTowardsTarget(targetPosition)) {yield return null;}
 
 				//animate weapon fx
+				BSM.PlayUnarmedSurvivorAttackSound();
 				yield return new WaitForSeconds(0.2f);
 
 				//do damage
@@ -128,8 +152,10 @@ public class SurvivorStateMachine : MonoBehaviour {
 				int myDmg = CalculateMyDamage();
 				Debug.Log ("Survivor hit the zombie for " +myDmg+ " damage");
 				targetZombie.zombie.curHP = targetZombie.zombie.curHP - myDmg;
-				targetZombie.CheckForDeath();
-				StartCoroutine(SendAttackToServer(survivor.survivor_id, 0));
+				bool isDed = targetZombie.CheckForDeath();
+				StartCoroutine(SendAttackToServer(survivor.survivor_id, 0, isDed));
+				//adjust the local data and update the UI
+				survivor.curStamina -= 5;
 				UpdateStaminaBar();
 
 			}
@@ -138,12 +164,19 @@ public class SurvivorStateMachine : MonoBehaviour {
 			//remove from list
 			BSM.TurnList.RemoveAt(0);
 
+			if (iAmBit == true) {
+				turnsTillTurning--;
+				if (turnsTillTurning < 1) {
+					TurnMeIntoAZombie();
+				}
+			}
 
 			//reset BSM ->
 			BSM.battleState = BattleStateMachine.PerformAction.WAIT;
 
 			gameObject.GetComponent<SpriteRenderer>().sortingOrder = startRenderLayer;
 			actionStarted = false;
+			BlinkingSliderCheck();
 			currentState = TurnState.DONE;
 		}
 		
@@ -152,11 +185,19 @@ public class SurvivorStateMachine : MonoBehaviour {
 		return goal != (transform.position = Vector3.MoveTowards(transform.position, goal, animSpeed * Time.deltaTime));
 	}
 
-	IEnumerator SendAttackToServer (int survivorID, int weaponID) {
+	IEnumerator SendAttackToServer (int survivorID, int weaponID, bool kill) {
 		WWWForm form = new WWWForm();
 		form.AddField("id", GameManager.instance.userId);
+		form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+		form.AddField("client", "mob");
 		form.AddField("survivor_id", survivorID);
 		form.AddField("weapon_id", weaponID);
+		form.AddField("bldg_name", GameManager.instance.activeBldg_name);
+		if (kill == true) {
+			form.AddField("zombie_kill", "1");
+		} else {
+			form.AddField("zombie_kill", "0");
+		}
 
 		WWW www = new WWW(sendAttackURL, form);
 		yield return www;
@@ -251,13 +292,7 @@ public class SurvivorStateMachine : MonoBehaviour {
 				//this is where we remove the ammo from the game. server should execute the amo reduction when the attack is sent
 				GameManager.instance.ammo--;
 				BSM.UpdateUINumbers();
-			} else {
-				Debug.Log ("MAJOR error, there's a weapon equipped without a type value. executing an unarmed swing, but this is broken");
-				int multiplier = Random.Range(0, 7);
-				myDmg += multiplier;
-				//return myDmg;
-			}
-		} else if (survivor.weaponEquipped.GetComponent<BaseWeapon>().weaponType == BaseWeapon.WeaponType.GUN && GameManager.instance.ammo < 1) {
+			} else if (survivor.weaponEquipped.GetComponent<BaseWeapon>().weaponType == BaseWeapon.WeaponType.GUN && GameManager.instance.ammo < 1) {
 				int wepDmg = survivor.weaponEquipped.GetComponent<BaseWeapon>().base_dmg + Random.Range(0, survivor.weaponEquipped.GetComponent<BaseWeapon>().modifier);
 				if (myTarget.zombie.zombieType == BaseZombie.Type.FAT) {
 					float multiplier = Random.Range(1.1f, 2.25f);
@@ -280,6 +315,12 @@ public class SurvivorStateMachine : MonoBehaviour {
 					//return myDmg;
 				}
 				myDmg = Mathf.RoundToInt(myDmg * 0.6f);
+			} else {
+				Debug.Log ("MAJOR error, there's a weapon equipped without a type value. executing an unarmed swing, but this is broken");
+				int multiplier = Random.Range(0, 7);
+				myDmg += multiplier;
+				//return myDmg;
+			}
 		} else {
 			Debug.Log ("!!PLAYER HAS NO WEAPON EQUIPPED!! this should set off alarms to the player");
 			int multiplier = Random.Range(0, 7);
@@ -295,10 +336,53 @@ public class SurvivorStateMachine : MonoBehaviour {
 		return myDmg;
 	}
 
+	public void BiteTimerStart () {
+		//calculate how many turns you have left
+		int turns = Random.Range(1, 5);
+		turnsTillTurning = turns;
+		iAmBit = true;
+	}
+
+	private void TurnMeIntoAZombie () {
+		//count the zombies to kill up 1
+		GameManager.instance.zombiesToFight++;
+
+		//remove the survivor from the battlestate machine.
+		BSM.survivorList.Remove(this.gameObject);
+		BSM.survivorTurnList.Remove(this.gameObject);
+
+		//remove the survivor from the gamemanager
+		GameManager.instance.LoadAllGameData();
+		Destroy(this.gameObject);
+	}
+
+	private void BlinkingSliderCheck () {
+		BlinkingSlider myBlinkingSlider = myStamSlider.gameObject.GetComponent<BlinkingSlider>();
+		if (survivor.curStamina < -50) {
+			myBlinkingSlider.StartBlinking(0.2f);
+		} else if (survivor.curStamina < -25) {
+			myBlinkingSlider.StartBlinking(0.6f);
+		} else if (survivor.curStamina < -10) {
+			myBlinkingSlider.StartBlinking(1.1f);
+		} else if (survivor.curStamina >= 0) {
+			myBlinkingSlider.StopBlinking();
+		}
+	}
+
 	public void UpdateStaminaBar () {
 		float sliderValue = ((float)(survivor.curStamina) / (float)(survivor.baseStamina));
+		if (sliderValue <=0) {
+			sliderValue=0;
+		}
 		myStamSlider.value = sliderValue;
 		//Debug.Log ("Setting "+gameObject.name+" stamina slider to "+sliderValue);
+	}
+
+	public void DisableAllWeaponSprites () {
+		foreach (GameObject sprite in myWepSprites) {
+			sprite.SetActive(false);
+		}
+		mySelectedIcon.SetActive(false);
 	}
 
 	public void UpdateWeaponSprite () {
@@ -308,15 +392,26 @@ public class SurvivorStateMachine : MonoBehaviour {
 		}
 		if (this.survivor.weaponEquipped != null) {
 			Debug.Log(this.survivor.name + " believes to have a weapon equipped , wep name: " + this.survivor.weaponEquipped.name);
-			if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().weaponType == BaseWeapon.WeaponType.KNIFE) {
+
+			//this should change to get the name
+			if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name == "crude shiv") {
 				myWepSprites[0].SetActive(true);
-				Debug.Log (this.survivor.name + " is equipping a knife sprite");
-			} else if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().weaponType == BaseWeapon.WeaponType.CLUB) {
+				//Debug.Log (this.survivor.name + " is equipping a knife sprite");
+			} else if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name == "baseball bat") {
 				myWepSprites[1].SetActive(true);
-				Debug.Log (this.survivor.name + " is equipping a club sprite");
-			} else if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().weaponType == BaseWeapon.WeaponType.GUN) {
+				//Debug.Log (this.survivor.name + " is equipping a club sprite");
+			} else if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name == ".22 Revolver" ) {
 				myWepSprites[2].SetActive(true);
-				Debug.Log (this.survivor.name + " is equipping a gun sprite");
+				//Debug.Log (this.survivor.name + " is equipping a gun sprite");
+			}else if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name == "hunting knife" ) {
+				myWepSprites[3].SetActive(true);
+				//Debug.Log (this.survivor.name + " is equipping a gun sprite");
+			}else if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name == "sledgehammer" ) {
+				myWepSprites[4].SetActive(true);
+				//Debug.Log (this.survivor.name + " is equipping a gun sprite");
+			}else if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name == "shotgun" ) {
+				myWepSprites[5].SetActive(true);
+				//Debug.Log (this.survivor.name + " is equipping a gun sprite");
 			}
 		} else {
 			Debug.Log("Warning: No weapon equipped!!!");

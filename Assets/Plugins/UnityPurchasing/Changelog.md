@@ -1,3 +1,40 @@
+## [1.8.3] - 2016-10-13
+### Fixed
+- iOS crash when calling PurchasingManager.ConfirmPendingPurchase with a product that does not have a transaction ID
+- Ensure tvOS build uses correct correct stub DLL
+
+## [1.8.2] - 2016-09-23
+### Fixed
+- Tizen Store - Product list not delivered to new app or new user
+
+## [1.8.1] - 2016-08-30
+### Fixed
+- Windows Store - Windows App Compatibility Kit Supported API failure with exposure of Tizen API.
+- Tizen Store - Added sample products and GroupId to `IAPDemo.cs`
+
+## [1.8.0] - 2016-08-23
+### Added
+- Tizen Store support. Preliminary documentation is available [here](https://docs.google.com/document/d/1A2TidgeV4lY16IcjdU7lX4EIvx6NNfONaph12iT8KyY).
+
+### Fixed
+- Google Play - Promo code redemptions not being detected whilst the App is running.
+- Google Play - Guard against spurious SecurityException (additional details [here](https://github.com/googlesamples/android-play-billing/issues/26).)
+
+## [1.7.0] - 2016-08-07
+### Added
+- Samsung Galaxy store support. Preliminary documentation is available [here](https://docs.google.com/document/d/1kUq-AHKyJftUA68xr44mrp7gs_MNxNiQ693s0b7qDdM).
+- Google Play - failed purchases - the [Google Play server response code](https://developer.android.com/google/play/billing/billing_reference.html#billing-codes) is now supplied as the [PurchaseFailedEventArgs.message](https://docs.unity3d.com/ScriptReference/Purchasing.PurchaseFailedEventArgs-message.html) property for failed purchases.
+- Android - it is now possible to choose the store implementation to use at runtime.
+    - Make a build containing all store implementations by choosing Window > Unity IAP > Android > "Select store at runtime"
+
+```csharp
+// Pass the desired store to the module, e.g. Amazon Apps.
+var module = StandardPurchasingModule.Instance(AndroidStore.AmazonAppStore);
+```
+
+### Fixed
+- Google Play - PurchaseFailureReason.ItemUnavailable and PurchaseFailureReason.BillingUnavailable being reported as 'Unknown' errors.
+
 ## [1.6.1] - 2016-07-18
 ### Fixed
 - Google Play - fixed non fatal 'IllegalArgumentException: Receiver not registered' warning appearing in crashlogs.

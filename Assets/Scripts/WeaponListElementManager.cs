@@ -20,10 +20,15 @@ public class WeaponListElementManager : MonoBehaviour {
 		stam_cost = myWeapon.stam_cost;
 		durability = myWeapon.durability;
 		mapLevelManager = GameObject.Find("Map Level Manager").GetComponent<MapLevelManager>();
+		this.transform.localScale = new Vector3(1,1,1);
 	}
 
 	public void EquipButtonPressed () {
 		mapLevelManager.EquipThisWeapon(weaponID);
+	}
+
+	public void UnequipButtonPressed () {
+		mapLevelManager.UneqipThisWeapon(weaponID);
 	}
 
 }

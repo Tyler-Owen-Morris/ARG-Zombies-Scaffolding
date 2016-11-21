@@ -7,6 +7,9 @@
 using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using System.Text;
+using System.Security.Cryptography;
+using System;
 
 public class QREncodeTest : MonoBehaviour {
 	public QRCodeEncodeController e_qrController;
@@ -37,7 +40,8 @@ public class QREncodeTest : MonoBehaviour {
 	public void Encode()
 	{
 		if (e_qrController != null) {
-			string valueStr = m_inputfield.text;
+			string valueStr = encryptData(m_inputfield.text);
+            Debug.Log(valueStr);
 			e_qrController.Encode(valueStr);
 		}
 	}
@@ -48,4 +52,18 @@ public class QREncodeTest : MonoBehaviour {
 		m_inputfield.text = "";
 	}
 
+    public string encryptData(string toEncrypt)
+    {
+        byte[] keyArray = UTF8Encoding.UTF8.GetBytes(GameManager.QR_encryption_key);
+        // 256 -AES key 
+        byte[] toEncryptArray = UTF8Encoding.UTF8.GetBytes(toEncrypt);
+        RijndaelManaged rDel = new RijndaelManaged();
+        rDel.Key = keyArray;
+        rDel.Mode = CipherMode.ECB;
+        rDel.Padding = PaddingMode.PKCS7;
+        ICryptoTransform cTransform = rDel.CreateEncryptor();
+        byte[] resultArray = cTransform.TransformFinalBlock(toEncryptArray, 0, toEncryptArray.Length);
+
+        return Convert.ToBase64String(resultArray, 0, resultArray.Length);
+    }
 }

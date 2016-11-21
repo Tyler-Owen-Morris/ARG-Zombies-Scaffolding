@@ -18,8 +18,18 @@ public class MusicManager : MonoBehaviour {
 	void Start () {
 		audioSource = GetComponent<AudioSource>();
 	}
-	
-	void OnLevelWasLoaded () {
+
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnLevelFinishedLoading;
+    }
+
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnLevelFinishedLoading;
+    }
+
+    void OnLevelFinishedLoading (Scene scene, LoadSceneMode mode) {
 		activeScene = SceneManager.GetActiveScene();
 		AudioClip lastLevelMusic = GetComponent<AudioSource>().clip;
 		AudioClip thislevelMusic = levelMusicChangeArray[activeScene.buildIndex];

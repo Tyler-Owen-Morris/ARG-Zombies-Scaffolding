@@ -9,7 +9,7 @@ public class SetStartVolume : MonoBehaviour {
 	void Start () {
 		musicManager = GameObject.FindObjectOfType<MusicManager>();
 		if (musicManager) {
-			//Debug.Log("Music Manager found: " + musicManager);
+			Debug.Log("Music Manager found: " + musicManager+" setting volume to: "+PlayerPrefsManager.GetMasterVolume());
 		 	musicManager.ChangeVolume (PlayerPrefsManager.GetMasterVolume());
 		} else {
 			Debug.LogWarning("no music manager found");

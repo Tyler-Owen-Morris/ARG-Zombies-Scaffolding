@@ -28,10 +28,10 @@ public class ZombieStateMachine : MonoBehaviour {
 	//timeforaction variables
 	private bool actionStarted = false;
 	private bool deathActionStarted = false;
-	private float animSpeed = 15.0f;
+	private float animSpeed = 3000.0f;
 	public GameObject target;
 
-	private string ZombieAttackURL = "http://www.argzombie.com/ARGZ_SERVER/ZombieAttack.php";
+	private string ZombieAttackURL = GameManager.serverURL+"/ZombieAttack.php";
 
 
 	// Use this for initialization
@@ -39,7 +39,7 @@ public class ZombieStateMachine : MonoBehaviour {
 		myTargetGraphic.SetActive(false);
 		startPosition = gameObject.transform.position;
 		startRotation = gameObject.transform.rotation;
-		spawnPoint = new Vector3 (startPosition.x + 2.5f, startPosition.y, startPosition.z);
+		spawnPoint = new Vector3 (startPosition.x + 600f, startPosition.y, startPosition.z);
 		currentState = TurnState.WAITING;
 		BSM = FindObjectOfType<BattleStateMachine>();
 		myTypeText.text = zombie.zombieType.ToString();
@@ -72,9 +72,13 @@ public class ZombieStateMachine : MonoBehaviour {
 		}
 	}
 
-	public void CheckForDeath () {
+	public bool CheckForDeath () {
 		if (zombie.curHP <= 0 ) {
 			currentState = TurnState.DEAD;
+			BSM.zombieList.Remove(this.gameObject);
+			return true;
+		} else {
+			return false;
 		}
 	}
 
@@ -96,12 +100,22 @@ public class ZombieStateMachine : MonoBehaviour {
 			actionStarted = true;
 			int startRenderLayer = gameObject.GetComponent<SpriteRenderer>().sortingOrder;
 
-			//animate the enemy near the hero to attack
-			Vector3 targetPosition = new Vector3(target.transform.position.x + 0.3f, target.transform.position.y, target.transform.position.z);
-			gameObject.GetComponent<SpriteRenderer>().sortingOrder = target.GetComponent<SpriteRenderer>().sortingOrder;
+			Vector3 targetPosition = new Vector3(0, 0, 0); //just called to initialize the variable.
+			if (target != null) {
+				//animate the enemy near the hero to attack
+				targetPosition = new Vector3(target.transform.position.x + 55.0f, target.transform.position.y, target.transform.position.z);
+				gameObject.GetComponent<SpriteRenderer>().sortingOrder = target.GetComponent<SpriteRenderer>().sortingOrder;
+			} else {
+				currentState = TurnState.CHOOSEACTION;
+				actionStarted = false;
+				StopCoroutine(TakeAction());
+			}
+
 			while (MoveTowardsEnemy(targetPosition)) {yield return null;}
 			//animate weaponfx
+			BSM.PlayZombieAttackSound();
 			yield return new WaitForSeconds(0.25f);
+
 			//do damage
 			SurvivorStateMachine targetSurvivor = target.GetComponent<SurvivorStateMachine>();
 			int myDmg = CalculateMyDamage ();
@@ -114,13 +128,25 @@ public class ZombieStateMachine : MonoBehaviour {
 			bool survivorBit= false;
 			if (targetSurvivor.teamPos == 5) {
 				//this is player character, he has different odds than the team
-				odds = 3.0f;
+				GameObject[] survivorsInCombat = GameObject.FindGameObjectsWithTag("survivor");
+				if (survivorsInCombat.Length > 1) {
+					//player character cannot get bit
+					odds = 0.0f;
+				} else {
+					odds = 0.5f;
+				}
+
 			} else {
-				odds = 7.0f;
+				odds = 1.1f;//starting odds for a survivor to get bitten.
 			}
-			if (targetSurvivor.survivor.curStamina < 1) {
+			int cur_stam = targetSurvivor.survivor.curStamina;
+			if (cur_stam < 1) {
 				//if player is exhausted, 2.5x the odds to get bitten
 				odds = odds*2.5f;
+			}
+			int double_neg_stam = targetSurvivor.survivor.baseStamina * -2;
+			if (cur_stam < double_neg_stam) {
+				odds = (float)(odds*2.5f);
 			}
 			float roll = Random.Range(0.0f, 100.0f);
 			if (roll < odds) {
@@ -156,6 +182,8 @@ public class ZombieStateMachine : MonoBehaviour {
 	IEnumerator SendZombieAttack (int survivorID, int dmg) {
 		WWWForm form = new WWWForm();
 		form.AddField("id", GameManager.instance.userId);
+		form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+		form.AddField("client", "mob");
 		form.AddField("survivor_id", survivorID);
 		form.AddField("dmg", dmg);
 
@@ -186,7 +214,7 @@ public class ZombieStateMachine : MonoBehaviour {
 			}
 
 			//animate zombie to the ground.
-			Quaternion downPos = new Quaternion (0,0,-90,0);
+			Quaternion downPos = new Quaternion (0,0,-40,0);
 			while (RotateToTarget(downPos)) {yield return null;}
 			//move to off screen Death/Spawn target
 			while (MoveTowardsEnemy(spawnPoint)) {yield return null;}
@@ -200,6 +228,7 @@ public class ZombieStateMachine : MonoBehaviour {
 				BSM.zombieList.Add(gameObject);
 				currentState = TurnState.WAITING;
 			} else {
+				this.gameObject.SetActive(false);
 				myTypeText.text = "";
 				//do not reactivate or animate- just leave the zombie dead off screen and change its state.
 				foreach (GameObject zombie in BSM.zombieList) {
@@ -210,6 +239,8 @@ public class ZombieStateMachine : MonoBehaviour {
 
 					}
 				}
+				//turn off in heirarchy- reset the turns- 
+				Destroy(this.gameObject);
 				currentState = TurnState.WAITING;
 			}
 			deathActionStarted = false;
@@ -218,7 +249,7 @@ public class ZombieStateMachine : MonoBehaviour {
 	}
 
 	private bool RefreshRotate (Quaternion goal) {
-		return goal != (transform.rotation = Quaternion.RotateTowards(transform.rotation, goal, 90 *Time.deltaTime));
+		return goal != (transform.rotation = Quaternion.RotateTowards(transform.rotation, goal, animSpeed *Time.deltaTime));
 	}
 
 	private bool RotateToTarget (Quaternion goal) {

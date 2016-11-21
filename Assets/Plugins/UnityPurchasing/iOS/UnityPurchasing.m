@@ -496,6 +496,8 @@ void unityPurchasingPurchase(const char* json, const char* developerPayload) {
 }
 
 void unityPurchasingFinishTransaction(const char* productJSON, const char* transactionId) {
+    if (transactionId == NULL)
+        return;
     NSString* tranId = [NSString stringWithUTF8String:transactionId];
     [UnityPurchasing_getInstance() finishTransaction:tranId];
 }

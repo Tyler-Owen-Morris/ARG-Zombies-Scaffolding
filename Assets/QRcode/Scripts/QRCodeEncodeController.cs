@@ -16,7 +16,7 @@ using ZXing.Common;
 
 public class QRCodeEncodeController : MonoBehaviour {
 
-	private Texture2D m_EncodedTex;
+	public Texture2D m_EncodedTex;
 	public int e_QRCodeWidth;
 	public int e_QRCodeHeight;
 	public delegate void QREncodeFinished(Texture2D tex);  
@@ -26,7 +26,7 @@ public class QRCodeEncodeController : MonoBehaviour {
 	void Start ()
 	{
 		int targetWidth = Mathf.Min(e_QRCodeWidth,e_QRCodeHeight);
-		targetWidth = Mathf.Clamp (targetWidth, 128, 1024);
+		targetWidth = Mathf.Clamp (targetWidth, 256, 1024);
 		e_QRCodeWidth = e_QRCodeHeight = targetWidth;
 
 		m_EncodedTex = new Texture2D(e_QRCodeWidth, e_QRCodeHeight);
@@ -72,6 +72,7 @@ public class QRCodeEncodeController : MonoBehaviour {
 
 		m_EncodedTex.Apply ();
 
+		Debug.Log(e_QREncodeFinished.ToString());
 		e_QREncodeFinished (m_EncodedTex);
 	}
 
