@@ -43,6 +43,7 @@ public class BattleStateMachine : MonoBehaviour {
 
 	public int zombiesKilled = 0;
 	public Text zombieCounter, ammmoCounter, survivorBitText, failedToRunText;
+    public GameObject blazeOfGloryImage;
 
 	public AudioClip knifeSound, clubSound, pistolSound, shotgunSound;
 	public AudioClip[] zombieSounds, survivorUnarmedSounds;
@@ -86,10 +87,14 @@ public class BattleStateMachine : MonoBehaviour {
     void OnLevelFinishedLoading (Scene scene, LoadSceneMode mode) {
 		if (GameManager.instance.blazeOfGloryActive == true) {
 			InitiateBlazeOfGlory();
-		}
+		} else
+        {
+            blazeOfGloryImage.SetActive(false);
+        }
 	}
 
 	void InitiateBlazeOfGlory () {
+        blazeOfGloryImage.SetActive(true);
 		cheatSaveButton.SetActive(false);
 		runButton.SetActive(false);
 		attackButton.SetActive(false);

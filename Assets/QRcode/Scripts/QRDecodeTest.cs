@@ -5,6 +5,10 @@
 using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using System;
+using System.Security.Cryptography;
+using System.Text;
+
 public class QRDecodeTest : MonoBehaviour {
 
 	public QRCodeDecodeController e_qrController;
@@ -27,7 +31,9 @@ public class QRDecodeTest : MonoBehaviour {
 
 	void qrScanFinished(string dataText)
 	{
+        dataText = decryptData(dataText);
 		UiText.text = dataText;
+        Debug.Log(dataText);
 		if (resetBtn != null) {
 			resetBtn.SetActive(true);
 		}
@@ -71,5 +77,20 @@ public class QRDecodeTest : MonoBehaviour {
 		}
 		Application.LoadLevel (scenename);
 	}
+
+    public string decryptData(string toDecrypt)
+    {
+        byte[] keyArray = UTF8Encoding.UTF8.GetBytes(GameManager.QR_encryption_key);
+        // AES-256 key 
+        byte[] toEncryptArray = Convert.FromBase64String(toDecrypt);
+        RijndaelManaged rDel = new RijndaelManaged();
+        rDel.Key = keyArray;
+        rDel.Mode = CipherMode.ECB;
+        rDel.Padding = PaddingMode.PKCS7; // better lang support 
+        ICryptoTransform cTransform = rDel.CreateDecryptor();
+        byte[] resultArray = cTransform.TransformFinalBlock(toEncryptArray, 0, toEncryptArray.Length);
+
+        return UTF8Encoding.UTF8.GetString(resultArray);
+    }
 
 }

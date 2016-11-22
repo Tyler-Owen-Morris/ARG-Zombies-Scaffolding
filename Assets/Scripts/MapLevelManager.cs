@@ -49,7 +49,7 @@ public class MapLevelManager : MonoBehaviour {
 	private string clearDeadSurvivorsURL = GameManager.serverURL+"/ClearDead.php";
 	private string reRollZombieURL = GameManager.serverURL+"/ReRollZombieCount.php";
     private string transferLootURL = GameManager.serverURL + "/TransferLootFromBuilding.php";
-    public string placeGearURL = GameManager.serverURL + "/PlaceGear.php";
+    //public string placeGearURL = GameManager.serverURL + "/PlaceGear.php";//relocated to cleared bldg panel mgr
 
 	public void InventoryButtonPressed () {
 		if (inventoryPanel.activeInHierarchy == false ) {
@@ -666,7 +666,7 @@ public class MapLevelManager : MonoBehaviour {
 
 			if (distToBldg > 300.0f) {
 				//out of range, disable button
-				enterBldgButton.GetComponent<Button>().interactable = false;
+				//enterBldgButton.GetComponent<Button>().interactable = false;
 			} else {
 				//in range, enable button
 				enterBldgButton.GetComponent<Button>().interactable = true;

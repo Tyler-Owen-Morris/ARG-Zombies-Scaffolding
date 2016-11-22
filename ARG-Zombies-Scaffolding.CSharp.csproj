@@ -225,6 +225,7 @@
     <Compile Include="Assets\Scripts\5man Combat Scripts\WeaponManager.cs" />
     <Compile Include="Assets\Scripts\5man Combat Scripts\ZombieStateMachine.cs" />
     <Compile Include="Assets\Scripts\BackgroundRandomizer.cs" />
+    <Compile Include="Assets\Scripts\BlazeOGImageOscillator.cs" />
     <Compile Include="Assets\Scripts\BlinkingSlider.cs" />
     <Compile Include="Assets\Scripts\Building.cs" />
     <Compile Include="Assets\Scripts\BuildingClearTextController.cs" />
@@ -263,6 +264,7 @@
     <Compile Include="Assets\Scripts\SurvivorListElementManager.cs" />
     <Compile Include="Assets\Scripts\SurvivorListPopulator.cs" />
     <Compile Include="Assets\Scripts\SurvivorPlayCard.cs" />
+    <Compile Include="Assets\Scripts\SwipeIconBlinker.cs" />
     <Compile Include="Assets\Scripts\TMP_locationplaceholder.cs" />
     <Compile Include="Assets\Scripts\Util.cs" />
     <Compile Include="Assets\Scripts\VictoryScreenController.cs" />
@@ -271,7 +273,6 @@
     <Compile Include="Assets\Scripts\WeaponListPopulator.cs" />
     <Compile Include="Assets\Scripts\WeaponSelectManager.cs" />
     <Compile Include="Assets\Scripts\ZombieQRController.cs" />
-    <Compile Include="Assets\SwipeIconBlinker.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\FacebookSDK\SDK\Editor\android\DefaultAndroidManifest.xml" />

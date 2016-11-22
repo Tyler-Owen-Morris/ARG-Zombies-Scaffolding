@@ -43,7 +43,7 @@ public class GameManager : MonoBehaviour {
 	public string userLastName;
 	public string userName;
 
-	public static string serverURL = "http://www.argzombie.com/ARGZ_DEV_SERVER";
+	public static string serverURL = "http://www.argzombie.com/ARGZ_SERVER";
 	public static string QR_encryption_key = "12345678901234567890123456789012";
 
 	private string startNewCharURL = serverURL+"/StartNewCharacter.php";
@@ -1321,11 +1321,66 @@ public class GameManager : MonoBehaviour {
 
 						wwwForm.AddField("bldg_name", GameManager.instance.activeBldg_name);
 						wwwForm.AddField("bldg_id", GameManager.instance.activeBldg_id);
-						//wwwForm.AddField("supply", GameManager.instance.reportedSupply);
-						//wwwForm.AddField("food" , GameManager.instance.reportedFood);
-						//wwwForm.AddField("water", GameManager.instance.reportedWater);
-						if (survivorFound) {
-							wwwForm.AddField("survivor_found", "1");
+                        //wwwForm.AddField("supply", GameManager.instance.reportedSupply);
+                        //wwwForm.AddField("food" , GameManager.instance.reportedFood);
+                        //wwwForm.AddField("water", GameManager.instance.reportedWater);
+
+                        if (survivorFound) {
+
+                            //calculate the number of survivors found.
+                            int survivor_count = 1;
+                            int days = Mathf.FloorToInt((float)(DateTime.Now - GameManager.instance.timeCharacterStarted).TotalDays);
+                            if (days < 1)
+                            {
+                                int group_bonus = UnityEngine.Random.Range(1,5);
+                                float odds = 90.0f;
+                                float roll = UnityEngine.Random.Range(0.0f, 100.0f);
+                                if (roll < odds)
+                                {
+                                    survivor_count += group_bonus;
+                                }
+                            }else if (days < 3)
+                            {
+                                int group_bonus = UnityEngine.Random.Range(1, 4);
+                                float odds = 70.0f;
+                                float roll = UnityEngine.Random.Range(0.0f, 100.0f);
+                                if (roll < odds)
+                                {
+                                    survivor_count += group_bonus;
+                                }
+                            }
+                            else if (days < 8)
+                            {
+                                int group_bonus = UnityEngine.Random.Range(1, 2);
+                                float odds = 50.0f;
+                                float roll = UnityEngine.Random.Range(0.0f, 100.0f);
+                                if (roll < odds)
+                                {
+                                    survivor_count += group_bonus;
+                                }
+                            }
+                            else if (days < 15)
+                            {
+                                int group_bonus = UnityEngine.Random.Range(1, 2);
+                                float odds = 25.0f;
+                                float roll = UnityEngine.Random.Range(0.0f, 100.0f);
+                                if (roll < odds)
+                                {
+                                    survivor_count += group_bonus;
+                                }
+                            }
+                            else if (days > 30)
+                            {
+                                int group_bonus = UnityEngine.Random.Range(0, 1);
+                                float odds = 15.0f;
+                                float roll = UnityEngine.Random.Range(0.0f, 100.0f);
+                                if (roll < odds)
+                                {
+                                    survivor_count += group_bonus;
+                                }
+                            }
+
+                            wwwForm.AddField("survivor_found", survivor_count);
 						} else {
 							wwwForm.AddField("survivor_found", "0");
 						}

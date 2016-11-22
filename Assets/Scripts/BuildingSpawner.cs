@@ -218,13 +218,18 @@ public class BuildingSpawner : MonoBehaviour {
 							break;
 						} 
 					} else {
-						
+                        continue;
 					}
 				}
 
-				if (cleared == 0) {
+                //ActivateMe is now the catch all building initilizer.
+                myBuilding.ActivateMe();
+
+                /*
+                if (cleared == 0) {
 					myBuilding.ActivateMe();
 				}
+                */
 			}
 		} else {
 			foreach (GameObject building in buildings) {
@@ -308,52 +313,61 @@ public class BuildingSpawner : MonoBehaviour {
     		Destroy(outpost.gameObject);
     	}
 
-    	//pull the json text from the game manager
-    	string outpostJsonText = GameManager.instance.outpostJsonText;
-    	Debug.Log("Outpost JsonData: "+GameManager.instance.outpostJsonText);
+        if (GameManager.instance.outpostJsonText != "")
+        {
+            //pull the json text from the game manager
+            string outpostJsonText = GameManager.instance.outpostJsonText;
+            Debug.Log("Outpost JsonData: " + GameManager.instance.outpostJsonText);
 
 
-		JsonData outpostJSON = JsonMapper.ToObject(GameManager.instance.outpostJsonText);
+            JsonData outpostJSON = JsonMapper.ToObject(GameManager.instance.outpostJsonText);
 
-		//plot outposts to game space, if there are any...
-		for (int i=0; i < outpostJSON.Count; i++) {
-			float outpostLat = float.Parse(outpostJSON[i]["outpost_lat"].ToString());
-			float outpostLng = float.Parse(outpostJSON[i]["outpost_lng"].ToString());
-			int outpost_id = (int)outpostJSON[i]["outpost_id"];
-			int capacity = (int)outpostJSON[i]["capacity"];
-			float myLat = float.Parse(outpostJSON[i]["outpost_lat"].ToString());
-			float myLng = float.Parse(outpostJSON[i]["outpost_lng"].ToString());
+            //plot outposts to game space, if there are any...
+            for (int i = 0; i < outpostJSON.Count; i++)
+            {
+                float outpostLat = float.Parse(outpostJSON[i]["outpost_lat"].ToString());
+                float outpostLng = float.Parse(outpostJSON[i]["outpost_lng"].ToString());
+                int outpost_id = (int)outpostJSON[i]["outpost_id"];
+                int capacity = (int)outpostJSON[i]["capacity"];
+                float myLat = float.Parse(outpostJSON[i]["outpost_lat"].ToString());
+                float myLng = float.Parse(outpostJSON[i]["outpost_lng"].ToString());
 
-			double deltaLat = 0;
-			double deltaLng = 0;
+                double deltaLat = 0;
+                double deltaLng = 0;
 
-			if (Input.location.status == LocationServiceStatus.Running) {
-				//legit math
-				deltaLat = (Input.location.lastData.latitude - outpostLat);
-				deltaLng = (Input.location.lastData.longitude - outpostLng);
-			}  else {
-				//dummy math for unity client
-				deltaLat = (37.70883f - outpostLat);
-				deltaLng = (-122.4293f - outpostLng);
-			}
+                if (Input.location.status == LocationServiceStatus.Running)
+                {
+                    //legit math
+                    deltaLat = (Input.location.lastData.latitude - outpostLat);
+                    deltaLng = (Input.location.lastData.longitude - outpostLng);
+                }
+                else
+                {
+                    //dummy math for unity client
+                    deltaLat = (37.70883f - outpostLat);
+                    deltaLng = (-122.4293f - outpostLng);
+                }
 
-			//Debug.Log("change in lat: "+deltaLat+" change in lng: "+deltaLng);
-			//Debug.Log(m_per_deg_lat.ToString()+" "+m_per_deg_lon.ToString());
-			double xDistMeters = deltaLat * m_per_deg_lat;
-			double yDistMeters = deltaLng * m_per_deg_lon;
-			//Debug.Log("outpost located at "+xDistMeters.ToString()+" away in the X, and "+yDistMeters+" meters away in the Y");
+                //Debug.Log("change in lat: "+deltaLat+" change in lng: "+deltaLng);
+                //Debug.Log(m_per_deg_lat.ToString()+" "+m_per_deg_lon.ToString());
+                double xDistMeters = deltaLat * m_per_deg_lat;
+                double yDistMeters = deltaLng * m_per_deg_lon;
+                //Debug.Log("outpost located at "+xDistMeters.ToString()+" away in the X, and "+yDistMeters+" meters away in the Y");
 
 
-			float xCoord = (float)(screenCenter.x - xDistMeters);
-			float yCoord = (float)(screenCenter.y - yDistMeters);
-			Vector3 pos = new Vector3(xCoord, yCoord, 0);
-			GameObject instance = Instantiate(outpostPrefab);
-			instance.transform.SetParent(this.gameObject.transform);
-			instance.transform.position = pos;
-			Outpost myOutpost = instance.GetComponent<Outpost>();
-			myOutpost.SetMyOutpostData(capacity, outpost_id, myLat, myLng);
-			Debug.Log("Placing outpost at map position: "+pos.ToString());
-		}
-		
+                float xCoord = (float)(screenCenter.x - xDistMeters);
+                float yCoord = (float)(screenCenter.y - yDistMeters);
+                Vector3 pos = new Vector3(xCoord, yCoord, 0);
+                GameObject instance = Instantiate(outpostPrefab);
+                instance.transform.SetParent(this.gameObject.transform);
+                instance.transform.position = pos;
+                Outpost myOutpost = instance.GetComponent<Outpost>();
+                myOutpost.SetMyOutpostData(capacity, outpost_id, myLat, myLng);
+                Debug.Log("Placing outpost at map position: " + pos.ToString());
+            }
+        }else
+        {
+            Debug.Log("no outposts to spawn to map");
+        }
     }
 }
