@@ -126,7 +126,7 @@ public class QRPanelController : MonoBehaviour {
 		if (scannedJson[0].ToString() == "player") {
 			if(scannedJson[1].ToString() != GameManager.instance.userId) {
 				StartCoroutine(mapLvlMgr.PostTempLocationText("pairing with survivor"));
-				StartCoroutine(SendQRPairToServer(scannedText));
+				StartCoroutine(SendQRPairToServer(decrypted_text));
 			}else{
 				StartCoroutine(mapLvlMgr.PostTempLocationText("Players may not pair with themselves"));
                 PostQRResultText("Players may not pair with themselves");
@@ -134,7 +134,7 @@ public class QRPanelController : MonoBehaviour {
 			}
 		} else if (scannedJson[0].ToString() == "outpost") {
 			StartCoroutine(mapLvlMgr.PostTempLocationText("attempting to join outpost"));
-			StartCoroutine(SendOutpostRequestToServer(scannedJson));
+			StartCoroutine(SendOutpostRequestToServer(decrypted_text));
 		} else if (scannedJson[0].ToString() == "homebase") {
 			//check if this homebase belongs to the player.
 			string base_owner_id = scannedJson[1].ToString();
@@ -272,7 +272,7 @@ public class QRPanelController : MonoBehaviour {
 			if (DateTime.Now < upperLimit && DateTime.Now > lowerLimit) {
 				Debug.Log("The QR code contains a valid time");
 
-				float distanceAllowedInMeters = 25.0f;
+				float distanceAllowedInMeters = 100.0f;
 				float requestLat = float.Parse(requestingJSON[3].ToString());
 				float requestLng = float.Parse(requestingJSON[4].ToString());
 

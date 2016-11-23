@@ -487,8 +487,11 @@ public class GameManager : MonoBehaviour {
 		if (FB.IsLoggedIn == true) {
 			form.AddField("id", GameManager.instance.userId);
 		} else {
-			GameManager.instance.userId = "10154194346243928";
-			form.AddField("id", GameManager.instance.userId);
+            Debug.Log("player is not logged in, cannot resume game");
+            StopCoroutine(FetchResumePlayerData());
+
+            //GameManager.instance.userId = "10154194346243928";
+			//form.AddField("id", GameManager.instance.userId);
 		}
 		form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
 		form.AddField("client", "mob");
