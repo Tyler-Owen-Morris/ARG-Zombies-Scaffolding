@@ -1404,7 +1404,7 @@ public class GameManager : MonoBehaviour {
 								Debug.Log(buildingClearReturn[1].ToString());
 
 								//if there has been a survivor added to the players team.
-								if (buildingClearReturn[2].ToString() == "1") {
+								if ((int)buildingClearReturn[2] > 0) {
 									foundSurvivorName = buildingClearReturn[3][0]["name"].ToString();
 									foundSurvivorCurStam = (int)buildingClearReturn[3][0]["base_stam"];
 									foundSurvivorMaxStam = (int)buildingClearReturn[3][0]["base_stam"];
