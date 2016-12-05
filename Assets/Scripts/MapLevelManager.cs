@@ -167,6 +167,8 @@ public class MapLevelManager : MonoBehaviour {
         	playerNameText.text = name;
         }
         bldgSpawner = GameObject.Find("Building Populator").GetComponent<BuildingSpawner>();
+
+        SetEndGameButtonText(); //this is going to be handled 1x on map level load for dynamic changes over time.
     }
 
     void OnEnable()
@@ -184,8 +186,26 @@ public class MapLevelManager : MonoBehaviour {
         if (runGameClock == true)
         {
             UpdateTimeAliveClock();
+            //UpdateButtonSizes();
         }
     }
+
+    /*
+    public int pub_x, pub_y;
+
+    void UpdateButtonSizes()
+    {
+        RectTransform rt = endGameButton.GetComponent<RectTransform>();
+        if (rt != null)
+        {
+            rt.sizeDelta = new Vector2(pub_x, pub_y);
+        }
+        else
+        {
+            Debug.Log("unable to find endgame RT");
+        }   
+    }
+    */
 
 	void OnLevelFinishedLoading (Scene scene, LoadSceneMode mode) {
 		//UpdateTheUI();
@@ -195,7 +215,7 @@ public class MapLevelManager : MonoBehaviour {
 		CheckForStarvationDehydration();
 		UpdateTheUI();
 
-		endGameButton.SetActive(true);
+        
 		/* 
 		//if the player is the last one left alive, activate the gameover button.
 		JsonData survivorJson = JsonMapper.ToObject(GameManager.instance.survivorJsonText);
@@ -207,6 +227,62 @@ public class MapLevelManager : MonoBehaviour {
 		}
 		*/
 	}
+
+    void SetEndGameButtonText ()
+    {
+        Text button_text = endGameButton.GetComponentInChildren<Text>();
+        Debug.Log(button_text.text);
+
+        if (button_text != null)
+        {
+            TimeSpan time_alive = (DateTime.Now - GameManager.instance.timeCharacterStarted);
+            int days_alive = Mathf.FloorToInt((float)time_alive.TotalDays);
+
+            if (days_alive < 3)
+            {
+                RectTransform button_rt = endGameButton.GetComponent<RectTransform>();
+                button_rt.sizeDelta = new Vector2(100, 62);
+                //suicide isn't that tempting yet
+                button_text.text = "die intentionally";
+
+            }else if (days_alive < 8)
+            {
+                RectTransform button_rt = endGameButton.GetComponent<RectTransform>();
+                button_rt.sizeDelta = new Vector2(120, 77);
+                button_text.text = "stop living";
+            }
+            else if (days_alive < 13)
+            {
+                RectTransform button_rt = endGameButton.GetComponent<RectTransform>();
+                button_rt.sizeDelta = new Vector2(143, 86);
+                button_text.text = "take the easy way out";
+            }
+            else if (days_alive < 21)
+            {
+                RectTransform button_rt = endGameButton.GetComponent<RectTransform>();
+                button_rt.sizeDelta = new Vector2(162, 95);
+                button_text.text = "give up on life";
+            }
+            else if (days_alive < 34)
+            {
+                RectTransform button_rt = endGameButton.GetComponent<RectTransform>();
+                button_rt.sizeDelta = new Vector2(185, 110);
+                button_text.text = "end the pain";
+            }
+            else
+            {
+                RectTransform button_rt = endGameButton.GetComponent<RectTransform>();
+                button_rt.sizeDelta = new Vector2(200, 120);
+                //suicide is very tempting now
+                button_text.text = "sweet release";
+            }
+            Debug.Log(days_alive.ToString() + ": days alive calculated by the suicide button");
+
+        }else
+        {
+            Debug.Log("Suicide button text object not found");
+        }
+    }
 
 	void CheckForStarvationDehydration () {
 		//initialize data needed for funciton

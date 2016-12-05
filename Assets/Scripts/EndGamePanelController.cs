@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class EndGamePanelController : MonoBehaviour {
 
 	public GameObject[] suicideVerificationPanelArray;
-	public int count =0;
+	public int count =0, target;
 
 	void Start () {
 		ShuffleTheArray(suicideVerificationPanelArray);
@@ -12,7 +13,7 @@ public class EndGamePanelController : MonoBehaviour {
 
 	void ShuffleTheArray (GameObject[] array) {
 		for (int i = array.Length-1; i > 0; i--) {
-			int pos = Random.Range(0, i);
+			int pos = UnityEngine.Random.Range(0, i);
 			GameObject tmp = array[i];
 			array[i] = array[pos];
 			array[pos] = tmp;
@@ -21,6 +22,7 @@ public class EndGamePanelController : MonoBehaviour {
 
 	public void BeginSuicideQuestioning () {
 		count = 0;
+        CalculateTargetValue();
 		ContinueWithSuicide();
 	}
 
@@ -39,7 +41,7 @@ public class EndGamePanelController : MonoBehaviour {
 		//increment count up and check
 		count ++;
 
-		if (count >= suicideVerificationPanelArray.Length) {
+		if (count >= target) {
 			Debug.Log("player has verified suicide");
 			StartCoroutine(GameManager.instance.KillUrself());
 		}
@@ -65,4 +67,32 @@ public class EndGamePanelController : MonoBehaviour {
 			panel.SetActive(false);
 		}
 	}
+
+    public void CalculateTargetValue()
+    {
+        TimeSpan time_alive = (DateTime.Now - GameManager.instance.timeCharacterStarted);
+        int days_alive =  Mathf.FloorToInt((float)time_alive.TotalDays);
+
+        if (days_alive < 3)
+        {
+            //it's 'harder' to kill yourself in the beginning.
+            target = 18;
+        }else if (days_alive < 8)
+        {
+            target = 15;
+        }else if (days_alive < 13)
+        {
+            target = 11;
+        }else if (days_alive < 21)
+        {
+            target = 8;
+        }else if (days_alive < 34)
+        {
+            target = 6;
+        }else
+        {
+            //after day 34, it will only require 3 correct answers to execute the suicide function.
+            target = 3;
+        }
+    }
 }

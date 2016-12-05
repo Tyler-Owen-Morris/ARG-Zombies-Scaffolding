@@ -43,7 +43,27 @@ public class ZombieStateMachine : MonoBehaviour {
 		currentState = TurnState.WAITING;
 		BSM = FindObjectOfType<BattleStateMachine>();
 		myTypeText.text = zombie.zombieType.ToString();
+        SetMySprite();
 	}
+
+    void SetMySprite()
+    {
+        //find my sprite renderer
+        SpriteRenderer my_spriteRenderer = this.gameObject.GetComponent<SpriteRenderer>();
+
+        if (zombie.zombieType == BaseZombie.Type.SKINNY)
+        {
+            my_spriteRenderer.sprite = BSM.zombie_sprite_array[0];
+        }else if (zombie.zombieType == BaseZombie.Type.NORMAL)
+        {
+            my_spriteRenderer.sprite = BSM.zombie_sprite_array[1];
+        }else if (zombie.zombieType == BaseZombie.Type.FAT)
+        {
+            my_spriteRenderer.sprite = BSM.zombie_sprite_array[2];
+        }
+
+        Debug.Log(this.gameObject.name + " is setting their sprite to a " + zombie.zombieType.ToString() + " zombie");
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -261,6 +281,7 @@ public class ZombieStateMachine : MonoBehaviour {
 	}
 
 	void ReRollType () {
+        //determine and set new type
 		int roll = Random.Range (1,3);
 		if (roll == 1)  {
 			zombie.zombieType = BaseZombie.Type.FAT;
@@ -269,7 +290,10 @@ public class ZombieStateMachine : MonoBehaviour {
 		} else if (roll == 3) {
 			zombie.zombieType = BaseZombie.Type.SKINNY;
 		}
+
+        //update the UI text and sprite
 		myTypeText.text = zombie.zombieType.ToString();
+        SetMySprite();
 	}
 
 	int CalculateMyDamage () {

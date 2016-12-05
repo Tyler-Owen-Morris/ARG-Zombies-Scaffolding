@@ -129,6 +129,7 @@ public class ClearedBuildingPanelManager : MonoBehaviour {
             {
                 if (type == "supply")
                 {
+                    Debug.Log("supply looting succesful on server: updating client.");
                     GameManager.instance.supply += loot_qty;
                     trapProgressSlider.value = 0;
                     currentMapManager.activeBuilding.supply_inside = 0;

@@ -1279,10 +1279,11 @@ public class GameManager : MonoBehaviour {
 
 	public bool clearedBuildingSendInProgress = false;
 	public void BuildingIsCleared (bool survFound) {
+        GameManager.instance.survivorFound = survFound;
 		if (clearedBuildingSendInProgress == false) {
 			clearedBuildingSendInProgress = true;
 
-			StartCoroutine(SendClearedBuilding(survivorFound));
+			StartCoroutine(SendClearedBuilding(survFound));
 		} 
 	}
 
@@ -1328,7 +1329,7 @@ public class GameManager : MonoBehaviour {
                         //wwwForm.AddField("food" , GameManager.instance.reportedFood);
                         //wwwForm.AddField("water", GameManager.instance.reportedWater);
 
-                        if (survivorFound) {
+                        if (survivorFound == true) {
 
                             //calculate the number of survivors found.
                             int survivor_count = 1;
@@ -1383,12 +1384,14 @@ public class GameManager : MonoBehaviour {
                                 }
                             }
 
+                            Debug.Log("Found " + survivor_count.ToString() + " survivors to add to the team");
                             wwwForm.AddField("survivor_found", survivor_count);
 						} else {
+                            Debug.Log("Found no survivors according to GameManager Coroutine");
 							wwwForm.AddField("survivor_found", "0");
 						}
 
-						Debug.Log ("sending cleared building message to the server- bldg_name: "+GameManager.instance.activeBldg_name+" and id: "+GameManager.instance.activeBldg_id);
+						Debug.Log ("sending cleared building message to the server- bldg_name: "+GameManager.instance.activeBldg_name+" and id: "+GameManager.instance.activeBldg_id+" Survivor Found status: "+survivorFound);
 						WWW www = new WWW(buildingClearedURL, wwwForm);
 						yield return www;
 
@@ -1402,11 +1405,11 @@ public class GameManager : MonoBehaviour {
 
 								//if there has been a survivor added to the players team.
 								if (buildingClearReturn[2].ToString() == "1") {
-									foundSurvivorName = buildingClearReturn[3]["name"].ToString();
-									foundSurvivorCurStam = (int)buildingClearReturn[3]["base_stam"];
-									foundSurvivorMaxStam = (int)buildingClearReturn[3]["base_stam"];
-									foundSurvivorAttack = (int)buildingClearReturn[3]["base_attack"];
-									foundSurvivorEntryID = (int)buildingClearReturn[3]["entry_id"];
+									foundSurvivorName = buildingClearReturn[3][0]["name"].ToString();
+									foundSurvivorCurStam = (int)buildingClearReturn[3][0]["base_stam"];
+									foundSurvivorMaxStam = (int)buildingClearReturn[3][0]["base_stam"];
+									foundSurvivorAttack = (int)buildingClearReturn[3][0]["base_attack"];
+									foundSurvivorEntryID = (int)buildingClearReturn[3][0]["entry_id"];
 								}
 							}
 						} else {

@@ -45,6 +45,8 @@ public class BattleStateMachine : MonoBehaviour {
 	public Text zombieCounter, ammmoCounter, survivorBitText, failedToRunText;
     public GameObject blazeOfGloryImage;
 
+    public Sprite[] zombie_sprite_array;
+
 	public AudioClip knifeSound, clubSound, pistolSound, shotgunSound;
 	public AudioClip[] zombieSounds, survivorUnarmedSounds;
 	public AudioSource myAudioSource;
@@ -458,6 +460,8 @@ public class BattleStateMachine : MonoBehaviour {
 	bool CalculateSurvivorFound () {
 		float odds =0.0f;
 
+        GameManager.instance.daysSurvived = Mathf.FloorToInt((float)(DateTime.Now-GameManager.instance.timeCharacterStarted).TotalDays);
+
 		if (GameManager.instance.daysSurvived < GameManager.DaysUntilOddsFlat) {
 			DateTime now = System.DateTime.Now;
 			double days_alive = (now-GameManager.instance.timeCharacterStarted).TotalDays;
@@ -495,6 +499,7 @@ public class BattleStateMachine : MonoBehaviour {
 		*/
 
 		float roll = UnityEngine.Random.Range(0.0f, 1.0f);
+        Debug.Log(roll.ToString() + " is player roll, and " + odds + " are calculated player odds");
 		if (roll < odds) {
 			Debug.Log("survivor found!");
 			return true;

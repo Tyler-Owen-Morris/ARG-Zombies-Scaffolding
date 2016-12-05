@@ -12,7 +12,7 @@
     <ProjectTypeGuids>{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Unity Subset v3.5</TargetFrameworkProfile>
+    <TargetFrameworkProfile>Unity Full v3.5</TargetFrameworkProfile>
     <CompilerResponseFile></CompilerResponseFile>
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>Android:13</UnityBuildTarget>
@@ -99,6 +99,9 @@
     </Reference>
     <Reference Include="LitJson">
       <HintPath>Assets\Resources\LitJson.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>Assets\Plugins\Newtonsoft.Json.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -234,6 +237,10 @@
     <Compile Include="Assets\Scripts\CurrentLocationUpdater.cs" />
     <Compile Include="Assets\Scripts\EndGamePanelController.cs" />
     <Compile Include="Assets\Scripts\FadeIn.cs" />
+    <Compile Include="Assets\Scripts\FitBitAPI.cs" />
+    <Compile Include="Assets\Scripts\FitbitCaller.cs" />
+    <Compile Include="Assets\Scripts\FitbitData.cs" />
+    <Compile Include="Assets\Scripts\FitbitInterfaceManager.cs" />
     <Compile Include="Assets\Scripts\FloatingText.cs" />
     <Compile Include="Assets\Scripts\FloatingTextController.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
@@ -241,6 +248,7 @@
     <Compile Include="Assets\Scripts\GamePreferences.cs" />
     <Compile Include="Assets\Scripts\Health.cs" />
     <Compile Include="Assets\Scripts\IAPManager.cs" />
+    <Compile Include="Assets\Scripts\JSONObject.cs" />
     <Compile Include="Assets\Scripts\LevelManager.cs" />
     <Compile Include="Assets\Scripts\LoginManager.cs" />
     <Compile Include="Assets\Scripts\MapLevelManager.cs" />
@@ -250,6 +258,7 @@
     <Compile Include="Assets\Scripts\MissionListPopulator.cs" />
     <Compile Include="Assets\Scripts\MusicManager.cs" />
     <Compile Include="Assets\Scripts\MusicPlayer.cs" />
+    <Compile Include="Assets\Scripts\OAuth2AccessToken.cs" />
     <Compile Include="Assets\Scripts\OptionsController.cs" />
     <Compile Include="Assets\Scripts\Outpost.cs" />
     <Compile Include="Assets\Scripts\OutpostPanelController.cs" />
@@ -278,6 +287,7 @@
     <None Include="Assets\FacebookSDK\SDK\Editor\android\DefaultAndroidManifest.xml" />
     <None Include="Assets\FacebookSDK\SDK\Scripts\Canvas\Resources\JSSDKBindings.txt" />
     <None Include="Assets\Plugins\Android\AndroidManifest.xml" />
+    <None Include="Assets\Plugins\Newtonsoft.Json.xml" />
     <None Include="Assets\QRcode\CamMat\WebCam.shader" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
