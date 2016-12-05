@@ -9,7 +9,13 @@ public class StaminaText : MonoBehaviour {
 	void Start () {
 		animator = GetComponent<Animator>();
 		AnimatorClipInfo[] clipInfo = animator.GetCurrentAnimatorClipInfo(0);
-		//Debug.Log(clipInfo[0].clip.length);
+		Debug.Log(clipInfo[0].clip.length);
+        if (this.transform.parent.name == "deleteme")
+        {
+            GameObject parent = this.transform.parent.gameObject;
+            Destroy(parent, clipInfo[0].clip.length);
+        }
+
 		Destroy(this.gameObject, clipInfo[0].clip.length);
 	}
 
@@ -18,4 +24,8 @@ public class StaminaText : MonoBehaviour {
 		Debug.Log("+"+myText+" stamina");
 	}
 
+    public void SetDamageText (string myDmg)
+    {
+        stamText.text = myDmg.ToString();
+    }
 }

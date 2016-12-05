@@ -8,7 +8,7 @@ public class SurvivorStateMachine : MonoBehaviour {
 	public bool isSelected;
 	public BaseSurvivor survivor;
 	public int teamPos, turnsTillTurning;
-	public GameObject mySelectedIcon, myGunShot, myClubSlash, myKnifeStab;
+	public GameObject mySelectedIcon, myGunShot, myClubSlash, myKnifeStab, combatTextPrefab;
 	public Slider myStamSlider;
 	public GameObject[] myWepSprites;
 	public Text sliderNameText;
@@ -116,6 +116,7 @@ public class SurvivorStateMachine : MonoBehaviour {
 				int myDmg = CalculateMyDamage();
 				Debug.Log ("Survivor hit the zombie for " +myDmg+ " damage");
 				targetZombie.zombie.curHP = targetZombie.zombie.curHP - myDmg;
+                SpawnCombatDamageText(targetZombie.gameObject, myDmg);
 				bool isDed = targetZombie.CheckForDeath();
 				StartCoroutine(SendAttackToServer(survivor.survivor_id, myWeapon.weapon_id, isDed));
 				UpdateStaminaBar();
@@ -335,6 +336,28 @@ public class SurvivorStateMachine : MonoBehaviour {
 
 		return myDmg;
 	}
+
+    void SpawnCombatDamageText (GameObject trgt, int val)
+    {
+        //spawn empty game object, attach to canvas, and locate in correct position.
+        GameObject canvas = GameObject.Find("Canvas");
+        GameObject empty = new GameObject();
+        empty.name = "deleteme";
+        GameObject zombie_pos = Instantiate(empty);
+        zombie_pos.transform.SetParent(canvas.transform, false);
+        Camera myCamera = FindObjectOfType<Camera>();
+        Vector3 screen_pos = myCamera.WorldToScreenPoint(trgt.transform.position);
+        Vector3 tmp_pos = screen_pos + new Vector3(0.0f, 100.0f, 0.0f);
+        zombie_pos.transform.position = tmp_pos;
+
+        //get the prefab and instantiate it
+        GameObject dmgTxtPrefab = Resources.Load<GameObject>("Prefabs/Damage Text Prefab");
+        GameObject instance = Instantiate(dmgTxtPrefab);
+        StaminaText dmgText = instance.GetComponent<StaminaText>();
+        instance.transform.SetParent(zombie_pos.transform, false);
+        dmgText.SetDamageText(val.ToString());
+        
+    }
 
 	public void BiteTimerStart () {
 		//calculate how many turns you have left
