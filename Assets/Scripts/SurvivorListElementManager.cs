@@ -69,7 +69,7 @@ public class SurvivorListElementManager : MonoBehaviour {
 		mySliderText.text = myStamString;
 		float val = (float)temp_stam / (float)survPlayCard.survivor.baseStamina;
 		myStamSlider.value = val;
-		Debug.Log(val.ToString());
+		//Debug.Log(val.ToString());
 	}
 
 	public void SetInjuryText (int injury_id) {

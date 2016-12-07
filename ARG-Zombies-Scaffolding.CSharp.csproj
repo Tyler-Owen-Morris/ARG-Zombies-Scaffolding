@@ -73,6 +73,9 @@
     <Reference Include="UnityEditor.iOS.Extensions.Common">
       <HintPath>Library\UnityAssemblies\UnityEditor.iOS.Extensions.Common.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>Assets\Plugins\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="Common">
       <HintPath>Assets\Plugins\UnityPurchasing\Bin\Common.dll</HintPath>
     </Reference>
@@ -99,9 +102,6 @@
     </Reference>
     <Reference Include="LitJson">
       <HintPath>Assets\Resources\LitJson.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>Assets\Plugins\Newtonsoft.Json.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -221,6 +221,8 @@
     <Compile Include="Assets\Scripts\5man Combat Scripts\BaseWeapon.cs" />
     <Compile Include="Assets\Scripts\5man Combat Scripts\BaseZombie.cs" />
     <Compile Include="Assets\Scripts\5man Combat Scripts\BattleStateMachine.cs" />
+    <Compile Include="Assets\Scripts\5man Combat Scripts\CombatWeaponListElementManager.cs" />
+    <Compile Include="Assets\Scripts\5man Combat Scripts\CombatWeaponListPopulator.cs" />
     <Compile Include="Assets\Scripts\5man Combat Scripts\ContinueRunningButtonManager.cs" />
     <Compile Include="Assets\Scripts\5man Combat Scripts\KillYourselfButtonManager.cs" />
     <Compile Include="Assets\Scripts\5man Combat Scripts\SurvivorStateMachine.cs" />

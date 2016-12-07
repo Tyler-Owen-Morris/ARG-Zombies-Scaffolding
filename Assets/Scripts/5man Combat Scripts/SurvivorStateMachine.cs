@@ -126,10 +126,8 @@ public class SurvivorStateMachine : MonoBehaviour {
 				//Record the durability loss
 				myWeapon.durability = myWeapon.durability - 1;
 				if (myWeapon.durability < 1) {
-//					//remove from list first
-//					int whereIsIt = GameManager.instance.survivorCardList.IndexOf(survivor.weaponEquipped);
-//					Debug.Log(whereIsIt);
-//					GameManager.instance.survivorCardList.RemoveAt(whereIsIt);
+                    //notify the BSM so that player can select a new weapon.
+                    BSM.WeaponDestroyed(this.survivor.survivor_id);
 
 					//destoy game object, and update survivor sprite
 					Destroy(survivor.weaponEquipped.gameObject);
@@ -414,7 +412,7 @@ public class SurvivorStateMachine : MonoBehaviour {
 			sprite.SetActive(false);
 		}
 		if (this.survivor.weaponEquipped != null) {
-			Debug.Log(this.survivor.name + " believes to have a weapon equipped , wep name: " + this.survivor.weaponEquipped.name);
+			//Debug.Log(this.survivor.name + " believes to have a weapon equipped , wep name: " + this.survivor.weaponEquipped.name);
 
 			//this should change to get the name
 			if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name == "crude shiv") {

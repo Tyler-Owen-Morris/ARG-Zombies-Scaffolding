@@ -302,18 +302,32 @@ public class ZombieStateMachine : MonoBehaviour {
 
 	//this is being used for players targeting zombies
 	void OnMouseDown () {
+        //provided characters have not already started moving.
 		if (actionStarted == false) {
-			GameObject[] targetReticleObjects = GameObject.FindGameObjectsWithTag("targetReticle");
-			foreach (GameObject targetReticle in targetReticleObjects){
-				ZombieStateMachine ZSM = gameObject.GetComponentInParent<ZombieStateMachine>();
-				ZSM.iAmPlayerTarget =false;
-				targetReticle.SetActive(false);
-			}
-			
+            //turn all target reticles off
+            GameObject[] targetReticleObjects = GameObject.FindGameObjectsWithTag("targetReticle");
+            foreach (GameObject targetReticle in targetReticleObjects)
+            {
+                ZombieStateMachine ZSM = gameObject.GetComponentInParent<ZombieStateMachine>();
+                ZSM.iAmPlayerTarget = false;
+                targetReticle.SetActive(false);
+            }
 
-			iAmPlayerTarget = true;
-			myTargetGraphic.SetActive(true);
-			BSM.playerTarget = this.gameObject;
+            
+            if (BSM.playerTarget != this.gameObject)
+            {
+                //if this is not already player target- set it to player target
+                iAmPlayerTarget = true;
+                myTargetGraphic.SetActive(true);
+                BSM.playerTarget = this.gameObject;
+            }else
+            {
+                //if this is already player target, UN-target this zombie
+                Debug.Log("un-targeting this zombie");
+                BSM.playerTarget = null;
+                iAmPlayerTarget = false;
+                myTargetGraphic.SetActive(false);
+            }
 		}
 	}
 }

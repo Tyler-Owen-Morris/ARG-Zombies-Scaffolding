@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 
 public class MapLevelManager : MonoBehaviour {
 
-	public GameObject inventoryPanel, buildingPanel, clearedBuildingPanel, qrPanel, personelPanel, gearPanel, homebasePanel, homebaseConfirmationPanel, outpostSelectionPanel, outpostConfirmationPanel, missionStartConfirmationPanel, OutpostQRPanel, enterBldgButton, unequippedWeaponsPanel, mapLevelCanvas, hungerThirstWarningPanel, endGamePanel, endGameButton, bogConfirmationPanel;
+	public GameObject missionCompletePanel, inventoryPanel, buildingPanel, clearedBuildingPanel, qrPanel, personelPanel, gearPanel, homebasePanel, homebaseConfirmationPanel, outpostSelectionPanel, outpostConfirmationPanel, missionStartConfirmationPanel, OutpostQRPanel, enterBldgButton, unequippedWeaponsPanel, mapLevelCanvas, hungerThirstWarningPanel, endGamePanel, endGameButton, bogConfirmationPanel;
 
 	[SerializeField]
 	public Text supplyText, daysAliveText, survivorsAliveText, currentLatText, currentLonText, locationReportText, zombieKillText, foodText, waterText, gearText, playerNameText, clearedBuildingNameText, bldgNameText, bldgSupplyText, bldgFoodText, bldgWaterText, clearedBldgSupplyText, clearedBldgFoodText, clearedBldgWaterText, zombieCountText, bldgDistText, homebaseLatText, homebaseLonText, missionConfirmationText;
@@ -1010,13 +1010,15 @@ public class MapLevelManager : MonoBehaviour {
     		mission_results_text += "and everyone returned safely";
     	}
 
-    	//instantiate the panel, set it's ID and text
-    	GameObject instance = Instantiate(missionCompletePrefab);
-    	GameObject canvas = GameObject.Find("Canvas");
-    	instance.gameObject.transform.SetParent(canvas.transform);
-    	MissionCompletePanelManager missCompPanelMgr = instance.GetComponent<MissionCompletePanelManager>();
+        //instantiate the panel, set it's ID and text
+        //GameObject canvas = GameObject.Find("Canvas");
+        //GameObject instance = Instantiate(missionCompletePrefab, canvas.transform) as GameObject;
+
+
+    	MissionCompletePanelManager missCompPanelMgr = missionCompletePanel.GetComponent<MissionCompletePanelManager>();
     	missCompPanelMgr.missionInfoText.text = mission_results_text;
     	missCompPanelMgr.mission_id = mission_id;
+        missionCompletePanel.SetActive(true);
     }
     
     //this is to get the last location data coroutine, it's part of updating the UI.
@@ -1501,6 +1503,8 @@ public class MapLevelManager : MonoBehaviour {
 			Debug.Log(www.error);
 		}
 	}
+
+
 	public bool promotionInProgress=false;
 	public void PromoteThisSurvivor (int surv_id) {
 		if (promotionInProgress==false) {

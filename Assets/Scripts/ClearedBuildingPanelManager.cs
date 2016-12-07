@@ -173,6 +173,7 @@ public class ClearedBuildingPanelManager : MonoBehaviour {
 
     public void CalculateTrapStatus ()
     {
+        currentMapManager = MapLevelManager.FindObjectOfType<MapLevelManager>();
         //calculate days trap has been in place.
         int days_to_fill = 5;
         float interval = 1.0f/days_to_fill;
@@ -228,6 +229,7 @@ public class ClearedBuildingPanelManager : MonoBehaviour {
 
     public void CalculateBarrelStatus()
     {
+        currentMapManager = MapLevelManager.FindObjectOfType<MapLevelManager>();
         //calculate days barrel has been in place.
         int days_to_fill = 10;
         float interval = 1.0f / days_to_fill;
@@ -311,6 +313,7 @@ public class ClearedBuildingPanelManager : MonoBehaviour {
 
     public void CalculateGreenhouseStatus ()
     {
+        currentMapManager = MapLevelManager.FindObjectOfType<MapLevelManager>();
         //calculate days barrel has been in place.
         int days_to_fill = 20;
         float interval = 1.0f / days_to_fill;

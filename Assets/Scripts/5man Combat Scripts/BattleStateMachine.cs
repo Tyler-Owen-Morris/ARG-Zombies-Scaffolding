@@ -35,15 +35,16 @@ public class BattleStateMachine : MonoBehaviour {
 	public List<GameObject> zombieList = new List<GameObject>();
 
 	public GameObject playerTarget;
-	public GameObject autoAttackToggle, survivorBitPanel, playerBitPanel, failedRunAwayPanel, runButton, attackButton, cheatSaveButton;
+	public GameObject weaponBrokenPanel, autoAttackToggle, survivorBitPanel, playerBitPanel, failedRunAwayPanel, runButton, attackButton, cheatSaveButton;
 	public AmputationButtonManager amputationButton;
 	public GameObject playerPos1, playerPos2, playerPos3, playerPos4, playerPos5;
 	[SerializeField]
 	public bool autoAttackIsOn= false;
 
-	public int zombiesKilled = 0;
+	public int zombiesKilled = 0, brokenWeapon_surv_id;
 	public Text zombieCounter, ammmoCounter, survivorBitText, failedToRunText;
     public GameObject blazeOfGloryImage;
+    public CombatWeaponListPopulator my_CWLP;
 
     public Sprite[] zombie_sprite_array;
 
@@ -56,9 +57,10 @@ public class BattleStateMachine : MonoBehaviour {
 	private string injuredSurvivorURL = GameManager.serverURL+"/InjuredSurvivor.php";
 	private string restoreSurvivorURL = GameManager.serverURL+"/RestoreSurvivor.php";
 	private string combatSuicideURL = GameManager.serverURL+"/CombatSuicide.php";
+    private string equipWeaponURL = GameManager.serverURL + "/EquipWeapon.php";
 
-	//private int totalSurvivorsFound = 0;
-	void Awake () {
+    //private int totalSurvivorsFound = 0;
+    void Awake () {
 		LoadInSurvivorCardData();
 	}
 
@@ -902,6 +904,21 @@ public class BattleStateMachine : MonoBehaviour {
 
 			float roll = UnityEngine.Random.Range(0.0f, 100.0f);
 			if (roll <= odds) {
+                //check that it was not the player character
+                if (mySSM.teamPos == 5)
+                {
+                    GameObject[] battle_survivors = GameObject.FindGameObjectsWithTag("survivor");
+                    if (battle_survivors.Length <= 1)
+                    {
+                        //if the player is the last one alive, then they died...
+                        StartCoroutine(GameManager.instance.PlayerBit());
+                    }
+                    else
+                    {
+                        continue; //no game over, just go to next survivor
+                    }
+                }
+
 				//this survivor has failed to run away.
 				StartCoroutine(SendDeadSurvivorToServer(mySSM.survivor.survivor_id));
 				failedToRunText.text = mySSM.survivor.name+" fell behind and was overcome by zombies. they didn't make it.\n what will you do?";
@@ -922,4 +939,113 @@ public class BattleStateMachine : MonoBehaviour {
 			SceneManager.LoadScene("02a Map Level");
 		}
 	}
+
+    public void WeaponDestroyed (int surv_id)
+    {
+        brokenWeapon_surv_id = surv_id;
+        battleState = PerformAction.BITECASE; //this is used to temporarily pause the BSM
+        
+        if (my_CWLP != null)
+        {
+            weaponBrokenPanel.SetActive(true);
+            my_CWLP.PopulateUnequippedWeapons();
+        }else
+        {
+            Debug.Log("Unable to locate Weapon list populator");
+        }
+        
+    }
+
+    public void DontEquipNewWeapon ()
+    {
+        foreach (GameObject surv in survivorList)
+        {
+            SurvivorStateMachine my_SSM = surv.GetComponent<SurvivorStateMachine>();
+            if (my_SSM != null)
+            {
+                my_SSM.UpdateWeaponSprite();
+            }else
+            {
+                Debug.Log("No SurvivorStateMachine able to be located for "+surv.name);
+            }
+        }
+        weaponBrokenPanel.SetActive(false);
+        battleState = PerformAction.WAIT;
+    }
+
+    public void EquipNewWeapon(int wep_id) {
+        StartCoroutine(EquipWeaponToSurvivor(brokenWeapon_surv_id, wep_id));
+        Debug.Log("Sending weapon equip to server; surv ID: " + brokenWeapon_surv_id + " wep id: " + wep_id);
+    }
+
+    IEnumerator EquipWeaponToSurvivor(int survivor_id, int weapon_id)
+    {
+        WWWForm form = new WWWForm();
+        form.AddField("id", GameManager.instance.userId);
+        form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+        form.AddField("client", "mob");
+        form.AddField("survivor_id", survivor_id);
+        form.AddField("weapon_id", weapon_id);
+
+        WWW www = new WWW(equipWeaponURL, form);
+        yield return www;
+        Debug.Log(www.text);
+
+        if (www.error == null)
+        {
+            string serverString = www.text.ToString();
+            JsonData weaponEquipJson = JsonMapper.ToObject(serverString);
+
+            if (weaponEquipJson[0].ToString() == "Success")
+            {
+                Debug.Log(weaponEquipJson[1].ToString());
+                GameManager.instance.weaponCardList.Clear();
+                GameManager.instance.weaponCardList.AddRange(GameObject.FindGameObjectsWithTag("weaponcard"));
+
+
+                //find the weapon to be equipped.
+                foreach (GameObject weapon in GameManager.instance.weaponCardList)
+                {
+                    BaseWeapon my_wep = weapon.GetComponent<BaseWeapon>();
+                    if (my_wep.weapon_id == weapon_id)
+                    {
+                        //find the survivor, and update and associate the objects in game data
+                        my_wep.equipped_id = survivor_id;
+                        foreach (GameObject survivor in survivorList)
+                        {
+                            SurvivorStateMachine my_surv = survivor.GetComponent<SurvivorStateMachine>();
+                            if (my_surv.survivor.survivor_id == survivor_id)
+                            {
+                                my_surv.survivor.weaponEquipped = my_wep.gameObject;
+                                my_surv.UpdateWeaponSprite();
+                                weaponBrokenPanel.SetActive(false);
+                                Debug.Log("New weapon sucessfully equipped");
+                                battleState = PerformAction.WAIT;
+                                break;
+                            }else
+                            {
+                                continue;
+                            }
+                        }
+                    }else
+                    {
+                        continue;
+                    }
+                }
+
+                Debug.Log("Unable to associate weapon and survivor records");
+
+            }
+            else if (weaponEquipJson[0].ToString() == "Failed")
+            {
+                Debug.Log(weaponEquipJson[1].ToString());
+            }
+
+
+        }
+        else
+        {
+            Debug.Log(www.error);
+        }
+    }
 }
