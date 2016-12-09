@@ -516,8 +516,11 @@ public class ClearedBuildingPanelManager : MonoBehaviour {
                 }
                 else
                 {
-                    Debug.Log(gearPlaceJSON[3].ToString());
+                    Debug.Log(gearPlaceJSON[1].ToString());
                 }
+
+                GameManager.instance.clearedBldgJsonText = JsonMapper.ToJson(gearPlaceJSON[2]);
+                Debug.Log(GameManager.instance.clearedBldgJsonText);
             }
             else
             {

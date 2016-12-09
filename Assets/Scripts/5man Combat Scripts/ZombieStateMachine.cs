@@ -323,7 +323,7 @@ public class ZombieStateMachine : MonoBehaviour {
             }else
             {
                 //if this is already player target, UN-target this zombie
-                Debug.Log("un-targeting this zombie");
+                //Debug.Log("un-targeting this zombie");
                 BSM.playerTarget = null;
                 iAmPlayerTarget = false;
                 myTargetGraphic.SetActive(false);

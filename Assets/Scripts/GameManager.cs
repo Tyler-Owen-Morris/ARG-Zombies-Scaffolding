@@ -35,7 +35,7 @@ public class GameManager : MonoBehaviour {
 	//made this public while working on the server "cleared list" data retention. it should go back to private
 	public string activeBldg_name, zombie_to_kill_id ="", activeBldg_lootcode, activeBldg_id;
 	public int activeBldg_supply, activeBldg_food, activeBldg_water, activeBldg_zombies;
-	public string locationJsonText, survivorJsonText, weaponJsonText, clearedBldgJsonText, outpostJsonText, missionJsonText, starvationHungerJsonText, injuryJsonText;
+	public string locationJsonText, survivorJsonText, weaponJsonText, clearedBldgJsonText, outpostJsonText, missionJsonText, starvationHungerJsonText, injuryJsonText, foundSurvivorJsonText;
 	public JsonData missionData;
 
 	public string userId;
@@ -1405,12 +1405,16 @@ public class GameManager : MonoBehaviour {
 
 								//if there has been a survivor added to the players team.
 								if ((int)buildingClearReturn[2] > 0) {
+                                    foundSurvivorJsonText = JsonMapper.ToJson(buildingClearReturn[3]);
+                                    Debug.Log(foundSurvivorJsonText);
+                                    /*
 									foundSurvivorName = buildingClearReturn[3][0]["name"].ToString();
 									foundSurvivorCurStam = (int)buildingClearReturn[3][0]["base_stam"];
 									foundSurvivorMaxStam = (int)buildingClearReturn[3][0]["base_stam"];
 									foundSurvivorAttack = (int)buildingClearReturn[3][0]["base_attack"];
 									foundSurvivorEntryID = (int)buildingClearReturn[3][0]["entry_id"];
-								}
+								    */
+                                }
 							}
 						} else {
 							Debug.Log(www.error);

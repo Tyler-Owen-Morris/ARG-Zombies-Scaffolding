@@ -11,7 +11,7 @@ public class MapLevelManager : MonoBehaviour {
 	public GameObject missionCompletePanel, inventoryPanel, buildingPanel, clearedBuildingPanel, qrPanel, personelPanel, gearPanel, homebasePanel, homebaseConfirmationPanel, outpostSelectionPanel, outpostConfirmationPanel, missionStartConfirmationPanel, OutpostQRPanel, enterBldgButton, unequippedWeaponsPanel, mapLevelCanvas, hungerThirstWarningPanel, endGamePanel, endGameButton, bogConfirmationPanel;
 
 	[SerializeField]
-	public Text supplyText, daysAliveText, survivorsAliveText, currentLatText, currentLonText, locationReportText, zombieKillText, foodText, waterText, gearText, playerNameText, clearedBuildingNameText, bldgNameText, bldgSupplyText, bldgFoodText, bldgWaterText, clearedBldgSupplyText, clearedBldgFoodText, clearedBldgWaterText, zombieCountText, bldgDistText, homebaseLatText, homebaseLonText, missionConfirmationText;
+	public Text supplyText, daysAliveText, survivorsAliveText, currentLatText, currentLonText, locationReportText, zombieKillText, foodText, waterText, gearText, expirationText, playerNameText, clearedBuildingNameText, bldgNameText, bldgSupplyText, bldgFoodText, bldgWaterText, clearedBldgSupplyText, clearedBldgFoodText, clearedBldgWaterText, zombieCountText, bldgDistText, homebaseLatText, homebaseLonText, missionConfirmationText;
 
 	[SerializeField]
 	private Slider playerHealthSlider, playerHealthSliderDuplicate;
@@ -458,54 +458,8 @@ public class MapLevelManager : MonoBehaviour {
         {
             waterText.text = "Water: 0";
         }
-        zombieKillText.text = "zombie kills: "+GameManager.instance.zombieKill_score.ToString();
 
-        //gearText is the text object on the inventory panel that displays users inventory. Construst and set it.
-        string my_gear_string = "";
-        my_gear_string += "Ammunition: " + GameManager.instance.ammo.ToString()+"\n";
-        if (GameManager.instance.trap > 0)
-            my_gear_string += "Traps: " + GameManager.instance.trap.ToString() + "\n";
-        if(GameManager.instance.barrel>0)
-            my_gear_string += "Barrels: " + GameManager.instance.barrel.ToString() + "\n";
-        if(GameManager.instance.greenhouse>0)
-            my_gear_string += "Greenhouse: "+GameManager.instance.greenhouse.ToString()+"\n";
-        my_gear_string += "\n";
-        int shiv_count = 0;
-        int huntKnife_count = 0;
-        int bat_count = 0;
-        int hammer_count = 0;
-        int twentytwo_count = 0;
-        int shotty_count = 0;
-        foreach (GameObject weapon in GameManager.instance.weaponCardList)
-        {
-            BaseWeapon myWep = weapon.GetComponent<BaseWeapon>();
-            if (myWep.name == "crude shiv")
-                shiv_count++;
-            if (myWep.name == "hunting knife")
-                huntKnife_count++;
-            if (myWep.name == "baseball bat")
-                bat_count++;
-            if (myWep.name == "sledgehammer")
-                hammer_count++;
-            if (myWep.name == ".22 revolver")
-                twentytwo_count++;
-            if (myWep.name == "shotgun")
-                shotty_count++;
-        }
-        if (shiv_count > 0)
-            my_gear_string += "Shivs: " + shiv_count.ToString() + "\n";
-        if(huntKnife_count>0)
-            my_gear_string += "Hunting Knives: "+huntKnife_count+"\n";
-        if (bat_count > 0)
-            my_gear_string += "Baseball Bats: " + bat_count + "\n";
-        if (hammer_count > 0)
-            my_gear_string += "Sledgehammers: " + hammer_count + "\n";
-        if (twentytwo_count > 0)
-            my_gear_string += ".22 Revolvers: " + twentytwo_count + "\n";
-        if (shotty_count > 0)
-            my_gear_string += "Shotguns: " + shotty_count + "\n";
-        
-        gearText.text = my_gear_string;
+        UpdateInventoryPanelText();
 
         //this runs the game clock on the map level instead of setting a static float for "time played"
         //daysAliveText.text = ((float)((DateTime.Now-GameManager.instance.timeCharacterStarted).TotalDays)).ToString("F2");
@@ -531,6 +485,85 @@ public class MapLevelManager : MonoBehaviour {
 		bldgSpawner.UpdateBuildings();
         StartCoroutine(SetCurrentLocationText());
 	}
+
+    void UpdateInventoryPanelText ()
+    {
+        //set zombie kill text
+        zombieKillText.text = "zombies killed: " + GameManager.instance.zombieKill_score.ToString();
+
+        //Construct the string to display equipment status
+        string my_gear_string = "";
+        my_gear_string += "Ammunition: " + GameManager.instance.ammo.ToString() + "\n";
+        if (GameManager.instance.trap > 0)
+            my_gear_string += "Traps: " + GameManager.instance.trap.ToString() + "\n";
+        if (GameManager.instance.barrel > 0)
+            my_gear_string += "Barrels: " + GameManager.instance.barrel.ToString() + "\n";
+        if (GameManager.instance.greenhouse > 0)
+            my_gear_string += "Greenhouse: " + GameManager.instance.greenhouse.ToString() + "\n";
+        my_gear_string += "\n";
+        int shiv_count = 0;
+        int huntKnife_count = 0;
+        int bat_count = 0;
+        int hammer_count = 0;
+        int twentytwo_count = 0;
+        int shotty_count = 0;
+        foreach (GameObject weapon in GameManager.instance.weaponCardList)
+        {
+            BaseWeapon myWep = weapon.GetComponent<BaseWeapon>();
+            if (myWep.name == "crude shiv")
+                shiv_count++;
+            if (myWep.name == "hunting knife")
+                huntKnife_count++;
+            if (myWep.name == "baseball bat")
+                bat_count++;
+            if (myWep.name == "sledgehammer")
+                hammer_count++;
+            if (myWep.name == ".22 revolver")
+                twentytwo_count++;
+            if (myWep.name == "shotgun")
+                shotty_count++;
+        }
+        if (shiv_count > 0)
+            my_gear_string += "Shivs: " + shiv_count.ToString() + "\n";
+        if (huntKnife_count > 0)
+            my_gear_string += "Hunting Knives: " + huntKnife_count + "\n";
+        if (bat_count > 0)
+            my_gear_string += "Baseball Bats: " + bat_count + "\n";
+        if (hammer_count > 0)
+            my_gear_string += "Sledgehammers: " + hammer_count + "\n";
+        if (twentytwo_count > 0)
+            my_gear_string += ".22 Revolvers: " + twentytwo_count + "\n";
+        if (shotty_count > 0)
+            my_gear_string += "Shotguns: " + shotty_count + "\n";
+
+        gearText.text = my_gear_string;//located in inventory panel/equipment panel
+
+        //construct the string that calculates starvation and thirst
+        string my_rss_expiration_string = "";
+        GameObject[] all_survivors = GameObject.FindGameObjectsWithTag("survivorcard");
+        int all_surv_count = all_survivors.Length;
+        my_rss_expiration_string += all_surv_count.ToString() + " survivors\n";
+        int daily_consumption = all_surv_count * 4; //eat&drink 1 unit per 6 hrs
+        my_rss_expiration_string += "will consume= " + daily_consumption + " water/day\n";
+        my_rss_expiration_string += "and " + daily_consumption + " food/day\n";
+        int meals_to_expire_f = Mathf.FloorToInt(GameManager.instance.foodCount / all_surv_count);
+        int hrs_food_remain = meals_to_expire_f * 6;
+        int days_food_remain = Mathf.FloorToInt(hrs_food_remain / 24);
+        my_rss_expiration_string += "Out of FOOD in " + days_food_remain + " days\n";
+        int meals_to_expire_w = Mathf.FloorToInt(GameManager.instance.waterCount / all_surv_count);
+        int hrs_water_remain = meals_to_expire_w * 6;
+        int days_water_remain = Mathf.FloorToInt(hrs_water_remain/24);
+        my_rss_expiration_string += "Out of WATER in " + days_water_remain + " days\n";
+        if (days_water_remain <= days_food_remain)
+        {
+            my_rss_expiration_string += "DEAD in " +(days_water_remain+2)+" days";
+        }else
+        {
+            my_rss_expiration_string += "DEAD in " + (days_food_remain + 3) + " days";
+        }
+        expirationText.text = my_rss_expiration_string;
+
+    }
 
     private void UpdateTimeAliveClock() {
         TimeSpan time_alive = (DateTime.Now - GameManager.instance.timeCharacterStarted);
