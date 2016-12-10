@@ -144,7 +144,7 @@ public class ZombieStateMachine : MonoBehaviour {
 			targetSurvivor.survivor.curStamina -= myDmg;
 
 			//check for having bit the player
-			float odds = 0.0f;
+			float odds = 2.0f;
 			bool survivorBit= false;
 			if (targetSurvivor.teamPos == 5) {
 				//this is player character, he has different odds than the team
@@ -153,11 +153,11 @@ public class ZombieStateMachine : MonoBehaviour {
 					//player character cannot get bit
 					odds = 0.0f;
 				} else {
-					odds = 0.5f;
+					odds += 0.5f;
 				}
 
 			} else {
-				odds = 1.1f;//starting odds for a survivor to get bitten.
+				odds += 1.1f;//starting odds for a survivor to get bitten.
 			}
 			int cur_stam = targetSurvivor.survivor.curStamina;
 			if (cur_stam < 1) {
