@@ -977,7 +977,7 @@ public class GameManager : MonoBehaviour {
 		Double days = (now - timeCharacterStarted).TotalDays;
 		daysSurvived = Convert.ToInt32(days);
 
-		Debug.Log ("The SetDaysSurvived function has returned: " + days + " Days since character created");
+		//Debug.Log ("The SetDaysSurvived function has returned: " + days + " Days since character created");
 	}
 
 	public void StartNewCharacter () {

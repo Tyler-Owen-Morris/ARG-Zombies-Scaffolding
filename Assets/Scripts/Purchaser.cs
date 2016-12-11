@@ -53,6 +53,7 @@ public class Purchaser : MonoBehaviour, IStoreListener
         if (IsInitialized())
         {
             // ... we are done here.
+            Debug.Log("Purchaser already initialized...");
             return;
         }
         

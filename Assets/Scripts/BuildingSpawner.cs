@@ -55,7 +55,7 @@ public class BuildingSpawner : MonoBehaviour {
 				myWwwString += "37.70897,-122.4292";
 				//this is assuming my home location
 			}
-			myWwwString += "&radius=500";
+			myWwwString += "&radius=400";
 			//myWwwString += "&keyword=things";
 			myWwwString += "&key="+ googleAPIKey;
 
@@ -86,7 +86,13 @@ public class BuildingSpawner : MonoBehaviour {
 		Debug.Log(JsonMapper.ToJson(bldgJson));
         //JsonData foursquareJson = JsonMapper.ToObject(jsonReturn);
 
-
+        double m_per_pixel_mapBG = GetMetersPerPixelOfGoogleMapImage();
+        GoogleMap my_GM = FindObjectOfType<GoogleMap>();
+        //int map_img_size = 560;//this worked for iPhone 5
+        int map_img_size = 420;
+        double map_width_in_meters = (float)(m_per_pixel_mapBG*map_img_size);
+        double m_per_screen_pixel = map_width_in_meters / Screen.width;
+        Debug.Log("Calculating m/px-BG: " + m_per_pixel_mapBG + "  Map width in meters: "+map_width_in_meters+"  and meters/pixel for building placement: " + m_per_screen_pixel);
 	        
         for (int i = 0; i < bldgJson["results"].Count; i++) {
 			string myName = (string)bldgJson["results"][i]["name"];
@@ -114,6 +120,8 @@ public class BuildingSpawner : MonoBehaviour {
 			}
 			double xDistMeters = deltaLongitude * m_per_deg_lon;
 			double yDistMeters = deltaLatitude * m_per_deg_lat;
+            float xScreenDist = (float)(xDistMeters * m_per_screen_pixel);
+            float yScreenDist = (float)(yDistMeters * m_per_screen_pixel);
 			
 
 			
@@ -125,8 +133,8 @@ public class BuildingSpawner : MonoBehaviour {
 			instance.buildingID = myBldgID;
 			instance.myLat = lat;
 			instance.myLng = lng;
-			float xCoord = (float)(screenCenter.x - (xDistMeters));
-			float yCoord = (float)(screenCenter.y - (yDistMeters));
+			float xCoord = (float)(screenCenter.x - (xScreenDist));
+			float yCoord = (float)(screenCenter.y - (yScreenDist));
 			Vector3 pos = new Vector3 (xCoord, yCoord, 0);
 
 			instance.transform.SetParent(bldgHolder.transform);
@@ -274,8 +282,34 @@ public class BuildingSpawner : MonoBehaviour {
       	SpawnOutpostsToMap(); 
     }
 
+    double GetMetersPerPixelOfGoogleMapImage ()
+    {
+        GoogleMap my_GoogleMap = FindObjectOfType<GoogleMap>();
+        int zoom = 0;
+        if (my_GoogleMap != null)
+        {
+            zoom = my_GoogleMap.zoom;
+        }else
+        {
+            zoom = 16;
+        }
+        float my_lat = 0.0f;
+        if (Input.location.status==LocationServiceStatus.Running)
+        {
+            my_lat = Input.location.lastData.latitude;
+        }else
+        {
+            my_lat = 37.70897f;
+        }
+        double my_value = 156543.03392f * Mathf.Cos((my_lat*Mathf.PI) / 180 ) / Mathf.Pow(2,zoom);
+        //my_value = 2.38865f;
+        Debug.Log("Calculating m/pixel of original google image to be: " + my_value);
+        return my_value;
+    }
 
-	public void PlaceHomebaseGraphic () {
+
+
+    public void PlaceHomebaseGraphic () {
     	float homeLat = GameManager.instance.homebaseLat;
     	float homeLon = GameManager.instance.homebaseLong;
 

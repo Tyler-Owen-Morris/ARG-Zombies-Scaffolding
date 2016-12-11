@@ -231,7 +231,7 @@ public class MapLevelManager : MonoBehaviour {
     void SetEndGameButtonText ()
     {
         Text button_text = endGameButton.GetComponentInChildren<Text>();
-        Debug.Log(button_text.text);
+        //Debug.Log(button_text.text);
 
         if (button_text != null)
         {
@@ -276,7 +276,7 @@ public class MapLevelManager : MonoBehaviour {
                 //suicide is very tempting now
                 button_text.text = "sweet release";
             }
-            Debug.Log(days_alive.ToString() + ": days alive calculated by the suicide button");
+            //Debug.Log(days_alive.ToString() + ": days alive calculated by the suicide button");
 
         }else
         {
