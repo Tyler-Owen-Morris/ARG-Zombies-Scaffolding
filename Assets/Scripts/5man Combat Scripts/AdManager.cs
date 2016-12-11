@@ -9,16 +9,17 @@ public class AdManager : MonoBehaviour {
         if (Advertisement.IsReady())
         {
             Advertisement.Show("", new ShowOptions(){resultCallback = HandleAdResult});
-        }
+        } 
     }
 
     private void HandleAdResult(ShowResult result)
     {
+        BattleStateMachine BSM = FindObjectOfType<BattleStateMachine>();
         switch (result)
         {
+
             case ShowResult.Finished:
                 //restore survivor
-                BattleStateMachine BSM = FindObjectOfType<BattleStateMachine>();
                 if (BSM != null)
                 {
                     BSM.PlayerChoosePurchaseSurvivorSave();
@@ -27,8 +28,16 @@ public class AdManager : MonoBehaviour {
                     Debug.Log("unable to find battlestatemachine to reward player for successful ad watch");
                 }
                 break;
+
             case ShowResult.Skipped:
-                //kill the survivor horribly
+                //unbite- but don't restore survivor.
+                if (BSM != null)
+                {
+                    BSM.PlayerPartiallyWatchedAD();
+                }else
+                {
+                    Debug.Log("unable to find battlestatemachine to reward player for partial ad watch");
+                }
 
                 break;
             case ShowResult.Failed:

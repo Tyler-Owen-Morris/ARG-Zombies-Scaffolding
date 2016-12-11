@@ -89,10 +89,10 @@ public class BuildingSpawner : MonoBehaviour {
         double m_per_pixel_mapBG = GetMetersPerPixelOfGoogleMapImage();
         GoogleMap my_GM = FindObjectOfType<GoogleMap>();
         //int map_img_size = 560;//this worked for iPhone 5
-        int map_img_size = 420;
-        double map_width_in_meters = (float)(m_per_pixel_mapBG*map_img_size);
-        double m_per_screen_pixel = map_width_in_meters / Screen.width;
-        Debug.Log("Calculating m/px-BG: " + m_per_pixel_mapBG + "  Map width in meters: "+map_width_in_meters+"  and meters/pixel for building placement: " + m_per_screen_pixel);
+        int map_img_size = Mathf.FloorToInt(Screen.height/2);
+        double map_height_in_meters = (m_per_pixel_mapBG*map_img_size);
+        double m_per_screen_pixel = map_height_in_meters / Screen.height;
+        Debug.Log("Calculating m/px-BG: " + m_per_pixel_mapBG + "  Map width in meters: "+map_height_in_meters+"  and meters/pixel for building placement: " + m_per_screen_pixel);
 	        
         for (int i = 0; i < bldgJson["results"].Count; i++) {
 			string myName = (string)bldgJson["results"][i]["name"];
@@ -301,7 +301,8 @@ public class BuildingSpawner : MonoBehaviour {
         {
             my_lat = 37.70897f;
         }
-        double my_value = 156543.03392f * Mathf.Cos((my_lat*Mathf.PI) / 180 ) / Mathf.Pow(2,zoom);
+        //double my_value = 156543.03392f *( Mathf.Cos((my_lat*Mathf.PI) / 180 ) / Mathf.Pow(2,zoom));
+        double my_value = (Mathf.Cos(my_lat*Mathf.PI/180)*2*Mathf.PI*6378137)/(256*Mathf.Pow(2, zoom));
         //my_value = 2.38865f;
         Debug.Log("Calculating m/pixel of original google image to be: " + my_value);
         return my_value;

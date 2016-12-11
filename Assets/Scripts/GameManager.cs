@@ -43,7 +43,7 @@ public class GameManager : MonoBehaviour {
 	public string userLastName;
 	public string userName;
 
-	public static string serverURL = "http://www.argzombie.com/ARGZ_SERVER";
+	public static string serverURL = "http://www.argzombie.com/ARGZ_DEV_SERVER";
 	public static string QR_encryption_key = "12345678901234567890123456789012";
 
 	private string startNewCharURL = serverURL+"/StartNewCharacter.php";

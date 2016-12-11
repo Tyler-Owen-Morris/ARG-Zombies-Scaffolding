@@ -349,13 +349,26 @@ public class MapLevelManager : MonoBehaviour {
 					lastUpdateLng = Input.location.lastData.longitude;
 				}
 
-			} else {
+                //update the map background
+                GoogleMap my_googleMap = FindObjectOfType<GoogleMap>();
+                if (my_googleMap != null)
+                {
+                    my_googleMap.Refresh();
+                }
+                else
+                {
+                    Debug.Log("UI updater could not locate Google Map clas to refresh map image");
+                }
+
+            } else {
 				//store current location as last updated location and do the update
 				lastUpdateLat = Input.location.lastData.latitude;
 				lastUpdateLng = Input.location.lastData.longitude;
 			}
 		}
+        //update building locations
 		bldgSpawner.UpdateBuildings();
+
 	}
 
 	public void RegenerateStamina () {

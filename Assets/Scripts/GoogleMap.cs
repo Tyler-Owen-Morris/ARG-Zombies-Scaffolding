@@ -56,7 +56,14 @@ public class GoogleMap : MonoBehaviour
 		
 			qs += "&zoom=" + zoom.ToString ();
 		}
-		qs += "&size=" + WWW.UnEscapeURL (string.Format ("{0}x{0}", size));
+        int wide = Screen.width / 2;
+        int high = Screen.height / 2;
+        if (wide > 1280 || high > 1280)
+        {
+            wide = wide / 2;
+            high = high / 2;
+        }
+		qs += "&size=" + WWW.UnEscapeURL (string.Format ("{0}x{1}", wide, high));
 		qs += "&scale=" + (doubleResolution ? "2" : "1");
 		qs += "&maptype=" + mapType.ToString ().ToLower ();
 		var usingSensor = false;

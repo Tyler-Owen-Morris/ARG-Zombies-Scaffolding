@@ -857,6 +857,14 @@ public class BattleStateMachine : MonoBehaviour {
 		}
 	}
 
+    public void PlayerPartiallyWatchedAD ()
+    {
+        //no stamina gain is assessed- no need to update server.
+        survivorWithBite = null; //off the chopping block
+        playerBitPanel.SetActive(false); //panel gone
+        battleState = PerformAction.WAIT; // resume battle state machine
+    }
+
 	//this is called from the run away failed panel
 	public void TurnAndFight () {
 		failedRunAwayPanel.SetActive(false);

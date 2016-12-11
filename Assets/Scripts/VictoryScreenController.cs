@@ -198,7 +198,7 @@ public class VictoryScreenController : MonoBehaviour {
             StartCoroutine(StealFromSurvivors(found_food, found_water, found_supply));
             attack_string += "your attack took them by surprise\n";
             attack_string += "surveying the "+(found_surv_count-escaped).ToString()+" dead reveals\n";
-            attack_string += found_food + " food " + found_water + " water & " + found_supply + " for the taking";
+            attack_string += found_food + " food " + found_water + " water & " + found_supply + " supply for the taking";
             if (escaped > 0)
             {
                 attack_string += "\n"+escaped + " got away...";
