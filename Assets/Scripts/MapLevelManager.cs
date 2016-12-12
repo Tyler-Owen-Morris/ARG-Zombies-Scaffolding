@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 
 public class MapLevelManager : MonoBehaviour {
 
-	public GameObject missionCompletePanel, inventoryPanel, buildingPanel, clearedBuildingPanel, qrPanel, personelPanel, gearPanel, homebasePanel, homebaseConfirmationPanel, outpostSelectionPanel, outpostConfirmationPanel, missionStartConfirmationPanel, OutpostQRPanel, enterBldgButton, unequippedWeaponsPanel, mapLevelCanvas, hungerThirstWarningPanel, endGamePanel, endGameButton, bogConfirmationPanel;
+	public GameObject exitGamePanel, missionCompletePanel, inventoryPanel, buildingPanel, clearedBuildingPanel, qrPanel, personelPanel, gearPanel, homebasePanel, homebaseConfirmationPanel, outpostSelectionPanel, outpostConfirmationPanel, missionStartConfirmationPanel, OutpostQRPanel, enterBldgButton, unequippedWeaponsPanel, mapLevelCanvas, hungerThirstWarningPanel, endGamePanel, endGameButton, bogConfirmationPanel;
 
 	[SerializeField]
 	public Text supplyText, daysAliveText, survivorsAliveText, currentLatText, currentLonText, locationReportText, zombieKillText, foodText, waterText, gearText, expirationText, playerNameText, clearedBuildingNameText, bldgNameText, bldgSupplyText, bldgFoodText, bldgWaterText, clearedBldgSupplyText, clearedBldgFoodText, clearedBldgWaterText, zombieCountText, bldgDistText, homebaseLatText, homebaseLonText, missionConfirmationText;
@@ -130,6 +130,23 @@ public class MapLevelManager : MonoBehaviour {
 		OPController.SetQRtextAndEncode(outpost_id);
 		OutpostQRPanel.SetActive(true);
 	}
+
+    public void ToggleExitPanel ()
+    {
+        if (exitGamePanel.activeInHierarchy)
+        {
+            exitGamePanel.SetActive(false);
+        }else
+        {
+            exitGamePanel.SetActive(true);
+        }
+    }
+
+    public void ExitGame()
+    {
+        Debug.Log("EXIT GAME CALLED!!");
+        SceneManager.LoadScene("01a Login");
+    }
 
 //	public void PlayerAttemptingPurchaseFullHealth () {
 //		GameManager.instance.PlayerAttemptingPurchaseFullHealth();
