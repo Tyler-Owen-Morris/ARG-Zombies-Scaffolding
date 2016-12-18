@@ -1,12 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using SpriteColorFX;
 
 public class ZombieStateMachine : MonoBehaviour {
 
 	public BaseZombie zombie;
 	public GameObject myTargetGraphic;
 	public Text myTypeText;
+    [SerializeField]
+    public ZombieColorProfile[] zombieColorProfileArray;
 
 	private BattleStateMachine BSM;
 	private Vector3 startPosition;
@@ -50,19 +53,66 @@ public class ZombieStateMachine : MonoBehaviour {
     {
         //find my sprite renderer
         SpriteRenderer my_spriteRenderer = this.gameObject.GetComponent<SpriteRenderer>();
+        SpriteColorMasks3 spriteRecolorer = GetComponent<SpriteColorMasks3>();
 
         if (zombie.zombieType == BaseZombie.Type.SKINNY)
         {
             my_spriteRenderer.sprite = BSM.zombie_sprite_array[0];
+            spriteRecolorer.textureMask = BSM.zombie_texture_array[0] as Texture2D;
         }else if (zombie.zombieType == BaseZombie.Type.NORMAL)
         {
             my_spriteRenderer.sprite = BSM.zombie_sprite_array[1];
-        }else if (zombie.zombieType == BaseZombie.Type.FAT)
+            spriteRecolorer.textureMask = BSM.zombie_texture_array[1] as Texture2D;
+        }
+        else if (zombie.zombieType == BaseZombie.Type.FAT)
         {
             my_spriteRenderer.sprite = BSM.zombie_sprite_array[2];
+            spriteRecolorer.textureMask = BSM.zombie_texture_array[2] as Texture2D;
         }
+        spriteRecolorer.pixelOp = SpriteColorHelper.PixelOp.Overlay;
+        RecolorMySprite();
+        //spriteRecolorer.colorMaskRed = GimmieRandomColor();
+        //spriteRecolorer.colorMaskGreen = GimmieRandomColor();
+        //spriteRecolorer.colorMaskBlue = GimmieRandomColor();
+
+        Debug.Log(spriteRecolorer.colorMaskRed.ToString() +"R :: "+spriteRecolorer.colorMaskGreen.ToString()+"G :: "+spriteRecolorer.colorMaskBlue.ToString()+"B");
 
         Debug.Log(this.gameObject.name + " is setting their sprite to a " + zombie.zombieType.ToString() + " zombie");
+    }
+
+    Vector4 GimmieRandomColor() {
+        float r = Random.Range(0.0f, 1.0f);
+        float g = Random.Range(0.0f, 1.0f);
+        float b = Random.Range(0.0f, 1.0f);
+        float a = Random.Range(0.0f, 1.0f);
+        return new Vector4(r, g, b, a);
+    }
+
+    [System.Serializable]
+    public class ZombieColorProfile
+    {
+        public SpriteColorHelper.PixelOp comp_type;
+        public Color r_channel;
+        public Color g_channel;
+        public Color b_channel;
+    }
+
+    void RecolorMySprite ()
+    {
+        SpriteColorMasks3 my_spriteRecolorer = GetComponent<SpriteColorMasks3>();
+
+        if (my_spriteRecolorer!= null)
+        {
+            int pos = Random.Range(0, zombieColorProfileArray.Length - 1);
+            my_spriteRecolorer.pixelOp = zombieColorProfileArray[pos].comp_type;
+            my_spriteRecolorer.colorMaskRed = zombieColorProfileArray[pos].r_channel;
+            my_spriteRecolorer.colorMaskGreen = zombieColorProfileArray[pos].g_channel;
+            my_spriteRecolorer.colorMaskBlue = zombieColorProfileArray[pos].b_channel;
+        }
+        else
+        {
+            Debug.Log("no sprite color mask found- leaving default color");
+        }
     }
 	
 	// Update is called once per frame

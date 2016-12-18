@@ -35,11 +35,6 @@ public class QRPanelController : MonoBehaviour {
 		AcceptButtonPressed();
 		mapLvlMgr = MapLevelManager.FindObjectOfType<MapLevelManager>();
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 
 	void qrEncodeFinished(Texture2D tex)
 	{
@@ -148,7 +143,8 @@ public class QRPanelController : MonoBehaviour {
                 if (CalculateDistanceToTarget(base_lat, base_lng) <= 50.0f)
                 {
                     //player is in range of their homebase
-                    StartCoroutine(mapLvlMgr.PostTempLocationText("Checking in at homebase"));
+                    StartCoroutine(mapLvlMgr.PostTempLocationText("Checking in at Homebase"));
+                    PostQRResultText("Checking in at Homebase");
                     StartCoroutine(PlayerCheckinToHomebase(base_lat, base_lng));
                 }else
                 {

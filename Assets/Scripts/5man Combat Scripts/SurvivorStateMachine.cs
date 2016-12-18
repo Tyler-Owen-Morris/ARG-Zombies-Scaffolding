@@ -12,6 +12,7 @@ public class SurvivorStateMachine : MonoBehaviour {
 	public Slider myStamSlider;
 	public GameObject[] myWepSprites;
 	public Text sliderNameText;
+    public SpriteRenderer my_face;
 
 	private BattleStateMachine BSM;
 	private Vector3 startPosition;
@@ -44,7 +45,17 @@ public class SurvivorStateMachine : MonoBehaviour {
 		myGunShot = transform.FindChild("GunShot").gameObject;
 		myClubSlash = transform.FindChild("ClubSlash").gameObject;
 		myKnifeStab = transform.FindChild("KnifeStab").gameObject;
+
+       
 	}
+
+    public void SetMyPofilePic(string url)
+    {
+        my_face.sprite = GameManager.instance.profileImageManager.GetMyProfilePic(survivor.survivor_id, url);
+        Image healthbar_img = myStamSlider.transform.FindChild("Profile pic").GetComponent<Image>();
+        healthbar_img.sprite = my_face.sprite;
+        my_face.gameObject.SetActive(false);
+    }
 	
 
 	void Update () {

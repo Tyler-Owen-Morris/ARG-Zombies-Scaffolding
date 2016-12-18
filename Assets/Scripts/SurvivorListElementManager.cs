@@ -22,10 +22,24 @@ public class SurvivorListElementManager : MonoBehaviour {
 		entry_id = survPlayCard.entry_id;
 		team_pos = survPlayCard.team_pos;
 		mapLevelManager = GameObject.Find("Map Level Manager").GetComponent<MapLevelManager>();
-		StartCoroutine(UpdateMyProfilePic());
+		//StartCoroutine(UpdateMyProfilePic());
+        SetProfilePic();
 		this.transform.localScale = new Vector3(1,1,1);
 		UpdateMyText();
 	}
+
+    void SetProfilePic ()
+    {
+        ProfileImageManager PIM = FindObjectOfType<ProfileImageManager>();
+        survivorPortraitSprite.sprite = PIM.GetMyProfilePic(entry_id, survPlayCard.profilePicURL);
+
+        if (survPlayCard.team_pos == 5)
+        {
+            Image survivorPic = survivorPortraitSprite;
+            survivorPic.sprite = GameManager.instance.my_profile_pic;
+
+        }
+    }
 
 	IEnumerator UpdateMyProfilePic() {
         if (survPlayCard.team_pos == 5)

@@ -47,6 +47,7 @@ public class BattleStateMachine : MonoBehaviour {
     public CombatWeaponListPopulator my_CWLP;
 
     public Sprite[] zombie_sprite_array;
+    public Texture[] zombie_texture_array;
 
 	public AudioClip knifeSound, clubSound, pistolSound, shotgunSound;
 	public AudioClip[] zombieSounds, survivorUnarmedSounds;
@@ -124,6 +125,9 @@ public class BattleStateMachine : MonoBehaviour {
 				mySurvivorStateMachine.survivor.survivor_id = myPlayCard.entry_id;
 				mySurvivorStateMachine.teamPos = myPlayCard.team_pos;
 				mySurvivorStateMachine.sliderNameText.text = myPlayCard.survivor.name;
+                mySurvivorStateMachine.my_face.sprite = GameManager.instance.my_profile_pic;
+                mySurvivorStateMachine.myStamSlider.gameObject.transform.FindChild("Profile pic").GetComponent<Image>().sprite = GameManager.instance.my_profile_pic;
+                mySurvivorStateMachine.my_face.gameObject.SetActive(false);
 			} else if (myPlayCard.team_pos == 4) {
 				SurvivorStateMachine mySurvivorStateMachine = playerPos2.GetComponent<SurvivorStateMachine>();
 				mySurvivorStateMachine.survivor.name = myPlayCard.survivor.name;
@@ -134,7 +138,8 @@ public class BattleStateMachine : MonoBehaviour {
 				mySurvivorStateMachine.survivor.survivor_id = myPlayCard.entry_id;
 				mySurvivorStateMachine.teamPos = myPlayCard.team_pos;
 				mySurvivorStateMachine.sliderNameText.text = myPlayCard.survivor.name;
-			} else if (myPlayCard.team_pos == 3) {
+                mySurvivorStateMachine.SetMyPofilePic(myPlayCard.profilePicURL);
+            } else if (myPlayCard.team_pos == 3) {
 				SurvivorStateMachine mySurvivorStateMachine = playerPos3.GetComponent<SurvivorStateMachine>();
 				mySurvivorStateMachine.survivor.name = myPlayCard.survivor.name;
 				mySurvivorStateMachine.survivor.baseStamina = myPlayCard.survivor.baseStamina; 
@@ -144,7 +149,8 @@ public class BattleStateMachine : MonoBehaviour {
 				mySurvivorStateMachine.survivor.survivor_id = myPlayCard.entry_id;
 				mySurvivorStateMachine.teamPos = myPlayCard.team_pos;
 				mySurvivorStateMachine.sliderNameText.text = myPlayCard.survivor.name;
-			} else if (myPlayCard.team_pos == 2) {
+                mySurvivorStateMachine.SetMyPofilePic(myPlayCard.profilePicURL);
+            } else if (myPlayCard.team_pos == 2) {
 				SurvivorStateMachine mySurvivorStateMachine = playerPos4.GetComponent<SurvivorStateMachine>();
 				mySurvivorStateMachine.survivor.name = myPlayCard.survivor.name;
 				mySurvivorStateMachine.survivor.baseStamina = myPlayCard.survivor.baseStamina; 
@@ -154,7 +160,8 @@ public class BattleStateMachine : MonoBehaviour {
 				mySurvivorStateMachine.survivor.survivor_id = myPlayCard.entry_id;
 				mySurvivorStateMachine.teamPos = myPlayCard.team_pos;
 				mySurvivorStateMachine.sliderNameText.text = myPlayCard.survivor.name;
-			} else if (myPlayCard.team_pos == 1) {
+                mySurvivorStateMachine.SetMyPofilePic(myPlayCard.profilePicURL);
+            } else if (myPlayCard.team_pos == 1) {
 				SurvivorStateMachine mySurvivorStateMachine = playerPos5.GetComponent<SurvivorStateMachine>();
 				mySurvivorStateMachine.survivor.name = myPlayCard.survivor.name;
 				mySurvivorStateMachine.survivor.baseStamina = myPlayCard.survivor.baseStamina; 
@@ -164,7 +171,8 @@ public class BattleStateMachine : MonoBehaviour {
 				mySurvivorStateMachine.survivor.survivor_id = myPlayCard.entry_id;
 				mySurvivorStateMachine.teamPos = myPlayCard.team_pos;
 				mySurvivorStateMachine.sliderNameText.text = myPlayCard.survivor.name;
-			}
+                mySurvivorStateMachine.SetMyPofilePic(myPlayCard.profilePicURL);
+            }
 		}
 
 		//if there are less than 5 survivors, remove the gameObjects starting with 5 and working up.
@@ -977,11 +985,13 @@ public class BattleStateMachine : MonoBehaviour {
                 Debug.Log("No SurvivorStateMachine able to be located for "+surv.name);
             }
         }
+        Time.timeScale = 1.0f; //resume normal speed
         weaponBrokenPanel.SetActive(false);
         battleState = PerformAction.WAIT;
     }
 
     public void EquipNewWeapon(int wep_id) {
+        Time.timeScale = 1.0f;//resume normal speed
         StartCoroutine(EquipWeaponToSurvivor(brokenWeapon_surv_id, wep_id));
         Debug.Log("Sending weapon equip to server; surv ID: " + brokenWeapon_surv_id + " wep id: " + wep_id);
     }

@@ -13,6 +13,9 @@ public class CombatWeaponListPopulator : MonoBehaviour {
 
     public void PopulateUnequippedWeapons ()
     {
+        //go into slowmo while selecting a weapon.
+        Time.timeScale = 0.1f;
+
         unequippedWeaponListElementPrefab = Resources.Load<GameObject>("Prefabs/UnequippedWeaponListElement");
         if (unequippedWeaponListElementPrefab == null)
         {

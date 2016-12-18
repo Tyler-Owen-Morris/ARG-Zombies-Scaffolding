@@ -102,8 +102,19 @@ public class GoogleMap : MonoBehaviour
         Debug.Log("Screen HxW: " + Screen.height + ", " + Screen.width + "  google image dimensions: " + height + ", " + width);
         Sprite map_pic = Sprite.Create(req.texture, new Rect(0, 0, width, height), new Vector2());
         GetComponent<Image>().sprite = map_pic;
-        GetComponent<SpriteRenderer>().sprite = map_pic;
+        //GetComponent<SpriteRenderer>().sprite = map_pic;
         //InvertMySprite();
+
+        //attempt to update color
+        SpriteColorFX.SpriteColorInstagram my_instagram_color = GetComponent<SpriteColorFX.SpriteColorInstagram>();
+        if (my_instagram_color != null)
+        {
+            my_instagram_color.Filter = SpriteColorFX.SpriteColorInstagram.Filters.XProII;
+            Debug.Log("setting sprite color filter");
+        }else
+        {
+            Debug.Log("GetComponent failed to locate sprite color FX filter");
+        }
 	}
 	
     void InvertMySprite ()

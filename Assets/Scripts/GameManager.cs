@@ -12,6 +12,8 @@ public class GameManager : MonoBehaviour {
 
 	public static GameManager instance;
 
+    public ProfileImageManager profileImageManager;
+
 	public bool gameDataInitialized = false, updateWeaponAndSurvivorMapLevelUI = false, survivorFound = false, playerInTutorial = false, weaponHasBeenSelected = false, playerIsZombie = false, blazeOfGloryActive = false;
 	public int daysSurvived, supply, ammo, trap, barrel, greenhouse, reportedSupply, reportedWater, reportedFood, playerCurrentStamina, playerMaxStamina, zombiesToFight, foodCount, waterCount, mealCount, distanceCoveredThisSession, zombieKill_HighScore, zombieKill_score;
 	public DateTime timeCharacterStarted, lastHomebaseSetTime, gameOverTime, activeBldg_lastclear;
@@ -84,6 +86,7 @@ public class GameManager : MonoBehaviour {
 		survivorPlayCardPrefab = Resources.Load<SurvivorPlayCard>("Prefabs/SurvivorPlayCard");
 		baseWeaponPrefab = Resources.Load<BaseWeapon>("Prefabs/BaseWeaponPrefab");
 
+        profileImageManager = FindObjectOfType<ProfileImageManager>();
 		//ResetAllBuildings();
 	}
 
@@ -110,6 +113,9 @@ public class GameManager : MonoBehaviour {
 			//mapManager.UpdateTheUI();
 			mapManager.theMissionListPopulator.LoadMissionsFromGameManager();
 
+            ProfileImageManager my_prof_img_mgr = FindObjectOfType<ProfileImageManager>();
+            my_prof_img_mgr.LoadProfilePictures();
+
 		} else if (activeScene.name.ToString() == "01a Login") {
 
 			LoginManager loginMgr = FindObjectOfType<LoginManager>();
@@ -135,76 +141,10 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
-//	JsonData CurrentPlayerDataIntoJson () {
-//		string[] playerData = new string[] () ;
-//
-//	}
 
-	//public void UpdateAllStatsToGameMemory () {
-		//this is a big nono, hence it's disabled
-
-		//StartCoroutine(UpdateGameManagerToGameServer());
-	/*
-		GamePreferences.SetShivCount(shivCount);
-		GamePreferences.SetClubCount(clubCount);
-		GamePreferences.SetGunCount(gunCount);
-		GamePreferences.SetShivDurability(shivDurability);
-		GamePreferences.SetClubDurability(clubDurability);
-		GamePreferences.SetSupply(supply);
-		GamePreferences.SetTotalSurvivors (totalSurvivors);
-		GamePreferences.SetActiveSurvivors (survivorsActive);
-		GamePreferences.SetWaterCount (waterCount);
-		GamePreferences.SetFoodCount (foodCount);
-		GamePreferences.SetMealsCount (mealCount);
-		SetPublicPlayerHealth (this.playerCurrentHealth);
-		GamePreferences.SetHomebaseLattitude (homebaseLat);
-		GamePreferences.SetHomebaseLongitude (homebaseLong);
-		*/
-		//removed to update the server
-	//}
-
-//	IEnumerator UpdateGameManagerToGameServer() {
-////		JsonData playerJsonData = CurrentPlayerDataIntoJson();
-////		String playerJsonString = File.ReadAllText(Application.dataPath + "/Resources/Player.json");
-//
-//
-//		WWWForm form = new WWWForm();
-//		form.AddField("id", GameManager.instance.userId );
-//		form.AddField("first_name", GameManager.instance.userFirstName);
-//		form.AddField("last_name", GameManager.instance.userLastName);
-//		form.AddField("curr_stamina", GameManager.instance.playerCurrentStamina);
-//		form.AddField("supply", GameManager.instance.supply);
-//		form.AddField("food", GameManager.instance.foodCount);
-//		form.AddField("water", GameManager.instance.waterCount);
-//		form.AddField("knife_durability", GameManager.instance.shivDurability);
-//		form.AddField("club_durability", GameManager.instance.clubDurability);
-//		form.AddField("home_lat", GameManager.instance.homebaseLat.ToString());
-//		form.AddField("home_lon", GameManager.instance.homebaseLong.ToString());
-//		form.AddField("char_created_DateTime", GameManager.instance.timeCharacterStarted.ToString());
-//
-//		WWW www = new WWW(updateAllStatsURL, form);
-//		yield return www;
-//
-//		if (www.error == null) {
-//			
-//			Debug.Log ("Server successfully updated " + www.text);
-//
-//			yield break;
-//		} else {
-//			Debug.Log("WWW error "+ www.error);
-//		}
-//	}
 
 	IEnumerator NewCharacterUpdateServer () {
-//		WWWForm form1 = new WWWForm();
-//		form1.AddField("id", GameManager.instance.userId);
-//		form1.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
-//		form1.AddField("client", "mob");
-//
-//		//this is now handled in the start new character php script
-//		WWW www1 = new WWW(clearSurvivorDataURL, form1);
-//		yield return www1;
-//		Debug.Log (www1.text);
+
 		
 		WWWForm form = new WWWForm();
 		form.AddField("id", GameManager.instance.userId );

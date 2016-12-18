@@ -271,6 +271,8 @@
     <Compile Include="Assets\Scripts\OutpostPanelController.cs" />
     <Compile Include="Assets\Scripts\PlayerPrefsManager.cs" />
     <Compile Include="Assets\Scripts\PopulatedBuilding.cs" />
+    <Compile Include="Assets\Scripts\ProfileImageHolder.cs" />
+    <Compile Include="Assets\Scripts\ProfileImageManager.cs" />
     <Compile Include="Assets\Scripts\Purchaser.cs" />
     <Compile Include="Assets\Scripts\QRPanelController.cs" />
     <Compile Include="Assets\Scripts\SetStartVolume.cs" />
