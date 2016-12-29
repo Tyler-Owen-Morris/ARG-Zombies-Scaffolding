@@ -11,7 +11,7 @@ public class MapLevelManager : MonoBehaviour {
 	public GameObject exitGamePanel, missionCompletePanel, inventoryPanel, buildingPanel, clearedBuildingPanel, qrPanel, personelPanel, gearPanel, homebasePanel, homebaseConfirmationPanel, outpostSelectionPanel, outpostConfirmationPanel, missionStartConfirmationPanel, OutpostQRPanel, enterBldgButton, unequippedWeaponsPanel, mapLevelCanvas, hungerThirstWarningPanel, endGamePanel, endGameButton, bogConfirmationPanel;
 
 	[SerializeField]
-	public Text supplyText, daysAliveText, survivorsAliveText, currentLatText, currentLonText, locationReportText, zombieKillText, foodText, waterText, gearText, expirationText, playerNameText, clearedBuildingNameText, bldgNameText, bldgSupplyText, bldgFoodText, bldgWaterText, clearedBldgSupplyText, clearedBldgFoodText, clearedBldgWaterText, zombieCountText, bldgDistText, homebaseLatText, homebaseLonText, missionConfirmationText;
+	public Text woodText, metalText, justDayAlivetext, daysAliveText, survivorsAliveText, currentLatText, currentLonText, locationReportText, zombieKillText, foodText, waterText, gearText, expirationText, playerNameText, clearedBuildingNameText, bldgNameText, bldgWoodText, bldgMetalText, bldgFoodText, bldgWaterText, clearedBldgWoodText, clearedBldgMetalText, clearedBldgFoodText, clearedBldgWaterText, zombieCountText, bldgDistText, homebaseLatText, homebaseLonText, missionConfirmationText;
 
 	[SerializeField]
 	private Slider playerHealthSlider, playerHealthSliderDuplicate;
@@ -352,7 +352,8 @@ public class MapLevelManager : MonoBehaviour {
 	void CheckAndUpdateMap () {
 		//check if location services are active
 		if (Input.location.status == LocationServiceStatus.Running) {
-			//if a last location has NOT been logged
+			
+            //if a last location has NOT been logged
 			if (lastUpdateLat != 0 && lastUpdateLng != 0) {
 				//if you've moved enough, then do the update, otherwise do nothing
 				if (CalculateDistanceToTarget(lastUpdateLat, lastUpdateLng)>= 20.0f) {
@@ -365,24 +366,23 @@ public class MapLevelManager : MonoBehaviour {
 					lastUpdateLat = Input.location.lastData.latitude;
 					lastUpdateLng = Input.location.lastData.longitude;
 				}
-
-                //update the map background
-                GoogleMap my_googleMap = FindObjectOfType<GoogleMap>();
-                if (my_googleMap != null)
-                {
-                    my_googleMap.Refresh();
-                }
-                else
-                {
-                    Debug.Log("UI updater could not locate Google Map clas to refresh map image");
-                }
-
             } else {
 				//store current location as last updated location and do the update
 				lastUpdateLat = Input.location.lastData.latitude;
 				lastUpdateLng = Input.location.lastData.longitude;
 			}
-		}
+
+            //update the map background
+            GoogleMap my_googleMap = FindObjectOfType<GoogleMap>();
+            if (my_googleMap != null)
+            {
+                my_googleMap.Refresh();
+            }
+            else
+            {
+                Debug.Log("UI updater could not locate Google Map clas to refresh map image");
+            }
+        }
         //update building locations
 		bldgSpawner.UpdateBuildings();
 
@@ -466,12 +466,19 @@ public class MapLevelManager : MonoBehaviour {
 		theSurvivorListPopulator.RefreshFromGameManagerList();
         
 		//left UI panel update
-        if (GameManager.instance.supply >0)
+        if (GameManager.instance.wood>0)
         {
-            supplyText.text = "Supply: " + GameManager.instance.supply.ToString();
+            woodText.text = "Wood: " + GameManager.instance.wood.ToString();
         }else
         {
-            supplyText.text = "Supply: 0";
+            woodText.text = "Wood: 0";
+        }
+        if (GameManager.instance.metal > 0)
+        {
+            metalText.text = "Metal: " + GameManager.instance.metal.ToString();
+        }else
+        {
+            metalText.text = "Metal: 0";
         }
 		if(GameManager.instance.foodCount > 0)
         {
@@ -601,16 +608,19 @@ public class MapLevelManager : MonoBehaviour {
         string my_string = "";
 
         //days
+        int days = 0;
         if (time_alive > TimeSpan.FromDays(1))
         {
             int total_days = Mathf.FloorToInt((float)time_alive.TotalDays);
-            my_string += total_days.ToString().PadLeft(2, '0') + "\n";
+            //my_string += total_days.ToString().PadLeft(2, '0') + "\n";
             time_alive = time_alive - TimeSpan.FromDays(total_days);
+            days = total_days;//store to update mid-center UI number
         }
         else
         {
-            my_string += "00\n";
+            //my_string += "00\n";
         }
+        justDayAlivetext.text = days.ToString();
         //hours
         if (time_alive > TimeSpan.FromHours(1))
         {
@@ -666,7 +676,8 @@ public class MapLevelManager : MonoBehaviour {
         //load building data into GameManager.instance
 		GameManager.instance.activeBldg_name = myBuilding.buildingName;
 		GameManager.instance.activeBldg_id = myBuilding.buildingID;
-		GameManager.instance.activeBldg_supply = myBuilding.supply_inside;
+		GameManager.instance.activeBldg_wood = myBuilding.wood_inside;
+        GameManager.instance.activeBldg_metal = myBuilding.metal_inside;
 		GameManager.instance.activeBldg_food = myBuilding.food_inside;
 		GameManager.instance.activeBldg_water = myBuilding.water_inside;
 		GameManager.instance.zombiesToFight = myBuilding.zombiePopulation;
@@ -677,7 +688,8 @@ public class MapLevelManager : MonoBehaviour {
 		int rand = UnityEngine.Random.Range(-3,3);
 		zombieCountText.text = (zombieCount+rand-2)+"-"+(zombieCount+rand+2);
 		bldgDistText.text = distToBldg.ToString();
-        bldgSupplyText.text = myBuilding.supply_inside.ToString();
+        bldgWoodText.text = myBuilding.wood_inside.ToString();
+        bldgMetalText.text = myBuilding.metal_inside.ToString();
         bldgFoodText.text = myBuilding.food_inside.ToString();
         bldgWaterText.text = myBuilding.water_inside.ToString();
 
@@ -685,14 +697,16 @@ public class MapLevelManager : MonoBehaviour {
 		if (myBuilding.last_cleared == DateTime.Parse("11:59pm 12/31/1999")) {
 			//this building has not been visited before
 			zombieCountText.text = "??";
-			bldgSupplyText.text = "??";
+			bldgWoodText.text = "??";
+            bldgMetalText.text = "??";
 			bldgFoodText.text = "??";
 			bldgWaterText.text = "??";
 
 		} else if (myBuilding.last_cleared == DateTime.Parse("12:01am 01/01/2000")) {
 			//this building has been entered, but not cleared
 			zombieCountText.text = myBuilding.zombiePopulation.ToString();
-			bldgSupplyText.text = "??";
+			bldgWoodText.text = "??";
+            bldgMetalText.text = "??";
 			bldgFoodText.text = "??";
 			bldgWaterText.text = "??";
 
@@ -759,14 +773,16 @@ public class MapLevelManager : MonoBehaviour {
                     CBPM.CalculateTrapStatus();
                     CBPM.CalculateBarrelStatus();
                     CBPM.CalculateGreenhouseStatus();
-                    bldgSupplyText.text = activeBuilding.supply_inside.ToString();
+                    bldgWoodText.text = activeBuilding.wood_inside.ToString();
+                    bldgMetalText.text = activeBuilding.metal_inside.ToString();
                     bldgFoodText.text = activeBuilding.food_inside.ToString();
                     bldgWaterText.text = activeBuilding.water_inside.ToString();
 
 				} else {
 					//zombie population has already been re-rolled, player has entered, but not cleared.
 					zombieCountText.text = "??"; 
-                    bldgSupplyText.text = myBuilding.supply_inside.ToString();
+                    bldgWoodText.text = myBuilding.wood_inside.ToString();
+                    bldgMetalText.text = myBuilding.metal_inside.ToString();
                     bldgFoodText.text = myBuilding.food_inside.ToString();
                     bldgWaterText.text = myBuilding.water_inside.ToString();
                     building_clear = false;
@@ -774,7 +790,8 @@ public class MapLevelManager : MonoBehaviour {
 			} else {
                 //building is clear
                 building_clear = true; //this tells which panel to load at the end of this function
-                clearedBldgSupplyText.text = myBuilding.supply_inside.ToString();
+                clearedBldgWoodText.text = myBuilding.wood_inside.ToString();
+                clearedBldgMetalText.text = myBuilding.metal_inside.ToString();
                 clearedBldgFoodText.text = myBuilding.food_inside.ToString();
                 clearedBldgWaterText.text = myBuilding.water_inside.ToString();
             }
@@ -958,7 +975,7 @@ public class MapLevelManager : MonoBehaviour {
 	}
 
     public void LootActiveBuilding() {
-        if (activeBuilding.supply_inside > 0 || activeBuilding.water_inside > 0 || activeBuilding.food_inside > 0)
+        if (activeBuilding.wood_inside > 0 || activeBuilding.metal_inside > 0 || activeBuilding.water_inside > 0 || activeBuilding.food_inside > 0)
         {
             StartCoroutine(TransferLoot());
         }else
@@ -986,21 +1003,26 @@ public class MapLevelManager : MonoBehaviour {
             if (lootTransferJson[0].ToString() == "Success")
             {
                 //manually update the game-state in order to avoid passing and loading JSON
-                GameManager.instance.supply += activeBuilding.supply_inside;
+                GameManager.instance.wood += activeBuilding.wood_inside;
+                GameManager.instance.metal += activeBuilding.metal_inside;
                 GameManager.instance.foodCount += activeBuilding.food_inside;
                 GameManager.instance.waterCount += activeBuilding.water_inside;
-                activeBuilding.supply_inside = 0;
+                activeBuilding.wood_inside = 0;
+                activeBuilding.metal_inside = 0;
                 activeBuilding.food_inside = 0;
                 activeBuilding.water_inside = 0;
                 GameManager.instance.activeBldg_food = 0;
-                GameManager.instance.activeBldg_supply = 0;
+                GameManager.instance.activeBldg_wood = 0;
+                GameManager.instance.activeBldg_metal = 0;
                 GameManager.instance.activeBldg_water = 0;
                 clearedBldgFoodText.text = "0";
-                clearedBldgSupplyText.text = "0";
+                clearedBldgWoodText.text = "0";
+                clearedBldgMetalText.text = "0";
                 clearedBldgWaterText.text = "0";
                 bldgFoodText.text = "0";
                 bldgWaterText.text = "0";
-                bldgSupplyText.text = "0";
+                bldgWoodText.text = "0";
+                bldgMetalText.text = "0";
                 
 
                 UpdateTheUI();
@@ -1454,7 +1476,8 @@ public class MapLevelManager : MonoBehaviour {
 			JsonData dropoffJson = JsonMapper.ToObject(dropoffReturnString);
 
 			if (dropoffJson[0].ToString() == "Success") {
-				GameManager.instance.supply = 0;
+				GameManager.instance.wood = 0;
+                GameManager.instance.metal = 0;
 
 //				if (dropoffJson[2].ToString() != "none") {
 //						GameManager.instance.shivCount = GameManager.instance.shivCount + (int)dropoffJson[2]["knife_for_pickup"];

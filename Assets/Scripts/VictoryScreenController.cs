@@ -43,7 +43,7 @@ public class VictoryScreenController : MonoBehaviour {
 	string ConstructWinningTextString () {
 		string outputText = "";
 		if (GameManager.instance.activeBldg_name != "zomb") {
-			outputText += "You earned " + GameManager.instance.reportedSupply + " supply\n";
+			outputText += "You earned " + GameManager.instance.reportedWood + " wood, and "+GameManager.instance.reportedMetal+" metal\n";
 			outputText += GameManager.instance.reportedFood + " Food\n";
 			outputText += GameManager.instance.reportedWater + " water.\n\n";
 
@@ -140,7 +140,7 @@ public class VictoryScreenController : MonoBehaviour {
 		}
 	}
 
-    IEnumerator StealFromSurvivors (int food, int water, int supply)
+    IEnumerator StealFromSurvivors (int food, int water, int wood, int metal)
     {
         WWWForm form = new WWWForm();
         form.AddField("id", GameManager.instance.userId);
@@ -149,7 +149,8 @@ public class VictoryScreenController : MonoBehaviour {
 
         form.AddField("food", food);
         form.AddField("water", water);
-        form.AddField("supply", supply);
+        form.AddField("wood", wood);
+        form.AddField("metal", metal);
 
         WWW www = new WWW(stealFromSurvivorsURL, form);
         yield return www;
@@ -157,6 +158,14 @@ public class VictoryScreenController : MonoBehaviour {
         if (www.error == null)
         {
             Debug.Log(www.text);
+            JsonData stealingJSON = JsonMapper.ToObject(www.text);
+            if (stealingJSON[0].ToString() == "Success")
+            {
+                GameManager.instance.foodCount += food;
+                GameManager.instance.waterCount += water;
+                GameManager.instance.wood += wood;
+                GameManager.instance.metal += metal;
+            }
         }else
         {
             Debug.Log(www.error);
@@ -170,7 +179,8 @@ public class VictoryScreenController : MonoBehaviour {
         JsonData foundSurvivorJson = JsonMapper.ToObject(GameManager.instance.foundSurvivorJsonText);
         int found_food = 0;
         int found_water = 0;
-        int found_supply = 0;
+        int found_wood = 0;
+        int found_metal = 0;
         int found_surv_count = foundSurvivorJson.Count;
         int escaped = 0;
         for (int i=0; i<found_surv_count;i++)
@@ -188,17 +198,18 @@ public class VictoryScreenController : MonoBehaviour {
                 //what did they have?
                 found_food += Random.Range(1, 15);
                 found_water += Random.Range(1, 15);
-                found_supply += Random.Range(5, 50);
+                found_wood += Random.Range(5, 15);
+                found_metal += Random.Range(5, 15);
             }
         }
         //send the results to the server
         string attack_string = "";
         if (escaped < found_surv_count) //if you actually caught someone
         {
-            StartCoroutine(StealFromSurvivors(found_food, found_water, found_supply));
+            StartCoroutine(StealFromSurvivors(found_food, found_water, found_wood, found_metal));
             attack_string += "your attack took them by surprise\n";
             attack_string += "surveying the "+(found_surv_count-escaped).ToString()+" dead reveals\n";
-            attack_string += found_food + " food " + found_water + " water & " + found_supply + " supply for the taking";
+            attack_string += found_food + " food, " + found_water + " water, " + found_wood + " wood, & "+found_metal+" metal for the taking";
             if (escaped > 0)
             {
                 attack_string += "\n"+escaped + " got away...";

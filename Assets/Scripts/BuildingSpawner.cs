@@ -177,7 +177,8 @@ public class BuildingSpawner : MonoBehaviour {
                     //if the spawned building matches the record, populate it
                     if (myBuilding.buildingName == clearedJson[i]["bldg_name"].ToString()) {
                         //load in the saved building data
-                        myBuilding.supply_inside = (int)clearedJson[i]["supply"];
+                        myBuilding.wood_inside = (int)clearedJson[i]["wood"];
+                        myBuilding.metal_inside = (int)clearedJson[i]["metal"];
                         myBuilding.food_inside = (int)clearedJson[i]["food"];
                         myBuilding.water_inside = (int)clearedJson[i]["water"];
                         myBuilding.zombiePopulation = (int)clearedJson[i]["zombies"];

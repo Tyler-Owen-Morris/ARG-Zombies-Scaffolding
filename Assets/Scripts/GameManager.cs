@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour {
     public ProfileImageManager profileImageManager;
 
 	public bool gameDataInitialized = false, updateWeaponAndSurvivorMapLevelUI = false, survivorFound = false, playerInTutorial = false, weaponHasBeenSelected = false, playerIsZombie = false, blazeOfGloryActive = false;
-	public int daysSurvived, supply, ammo, trap, barrel, greenhouse, reportedSupply, reportedWater, reportedFood, playerCurrentStamina, playerMaxStamina, zombiesToFight, foodCount, waterCount, mealCount, distanceCoveredThisSession, zombieKill_HighScore, zombieKill_score;
+	public int daysSurvived, /*supply,*/wood, metal, ammo, trap, barrel, greenhouse, reportedWood, reportedMetal, reportedWater, reportedFood, playerCurrentStamina, playerMaxStamina, zombiesToFight, foodCount, waterCount, mealCount, distanceCoveredThisSession, zombieKill_HighScore, zombieKill_score;
 	public DateTime timeCharacterStarted, lastHomebaseSetTime, gameOverTime, activeBldg_lastclear;
 	//public PopulatedBuilding active_building;
 	public float homebaseLat, homebaseLong;
@@ -36,7 +36,7 @@ public class GameManager : MonoBehaviour {
 	private Scene activeScene;
 	//made this public while working on the server "cleared list" data retention. it should go back to private
 	public string activeBldg_name, zombie_to_kill_id ="", activeBldg_lootcode, activeBldg_id;
-	public int activeBldg_supply, activeBldg_food, activeBldg_water, activeBldg_zombies;
+	public int activeBldg_wood, activeBldg_metal, activeBldg_food, activeBldg_water, activeBldg_zombies;
 	public string locationJsonText, survivorJsonText, weaponJsonText, clearedBldgJsonText, outpostJsonText, missionJsonText, starvationHungerJsonText, injuryJsonText, foundSurvivorJsonText;
 	public JsonData missionData;
 
@@ -153,7 +153,8 @@ public class GameManager : MonoBehaviour {
 		form.AddField("first_name", GameManager.instance.userFirstName);
 		form.AddField("last_name", GameManager.instance.userLastName);
 		form.AddField("name", GameManager.instance.userName);
-		form.AddField("supply", GameManager.instance.supply);
+		form.AddField("wood", GameManager.instance.wood);
+        form.AddField("metal", GameManager.instance.metal);
 		form.AddField("food", GameManager.instance.foodCount);
 		form.AddField("water", GameManager.instance.waterCount);
 		form.AddField("ammo", GameManager.instance.ammo);
@@ -198,8 +199,10 @@ public class GameManager : MonoBehaviour {
 				GameManager.instance.userLastName = fullGameData[1]["last_name"].ToString();
 				GameManager.instance.playerCurrentStamina = (int)fullGameData[1]["curr_stamina"];
 				GameManager.instance.playerMaxStamina = (int)fullGameData[1]["max_stamina"];
-				int sup = Convert.ToInt32(fullGameData[1]["supply"].ToString());
-				GameManager.instance.supply = sup;
+				int wod = Convert.ToInt32(fullGameData[1]["wood"].ToString());
+				GameManager.instance.wood = wod;
+                int met = Convert.ToInt32(fullGameData[1]["metal"].ToString());
+                GameManager.instance.metal = met;
 				int wat = Convert.ToInt32(fullGameData[1]["water"].ToString());
 				GameManager.instance.waterCount = wat;
 				int fud = Convert.ToInt32(fullGameData[1]["food"].ToString());
@@ -456,8 +459,10 @@ public class GameManager : MonoBehaviour {
 				GameManager.instance.userLastName = playerJson[1]["last_name"].ToString();
 				GameManager.instance.playerCurrentStamina = (int)playerJson[1]["curr_stamina"];
 				GameManager.instance.playerMaxStamina = (int)playerJson[1]["max_stamina"];
-				int sup = Convert.ToInt32(playerJson[1]["supply"].ToString());
-				GameManager.instance.supply = sup;
+				int wod = Convert.ToInt32(playerJson[1]["wood"].ToString());
+                GameManager.instance.wood = wod;
+                int met = Convert.ToInt32(playerJson[1]["metal"].ToString());
+                GameManager.instance.metal = met;
 				int wat = Convert.ToInt32(playerJson[1]["water"].ToString());
 				GameManager.instance.waterCount = wat;
 				int fud = Convert.ToInt32(playerJson[1]["food"].ToString());
@@ -934,7 +939,8 @@ public class GameManager : MonoBehaviour {
 
 		//roll a random number of survivors left alive and set both active and alive to that number.
 
-		GameManager.instance.supply = UnityEngine.Random.Range(20, 70);
+		GameManager.instance.wood = UnityEngine.Random.Range(20, 70);
+        GameManager.instance.metal = UnityEngine.Random.Range(20, 70);
 		GameManager.instance.waterCount = UnityEngine.Random.Range(10, 20);
 		GameManager.instance.foodCount = UnityEngine.Random.Range(15, 30);
 		GameManager.instance.ammo = UnityEngine.Random.Range(0,20);
@@ -987,8 +993,9 @@ public class GameManager : MonoBehaviour {
 	public void PaidRestartOfTheGame () {
 		
 
-		int newSupply = Mathf.RoundToInt(this.supply * 0.75f);
-		this.supply = newSupply;
+		int newWood = Mathf.RoundToInt(this.wood * 0.75f);
+        this.wood = newWood;
+        int newMetal = Mathf.RoundToInt(this.metal * 0.75f);
 		int newFood = Mathf.RoundToInt(this.foodCount / 2);
 		foodCount = newFood;
 		int newWater = Mathf.RoundToInt(this.waterCount / 2);
@@ -1032,7 +1039,8 @@ public class GameManager : MonoBehaviour {
 		survivorFound = false;
 
         //store the active building stats for win screen reporting.
-        GameManager.instance.reportedSupply = GameManager.instance.activeBldg_supply;
+        GameManager.instance.reportedWood = GameManager.instance.activeBldg_wood;
+        GameManager.instance.reportedMetal = GameManager.instance.activeBldg_metal;
         GameManager.instance.reportedFood = GameManager.instance.activeBldg_food;
         GameManager.instance.reportedWater = GameManager.instance.activeBldg_water;
 
@@ -1055,11 +1063,13 @@ public class GameManager : MonoBehaviour {
 
 		#region rss rolls
 		//roll the stats
-		int supply = 0;
+		int wood = 0;
+        int metal = 0;
 		int food = 0;
 		int water = 0;
 		if (GameManager.instance.activeBldg_lootcode == "S") {
-			int sup = UnityEngine.Random.Range(100, 250);
+			int wod = UnityEngine.Random.Range(100, 250);
+            int met = UnityEngine.Random.Range(50, 125);
 			int fud = UnityEngine.Random.Range(0, 12);
 			int wat = UnityEngine.Random.Range(0, 12);
 
@@ -1072,32 +1082,54 @@ public class GameManager : MonoBehaviour {
 			if (roll <= odds) {
 				wat =0;
 			}
-			supply = sup;
+
+            float supply_roll = UnityEngine.Random.Range(0.0f, 1.0f);
+            if (supply_roll < 0.05f)
+            {
+                //empty
+                wod = 0;
+                met = 0;
+            }else if (supply_roll < 0.45f)
+            {
+                //wood
+                met = 0;
+            }else if (supply_roll < 0.85f)
+            {
+                //metal
+                wod = 0;
+            } //else let both pass
+        
+			wood = wod;
+            metal = met;
 			food = fud;
 			water = wat;
 
 		} else if (GameManager.instance.activeBldg_lootcode == "F") {
 
-			int sup = UnityEngine.Random.Range(0, 20);
+			int wod = UnityEngine.Random.Range(0, 20);
+            int met = UnityEngine.Random.Range(0, 15);
 			int fud = UnityEngine.Random.Range(50, 150);
 			int wat = UnityEngine.Random.Range(0, 30);
 
 			float odds = 0.5f;
 			float roll = UnityEngine.Random.Range(0.0f, 1.0f);
 			if (roll <= odds) {
-				sup =0;
+				wod =0;
+                met = 0;
 			}
 			roll = UnityEngine.Random.Range(0.0f, 1.0f);
 			if (roll <= odds) {
 				wat =0;
 			}
-			supply = sup;
+			wood = wod;
+            metal = met;
 			food = fud;
 			water = wat;
 			
 		} else if (GameManager.instance.activeBldg_lootcode == "W") {
 
-			int sup = UnityEngine.Random.Range(0, 20);
+			int wod = UnityEngine.Random.Range(0, 20);
+            int met = UnityEngine.Random.Range(0, 20);
 			int fud = UnityEngine.Random.Range(0, 20);
 			int wat = UnityEngine.Random.Range(50, 150);
 
@@ -1108,16 +1140,19 @@ public class GameManager : MonoBehaviour {
 			}
 			roll = UnityEngine.Random.Range(0.0f, 1.0f);
 			if (roll <= odds) {
-				sup =0;
+				wod =0;
+                met = 0;
 			}
-			supply = sup;
+			wood = wod;
+            metal = met;
 			food = fud;
 			water = wat;
 
 		} else if (GameManager.instance.activeBldg_lootcode == "G") {
 
-			int sup = UnityEngine.Random.Range(0, 80);
-			int fud = UnityEngine.Random.Range(0, 45);
+			int wod = UnityEngine.Random.Range(0, 80);
+            int met = UnityEngine.Random.Range(0, 60);
+            int fud = UnityEngine.Random.Range(0, 45);
 			int wat = UnityEngine.Random.Range(0, 45);
 
 			float odds = 0.5f;
@@ -1129,7 +1164,14 @@ public class GameManager : MonoBehaviour {
 			if (roll <= odds) {
 				wat =0;
 			}
-			supply = sup;
+            roll = UnityEngine.Random.Range(0.0f, 1.0f);
+            if (roll <= odds)
+            {
+                wod = 0;
+                met = 0;
+            }
+			wood = wod;
+            metal = met;
 			food = fud;
 			water = wat;
 
@@ -1139,13 +1181,15 @@ public class GameManager : MonoBehaviour {
 		GameManager.instance.activeBldg_zombies = zombie_pop;
 		GameManager.instance.activeBldg_food = food;
 		GameManager.instance.activeBldg_water = water;
-		GameManager.instance.activeBldg_supply = supply;
+		GameManager.instance.activeBldg_wood = wood;
+        GameManager.instance.activeBldg_metal = metal;
 		GameManager.instance.zombiesToFight = zombie_pop;
 
-		Debug.Log("supply: "+supply.ToString()+" food: "+food.ToString()+" water: "+water.ToString()+" zombies: "+zombie_pop.ToString());
+		Debug.Log("Wood: "+wood.ToString()+" metal: "+metal.ToString()+" food: "+food.ToString()+" water: "+water.ToString()+" zombies: "+zombie_pop.ToString());
 		#endregion
 
-		form.AddField("supply", supply);
+		form.AddField("wood", wood);
+        form.AddField("metal", metal);
 		form.AddField("food", food);
 		form.AddField("water", water);
 		form.AddField("zombies", zombie_pop);

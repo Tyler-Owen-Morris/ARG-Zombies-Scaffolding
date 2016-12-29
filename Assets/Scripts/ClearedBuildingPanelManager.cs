@@ -60,10 +60,10 @@ public class ClearedBuildingPanelManager : MonoBehaviour {
         if (to_loot == "supply")
         {
             //confirm there is supply to loot.
-            if (currentMapManager.activeBuilding.supply_inside > 0)
+            if (currentMapManager.activeBuilding.wood_inside > 0 || currentMapManager.activeBuilding.metal_inside > 0)
             {
                 loot_type = to_loot;
-                loot_qty = currentMapManager.activeBuilding.supply_inside;
+                loot_qty = currentMapManager.activeBuilding.metal_inside;
                 lootConfirmationPanel.SetActive(true);
             }
         }else if (to_loot == "food")
@@ -130,11 +130,14 @@ public class ClearedBuildingPanelManager : MonoBehaviour {
                 if (type == "supply")
                 {
                     Debug.Log("supply looting succesful on server: updating client.");
-                    GameManager.instance.supply += loot_qty;
+                    GameManager.instance.wood += loot_qty;
+                    GameManager.instance.metal += loot_qty;
                     trapProgressSlider.value = 0;
-                    currentMapManager.activeBuilding.supply_inside = 0;
+                    currentMapManager.activeBuilding.wood_inside = 0;
+                    currentMapManager.activeBuilding.metal_inside = 0;
                     currentMapManager.activeBuilding.last_looted_supply = DateTime.Now;
-                    currentMapManager.clearedBldgSupplyText.text = "0";
+                    currentMapManager.clearedBldgWoodText.text = "0";
+                    currentMapManager.clearedBldgMetalText.text = "0";
                     yield return new WaitForSeconds(0.1f);
                     currentMapManager.UpdateTheUI();
                     CalculateTrapStatus();
@@ -198,32 +201,49 @@ public class ClearedBuildingPanelManager : MonoBehaviour {
         //store the "active supply" amounts in game data based on full days.
         if (days_active < 1)
         {
-            currentMapManager.activeBuilding.supply_inside = 0;
-            currentMapManager.clearedBldgSupplyText.text = "0";
+            currentMapManager.activeBuilding.wood_inside = 0;
+            currentMapManager.activeBuilding.metal_inside = 0;
+            currentMapManager.clearedBldgWoodText.text = "0";
+            currentMapManager.clearedBldgMetalText.text = "0";
         }else if (days_active < 2)
         {
-            currentMapManager.activeBuilding.supply_inside = 5;
-            currentMapManager.clearedBldgSupplyText.text = "5";
+            int n = 5;
+            currentMapManager.activeBuilding.wood_inside = n;
+            currentMapManager.activeBuilding.metal_inside = n;
+            currentMapManager.clearedBldgWoodText.text = n.ToString();
+            currentMapManager.clearedBldgMetalText.text = n.ToString();
         }
         else if (days_active < 3)
         {
-            currentMapManager.activeBuilding.supply_inside = 10;
-            currentMapManager.clearedBldgSupplyText.text = "10";
+            int n = 10;
+            currentMapManager.activeBuilding.wood_inside = n;
+            currentMapManager.activeBuilding.metal_inside = n;
+            currentMapManager.clearedBldgWoodText.text = n.ToString();
+            currentMapManager.clearedBldgMetalText.text = n.ToString();
         }
         else if (days_active < 4)
         {
-            currentMapManager.activeBuilding.supply_inside = 20;
-            currentMapManager.clearedBldgSupplyText.text = "20";
+            int n = 20;
+            currentMapManager.activeBuilding.wood_inside = n;
+            currentMapManager.activeBuilding.metal_inside = n;
+            currentMapManager.clearedBldgWoodText.text = n.ToString();
+            currentMapManager.clearedBldgMetalText.text = n.ToString();
         }
         else if (days_active< 5)
         {
-            currentMapManager.activeBuilding.supply_inside = 35;
-            currentMapManager.clearedBldgSupplyText.text = "35";
+            int n = 35;
+            currentMapManager.activeBuilding.wood_inside = n;
+            currentMapManager.activeBuilding.metal_inside = n;
+            currentMapManager.clearedBldgWoodText.text = n.ToString();
+            currentMapManager.clearedBldgMetalText.text = n.ToString();
         }
         else
         {
-            currentMapManager.activeBuilding.supply_inside = 45;
-            currentMapManager.clearedBldgSupplyText.text = "45";
+            int n = 5;
+            currentMapManager.activeBuilding.wood_inside = n;
+            currentMapManager.activeBuilding.metal_inside = n;
+            currentMapManager.clearedBldgWoodText.text = n.ToString();
+            currentMapManager.clearedBldgMetalText.text = n.ToString();
         }
     }
 
@@ -361,7 +381,7 @@ public class ClearedBuildingPanelManager : MonoBehaviour {
         else if (days_active < 14)
         {
             currentMapManager.activeBuilding.food_inside = 4;
-            currentMapManager.clearedBldgSupplyText.text = "4";
+            currentMapManager.clearedBldgFoodText.text = "4";
         }
         else if (days_active < 15)
         {

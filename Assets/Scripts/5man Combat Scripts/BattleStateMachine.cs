@@ -219,7 +219,8 @@ public class BattleStateMachine : MonoBehaviour {
 				} else if (zombieList.Count < 1) {
 					// end of the building
 					Debug.Log ("End building called");
-					int earned_supply = CalculateSupplyEarned();
+					int earned_wood = CalculateWoodEarned();
+                    int earned_metal = CalculateMetalFound();
 					int earned_water = CalculateWaterFound();
 					int earned_food = CalculateFoodFound();
                     bool found_survivor = CalculateSurvivorFound();
@@ -372,8 +373,8 @@ public class BattleStateMachine : MonoBehaviour {
 		ammmoCounter.text = "Ammo: "+GameManager.instance.ammo.ToString();
 	}
 
-	int CalculateSupplyEarned () {
-        return GameManager.instance.activeBldg_supply;
+	int CalculateWoodEarned () {
+        return GameManager.instance.activeBldg_wood;
         
         /*
         int supply_in_bldg = GameManager.instance.activeBldg_supply;
@@ -404,6 +405,10 @@ public class BattleStateMachine : MonoBehaviour {
 		return sum;
 		*/
 	}
+    int CalculateMetalFound ()
+    {
+        return GameManager.instance.activeBldg_metal;
+    }
 
 	int CalculateWaterFound () {
         return GameManager.instance.activeBldg_water;
