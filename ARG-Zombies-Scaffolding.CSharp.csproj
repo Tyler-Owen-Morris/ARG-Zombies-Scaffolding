@@ -231,6 +231,7 @@
     <Compile Include="Assets\Scripts\5man Combat Scripts\KillYourselfButtonManager.cs" />
     <Compile Include="Assets\Scripts\5man Combat Scripts\SurvivorStateMachine.cs" />
     <Compile Include="Assets\Scripts\5man Combat Scripts\TurnHandler.cs" />
+    <Compile Include="Assets\Scripts\5man Combat Scripts\TurnResultHolder.cs" />
     <Compile Include="Assets\Scripts\5man Combat Scripts\WeaponManager.cs" />
     <Compile Include="Assets\Scripts\5man Combat Scripts\ZombieStateMachine.cs" />
     <Compile Include="Assets\Scripts\BackgroundRandomizer.cs" />
@@ -243,6 +244,7 @@
     <Compile Include="Assets\Scripts\CurrentLocationUpdater.cs" />
     <Compile Include="Assets\Scripts\EndGamePanelController.cs" />
     <Compile Include="Assets\Scripts\FadeIn.cs" />
+    <Compile Include="Assets\Scripts\FadeToCombatPanelManager.cs" />
     <Compile Include="Assets\Scripts\FitBitAPI.cs" />
     <Compile Include="Assets\Scripts\FitbitCaller.cs" />
     <Compile Include="Assets\Scripts\FitbitData.cs" />
@@ -282,6 +284,7 @@
     <Compile Include="Assets\Scripts\SurvivorListElementManager.cs" />
     <Compile Include="Assets\Scripts\SurvivorListPopulator.cs" />
     <Compile Include="Assets\Scripts\SurvivorPlayCard.cs" />
+    <Compile Include="Assets\Scripts\SurvivorWallElementManager.cs" />
     <Compile Include="Assets\Scripts\SwipeIconBlinker.cs" />
     <Compile Include="Assets\Scripts\TMP_locationplaceholder.cs" />
     <Compile Include="Assets\Scripts\UIStatusToggler.cs" />

@@ -129,8 +129,11 @@ public class SurvivorStateMachine : MonoBehaviour {
 				targetZombie.zombie.curHP = targetZombie.zombie.curHP - myDmg;
                 SpawnCombatDamageText(targetZombie.gameObject, myDmg);
 				bool isDed = targetZombie.CheckForDeath();
-				StartCoroutine(SendAttackToServer(survivor.survivor_id, myWeapon.weapon_id, isDed));
-				UpdateStaminaBar();
+                //DO NOT send each attack to server- store results to list.
+                //StartCoroutine(SendAttackToServer(survivor.survivor_id, myWeapon.weapon_id, isDed)); //no longer updating server on each attack.
+                StoreAttack(survivor.survivor_id, myWeapon.weapon_id, isDed);
+
+                UpdateStaminaBar();
 				if (survivor.weaponEquipped != null) {
 					survivor.curStamina -= myWeapon.stam_cost;	
 				}
@@ -225,6 +228,22 @@ public class SurvivorStateMachine : MonoBehaviour {
 			Debug.Log(www.error);
 		}
 	}
+
+    private void StoreAttack (int survivor_id, int weapon_id, bool ded)
+    {
+        TurnResultHolder myTurnResult = new TurnResultHolder();
+        myTurnResult.attackType = "survivor";
+        myTurnResult.survivor_id = survivor_id;
+        myTurnResult.weapon_id = weapon_id;
+        if (ded)
+        {
+            myTurnResult.dead = 1;
+        }else
+        {
+            myTurnResult.dead = 0;
+        }
+        BSM.turnResultList.Add(myTurnResult);
+    }
 
 	private int CalculateMyDamage () {
 		ZombieStateMachine myTarget = plyrTarget.GetComponent<ZombieStateMachine>();
@@ -426,13 +445,13 @@ public class SurvivorStateMachine : MonoBehaviour {
 			//Debug.Log(this.survivor.name + " believes to have a weapon equipped , wep name: " + this.survivor.weaponEquipped.name);
 
 			//this should change to get the name
-			if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name == "crude shiv") {
+			if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name == "crude shiv" || this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name=="shank") {
 				myWepSprites[0].SetActive(true);
 				//Debug.Log (this.survivor.name + " is equipping a knife sprite");
-			} else if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name == "baseball bat") {
+			} else if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name == "deadly bat" || this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name == "baseball bat") {
 				myWepSprites[1].SetActive(true);
 				//Debug.Log (this.survivor.name + " is equipping a club sprite");
-			} else if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name == ".22 Revolver" ) {
+			} else if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name == ".22 Revolver" || this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name == ".22 revolver") {
 				myWepSprites[2].SetActive(true);
 				//Debug.Log (this.survivor.name + " is equipping a gun sprite");
 			}else if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name == "hunting knife" ) {
@@ -444,7 +463,19 @@ public class SurvivorStateMachine : MonoBehaviour {
 			}else if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name == "shotgun" ) {
 				myWepSprites[5].SetActive(true);
 				//Debug.Log (this.survivor.name + " is equipping a gun sprite");
-			}
+			}else if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name == "zip gun")
+            {
+                myWepSprites[6].SetActive(true);
+            }else if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name == "zip gun 2.0")
+            {
+                myWepSprites[7].SetActive(true);
+            }else if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name == "crude club")
+            {
+                myWepSprites[8].SetActive(true);
+            }else if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name == "reinforced club")
+            {
+                myWepSprites[9].SetActive(true);
+            }
 		} else {
 			Debug.Log("Warning: No weapon equipped!!!");
 		}

@@ -43,9 +43,9 @@ public class VictoryScreenController : MonoBehaviour {
 	string ConstructWinningTextString () {
 		string outputText = "";
 		if (GameManager.instance.activeBldg_name != "zomb") {
-			outputText += "You earned " + GameManager.instance.reportedWood + " wood, and "+GameManager.instance.reportedMetal+" metal\n";
-			outputText += GameManager.instance.reportedFood + " Food\n";
-			outputText += GameManager.instance.reportedWater + " water.\n\n";
+			outputText += "You earned " + GameManager.instance.activeBldg_wood + " wood, and "+GameManager.instance.activeBldg_metal+" metal\n";
+			outputText += GameManager.instance.activeBldg_food + " Food\n";
+			outputText += GameManager.instance.activeBldg_water + " water.\n\n";
 
 
 			if(GameManager.instance.survivorFound){

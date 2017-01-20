@@ -37,7 +37,7 @@ public class GameManager : MonoBehaviour {
 	//made this public while working on the server "cleared list" data retention. it should go back to private
 	public string activeBldg_name, zombie_to_kill_id ="", activeBldg_lootcode, activeBldg_id;
 	public int activeBldg_wood, activeBldg_metal, activeBldg_food, activeBldg_water, activeBldg_zombies;
-	public string locationJsonText, survivorJsonText, weaponJsonText, clearedBldgJsonText, outpostJsonText, missionJsonText, starvationHungerJsonText, injuryJsonText, foundSurvivorJsonText;
+	public string myWallsJsonText, locationJsonText, googleBldgJsonTextpg1, googleBldgJsonTextpg2, googleBldgJsonTextpg3, survivorJsonText, weaponJsonText, clearedBldgJsonText, outpostJsonText, missionJsonText, starvationHungerJsonText, injuryJsonText, foundSurvivorJsonText, survivorWallJsonText;
 	public JsonData missionData;
 
 	public string userId;
@@ -150,6 +150,7 @@ public class GameManager : MonoBehaviour {
 		form.AddField("id", GameManager.instance.userId );
 		form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
 		form.AddField("client", "mob");
+
 		form.AddField("first_name", GameManager.instance.userFirstName);
 		form.AddField("last_name", GameManager.instance.userLastName);
 		form.AddField("name", GameManager.instance.userName);
@@ -169,8 +170,9 @@ public class GameManager : MonoBehaviour {
 		if (www.error == null) {
 			
 			Debug.Log ("New character successfully started on the server" + www.text);
-			//SceneManager.LoadScene("02a Map Level");
-			yield break;
+            //SceneManager.LoadScene("02a Map Level"); //used to load map level before intro/wep select was added.
+            SceneManager.LoadScene("04a Weapon Select"); //added when survivor draft removed from new character process.
+            yield break;
 		} else {
 			Debug.Log("WWW error "+ www.error);
 		}
@@ -189,7 +191,7 @@ public class GameManager : MonoBehaviour {
 		if (www.error == null) {
 			JsonData fullGameData = JsonMapper.ToObject(www.text);
 
-			//******* 0-success 1-player 2-survivor 3-weapon 4-cleared buildings 5-outposts 6-missions 7-eat/drink/starve ******* THIS IS HOW THE INDEX IS ORGANIZED
+			//******* 0-success 1-player 2-survivor 3-weapon 4-cleared buildings 5-outposts 6-missions 7-eat/drink/starve 8-injuries 9-wall tags ******* THIS IS HOW THE INDEX IS ORGANIZED
 
 			if (fullGameData[0].ToString() =="Success") {
 
@@ -251,7 +253,7 @@ public class GameManager : MonoBehaviour {
 				} else {
 					survivorJsonText = "";
 				}
-				Debug.Log(survivorJsonText);
+				//Debug.Log(survivorJsonText);
 
 				//Debug.Log(JsonMapper.ToJson(fullGameData[3]));
 				if (fullGameData[3] != null) {
@@ -262,7 +264,7 @@ public class GameManager : MonoBehaviour {
 
 				if (fullGameData[4] != null) {
 					clearedBldgJsonText = JsonMapper.ToJson(fullGameData[4]);
-					Debug.Log(JsonMapper.ToJson(fullGameData[4]));
+					//Debug.Log(JsonMapper.ToJson(fullGameData[4]));
 				} else {
 					clearedBldgJsonText = "";
 				}
@@ -291,6 +293,14 @@ public class GameManager : MonoBehaviour {
 				}else {
 					injuryJsonText = "";
 				}
+
+                if (fullGameData[9] != null)
+                {
+                    myWallsJsonText = JsonMapper.ToJson(fullGameData[9]);
+                }else
+                {
+                    myWallsJsonText = "";
+                }
 
 				//***************
 				//load the survivor/weapon game objects into the GameManager, and then go to map level
@@ -944,8 +954,8 @@ public class GameManager : MonoBehaviour {
 		GameManager.instance.waterCount = UnityEngine.Random.Range(10, 20);
 		GameManager.instance.foodCount = UnityEngine.Random.Range(15, 30);
 		GameManager.instance.ammo = UnityEngine.Random.Range(0,20);
-		GameManager.instance.playerMaxStamina = 100;
-		GameManager.instance.playerCurrentStamina = 100;
+//		GameManager.instance.playerMaxStamina = 100;
+//		GameManager.instance.playerCurrentStamina = 100;
 		GameManager.instance.homebaseLat = 0.0f;
 		GameManager.instance.homebaseLong = 0.0f;
 		GameManager.instance.lastLoginTime = "12/31/1999 11:59:59";
@@ -1037,6 +1047,7 @@ public class GameManager : MonoBehaviour {
 
 	public void LoadBuildingCombat () {
 		survivorFound = false;
+        Debug.Log("Calling load into building ****************************");
 
         //store the active building stats for win screen reporting.
         GameManager.instance.reportedWood = GameManager.instance.activeBldg_wood;

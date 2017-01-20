@@ -171,15 +171,18 @@ public class ZombieStateMachine : MonoBehaviour {
 			int startRenderLayer = gameObject.GetComponent<SpriteRenderer>().sortingOrder;
 
 			Vector3 targetPosition = new Vector3(0, 0, 0); //just called to initialize the variable.
-			if (target != null) {
-				//animate the enemy near the hero to attack
-				targetPosition = new Vector3(target.transform.position.x + 55.0f, target.transform.position.y, target.transform.position.z);
-				gameObject.GetComponent<SpriteRenderer>().sortingOrder = target.GetComponent<SpriteRenderer>().sortingOrder;
-			} else {
-				currentState = TurnState.CHOOSEACTION;
-				actionStarted = false;
-				StopCoroutine(TakeAction());
-			}
+			
+            if (target == null)
+            {
+                //pick a new target.
+                int ind = Random.Range(0, BSM.survivorList.Count - 1);
+                target = BSM.survivorList[ind];
+            }
+
+			//animate the enemy near the hero to attack
+			targetPosition = new Vector3(target.transform.position.x + 55.0f, target.transform.position.y, target.transform.position.z);
+			gameObject.GetComponent<SpriteRenderer>().sortingOrder = target.GetComponent<SpriteRenderer>().sortingOrder;
+			
 
 			while (MoveTowardsEnemy(targetPosition)) {yield return null;}
 			//animate weaponfx
@@ -189,8 +192,10 @@ public class ZombieStateMachine : MonoBehaviour {
 			//do damage
 			SurvivorStateMachine targetSurvivor = target.GetComponent<SurvivorStateMachine>();
 			int myDmg = CalculateMyDamage ();
-			StartCoroutine(SendZombieAttack(targetSurvivor.survivor.survivor_id, myDmg));
-			Debug.Log ("Zombie hit Survivor for "+myDmg+" damage");
+
+            //StartCoroutine(SendZombieAttack(targetSurvivor.survivor.survivor_id, myDmg)); //no longer updating the server on each attack- now storing attacks for later
+
+            Debug.Log ("Zombie hit Survivor for "+myDmg+" damage");
 			targetSurvivor.survivor.curStamina -= myDmg;
 
 			//check for having bit the player
@@ -226,9 +231,12 @@ public class ZombieStateMachine : MonoBehaviour {
 				survivorBit = true;
 			}
 
+            //server update is repaced with locally storing the completed attack data here:
+            StoreAttack(targetSurvivor.survivor.survivor_id, survivorBit);
 
-			//return to start position
-			Vector3 firstPosition = startPosition;
+
+            //return to start position
+            Vector3 firstPosition = startPosition;
 			while (MoveTowardsEnemy(firstPosition)) {yield return null;}
 
 			//remove turn from list
@@ -247,6 +255,20 @@ public class ZombieStateMachine : MonoBehaviour {
 		}
 	}
 
+    private void StoreAttack (int surv_id, bool bite)
+    {
+        TurnResultHolder myTurnresult = new TurnResultHolder();
+        myTurnresult.attackType = "zombie";
+        myTurnresult.survivor_id = surv_id;
+        if (bite)
+        {
+            myTurnresult.dead = 1;
+        }else
+        {
+            myTurnresult.dead = 0;
+        }
+        BSM.turnResultList.Add(myTurnresult);
+    }
 
 
 	IEnumerator SendZombieAttack (int survivorID, int dmg) {

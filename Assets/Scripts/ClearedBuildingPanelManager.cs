@@ -127,21 +127,7 @@ public class ClearedBuildingPanelManager : MonoBehaviour {
             JsonData lootJSON = JsonMapper.ToObject(www.text);
             if (lootJSON[0].ToString() == "Success")
             {
-                if (type == "supply")
-                {
-                    Debug.Log("supply looting succesful on server: updating client.");
-                    GameManager.instance.wood += loot_qty;
-                    GameManager.instance.metal += loot_qty;
-                    trapProgressSlider.value = 0;
-                    currentMapManager.activeBuilding.wood_inside = 0;
-                    currentMapManager.activeBuilding.metal_inside = 0;
-                    currentMapManager.activeBuilding.last_looted_supply = DateTime.Now;
-                    currentMapManager.clearedBldgWoodText.text = "0";
-                    currentMapManager.clearedBldgMetalText.text = "0";
-                    yield return new WaitForSeconds(0.1f);
-                    currentMapManager.UpdateTheUI();
-                    CalculateTrapStatus();
-                }else if (type == "food")
+                if (type == "food")
                 {
                     GameManager.instance.foodCount += loot_qty;
                     greenhouseProgressSlider.value = 0;

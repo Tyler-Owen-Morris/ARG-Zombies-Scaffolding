@@ -8,10 +8,10 @@ using UnityEngine.SceneManagement;
 
 public class MapLevelManager : MonoBehaviour {
 
-	public GameObject exitGamePanel, missionCompletePanel, inventoryPanel, buildingPanel, clearedBuildingPanel, qrPanel, personelPanel, gearPanel, homebasePanel, homebaseConfirmationPanel, outpostSelectionPanel, outpostConfirmationPanel, missionStartConfirmationPanel, OutpostQRPanel, enterBldgButton, unequippedWeaponsPanel, mapLevelCanvas, hungerThirstWarningPanel, endGamePanel, endGameButton, bogConfirmationPanel;
+    public GameObject levelLoadingPanel, fadeToCombatPanel, survivorListGrid, survivorWallPanel, survivorWallConfirmationPanel, survivorWallEmptyTextObject, exitGamePanel, missionCompletePanel, inventoryPanel, buildingPanel, clearedBuildingPanel, qrPanel, personelPanel, gearPanel, homebasePanel, homebaseConfirmationPanel, outpostSelectionPanel, outpostConfirmationPanel, missionStartConfirmationPanel, OutpostQRPanel, enterBldgButton, unequippedWeaponsPanel, mapLevelCanvas, hungerThirstWarningPanel, endGamePanel, endGameButton, bogConfirmationPanel;
 
 	[SerializeField]
-	public Text woodText, metalText, justDayAlivetext, daysAliveText, survivorsAliveText, currentLatText, currentLonText, locationReportText, zombieKillText, foodText, waterText, gearText, expirationText, playerNameText, clearedBuildingNameText, bldgNameText, bldgWoodText, bldgMetalText, bldgFoodText, bldgWaterText, clearedBldgWoodText, clearedBldgMetalText, clearedBldgFoodText, clearedBldgWaterText, zombieCountText, bldgDistText, homebaseLatText, homebaseLonText, missionConfirmationText;
+	public Text survivorWallDescriptionText, survivorWallBldgNametext, woodText, metalText, justDayAlivetext, daysAliveText, survivorsAliveText, currentLatText, currentLonText, locationReportText, zombieKillText, foodText, waterText, gearText, expirationText, playerNameText, clearedBuildingNameText, bldgNameText, bldgWoodText, bldgMetalText, bldgFoodText, bldgWaterText, clearedBldgWoodText, clearedBldgMetalText, clearedBldgFoodText, clearedBldgWaterText, zombieCountText, bldgDistText, homebaseLatText, homebaseLonText, missionConfirmationText;
 
 	[SerializeField]
 	private Slider playerHealthSlider, playerHealthSliderDuplicate;
@@ -34,11 +34,16 @@ public class MapLevelManager : MonoBehaviour {
 	private int zombieCount, outpost_index;
 	public string bldgName, active_bldg_id;
 	public PopulatedBuilding activeBuilding;
+    public Image building_image;
+    public Text buildingTypeText, buildingTypeDescription;
 
 	public int active_gearing_survivor_id, to_equip_weapon_id, to_unequip_weapon_id;
 
 	private static GameObject missionCompletePrefab;
 
+    private string postNameToWallURL = GameManager.serverURL + "/PostNameToWall.php";
+    private string buyWallSurvivorURL = GameManager.serverURL + "/BuyWallSurvivor.php";
+    private string lookUpWallLocationURL = GameManager.serverURL + "/FetchWallData.php";
 	private string updateHomebaseURL = GameManager.serverURL+"/UpdateHomebaseLocation.php";
 	private string dropoffAndResupplyURL = GameManager.serverURL+"/DropoffAndResupply.php";
 	private string equipWeaponURL = GameManager.serverURL+"/EquipWeapon.php";
@@ -51,7 +56,10 @@ public class MapLevelManager : MonoBehaviour {
     private string transferLootURL = GameManager.serverURL + "/TransferLootFromBuilding.php";
     //public string placeGearURL = GameManager.serverURL + "/PlaceGear.php";//relocated to cleared bldg panel mgr
 
-	public void InventoryButtonPressed () {
+    private string googlePhotosURL = "https://maps.googleapis.com/maps/api/place/photo?";
+    private string googleAPIKey = "AIzaSyC0Ly6W_ljFCk5sV4n-T73e-rhRdNpiEe4";
+
+    public void InventoryButtonPressed () {
 		if (inventoryPanel.activeInHierarchy == false ) {
 			inventoryPanel.SetActive(true);
             personelPanel.gameObject.SetActive(true);
@@ -684,172 +692,517 @@ public class MapLevelManager : MonoBehaviour {
 		GameManager.instance.activeBldg_lootcode = myBuilding.loot_code;
 		GameManager.instance.activeBldg_lastclear = myBuilding.last_cleared;
 
-        //set the dist & zombie count text pieces
-		int rand = UnityEngine.Random.Range(-3,3);
-		zombieCountText.text = (zombieCount+rand-2)+"-"+(zombieCount+rand+2);
-		bldgDistText.text = distToBldg.ToString();
-        bldgWoodText.text = myBuilding.wood_inside.ToString();
-        bldgMetalText.text = myBuilding.metal_inside.ToString();
-        bldgFoodText.text = myBuilding.food_inside.ToString();
-        bldgWaterText.text = myBuilding.water_inside.ToString();
+        //detect social locations, and exit building functions- load social location
+        if (myBuilding.loot_code == "A")
+        {
+            StartCoroutine(SetUpWallPanel(myBuilding));
 
-        //check the building state based on timestamp stored on object.
-		if (myBuilding.last_cleared == DateTime.Parse("11:59pm 12/31/1999")) {
-			//this building has not been visited before
-			zombieCountText.text = "??";
-			bldgWoodText.text = "??";
-            bldgMetalText.text = "??";
-			bldgFoodText.text = "??";
-			bldgWaterText.text = "??";
+        }
+        else
+        {
 
-		} else if (myBuilding.last_cleared == DateTime.Parse("12:01am 01/01/2000")) {
-			//this building has been entered, but not cleared
-			zombieCountText.text = myBuilding.zombiePopulation.ToString();
-			bldgWoodText.text = "??";
-            bldgMetalText.text = "??";
-			bldgFoodText.text = "??";
-			bldgWaterText.text = "??";
+            //set the dist & zombie count text pieces
+            int rand = UnityEngine.Random.Range(-3, 3);
+            zombieCountText.text = (zombieCount + rand - 2) + "-" + (zombieCount + rand + 2);
+            bldgDistText.text = distToBldg.ToString();
+            bldgWoodText.text = myBuilding.wood_inside.ToString();
+            bldgMetalText.text = myBuilding.metal_inside.ToString();
+            bldgFoodText.text = myBuilding.food_inside.ToString();
+            bldgWaterText.text = myBuilding.water_inside.ToString();
 
-		} else {
-            //this building has been cleared before
-            TimeSpan time_since_cleared = (DateTime.Now - myBuilding.last_cleared);
-            if (time_since_cleared > TimeSpan.FromHours(4)) {
-				//zombies can appear after 4 hours- roll for zombies
-				enterBldgButton.GetComponent<Button>().interactable = true;
+            //set the building photo
+            string my_photoRef = myBuilding.photo_reference;
+            StartCoroutine(SetBuildingPhoto(my_photoRef));
 
-                //when a building is cleared it stores zombie pop as -1
-				if (myBuilding.zombiePopulation < 0) {
-
-                    //reroll zombie population before updating text
-                    float odds = 80f;//start at 80% to find bldg still clear after 4hr
-                    int min_zombie = 0;
-                    int max_zombie = 5;
-                    if (time_since_cleared > TimeSpan.FromHours(6))
-                    {
-                        odds -= 10;//70%
-                        min_zombie += 1;//1
-                        max_zombie += 3;//8
-                    }
-                    if (time_since_cleared > TimeSpan.FromHours(12))
-                    {
-                        odds -= 10;//60%
-                        min_zombie += 2;//3
-                        max_zombie += 4;//12
-                    }
-                    if (time_since_cleared > TimeSpan.FromHours(24))
-                    {
-                        odds -= 10;//50%
-                        min_zombie += 2;//5
-                        max_zombie += 6;//18
-                    }
-                    if (time_since_cleared> TimeSpan.FromHours(48))
-                    {
-                        odds -= 20;//30%
-                        min_zombie += 1;//6
-                        max_zombie += 7;//25
-                    }
-                    int zomb_pop = UnityEngine.Random.Range(min_zombie, max_zombie);
-                    
-
-                    float roll = UnityEngine.Random.Range(0.0f,100.0f);
-                    if (roll <= odds)
-                    {
-                        zomb_pop = 0; //there is a chance that no zombies have entered the building.
-                    }
-                    building_clear = false;//this will load the "not clear" building panel
-
-                    GameManager.instance.zombiesToFight = zomb_pop;
-                    zombieCount = zomb_pop;
-                    myBuilding.zombiePopulation = zomb_pop;
-                    StartCoroutine(ReRollZombiePopulation(zomb_pop)); //set the building to populated on the server, even if it is a 0.
-                    zombieCountText.text = "??"; //set up the panel text.
-                    Debug.Log("reroll zombie population to: "+zomb_pop.ToString());
-
-                    //^^^^this whole section above allows the player to enter combat with 0 zombies, and roll for a survivor any time 4h after initial clear
-                    //the first time they click on it after this time window- it rolls and stores the roll.
-
-                    //this is to set up the un-cleared building text with the correct stats for generated resources
-                    ClearedBuildingPanelManager CBPM = clearedBuildingPanel.GetComponent<ClearedBuildingPanelManager>();
-                    CBPM.CalculateTrapStatus();
-                    CBPM.CalculateBarrelStatus();
-                    CBPM.CalculateGreenhouseStatus();
-                    bldgWoodText.text = activeBuilding.wood_inside.ToString();
-                    bldgMetalText.text = activeBuilding.metal_inside.ToString();
-                    bldgFoodText.text = activeBuilding.food_inside.ToString();
-                    bldgWaterText.text = activeBuilding.water_inside.ToString();
-
-				} else {
-					//zombie population has already been re-rolled, player has entered, but not cleared.
-					zombieCountText.text = "??"; 
-                    bldgWoodText.text = myBuilding.wood_inside.ToString();
-                    bldgMetalText.text = myBuilding.metal_inside.ToString();
-                    bldgFoodText.text = myBuilding.food_inside.ToString();
-                    bldgWaterText.text = myBuilding.water_inside.ToString();
-                    building_clear = false;
-				}
-			} else {
-                //building is clear
-                building_clear = true; //this tells which panel to load at the end of this function
-                clearedBldgWoodText.text = myBuilding.wood_inside.ToString();
-                clearedBldgMetalText.text = myBuilding.metal_inside.ToString();
-                clearedBldgFoodText.text = myBuilding.food_inside.ToString();
-                clearedBldgWaterText.text = myBuilding.water_inside.ToString();
+            //set the type text
+            if (myBuilding.loot_code == "F")
+            {
+                buildingTypeText.text = myBuilding.google_type.Replace("_", " ");
+                buildingTypeText.color = Color.green;
+                buildingTypeDescription.text = "This location is more likely to contain food. slim chance of any wood or metal.";
             }
-			
-		}
+            else if (myBuilding.loot_code == "W")
+            {
+                buildingTypeText.text = myBuilding.google_type.Replace("_", " ");
+                buildingTypeText.color = Color.blue;
+                buildingTypeDescription.text = "This location is more likely to contain water. doubtful to contain wood or metal.";
+            }
+            else if (myBuilding.loot_code == "S")
+            {
+                buildingTypeText.text = myBuilding.google_type.Replace("_", " ");
+                buildingTypeText.color = Color.yellow;
+                buildingTypeDescription.text = "This location most likely has wood and/or metal. no reason to have food or water.";
+            }
+            else if (myBuilding.loot_code == "G")
+            {
+                buildingTypeText.text = myBuilding.google_type.Replace("_", " ");
+                buildingTypeText.color = Color.white;
+                buildingTypeDescription.text = "There's no telling what may or may not be there...";
+            }
+            else if (myBuilding.loot_code == "A")
+            {
+                buildingTypeText.text = myBuilding.google_type.Replace("_", " ");
+                buildingTypeText.color = Color.white;
+                buildingTypeDescription.text = "This is a social location. There are no resources here.";
+            }
+            else
+            {
+                Debug.Log("Building does not conform to any known type");
+            }
+
+            //the below text objects are not all used anymore- resource counts are disabled, for type text as set above.
+            //check the building state based on timestamp stored on object.
+            if (myBuilding.last_cleared == DateTime.Parse("11:59pm 12/31/1999"))
+            {
+                //this building has not been visited before
+                zombieCountText.text = "??";
+                bldgWoodText.text = "??";
+                bldgMetalText.text = "??";
+                bldgFoodText.text = "??";
+                bldgWaterText.text = "??";
+
+            }
+            else if (myBuilding.last_cleared == DateTime.Parse("12:01am 01/01/2000"))
+            {
+                //this building has been entered, but not cleared
+                zombieCountText.text = myBuilding.zombiePopulation.ToString();
+                bldgWoodText.text = "??";
+                bldgMetalText.text = "??";
+                bldgFoodText.text = "??";
+                bldgWaterText.text = "??";
+
+            }
+            else
+            {
+                //this building has been cleared before
+                TimeSpan time_since_cleared = (DateTime.Now - myBuilding.last_cleared);
+                if (time_since_cleared > TimeSpan.FromHours(4) && myBuilding.has_traps == false)
+                {
+                    //zombies can appear after 4 hours, without traps
+                    enterBldgButton.GetComponent<Button>().interactable = true;
+
+                    //when a building is cleared it stores zombie pop as -1
+                    if (myBuilding.zombiePopulation < 0)
+                    {
+
+                        //reroll zombie population before updating text
+                        float odds = 80f;//start at 80% to find bldg still clear after 4hr
+                        int min_zombie = 0;
+                        int max_zombie = 5;
+                        if (time_since_cleared > TimeSpan.FromHours(6))
+                        {
+                            odds -= 10;//70%
+                            min_zombie += 1;//1
+                            max_zombie += 3;//8
+                        }
+                        if (time_since_cleared > TimeSpan.FromHours(12))
+                        {
+                            odds -= 10;//60%
+                            min_zombie += 2;//3
+                            max_zombie += 4;//12
+                        }
+                        if (time_since_cleared > TimeSpan.FromHours(24))
+                        {
+                            odds -= 10;//50%
+                            min_zombie += 2;//5
+                            max_zombie += 6;//18
+                        }
+                        if (time_since_cleared > TimeSpan.FromHours(48))
+                        {
+                            odds -= 20;//30%
+                            min_zombie += 1;//6
+                            max_zombie += 7;//25
+                        }
+                        int zomb_pop = UnityEngine.Random.Range(min_zombie, max_zombie);
 
 
-		//set the color of the text based on the zombie count, and the distance calculated.
-		if(distToBldg < 150f) {
-			bldgDistText.color = Color.green;
-		} else if (distToBldg < 300f) {
-			bldgDistText.color = Color.yellow;
-		} else {
-			bldgDistText.color = Color.red;
-		}
-		if (zombieCount < 8) {
-			zombieCountText.color = Color.green;
-		} else if (zombieCount < 17) {
-			zombieCountText.color = Color.yellow;
-		} else {
-			zombieCountText.color = Color.red;
-		}
+                        float roll = UnityEngine.Random.Range(0.0f, 100.0f);
+                        if (roll <= odds)
+                        {
+                            zomb_pop = 0; //there is a chance that no zombies have entered the building.
+                        }
+                        building_clear = false;//this will load the "not clear" building panel
+
+                        GameManager.instance.zombiesToFight = zomb_pop;
+                        zombieCount = zomb_pop;
+                        myBuilding.zombiePopulation = zomb_pop;
+                        StartCoroutine(ReRollZombiePopulation(zomb_pop)); //set the building to populated on the server, even if it is a 0.
+                        zombieCountText.text = "??"; //set up the panel text.
+                        Debug.Log("reroll zombie population to: " + zomb_pop.ToString());
+
+                        //^^^^this whole section above allows the player to enter combat with 0 zombies, and roll for a survivor any time 4h after initial clear
+                        //the first time they click on it after this time window- it rolls and stores the roll.
+
+                        //this is to set up the un-cleared building text with the correct stats for generated resources
+                        ClearedBuildingPanelManager CBPM = clearedBuildingPanel.GetComponent<ClearedBuildingPanelManager>();
+                        CBPM.CalculateTrapStatus();
+                        CBPM.CalculateBarrelStatus();
+                        CBPM.CalculateGreenhouseStatus();
+                        bldgWoodText.text = activeBuilding.wood_inside.ToString();
+                        bldgMetalText.text = activeBuilding.metal_inside.ToString();
+                        bldgFoodText.text = activeBuilding.food_inside.ToString();
+                        bldgWaterText.text = activeBuilding.water_inside.ToString();
+
+                    }
+                    else
+                    {
+                        //zombie population has already been re-rolled, player has entered, but not cleared.
+                        zombieCountText.text = "??";
+                        bldgWoodText.text = myBuilding.wood_inside.ToString();
+                        bldgMetalText.text = myBuilding.metal_inside.ToString();
+                        bldgFoodText.text = myBuilding.food_inside.ToString();
+                        bldgWaterText.text = myBuilding.water_inside.ToString();
+                        building_clear = false;
+                    }
+                }
+                else
+                {
+                    //building is clear
+                    building_clear = true; //this tells which panel to load at the end of this function
+                    clearedBldgWoodText.text = myBuilding.wood_inside.ToString();
+                    clearedBldgMetalText.text = myBuilding.metal_inside.ToString();
+                    clearedBldgFoodText.text = myBuilding.food_inside.ToString();
+                    clearedBldgWaterText.text = myBuilding.water_inside.ToString();
+                }
+
+            }
 
 
-		//manage which buttons are available
-		if (Input.location.status == LocationServiceStatus.Running){
-			//if player is too far from the building disable the enter option.
+            //set the color of the text based on the zombie count, and the distance calculated.
+            if (distToBldg < 150f)
+            {
+                bldgDistText.color = Color.green;
+            }
+            else if (distToBldg < 300f)
+            {
+                bldgDistText.color = Color.yellow;
+            }
+            else
+            {
+                bldgDistText.color = Color.red;
+            }
+            if (zombieCount < 8)
+            {
+                zombieCountText.color = Color.green;
+            }
+            else if (zombieCount < 17)
+            {
+                zombieCountText.color = Color.yellow;
+            }
+            else
+            {
+                zombieCountText.color = Color.red;
+            }
 
-			if (distToBldg > 300.0f) {
-				//out of range, disable button
-				//enterBldgButton.GetComponent<Button>().interactable = false;
-			} else {
-				//in range, enable button
-				enterBldgButton.GetComponent<Button>().interactable = true;
-			}
-		} else {
-			//just leave the button on if location services arent running... later this will need to be removed.
-			enterBldgButton.GetComponent<Button>().interactable = true;
-		}
 
-		//if there are less than 10 survivors active, you may not start a mission.
-		if (GameManager.instance.activeSurvivorCardList.Count < 10) {
-			sendATeamButton.interactable = false;
-		} else {
-			sendATeamButton.interactable = true;
-		}
+            //manage which buttons are available
+            if (Input.location.status == LocationServiceStatus.Running)
+            {
+                //if player is too far from the building disable the enter option.
 
-        //activate the correct building panel.
-        if (building_clear == false)
+                if (distToBldg > 300.0f)
+                {
+                    //out of range, disable button
+                    //enterBldgButton.GetComponent<Button>().interactable = false;
+                }
+                else
+                {
+                    //in range, enable button
+                    enterBldgButton.GetComponent<Button>().interactable = true;
+                }
+            }
+            else
+            {
+                //just leave the button on if location services arent running... later this will need to be removed.
+                enterBldgButton.GetComponent<Button>().interactable = true;
+            }
+
+            //if there are less than 10 survivors active, you may not start a mission.
+            if (GameManager.instance.activeSurvivorCardList.Count < 10)
+            {
+                sendATeamButton.interactable = false;
+            }
+            else
+            {
+                sendATeamButton.interactable = true;
+            }
+
+            //activate the correct building panel.
+            if (building_clear == false)
+            {
+                buildingPanel.SetActive(true);
+            }
+            else
+            {
+                ClearedBuildingPanelManager CBPM = clearedBuildingPanel.GetComponent<ClearedBuildingPanelManager>();
+                CBPM.InitilizeMyText();
+                clearedBuildingPanel.SetActive(true);
+            }
+        }
+    }
+
+    IEnumerator SetUpWallPanel(PopulatedBuilding this_bldg)
+    {
+        WWWForm form = new WWWForm();
+        form.AddField("id", GameManager.instance.userId);
+        form.AddField("login_ts", GameManager.instance.lastLoginTime);
+        form.AddField("client", "mob");
+
+        form.AddField("bldg_name", this_bldg.buildingName);
+        form.AddField("bldg_id", this_bldg.buildingID);
+
+        WWW www = new WWW(lookUpWallLocationURL, form);
+        yield return www;
+        Debug.Log(www.text);
+
+        if (www.error == null)
         {
-            buildingPanel.SetActive(true);
-        }else
+            JsonData wallJSON = JsonMapper.ToObject(www.text);
+            if (wallJSON[0].ToString() == "Success")
+            {
+                if (wallJSON[1] != null)
+                {
+                    GameManager.instance.survivorWallJsonText = JsonMapper.ToJson(wallJSON[1]);
+                    Debug.Log(GameManager.instance.survivorWallJsonText);
+                    PopulateAndOpenSurvivorWall();
+                }else
+                {
+                    GameManager.instance.survivorWallJsonText = ""; //this notifies the populator that no survivors have visited this location recently enough
+                    PopulateAndOpenSurvivorWall(); //this opens the window
+                }
+            }
+        }
+        else
         {
-            ClearedBuildingPanelManager CBPM = clearedBuildingPanel.GetComponent<ClearedBuildingPanelManager>();
-            CBPM.InitilizeMyText();
-            clearedBuildingPanel.SetActive(true);
+            Debug.Log(www.error);
+        }
+    }
+
+    private void PopulateAndOpenSurvivorWall()
+    {
+
+        //activate panel
+        survivorWallPanel.SetActive(true);
+        survivorWallEmptyTextObject.SetActive(false);
+        survivorWallDescriptionText.text = "it's a "+activeBuilding.google_type.Replace("_", " ")+" of postings by nearby survivors, they read:";
+        survivorWallBldgNametext.text = GameManager.instance.activeBldg_name;
+        //destroy all the old list items
+        GameObject[] oldWallItems = GameObject.FindGameObjectsWithTag("walllistelement");
+        //Debug.Log("Found " + oldWallItems.Length.ToString() + " old wall tags to delete from the UI");
+        foreach (GameObject oldWallItem in oldWallItems)
+        {
+            Destroy(oldWallItem.gameObject);
         }
 
+        if (GameManager.instance.survivorWallJsonText != "")
+        {
+            //populate the panel
+            JsonData wallJson = JsonMapper.ToObject(GameManager.instance.survivorWallJsonText);
+            //GameObject survivorListGrid = GameObject.Find("SurvivorAliveGrid");
+            GameObject survivorWallItemPrefab = Resources.Load<GameObject>("Prefabs/SurvivorAliveListElement");
+
+            for (int i=0; wallJson.Count > i; i++)
+            {
+                GameObject instance = Instantiate(survivorWallItemPrefab, survivorListGrid.transform) as GameObject;
+                instance.transform.localScale = new Vector3(1, 1, 1);
+                SurvivorWallElementManager myWallElementMgr = instance.gameObject.GetComponent<SurvivorWallElementManager>();
+                if (myWallElementMgr != null)
+                {
+                    myWallElementMgr.SetUpThisListItem(wallJson[i]["player_name"].ToString(), wallJson[i]["player_id"].ToString());
+                }
+                else
+                {
+                    Debug.Log("unable to find the wall elelement manager on the prefab");
+                }
+            }
+        }
+        else
+        {
+            //we still want to open the panel- but nobody has visited here recently enough- REPORT THAT!!
+            survivorWallEmptyTextObject.SetActive(true);
+
+        }
+         
+    }
+
+    public bool surv_purchase_in_progress = false;
+    public void BuyThisSurvivor(string id, string suv_name)
+    {
+        if (surv_purchase_in_progress == false)
+        {
+            surv_purchase_in_progress = true;
+            StartCoroutine(BuySurvivor(id, suv_name));
+        }
+        else
+        {
+            Debug.Log("not sending multiple survivor adds simultaneously");
+        }
+    }
+
+    IEnumerator BuySurvivor(string ID, string suv_nme)
+    {
+        //check that the player does not already have this linked survivor
+        JsonData survivorJsonData = JsonMapper.ToObject(GameManager.instance.survivorJsonText);
+        bool got_him = false;
+        for (int i=0; i<survivorJsonData.Count; i++)
+        {
+            if (survivorJsonData[i]["paired_user_id"].ToString() == ID)
+            {
+                PostTempLocationText("Already paired with that user");
+                got_him = true;
+                break;
+            }
+        }
+        if (got_him) { surv_purchase_in_progress = false; PostTempLocationText("You can't recruit a player twice"); yield break; } //if the player is located in the active survivor list
+
+        //if not, then continue sending
+        WWWForm form = new WWWForm();
+        form.AddField("id", GameManager.instance.userId);
+        form.AddField("login_ts", GameManager.instance.lastLoginTime);
+        form.AddField("client", "mob");
+
+        form.AddField("buy_id", ID);
+        form.AddField("buy_name", suv_nme);
+
+        WWW www = new WWW(buyWallSurvivorURL, form);
+        yield return www;
+        Debug.Log(www.text);
+
+        if (www.error == null)
+        {
+            JsonData buyResultJson = JsonMapper.ToObject(www.text);
+            if (buyResultJson[0].ToString() == "Success")
+            {
+                GameManager.instance.survivorJsonText = JsonMapper.ToJson(buyResultJson[1]);
+                Debug.Log(GameManager.instance.survivorJsonText);
+            }
+            else
+            {
+                Debug.Log(buyResultJson[1].ToString());
+                PostTempLocationText(buyResultJson[1].ToString());
+            }
+        }
+        else
+        {
+            Debug.Log(www.error);
+        }
+        surv_purchase_in_progress = false;
+    }
+
+    private bool adding_name_to_wall = false;
+    public void AddMyNameToWall() {
+        //check that the player isn't already added to this location within the past 12hr
+        if (GameManager.instance.myWallsJsonText != "")
+        {
+            string active_bdg = GameManager.instance.activeBldg_name;//store active bldg to compare to known valid tags.
+            JsonData myWallTagsJson = JsonMapper.ToObject(GameManager.instance.myWallsJsonText); //pull valid tags
+            bool found = false;//this will notify the reaction after exiting the loop
+            for (int i = 0; i < myWallTagsJson.Count; i++)
+            {
+                if (active_bdg == myWallTagsJson[i]["bldg_name"].ToString())
+                {
+                    
+                    found = true;
+                    break;
+                }
+            }
+
+            if (found)
+            {
+                PostTempLocationText("Your name is already here");
+            }else
+            {
+                //player has not added this location- continue with send
+                if (adding_name_to_wall == false)
+                {
+                    adding_name_to_wall = true;
+                    StartCoroutine(PostNameToWall());
+                }
+            }
+
+        }
+        else
+        {
+            //player has not added this location continue with send
+            if (adding_name_to_wall == false)
+            {
+                adding_name_to_wall = true;
+                StartCoroutine(PostNameToWall());
+            }
+        }
+    }
+
+    IEnumerator PostNameToWall()
+    {
+        WWWForm form = new WWWForm();
+        form.AddField("id", GameManager.instance.userId);
+        form.AddField("login_ts", GameManager.instance.lastLoginTime);
+        form.AddField("client", "mob");
+
+        string pub_name = GameManager.instance.userFirstName + " " + GameManager.instance.userLastName[0]+".";
+        form.AddField("public_name", pub_name);
+        form.AddField("bldg_name", GameManager.instance.activeBldg_name);
+        form.AddField("bldg_id", GameManager.instance.activeBldg_id);
+
+        WWW www = new WWW(postNameToWallURL, form);
+        yield return www;
+        Debug.Log(www.text);
+
+        if (www.error == null)
+        {
+
+            JsonData namePostReturnJson = JsonMapper.ToObject(www.text);
+            if (namePostReturnJson[0].ToString() == "Success")
+            {
+                //handle response
+                PostTempLocationText("Succesfully added your name to this location"); //give them a popup in the UI
+                GameManager.instance.myWallsJsonText = JsonMapper.ToJson(namePostReturnJson[1]); //update the json
+                Debug.Log(GameManager.instance.myWallsJsonText);
+                survivorWallPanel.SetActive(false);
+                BuildingSpawner myBldgSpawner = FindObjectOfType<BuildingSpawner>();
+                myBldgSpawner.Turn60GoogleJsonIntoBuildings();
+
+            }else
+            {
+                Debug.Log(namePostReturnJson[1].ToString());
+            }
+        }else
+        {
+            Debug.Log(www.error);
+        }
+
+        adding_name_to_wall = false;
+    }
+
+    public Sprite defalut_bldg_photo;
+    IEnumerator SetBuildingPhoto (string photoRef) {
+        if (photoRef == "")
+        {
+            //if there's no saved photo for this building, reset the default and exit the coroutine.
+            building_image.sprite = defalut_bldg_photo;
+            yield break;
+        }
+
+        int maxWid = 200;
+        int maxHeight = 200;
+
+        string the_url = googlePhotosURL + "maxwidth=" + maxWid + "&maxheight=" + maxHeight + "&photoreference=" + photoRef + "&key=" + googleAPIKey;
+        Debug.Log(the_url);
+        WWW www = new WWW(the_url);
+        yield return www;
+        Debug.Log(www.text);
+
+        if (www.error == null)
+        {
+            int wid = www.texture.width;
+            int height = www.texture.height;
+            building_image.sprite = Sprite.Create(www.texture, new Rect(0, 0, wid, height), new Vector2());
+            Debug.Log("supposedly the building image is set.");
+        }else
+        {
+            Debug.Log("no building image returned from API"+www.error);
+        }
+        
     }
 
 	IEnumerator ReRollZombiePopulation(int count) {
@@ -880,7 +1233,12 @@ public class MapLevelManager : MonoBehaviour {
 	}
 
 	public void LoadIntoCombatFromBldgInspector () {
-		GameManager.instance.LoadBuildingCombat();
+
+        //turn on the fade-to-black panel, and call it's function to begin animating.
+        CancelInvoke("CheckAndUpdateMap"); //do not allow the mapmgr to delete the objects you're working with
+        fadeToCombatPanel.SetActive(true);
+        fadeToCombatPanel.GetComponent<FadeToCombatPanelManager>().BeginCombatTransitionAnimation();
+		//GameManager.instance.LoadBuildingCombat(); //we are now running an animation in code before calling the combat loader
 	}
 
 	public void AcknowledgeStarvationWarning () {
@@ -974,6 +1332,10 @@ public class MapLevelManager : MonoBehaviour {
         clearedBuildingPanel.SetActive(false);
 	}
 
+    public void DeactivateWallInspector() {
+        survivorWallPanel.SetActive(false);
+    }
+
     public void LootActiveBuilding() {
         if (activeBuilding.wood_inside > 0 || activeBuilding.metal_inside > 0 || activeBuilding.water_inside > 0 || activeBuilding.food_inside > 0)
         {
@@ -1051,7 +1413,8 @@ public class MapLevelManager : MonoBehaviour {
     	//declare variables 
     	string bldg_name = "";
     	int dead = 0;
-    	int supply = 0;
+    	int wood = 0;
+        int metal = 0;
     	int water = 0;
     	int food = 0;
 
@@ -1061,7 +1424,8 @@ public class MapLevelManager : MonoBehaviour {
     		if (missionJson[i]["mission_id"].ToString() == mission_id.ToString()) {
     			//load the matching data into variables with the correct scope
     			bldg_name = missionJson[i]["building_name"].ToString();
-    			supply = (int)missionJson[i]["supply_found"];
+    			wood = (int)missionJson[i]["wood"];
+                metal = (int)missionJson[i]["metal"];
     			water = (int)missionJson[i]["water_found"];
     			food = (int)missionJson[i]["food_found"];
 
@@ -1086,7 +1450,7 @@ public class MapLevelManager : MonoBehaviour {
     	//construct the text for the panel
     	string mission_results_text = "";
     	mission_results_text = "the team has returned from investigating "+bldg_name+"\n";
-    	mission_results_text += "they found "+supply+" supply\n";
+    	mission_results_text += "they found "+wood+" wood, and "+metal+" metal\n";
     	mission_results_text += water+" water\n";
     	mission_results_text += food+" food\n";
     	if (dead > 0) {
@@ -1265,7 +1629,7 @@ public class MapLevelManager : MonoBehaviour {
 
 		} else {
 			Debug.Log ("Location services not running");
-			StartCoroutine(PostTempLocationText("Location Services Not Running"));
+			//StartCoroutine(PostTempLocationText("Location Services Not Running"));
 			return 1000.0f;
 		}
 	}

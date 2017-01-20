@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using LitJson;
+using Newtonsoft.Json;
 
 public class BattleStateMachine : MonoBehaviour {
 
@@ -32,7 +33,8 @@ public class BattleStateMachine : MonoBehaviour {
 
 	public List <TurnHandler> TurnList = new List <TurnHandler> ();
 	public List <GameObject> survivorList = new List<GameObject>();
-	public List<GameObject> zombieList = new List<GameObject>();
+	public List <GameObject> zombieList = new List<GameObject>();
+    public List<TurnResultHolder> turnResultList = new List<TurnResultHolder>();
 
 	public GameObject playerTarget;
 	public GameObject weaponBrokenPanel, autoAttackToggle, survivorBitPanel, playerBitPanel, failedRunAwayPanel, runButton, attackButton, cheatSaveButton;
@@ -54,6 +56,7 @@ public class BattleStateMachine : MonoBehaviour {
 	public AudioSource myAudioSource;
 
 	public SurvivorStateMachine survivorWithBite;
+    private string postTurnsURL = GameManager.serverURL + "/PostTurns.php";
 	private string destroySurvivorURL = GameManager.serverURL+"/DestroySurvivor.php";
 	private string injuredSurvivorURL = GameManager.serverURL+"/InjuredSurvivor.php";
 	private string restoreSurvivorURL = GameManager.serverURL+"/RestoreSurvivor.php";
@@ -87,6 +90,8 @@ public class BattleStateMachine : MonoBehaviour {
     void OnDisable()
     {
         SceneManager.sceneLoaded -= OnLevelFinishedLoading;
+        //include a call to the turn list "dumper"
+        DumpTurnsToServer(false);//boolean indicates building has NOT been cleared
     }
 
     void OnLevelFinishedLoading (Scene scene, LoadSceneMode mode) {
@@ -217,15 +222,16 @@ public class BattleStateMachine : MonoBehaviour {
 				if (TurnList.Count > 0) {
 					battleState = PerformAction.SELECTACTION;
 				} else if (zombieList.Count < 1) {
-					// end of the building
-					Debug.Log ("End building called");
+                    // end of the building
+                   
+
+                    Debug.Log ("End building called");
 					int earned_wood = CalculateWoodEarned();
                     int earned_metal = CalculateMetalFound();
 					int earned_water = CalculateWaterFound();
 					int earned_food = CalculateFoodFound();
                     bool found_survivor = CalculateSurvivorFound();
-                    
-					GameManager.instance.BuildingIsCleared(found_survivor);
+                    DumpTurnsToServer(true);
 					battleState = PerformAction.COMPLETED;
 				}else if (autoAttackIsOn && survivorTurnList.Count > 0) {
 					//continue auto attack
@@ -473,6 +479,8 @@ public class BattleStateMachine : MonoBehaviour {
 	}
 
 	bool CalculateSurvivorFound () {
+        return false; //temporarily disabling ability to find survivors in buildings- 1-17-2017
+
 		float odds =0.0f;
 
         GameManager.instance.daysSurvived = Mathf.FloorToInt((float)(DateTime.Now-GameManager.instance.timeCharacterStarted).TotalDays);
@@ -886,19 +894,9 @@ public class BattleStateMachine : MonoBehaviour {
 
 	public void PlayerChoosesRunAway () {
 
-		survivorList.RemoveAll(GameObject => GameObject == null);
+        DumpTurnsToServer(false); //send all stored turn data to server
 
-		/*
-		//clean the list of any destroyed game-objects
-		for (int i = survivorList.Count; 0 < i ; i--) {
-			if (survivorList[i] != null) {
-				continue;
-			} else {
-				//since the list will collapse, we need to repeat the same position in the next loop
-				survivorList.RemoveAt(i);
-			}
-		}
-		*/
+        survivorList.RemoveAll(GameObject => GameObject == null);
 
 		int got_away = 0;
 		int running_away = survivorList.Count;
@@ -958,6 +956,7 @@ public class BattleStateMachine : MonoBehaviour {
 		//if everyone got away, go to map level. Otherwise the above loop has been broken with a dead survivor.
 		if (got_away == running_away) {
 			SceneManager.LoadScene("02a Map Level");
+            StartCoroutine(GameManager.instance.LoadAllGameData());
 		}
 	}
 
@@ -1067,6 +1066,57 @@ public class BattleStateMachine : MonoBehaviour {
 
         }
         else
+        {
+            Debug.Log(www.error);
+        }
+    }
+
+    public void DumpTurnsToServer (bool clr)
+    {
+        //construct array of turns
+        
+        string json_data = JsonConvert.SerializeObject(turnResultList);
+        Debug.Log(json_data);
+        //forward to coroutine to POST to web
+        StartCoroutine(PostTurnsToServer(json_data, clr));
+    }
+
+    IEnumerator PostTurnsToServer (string json_string, bool clear)
+    {
+        WWWForm form = new WWWForm();
+        form.AddField("id", GameManager.instance.userId);
+        form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+        form.AddField("client", "mob");
+
+        form.AddField("turns", json_string);
+        form.AddField("bldg_name", GameManager.instance.activeBldg_name);
+        if (clear)
+        {
+            form.AddField("clear", 1);
+        }else
+        {
+            form.AddField("clear", 0);
+        }
+
+        WWW www = new WWW(postTurnsURL, form);
+        yield return www;
+        Debug.Log(www.text);
+
+        if (www.error == null)
+        {
+            JsonData turnPostResultJson = JsonMapper.ToObject(www.text);
+            if (turnPostResultJson[0].ToString() == "Success")
+            {
+                turnResultList.Clear();
+                if (clear)
+                {
+                    GameManager.instance.BuildingIsCleared(false); //if clear, proceed to victory screen, false indicates no survivors found (ever)
+                }
+            }else
+            {
+                Debug.Log(turnPostResultJson[1].ToString());
+            }
+        }else
         {
             Debug.Log(www.error);
         }
