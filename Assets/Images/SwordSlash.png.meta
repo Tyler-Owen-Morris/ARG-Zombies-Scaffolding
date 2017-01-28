@@ -58,11 +58,19 @@ TextureImporter:
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spritePixelsToUnits: 100
   alphaIsTransparency: 1
+  spriteTessellationDetail: -1
   textureType: 8
-  buildTargetSettings: []
+  buildTargetSettings:
+  - buildTarget: Android
+    maxTextureSize: 1024
+    textureFormat: -1
+    compressionQuality: 50
+    allowsAlphaSplitting: 0
   spriteSheet:
+    serializedVersion: 2
     sprites:
-    - name: SwordSlash_0
+    - serializedVersion: 2
+      name: SwordSlash_0
       rect:
         serializedVersion: 2
         x: 12
@@ -72,17 +80,10 @@ TextureImporter:
       alignment: 1
       pivot: {x: 0, y: 1}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: 112, y: -47}
-        - {x: 113, y: -53}
-        - {x: 150, y: -65}
-        - {x: 157, y: -63}
-        - {x: 157, y: -57}
-        - {x: 153, y: -40}
-        - {x: 140, y: -22}
-        - {x: 120, y: -22}
-        - {x: 112, y: -23}
-    - name: SwordSlash_1
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: SwordSlash_1
       rect:
         serializedVersion: 2
         x: 210
@@ -92,22 +93,10 @@ TextureImporter:
       alignment: 1
       pivot: {x: 0, y: 1}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: 148, y: -57}
-        - {x: 151, y: -53}
-        - {x: 151, y: -46}
-        - {x: 128, y: -16}
-        - {x: 107, y: -16}
-        - {x: 96, y: -21}
-        - {x: 96, y: -31}
-        - {x: 103, y: -56}
-        - {x: 105, y: -58}
-        - {x: 119, y: -58}
-        - {x: 135, y: -57}
-        - {x: 139, y: -54}
-        - {x: 137, y: -54}
-        - {x: 145, y: -56}
-    - name: SwordSlash_2
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: SwordSlash_2
       rect:
         serializedVersion: 2
         x: 406
@@ -117,19 +106,10 @@ TextureImporter:
       alignment: 1
       pivot: {x: 0, y: 1}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: 147, y: -40}
-        - {x: 124, y: -8}
-        - {x: 92, y: -8}
-        - {x: 79, y: -23}
-        - {x: 79, y: -34}
-        - {x: 91, y: -52}
-        - {x: 109, y: -52}
-        - {x: 125, y: -51}
-        - {x: 126, y: -48}
-        - {x: 146, y: -52}
-        - {x: 147, y: -51}
-    - name: SwordSlash_3
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: SwordSlash_3
       rect:
         serializedVersion: 2
         x: 606
@@ -139,21 +119,10 @@ TextureImporter:
       alignment: 1
       pivot: {x: 0, y: 1}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: 115, y: -32}
-        - {x: 120, y: -28}
-        - {x: 120, y: -23}
-        - {x: 93, y: -13}
-        - {x: 55, y: -13}
-        - {x: 35, y: -22}
-        - {x: 35, y: -51}
-        - {x: 38, y: -53}
-        - {x: 59, y: -57}
-        - {x: 84, y: -57}
-        - {x: 117, y: -37}
-        - {x: 113, y: -34}
-        - {x: 106, y: -32}
-    - name: SwordSlash_4
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: SwordSlash_4
       rect:
         serializedVersion: 2
         x: 1
@@ -163,30 +132,10 @@ TextureImporter:
       alignment: 1
       pivot: {x: 0, y: 1}
       border: {x: 0, y: 0, z: 4, w: 0}
-      outline:
-      - - {x: 122, y: -35}
-        - {x: 124, y: -33}
-        - {x: 123, y: -30}
-        - {x: 117, y: -29}
-        - {x: 114, y: -29}
-        - {x: 113, y: -28}
-        - {x: 104, y: -28}
-        - {x: 115, y: -28}
-        - {x: 116, y: -29}
-        - {x: 118, y: -29}
-        - {x: 124, y: -28}
-        - {x: 124, y: -27}
-        - {x: 122, y: -15}
-        - {x: 50, y: -15}
-        - {x: 7, y: -37}
-        - {x: 7, y: -86}
-        - {x: 22, y: -104}
-        - {x: 28, y: -104}
-        - {x: 82, y: -81}
-        - {x: 115, y: -41}
-        - {x: 112, y: -38}
-        - {x: 103, y: -38}
-    - name: SwordSlash_5
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: SwordSlash_5
       rect:
         serializedVersion: 2
         x: 196
@@ -196,20 +145,10 @@ TextureImporter:
       alignment: 1
       pivot: {x: 0, y: 1}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: 93, y: -23}
-        - {x: 90, y: -23}
-        - {x: 92, y: -21}
-        - {x: 91, y: -18}
-        - {x: 41, y: -18}
-        - {x: 13, y: -50}
-        - {x: 13, y: -133}
-        - {x: 20, y: -139}
-        - {x: 65, y: -139}
-        - {x: 98, y: -73}
-        - {x: 98, y: -21}
-        - {x: 94, y: -22}
-    - name: SwordSlash_6
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: SwordSlash_6
       rect:
         serializedVersion: 2
         x: 397
@@ -219,26 +158,10 @@ TextureImporter:
       alignment: 1
       pivot: {x: 0, y: 1}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: 61, y: -57}
-        - {x: 55, y: -55}
-        - {x: 52, y: -60}
-        - {x: 49, y: -68}
-        - {x: 47, y: -76}
-        - {x: 47, y: -73}
-        - {x: 53, y: -52}
-        - {x: 52, y: -44}
-        - {x: 43, y: -44}
-        - {x: 31, y: -48}
-        - {x: 19, y: -64}
-        - {x: 19, y: -139}
-        - {x: 34, y: -176}
-        - {x: 72, y: -176}
-        - {x: 87, y: -166}
-        - {x: 95, y: -118}
-        - {x: 95, y: -115}
-        - {x: 93, y: -114}
-    - name: SwordSlash_7
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: SwordSlash_7
       rect:
         serializedVersion: 2
         x: 600
@@ -248,17 +171,10 @@ TextureImporter:
       alignment: 1
       pivot: {x: 0, y: 1}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: 16, y: -55}
-        - {x: 16, y: -132}
-        - {x: 17, y: -134}
-        - {x: 57, y: -177}
-        - {x: 65, y: -177}
-        - {x: 83, y: -169}
-        - {x: 88, y: -155}
-        - {x: 88, y: -82}
-        - {x: 49, y: -55}
-    - name: SwordSlash_8
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: SwordSlash_8
       rect:
         serializedVersion: 2
         x: 5
@@ -268,18 +184,10 @@ TextureImporter:
       alignment: 1
       pivot: {x: 0, y: 1}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: 43, y: -43}
-        - {x: 29, y: -43}
-        - {x: 23, y: -51}
-        - {x: 23, y: -130}
-        - {x: 54, y: -154}
-        - {x: 72, y: -154}
-        - {x: 84, y: -144}
-        - {x: 88, y: -98}
-        - {x: 88, y: -91}
-        - {x: 87, y: -89}
-    - name: SwordSlash_9
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: SwordSlash_9
       rect:
         serializedVersion: 2
         x: 198
@@ -289,17 +197,10 @@ TextureImporter:
       alignment: 1
       pivot: {x: 0, y: 1}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: 43, y: -74}
-        - {x: 40, y: -75}
-        - {x: 29, y: -79}
-        - {x: 29, y: -94}
-        - {x: 37, y: -126}
-        - {x: 75, y: -147}
-        - {x: 84, y: -147}
-        - {x: 95, y: -136}
-        - {x: 95, y: -103}
-    - name: SwordSlash_10
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: SwordSlash_10
       rect:
         serializedVersion: 2
         x: 412
@@ -309,18 +210,10 @@ TextureImporter:
       alignment: 1
       pivot: {x: 0, y: 1}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: 28, y: -98}
-        - {x: 23, y: -102}
-        - {x: 23, y: -113}
-        - {x: 42, y: -139}
-        - {x: 66, y: -150}
-        - {x: 79, y: -150}
-        - {x: 88, y: -144}
-        - {x: 88, y: -140}
-        - {x: 73, y: -108}
-        - {x: 45, y: -98}
-    - name: SwordSlash_11
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: SwordSlash_11
       rect:
         serializedVersion: 2
         x: 605
@@ -330,17 +223,8 @@ TextureImporter:
       alignment: 1
       pivot: {x: 0, y: 1}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: 66, y: -119}
-        - {x: 59, y: -125}
-        - {x: 56, y: -130}
-        - {x: 56, y: -133}
-        - {x: 71, y: -142}
-        - {x: 81, y: -144}
-        - {x: 90, y: -144}
-        - {x: 93, y: -139}
-        - {x: 93, y: -133}
-        - {x: 85, y: -119}
+      outline: []
+      tessellationDetail: -1
     outline: []
   spritePackingTag: 
   userData: 
