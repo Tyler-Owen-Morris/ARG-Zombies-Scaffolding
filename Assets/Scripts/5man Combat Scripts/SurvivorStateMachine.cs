@@ -396,7 +396,7 @@ public class SurvivorStateMachine : MonoBehaviour {
 
 	private void TurnMeIntoAZombie () {
 		//count the zombies to kill up 1
-		GameManager.instance.zombiesToFight++;
+		GameManager.instance.activeBldg_zombies++;
 
 		//remove the survivor from the battlestate machine.
 		BSM.survivorList.Remove(this.gameObject);

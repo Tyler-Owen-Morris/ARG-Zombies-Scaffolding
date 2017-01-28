@@ -74,14 +74,20 @@ public class ZombieStateMachine : MonoBehaviour {
             spriteRecolorer.textureMask = BSM.zombie_texture_array[2] as Texture2D;
         }
         spriteRecolorer.pixelOp = SpriteColorHelper.PixelOp.Overlay;
-        RecolorMySprite();
+        //RecolorMySprite(); //this picks from pre-selected color pallates
+        DisableMyColorizer(); //this function was created to undo all the colorshifting at runtime-instead of removing the components from the game
         //spriteRecolorer.colorMaskRed = GimmieRandomColor();
         //spriteRecolorer.colorMaskGreen = GimmieRandomColor();
         //spriteRecolorer.colorMaskBlue = GimmieRandomColor();
 
-        Debug.Log(spriteRecolorer.colorMaskRed.ToString() +"R :: "+spriteRecolorer.colorMaskGreen.ToString()+"G :: "+spriteRecolorer.colorMaskBlue.ToString()+"B");
+        //Debug.Log(spriteRecolorer.colorMaskRed.ToString() +"R :: "+spriteRecolorer.colorMaskGreen.ToString()+"G :: "+spriteRecolorer.colorMaskBlue.ToString()+"B");
 
         Debug.Log(this.gameObject.name + " is setting their sprite to a " + zombie.zombieType.ToString() + " zombie");
+    }
+
+    void DisableMyColorizer()
+    {
+        this.GetComponent<SpriteColorMasks3>().enabled=false;
     }
 
     Vector4 GimmieRandomColor() {
@@ -136,7 +142,7 @@ public class ZombieStateMachine : MonoBehaviour {
 			case (TurnState.DEAD):
                 //BattleStateMachine stores the #of zombies in the scene on start
                 //by making this comparison on death, we maintain that number
-				if (GameManager.instance.zombiesToFight >= GameManager.instance.activeBldg_zAcross+1) { 
+				if (GameManager.instance.activeBldg_zombies >= GameManager.instance.activeBldg_zAcross+1) { 
 					//kill me and refresh me.
 					StartCoroutine(DeathAction(true));
 				} else {
@@ -301,7 +307,7 @@ public class ZombieStateMachine : MonoBehaviour {
 		} else {
 			deathActionStarted = true;
 			BSM.zombieList.Remove(gameObject);
-			GameManager.instance.zombiesToFight --;
+			GameManager.instance.activeBldg_zombies --;
 			BSM.UpdateUINumbers();
 			BSM.zombiesKilled ++;
 

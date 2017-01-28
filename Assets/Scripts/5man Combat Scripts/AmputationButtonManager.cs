@@ -31,7 +31,8 @@ public class AmputationButtonManager : MonoBehaviour {
 		} else {
 			//failed amputation. Player dies, and zombies go +1
 			Debug.Log("unsuccessful amputation");
-			GameManager.instance.zombiesToFight++;
+            //GameManager.instance.zombiesToFight++;
+            GameManager.instance.activeBldg_zombies++;
 			myBSM.UpdateUINumbers();
 			myBSM.PlayerChooseKillSurvivor();
 		}

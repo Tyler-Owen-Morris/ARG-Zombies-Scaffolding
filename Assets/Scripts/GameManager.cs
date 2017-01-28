@@ -15,12 +15,12 @@ public class GameManager : MonoBehaviour {
     public ProfileImageManager profileImageManager;
 
 	public bool gameDataInitialized = false, updateWeaponAndSurvivorMapLevelUI = false, survivorFound = false, playerInTutorial = false, weaponHasBeenSelected = false, playerIsZombie = false, blazeOfGloryActive = false;
-	public int daysSurvived, /*supply,*/wood, metal, ammo, trap, barrel, greenhouse, reportedWood, reportedMetal, reportedWater, reportedFood, playerCurrentStamina, playerMaxStamina, zombiesToFight, foodCount, waterCount, mealCount, distanceCoveredThisSession, zombieKill_HighScore, zombieKill_score;
+	public int daysSurvived, /*supply,*/wood, metal, ammo, trap, barrel, greenhouse, reportedWood, reportedMetal, reportedWater, reportedFood, playerCurrentStamina, playerMaxStamina, foodCount, waterCount, mealCount, distanceCoveredThisSession, zombieKill_HighScore, zombieKill_score;
 	public DateTime timeCharacterStarted, lastHomebaseSetTime, gameOverTime, activeBldg_lastclear;
 	//public PopulatedBuilding active_building;
 	public float homebaseLat, homebaseLong;
 	public string foundSurvivorName, lastLoginTime;
-	public TimeSpan high_score, my_score;
+	public TimeSpan high_score, my_score, serverTimeOffset;
     public Sprite my_profile_pic;
     public Texture2D profile_image_texture;
 	public int foundSurvivorCurStam, foundSurvivorMaxStam, foundSurvivorAttack, foundSurvivorEntryID;
@@ -341,7 +341,7 @@ public class GameManager : MonoBehaviour {
 	public IEnumerator PlayerBit () {
 		activeBldg_name = "bite_case";
 		DateTime time_dead = DateTime.Now + TimeSpan.FromMinutes(UnityEngine.Random.Range(5, 25));
-		TimeSpan final_score = time_dead - GameManager.instance.timeCharacterStarted;
+		TimeSpan final_score = time_dead - (GameManager.instance.timeCharacterStarted + GameManager.instance.serverTimeOffset);
 		my_score=final_score;
 		Debug.Log("Player bit, and will turn at "+time_dead.ToString()+" giving a final score of: "+final_score.ToString());
 
@@ -372,8 +372,8 @@ public class GameManager : MonoBehaviour {
 
 	public IEnumerator PlayerDiedofStarvation () {
 		//calculate the players score 
-		DateTime time_dead = GameManager.instance.timeCharacterStarted + TimeSpan.FromHours(6 * GameManager.instance.mealCount);
-		TimeSpan final_score = time_dead - GameManager.instance.timeCharacterStarted;
+		DateTime time_dead = (GameManager.instance.timeCharacterStarted + GameManager.instance.serverTimeOffset) + TimeSpan.FromHours(6 * GameManager.instance.mealCount);
+		TimeSpan final_score = time_dead - (GameManager.instance.timeCharacterStarted + GameManager.instance.serverTimeOffset);
 		my_score = final_score;
 		Debug.Log(final_score.ToString());
 
@@ -399,7 +399,7 @@ public class GameManager : MonoBehaviour {
 		int courageTimer = UnityEngine.Random.Range(1, 20);
 		DateTime game_over_time = DateTime.Now + TimeSpan.FromMinutes(courageTimer);
 		GameManager.instance.gameOverTime = game_over_time;
-		TimeSpan myScore = game_over_time - GameManager.instance.timeCharacterStarted;
+		TimeSpan myScore = game_over_time - (GameManager.instance.timeCharacterStarted + GameManager.instance.serverTimeOffset);
 		my_score = myScore;
 		Debug.Log("My score: "+myScore.ToString()+" GameOverTime: "+gameOverTime.ToString());
 
@@ -973,6 +973,8 @@ public class GameManager : MonoBehaviour {
 		GameManager.instance.homebaseLat = 0.0f;
 		GameManager.instance.homebaseLong = 0.0f;
 		GameManager.instance.lastLoginTime = "12/31/1999 11:59:59";
+        GameManager.instance.activeBldg_zombies = 1; //set up the 1 zombie for the weapon-select combat
+        GameManager.instance.activeBldg_zAcross = 1;
 		playerInTutorial = true;
 
 		StartCoroutine (NewCharacterUpdateServer());
@@ -1055,7 +1057,8 @@ public class GameManager : MonoBehaviour {
 
 	public void LoadAltCombat (int zomb,string bldg_name) {
 		activeBldg_name = bldg_name;
-		zombiesToFight = zomb;
+        activeBldg_zombies = zomb;
+		//zombiesToFight = zomb;
         
         SceneManager.LoadScene("02e Combat-15");//all combat is handled in this one scene now
         //LoadRandomCombatScene();
@@ -1236,6 +1239,7 @@ public class GameManager : MonoBehaviour {
             zombie_pop = UnityEngine.Random.Range(5, 25);
         }
 
+        /*
         //RANDOMIZER- we want to randomly encounter NO zombies, and NO loot.
         int num_one = UnityEngine.Random.Range(1, 4);
         int num_two = UnityEngine.Random.Range(1, 4);
@@ -1251,6 +1255,7 @@ public class GameManager : MonoBehaviour {
                 metal = 0;
             }
         }
+        */
 
 
         //ZOMBIES ACROSS: this generates the integer that sets how many zombie models load in combat AKA how many a player must fight at once at this location
@@ -1279,7 +1284,8 @@ public class GameManager : MonoBehaviour {
 		GameManager.instance.activeBldg_water = water;
 		GameManager.instance.activeBldg_wood = wood;
         GameManager.instance.activeBldg_metal = metal;
-		GameManager.instance.zombiesToFight = zombie_pop;
+        GameManager.instance.activeBldg_zombies = zombie_pop;
+		//GameManager.instance.zombiesToFight = zombie_pop;
         GameManager.instance.activeBldg_zAcross = zombies_across;
 
 		Debug.Log("Wood: "+wood.ToString()+" metal: "+metal.ToString()+" food: "+food.ToString()+" water: "+water.ToString()+" zombies: "+zombie_pop.ToString());

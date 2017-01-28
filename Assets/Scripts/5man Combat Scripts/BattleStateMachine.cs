@@ -48,6 +48,7 @@ public class BattleStateMachine : MonoBehaviour {
     public GameObject blazeOfGloryImage;
     public CombatWeaponListPopulator my_CWLP;
 
+    public GameObject[] fixed_order_zombie_array; //we delete in a specific order from this array to ensure the zombies are spread out nicely
     public Sprite[] zombie_sprite_array;
     public Texture[] zombie_texture_array;
 
@@ -76,9 +77,8 @@ public class BattleStateMachine : MonoBehaviour {
         myAudioSource.volume = GamePreferences.GetSFXVolume();//set the SFX audio source to GamePref volume value
         
         //before we create the zombielist- we need to get the #'s correct
-        SetZombiesAcrossForThisBuilding();//this sets the number of models to the max- according to the buildings
-        RemoveAnyExcessZombieModels(); //if there are still too many models- this function removes them to match the count
-
+        SetZombieModelsForThisBuilding();//this should set the correct number of zombie models that should be in the scene.
+                
 		survivorList.AddRange (GameObject.FindGameObjectsWithTag("survivor"));
 		zombieList.AddRange (GameObject.FindGameObjectsWithTag("zombie"));
         //AdjustForLessThan5Zombies ();
@@ -88,7 +88,7 @@ public class BattleStateMachine : MonoBehaviour {
         PlayIntroSound();
 
         //AFTER all other pieces of data are loaded- set the battlestate to start the machine
-        battleState = PerformAction.WAIT;
+        battleState = PerformAction.WAIT;//this should start the machine moving.
 		playerGUI = PlayerInput.ACTIVATE;
 	}
 
@@ -120,7 +120,7 @@ public class BattleStateMachine : MonoBehaviour {
 
     void PlayIntroSound ()
     {
-        if (GameManager.instance.zombiesToFight  > 0)
+        if (GameManager.instance.activeBldg_zombies  > 0)
         {
             myAudioSource.PlayOneShot(foundZombieIntroSound);
         }
@@ -226,55 +226,76 @@ public class BattleStateMachine : MonoBehaviour {
 		}
 	}
 
-    void SetZombiesAcrossForThisBuilding()
+    void SetZombieModelsForThisBuilding()
     {
+        
+
         GameObject[] zombies = GameObject.FindGameObjectsWithTag("zombie");//grab all the models in the scene
+        Debug.Log("The game sees: " + zombies.Length+" zombies");
         int z_across = GameManager.instance.activeBldg_zAcross; //grab how many there SHOULD be
-        Debug.Log("I found: " + zombies.Length + " zombies in the scene, and " + GameManager.instance.activeBldg_zAcross + " zombies across according to game data");
-        if(zombies.Length > z_across || GameManager.instance.zombiesToFight==0) 
+        Debug.Log("I found: " + zombies.Length + " zombies in the scene, and " + GameManager.instance.activeBldg_zAcross + " zombies across, and "+GameManager.instance.activeBldg_zombies+" zombies to fight according to game data");
+        if(zombies.Length > z_across || zombies.Length > GameManager.instance.activeBldg_zombies || GameManager.instance.activeBldg_zombies==0) 
         {
-            if (GameManager.instance.zombiesToFight == 0)
+            if (GameManager.instance.activeBldg_zombies == 0)
             {
                 for (int i = 0; i < zombies.Length; i++)
                 {
                     Destroy(zombies[i]); //destroy everything.
                 }
+                Debug.Log("I am trying to destroy all of the zombies.");
             }
             else
             {
                 //remove all excess zombie gameobjects
-                int removeNum = zombies.Length - z_across;
+                int removeNum = 0;
+                int across_rem_num = zombies.Length - z_across;
+                int to_fight_remove_num = zombies.Length - GameManager.instance.activeBldg_zombies;
+                if (to_fight_remove_num >= across_rem_num)
+                {
+                    removeNum = to_fight_remove_num;
+                }else
+                {
+                    removeNum = across_rem_num;
+                }
                 for (int i = 0; i < removeNum; i++)
                 {
-                    Debug.Log("Destroying object number: " + i + zombies[i].gameObject.name);
+                    Debug.Log("Destroying object number: " + i + " "+fixed_order_zombie_array[i].gameObject.name);
                     //zombieList.Remove(tmp); //this funtion is now called before the list is formed
-                    int list_index = zombieList.IndexOf(zombies[i]);//get its index in the list
-                    zombieList.RemoveAt(list_index);//remove from list
-                    zombies[i].gameObject.SetActive(false); //overkill
-                    Destroy(zombies[i].gameObject);//destroy from gamespace
+                    //int list_index = zombieList.IndexOf(zombies[i]);//get its index in the list
+                    //zombieList.RemoveAt(list_index);//remove from list
+                    //zombies[i].gameObject.SetActive(false); //overkill
+                    Destroy(fixed_order_zombie_array[i].gameObject);//destroy from gamespace
                 }
+                Debug.Log("I am trying to remove "+removeNum+"zombies");
             }
         }
-    }
 
-    void RemoveAnyExcessZombieModels ()
-    {
-        GameObject[] zombies = GameObject.FindGameObjectsWithTag("zombie");
-        if (zombies.Length < GameManager.instance.zombiesToFight || GameManager.instance.zombiesToFight==0)
+        /* //all deletes should be handled above- we don't need to do this 2x now.
+        GameObject[] zombies2 = GameObject.FindGameObjectsWithTag("zombie");//look again in the scene at how many zombie models are there
+        Debug.Log("The game sees: " + zombies2.Length + " zombies");
+        if (zombies2.Length > GameManager.instance.activeBldg_zombies )
         {
-            int removeNum = zombies.Length - GameManager.instance.zombiesToFight;
-            for (int i = 0; i < removeNum; i++)
-            {
-                zombieList[0].SetActive(false);
-                zombieList[0].GetComponent<ZombieStateMachine>().myTypeText.text = "";
-                zombieList.RemoveAt(0);
-            }
+              int removeNum = zombies2.Length - GameManager.instance.activeBldg_zombies;
+              for (int i = 0; i < removeNum; i++)
+              {
+                  zombies2[i].SetActive(false);
+                  zombies2[i].GetComponent<ZombieStateMachine>().myTypeText.text = "";
+                  //zombieList.RemoveAt(i);//we are now referencing the local array and allowing the deletes to take place in the update.
+              }
+         }
+        */
+
+        GameObject[] zombies3 = GameObject.FindGameObjectsWithTag("zombie");
+        foreach (GameObject zomb in zombies3)
+        {
+            zomb.gameObject.SetActive(true);
         }
+        Debug.Log("at the end of setting up, the game still sees: " + zombies3.Length + " zombies in the game");
     }
 
 	void AdjustForLessThan5Zombies () {
-		if (GameManager.instance.zombiesToFight < 5) {
-			int removeNum = 5 - GameManager.instance.zombiesToFight;
+		if (GameManager.instance.activeBldg_zombies < 5) {
+			int removeNum = 5 - GameManager.instance.activeBldg_zombies;
 			for (int i = 0; i < removeNum; i++) {
 				zombieList[0].SetActive(false);
 				zombieList[0].GetComponent<ZombieStateMachine>().myTypeText.text = "";
@@ -282,18 +303,29 @@ public class BattleStateMachine : MonoBehaviour {
 			} 
 		}
 	}
+
+    void CleanZombieList() {
+        for (int i  =0; i < zombieList.Count; i++)
+        {
+            if (zombieList[i]== null)
+            {
+                zombieList.RemoveAt(i); //this will destroy the loop, so we must break to avoid an error
+                break;
+            }
+        }
+    }
 	
 	// Update is called once per frame
 	void Update () {
+
+        CleanZombieList();//we call this each frame, it will remove empty entries in the zombieList, and allow victory to get called
 
 		switch (battleState) {
 			case (PerformAction.WAIT):
 				if (TurnList.Count > 0) {
 					battleState = PerformAction.SELECTACTION;
-				} else if (zombieList.Count < 1) {
+				} else if (zombieList.Count < 1 /*|| GameManager.instance.activeBldg_zombies==0*/) {
                     // end of the building
-                   
-
                     Debug.Log ("End building called");
 					int earned_wood = CalculateWoodEarned();
                     int earned_metal = CalculateMetalFound();
@@ -444,7 +476,7 @@ public class BattleStateMachine : MonoBehaviour {
 	*/
 
 	public void UpdateUINumbers () {
-		zombieCounter.text = GameManager.instance.zombiesToFight.ToString();
+		zombieCounter.text = GameManager.instance.activeBldg_zombies.ToString();
 		ammmoCounter.text = "Ammo: "+GameManager.instance.ammo.ToString();
 	}
 
@@ -552,7 +584,7 @@ public class BattleStateMachine : MonoBehaviour {
 
 		float odds =0.0f;
 
-        GameManager.instance.daysSurvived = Mathf.FloorToInt((float)(DateTime.Now-GameManager.instance.timeCharacterStarted).TotalDays);
+        GameManager.instance.daysSurvived = Mathf.FloorToInt((float)(DateTime.Now- (GameManager.instance.timeCharacterStarted + GameManager.instance.serverTimeOffset)).TotalDays);
 
 		if (GameManager.instance.daysSurvived < GameManager.DaysUntilOddsFlat) {
 			DateTime now = System.DateTime.Now;
@@ -606,7 +638,7 @@ public class BattleStateMachine : MonoBehaviour {
 
 		if (GameManager.instance.daysSurvived < GameManager.DaysUntilOddsFlat) {
 			DateTime now = System.DateTime.Now;
-			double days_alive = (now-GameManager.instance.timeCharacterStarted).TotalDays;
+			double days_alive = (now- GameManager.instance.timeCharacterStarted ).TotalDays;
 
 			int exponent = 8;
 			float max_percentage = 0.5f; //this starts us at 50/50 odds.

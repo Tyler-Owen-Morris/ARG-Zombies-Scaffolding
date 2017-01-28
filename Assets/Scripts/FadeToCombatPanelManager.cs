@@ -100,7 +100,7 @@ public class FadeToCombatPanelManager : MonoBehaviour {
         float alphaChange = Time.deltaTime;
         currentColor.a += alphaChange;
         myImage.color = currentColor;
-        Debug.Log(myImage.color.a.ToString());
+        //Debug.Log(myImage.color.a.ToString());
         return 1 >= myImage.color.a;
     }
 

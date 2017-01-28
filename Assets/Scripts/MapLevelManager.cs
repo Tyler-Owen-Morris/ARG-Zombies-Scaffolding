@@ -634,7 +634,7 @@ public class MapLevelManager : MonoBehaviour {
     }
 
     private void UpdateTimeAliveClock() {
-        TimeSpan time_alive = (DateTime.Now - GameManager.instance.timeCharacterStarted);
+        TimeSpan time_alive = (DateTime.Now - (GameManager.instance.timeCharacterStarted+GameManager.instance.serverTimeOffset));
         //Debug.Log(time_alive.ToString());
         string my_string = "";
 
@@ -713,8 +713,8 @@ public class MapLevelManager : MonoBehaviour {
 		GameManager.instance.activeBldg_food = myBuilding.food_inside;
 		GameManager.instance.activeBldg_water = myBuilding.water_inside;
         GameManager.instance.activeBldg_zAcross = myBuilding.zombies_across;
-        GameManager.instance.activeBldg_zombies = myBuilding.zombiePopulation;//depreciated 1.26.17
-		GameManager.instance.zombiesToFight = myBuilding.zombiePopulation;
+        GameManager.instance.activeBldg_zombies = myBuilding.zombiePopulation;
+		//GameManager.instance.zombiesToFight = myBuilding.zombiePopulation;//depreciated 1.26.1
 		GameManager.instance.activeBldg_lootcode = myBuilding.loot_code;
 		GameManager.instance.activeBldg_lastclear = myBuilding.last_cleared;
 
@@ -849,7 +849,7 @@ public class MapLevelManager : MonoBehaviour {
                         }
                         building_clear = false;//this will load the "not clear" building panel
 
-                        GameManager.instance.zombiesToFight = zomb_pop;
+                        GameManager.instance.activeBldg_zombies = zomb_pop;
                         zombieCount = zomb_pop;
                         myBuilding.zombiePopulation = zomb_pop;
                         StartCoroutine(ReRollZombiePopulation(zomb_pop)); //set the building to populated on the server, even if it is a 0.

@@ -14,6 +14,7 @@ public class LoginManager : MonoBehaviour {
 	private int survivorsDrafted = 0;
     public bool runGameClock = false;
     private DateTime time_game_start;
+    private bool confirm_new_char = true;
 
 	public GameObject registrationPanel, loggedInPanel, survivorDraftPanel, newCharConfirmationPanel, userDataObject;
     public Text currentGameClock, player_name, player_food, player_water, firstTimeText;
@@ -53,7 +54,7 @@ public class LoginManager : MonoBehaviour {
     void Update() {
         if (runGameClock == true)
         {
-            TimeSpan time_alive = (DateTime.Now - GameManager.instance.timeCharacterStarted);
+            TimeSpan time_alive = (DateTime.Now - (GameManager.instance.timeCharacterStarted + GameManager.instance.serverTimeOffset));
             //Debug.Log(time_alive.ToString());
             string my_string = "";
 
@@ -137,7 +138,14 @@ public class LoginManager : MonoBehaviour {
     	if(newCharConfirmationPanel.activeInHierarchy) {
     		newCharConfirmationPanel.SetActive(false);
     	} else {
-    		newCharConfirmationPanel.SetActive(true);
+            if (confirm_new_char)
+            {
+                newCharConfirmationPanel.SetActive(true);
+            }else
+            {
+                GameManager.instance.StartNewCharacter();
+            }
+            
     	}
     }
 
@@ -250,8 +258,22 @@ public class LoginManager : MonoBehaviour {
                         //player is alive, and has a character active on server
                         Debug.Log("player is alive, and has an active character on the server");
                         
+                        //SET CLIENT TIME OFFSET
+                        GameManager.instance.serverTimeOffset = DateTime.Now - DateTime.Parse(zombStatJson[3]["NOW()"].ToString());
+                        Debug.Log("Server offset calculated to be: " + GameManager.instance.serverTimeOffset);
+
+
                         //Set up the clock for active character.
-                        time_game_start = DateTime.Parse(zombStatJson[2]["char_created_DateTime"].ToString());
+                        string zombStatJsonString = zombStatJson[2]["char_created_DateTime"].ToString();
+                        if (zombStatJsonString != "") {
+                            time_game_start = DateTime.Parse(zombStatJsonString);
+                        }else
+                        {
+                            confirm_new_char = false;//there is no previous character, we can bypass the confirmation panel on "start new"
+                        }
+
+                        
+
                         GameManager.instance.timeCharacterStarted = time_game_start;
                         runGameClock = true;
                         currentGameClock.gameObject.SetActive(true);
