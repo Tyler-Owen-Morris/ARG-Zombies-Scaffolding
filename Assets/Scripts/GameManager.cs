@@ -38,7 +38,7 @@ public class GameManager : MonoBehaviour {
 	private Scene activeScene;
 	//made this public while working on the server "cleared list" data retention. it should go back to private
 	public string activeBldg_name, zombie_to_kill_id ="", activeBldg_lootcode, activeBldg_id;
-	public int activeBldg_wood, activeBldg_metal, activeBldg_food, activeBldg_water, activeBldg_zombies;
+	public int activeBldg_zAcross, activeBldg_wood, activeBldg_metal, activeBldg_food, activeBldg_water, activeBldg_zombies;
 	public string myWallsJsonText, locationJsonText, googleBldgJsonTextpg1, googleBldgJsonTextpg2, googleBldgJsonTextpg3, survivorJsonText, weaponJsonText, clearedBldgJsonText, outpostJsonText, missionJsonText, starvationHungerJsonText, injuryJsonText, foundSurvivorJsonText, survivorWallJsonText;
 	public JsonData missionData;
 
@@ -323,9 +323,11 @@ public class GameManager : MonoBehaviour {
 					MapLevelManager mapManager = FindObjectOfType<MapLevelManager>();
 					mapManager.UpdateTheUI();
 					mapManager.theMissionListPopulator.LoadMissionsFromGameManager();
-				} else if (SceneManager.GetActiveScene().name == "02c Combat-5") {
-					BattleStateMachine BSM = FindObjectOfType<BattleStateMachine>();
-					BSM.ResetAllTurns();
+				} else if (SceneManager.GetActiveScene().name == "02e Combat-15"/*SceneManager.GetActiveScene().name == "02c Combat-5"*/) {
+                    
+                    //removed a call to the battlestatemachine- It will set itself up as it loads in.
+                    //BattleStateMachine BSM = FindObjectOfType<BattleStateMachine>();
+					//BSM.ResetAllTurns();
 					//game data is only refreshed from combat when a bit player turns zombie mid-combat. Resetting turns should stop zombies from targeting null gameobjects.
 				}
 			}	
@@ -1054,9 +1056,10 @@ public class GameManager : MonoBehaviour {
 	public void LoadAltCombat (int zomb,string bldg_name) {
 		activeBldg_name = bldg_name;
 		zombiesToFight = zomb;
-        //SceneManager.LoadScene ("02c Combat-5"); //removed to use random combat loader
-        LoadRandomCombatScene();
-	}
+        
+        SceneManager.LoadScene("02e Combat-15");//all combat is handled in this one scene now
+        //LoadRandomCombatScene();
+    }
 
 	public void LoadBuildingCombat () {
 		survivorFound = false;
@@ -1074,7 +1077,8 @@ public class GameManager : MonoBehaviour {
 		} else {
             //if player has been here before- the correct data should already be loaded
             //SceneManager.LoadScene ("02c Combat-5");
-            LoadRandomCombatScene();
+            SceneManager.LoadScene("02e Combat-15");
+            //LoadRandomCombatScene();
 		}
 
 
@@ -1247,7 +1251,22 @@ public class GameManager : MonoBehaviour {
                 metal = 0;
             }
         }
-        
+
+
+        //ZOMBIES ACROSS: this generates the integer that sets how many zombie models load in combat AKA how many a player must fight at once at this location
+        int zombies_across = 1;
+        //this should let us control the odds in 5% chunks
+        int across_roll = UnityEngine.Random.Range(0, 20);
+        if (across_roll < 10)
+        {
+            zombies_across = UnityEngine.Random.Range(2, 6);//lowest
+        }else if (across_roll < 17)
+        {
+            zombies_across = UnityEngine.Random.Range(4, 9);//harder
+        }else
+        {
+            zombies_across = UnityEngine.Random.Range(6, 15);//hardest
+        }
 
 
 
@@ -1261,6 +1280,7 @@ public class GameManager : MonoBehaviour {
 		GameManager.instance.activeBldg_wood = wood;
         GameManager.instance.activeBldg_metal = metal;
 		GameManager.instance.zombiesToFight = zombie_pop;
+        GameManager.instance.activeBldg_zAcross = zombies_across;
 
 		Debug.Log("Wood: "+wood.ToString()+" metal: "+metal.ToString()+" food: "+food.ToString()+" water: "+water.ToString()+" zombies: "+zombie_pop.ToString());
 		
@@ -1272,6 +1292,7 @@ public class GameManager : MonoBehaviour {
 		form.AddField("food", food);
 		form.AddField("water", water);
 		form.AddField("zombies", zombie_pop);
+        form.AddField("zombies_across", zombies_across); //this represents how many zombies the player will fight at once
 		form.AddField("bldg_name", GameManager.instance.activeBldg_name);
 		form.AddField("bldg_id", GameManager.instance.activeBldg_id);
 
@@ -1288,8 +1309,8 @@ public class GameManager : MonoBehaviour {
 				//if the mission tab is triggering this, don't load player into combat
 				if (mission == false) {
                     //SceneManager.LoadScene("02d Combat-10");
-
-                    LoadRandomCombatScene();
+                    SceneManager.LoadScene("02e Combat-15");
+                    //LoadRandomCombatScene();
                     
 				}
 			} else {
@@ -1300,7 +1321,7 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
-    void LoadRandomCombatScene ()
+    void LoadRandomCombatScene () //depreciated
     {
         int roll = UnityEngine.Random.Range(1, 3);
         if ( roll == 1 )

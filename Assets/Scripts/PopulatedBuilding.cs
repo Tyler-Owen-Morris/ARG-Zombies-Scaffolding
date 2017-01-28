@@ -6,7 +6,7 @@ using System;
 
 public class PopulatedBuilding : MonoBehaviour {
 
-	public int zombiePopulation = 0, wood_inside, metal_inside, food_inside, water_inside;
+	public int zombiePopulation = 0, wood_inside, metal_inside, food_inside, water_inside, zombies_across=1;
     public bool has_traps, has_barrel, has_greenhouse, has_my_tag=false;
 	public DateTime last_cleared, last_looted_supply, last_looted_food, last_looted_water;
 	public string buildingName, buildingID, google_type, loot_code, photo_reference;

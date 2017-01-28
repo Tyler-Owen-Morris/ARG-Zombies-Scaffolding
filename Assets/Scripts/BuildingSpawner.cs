@@ -797,6 +797,7 @@ public class BuildingSpawner : MonoBehaviour {
                             myBuilding.food_inside = (int)clearedJson[i]["food"];
                             myBuilding.water_inside = (int)clearedJson[i]["water"];
                             myBuilding.zombiePopulation = (int)clearedJson[i]["zombies"];
+                            myBuilding.zombies_across = (int)clearedJson[i]["zombies_across"];
                             myBuilding.last_cleared = DateTime.Parse(clearedJson[i]["time_cleared"].ToString());
 
                             if (clearedJson[i]["last_looted_food"].ToString() != "0000-00-00 00:00:00") //this is a blank entry in current DB config

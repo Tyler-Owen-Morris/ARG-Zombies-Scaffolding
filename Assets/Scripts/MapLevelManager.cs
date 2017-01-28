@@ -239,6 +239,8 @@ public class MapLevelManager : MonoBehaviour {
     {
         byte[] bytes = GameManager.instance.profile_image_texture.EncodeToPNG();
         Debug.Log("encode says: "+bytes+"reading off of "+GameManager.instance.profile_image_texture.ToString());
+
+
         ProfileImageManager myPIM = FindObjectOfType<ProfileImageManager>();
         myPIM.SyncPlayerProfileImageWithServer();
     }
@@ -251,9 +253,11 @@ public class MapLevelManager : MonoBehaviour {
 		CheckForStarvationDehydration();
 		UpdateTheUI();
 
+        /*
         ProfileImageManager myPIM = FindObjectOfType<ProfileImageManager>();
         myPIM.SyncPlayerProfileImageWithServer();
-		 
+	    */	 
+
 		//if the player is the last one left alive, activate the gameover button.
 		JsonData survivorJson = JsonMapper.ToObject(GameManager.instance.survivorJsonText);
 		if (survivorJson.Count > 1) {
@@ -688,6 +692,7 @@ public class MapLevelManager : MonoBehaviour {
     private float distToActiveBldg = 0.0f;
 	public void ActivateBuildingInspector(PopulatedBuilding myBuilding) {
         bool building_clear = false;
+        myBuilding.gameObject.tag = "Untagged";
 		CancelInvoke("CheckAndUpdateMap");
 
 		//load building data into MapLevelManager
@@ -707,6 +712,7 @@ public class MapLevelManager : MonoBehaviour {
         GameManager.instance.activeBldg_metal = myBuilding.metal_inside;
 		GameManager.instance.activeBldg_food = myBuilding.food_inside;
 		GameManager.instance.activeBldg_water = myBuilding.water_inside;
+        GameManager.instance.activeBldg_zAcross = myBuilding.zombies_across;
         GameManager.instance.activeBldg_zombies = myBuilding.zombiePopulation;//depreciated 1.26.17
 		GameManager.instance.zombiesToFight = myBuilding.zombiePopulation;
 		GameManager.instance.activeBldg_lootcode = myBuilding.loot_code;
@@ -1348,7 +1354,7 @@ public class MapLevelManager : MonoBehaviour {
 
 	public void DeactivateBuildingInspector () {
         activeBuilding.gameObject.tag = "building"; //re-tag the gameobject so that it may be deleted
-        InvokeRepeating("CheckAndUpdateMap", 0f, 10f);
+        InvokeRepeating("CheckAndUpdateMap", 10f, 10f);
 		buildingPanel.SetActive(false);
         clearedBuildingPanel.SetActive(false);
 	}

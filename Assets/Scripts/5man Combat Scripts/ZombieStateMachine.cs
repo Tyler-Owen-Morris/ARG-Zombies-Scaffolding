@@ -136,7 +136,7 @@ public class ZombieStateMachine : MonoBehaviour {
 			case (TurnState.DEAD):
                 //BattleStateMachine stores the #of zombies in the scene on start
                 //by making this comparison on death, we maintain that number
-				if (GameManager.instance.zombiesToFight >= BSM.zombies_in_front+1) { 
+				if (GameManager.instance.zombiesToFight >= GameManager.instance.activeBldg_zAcross+1) { 
 					//kill me and refresh me.
 					StartCoroutine(DeathAction(true));
 				} else {

@@ -43,7 +43,7 @@ public class BattleStateMachine : MonoBehaviour {
 	[SerializeField]
 	public bool autoAttackIsOn= false;
 
-	public int zombiesKilled = 0, brokenWeapon_surv_id, zombies_in_front;
+	public int zombiesKilled = 0, brokenWeapon_surv_id;
 	public Text zombieCounter, ammmoCounter, survivorBitText, failedToRunText;
     public GameObject blazeOfGloryImage;
     public CombatWeaponListPopulator my_CWLP;
@@ -65,27 +65,31 @@ public class BattleStateMachine : MonoBehaviour {
 
     //private int totalSurvivorsFound = 0;
     void Awake () {
+        battleState = PerformAction.COMPLETED;//this will idle the machine until the load can complete
 		LoadInSurvivorCardData();
        
 	}
 
 	void Start () {
-		battleState = PerformAction.WAIT;
-		playerGUI = PlayerInput.ACTIVATE;
-
 		myAudioSource = GetComponent<AudioSource>();
 		myAudioSource.playOnAwake = false;
         myAudioSource.volume = GamePreferences.GetSFXVolume();//set the SFX audio source to GamePref volume value
+        
+        //before we create the zombielist- we need to get the #'s correct
+        SetZombiesAcrossForThisBuilding();//this sets the number of models to the max- according to the buildings
+        RemoveAnyExcessZombieModels(); //if there are still too many models- this function removes them to match the count
 
 		survivorList.AddRange (GameObject.FindGameObjectsWithTag("survivor"));
 		zombieList.AddRange (GameObject.FindGameObjectsWithTag("zombie"));
         //AdjustForLessThan5Zombies ();
-        RemoveAnyExcessZombieModels();
+        
 
 		UpdateUINumbers();
         PlayIntroSound();
 
-        zombies_in_front = zombieList.Count;
+        //AFTER all other pieces of data are loaded- set the battlestate to start the machine
+        battleState = PerformAction.WAIT;
+		playerGUI = PlayerInput.ACTIVATE;
 	}
 
     void OnEnable()
@@ -221,6 +225,37 @@ public class BattleStateMachine : MonoBehaviour {
 			}
 		}
 	}
+
+    void SetZombiesAcrossForThisBuilding()
+    {
+        GameObject[] zombies = GameObject.FindGameObjectsWithTag("zombie");//grab all the models in the scene
+        int z_across = GameManager.instance.activeBldg_zAcross; //grab how many there SHOULD be
+        Debug.Log("I found: " + zombies.Length + " zombies in the scene, and " + GameManager.instance.activeBldg_zAcross + " zombies across according to game data");
+        if(zombies.Length > z_across || GameManager.instance.zombiesToFight==0) 
+        {
+            if (GameManager.instance.zombiesToFight == 0)
+            {
+                for (int i = 0; i < zombies.Length; i++)
+                {
+                    Destroy(zombies[i]); //destroy everything.
+                }
+            }
+            else
+            {
+                //remove all excess zombie gameobjects
+                int removeNum = zombies.Length - z_across;
+                for (int i = 0; i < removeNum; i++)
+                {
+                    Debug.Log("Destroying object number: " + i + zombies[i].gameObject.name);
+                    //zombieList.Remove(tmp); //this funtion is now called before the list is formed
+                    int list_index = zombieList.IndexOf(zombies[i]);//get its index in the list
+                    zombieList.RemoveAt(list_index);//remove from list
+                    zombies[i].gameObject.SetActive(false); //overkill
+                    Destroy(zombies[i].gameObject);//destroy from gamespace
+                }
+            }
+        }
+    }
 
     void RemoveAnyExcessZombieModels ()
     {
@@ -744,7 +779,18 @@ public class BattleStateMachine : MonoBehaviour {
 
 		//close the decision window & reset turns
 		survivorBitPanel.SetActive(false);
-		ResetAllTurns(); //this is to ensure the inactive player is not falsely targeted by a zombie. 
+        //ResetAllTurns(); //this is to ensure the inactive player is not falsely targeted by a zombie. 
+
+        //instead of resetting all turns- go through the list, and remove the null record
+        for (int i=0; i < survivorList.Count; i++)
+        {
+            if (survivorList[i] == null)
+            {
+                survivorList.RemoveAt(i);
+                break;
+            }
+        }
+
 
 		//pop up text to notify player
 
@@ -786,8 +832,16 @@ public class BattleStateMachine : MonoBehaviour {
 		}
 		GameManager.instance.activeSurvivorCardList.Remove(destroyMe2);
 		Destroy(destroyMe2);
-		//remove from the survivorlist on battlestatemachine
-
+        //remove from the survivorlist on battlestatemachine
+        //look for a null entry on the survivorList on this object- remove it before resetting turns
+        for (int i = 0; i < survivorList.Count; i++)
+        {
+            if (survivorList[i] == null)
+            {
+                survivorList.RemoveAt(i);
+                break;
+            }
+        }
 
 		//disable the survivor panel
 		survivorBitPanel.SetActive(false);
@@ -847,7 +901,7 @@ public class BattleStateMachine : MonoBehaviour {
 		}else{
 			Debug.Log(www.error);
 		}
-		ResetAllTurns();
+		//ResetAllTurns();
 	}
 
 	IEnumerator SendDeadSurvivorToServer(int idToDestroy) {
