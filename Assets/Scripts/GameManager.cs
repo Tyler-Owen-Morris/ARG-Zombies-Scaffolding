@@ -22,6 +22,7 @@ public class GameManager : MonoBehaviour {
 	public string foundSurvivorName, lastLoginTime;
 	public TimeSpan high_score, my_score;
     public Sprite my_profile_pic;
+    public Texture2D profile_image_texture;
 	public int foundSurvivorCurStam, foundSurvivorMaxStam, foundSurvivorAttack, foundSurvivorEntryID;
 	[SerializeField]
 	private GameObject[] weaponOptionsArray;
@@ -29,6 +30,7 @@ public class GameManager : MonoBehaviour {
 	public List <GameObject> activeSurvivorCardList = new List<GameObject>();
 	public List <GameObject> onMissionSurvivorCardList = new List<GameObject>();
 	public List <GameObject> injuredSurvivorCardList = new List<GameObject>();
+    public List <GameObject> deadSurvivorCardList = new List<GameObject>();
 	public List <GameObject> weaponCardList = new List<GameObject>();
 	public GameObject survivorCardHolder;
 	public GameObject weaponCardHolder;
@@ -45,7 +47,7 @@ public class GameManager : MonoBehaviour {
 	public string userLastName;
 	public string userName;
 
-	public static string serverURL = "http://www.argzombie.com/ARGZ_DEV_SERVER";
+	public static string serverURL = "http://www.argzombie.com/ARGZ_SERVER";
 	public static string QR_encryption_key = "12345678901234567890123456789012";
 
 	private string startNewCharURL = serverURL+"/StartNewCharacter.php";
@@ -593,17 +595,27 @@ public class GameManager : MonoBehaviour {
 			//instance.survivor_id = (int)survivorJson[1][i]["survivor_id"];
 			instance.team_pos = (int)survivorJson[i]["team_position"];
 			instance.profilePicURL = survivorJson[i]["profile_pic_url"].ToString();
-			if (survivorJson[i]["onMission"].ToString() == "1") {
+
+
+
+            if (survivorJson[i]["onMission"].ToString() == "1") {
 				instance.onMission = true;
-				onMissionSurvivorCardList.Add(instance.gameObject);
-			} else if (survivorJson[i]["onMission"].ToString() == "0") {
-				if (survivorJson[i]["injured"].ToString() == "0"){
-					instance.onMission = false;
-					activeSurvivorCardList.Add(instance.gameObject);
-				} else {
-					injuredSurvivorCardList.Add(instance.gameObject);
-				}
-			}
+                instance.dead = false;
+				onMissionSurvivorCardList.Add(instance.gameObject);//add to "away on mission" list
+			} else if (survivorJson[i]["injured"].ToString() != "0") { //injuries are stored by injury_id, NOT 0 means injured
+                instance.dead = false;
+                instance.onMission = false;
+				injuredSurvivorCardList.Add(instance.gameObject); //add to injured list
+			} else if (survivorJson[i]["dead"].ToString() == "1"){
+                instance.dead = true;
+                deadSurvivorCardList.Add(instance.gameObject); //add to the dead survivor list
+            }else{
+                instance.onMission = false;
+                instance.dead = false;
+                activeSurvivorCardList.Add(instance.gameObject); //add to the active+alive survivor list
+            }
+
+
 			instance.injury = (int)survivorJson[i]["injured"];
 
 			instance.transform.SetParent(GameManager.instance.survivorCardHolder.transform);
@@ -1042,7 +1054,8 @@ public class GameManager : MonoBehaviour {
 	public void LoadAltCombat (int zomb,string bldg_name) {
 		activeBldg_name = bldg_name;
 		zombiesToFight = zomb;
-		SceneManager.LoadScene ("02c Combat-5");
+        //SceneManager.LoadScene ("02c Combat-5"); //removed to use random combat loader
+        LoadRandomCombatScene();
 	}
 
 	public void LoadBuildingCombat () {
@@ -1059,8 +1072,9 @@ public class GameManager : MonoBehaviour {
 		if (GameManager.instance.activeBldg_lastclear == DateTime.Parse("11:59pm 12/31/1999")) {
 			StartCoroutine(RollNewBuildingContents(false));
 		} else {
-			//if player has been here before- the correct data should already be loaded
-			SceneManager.LoadScene ("02c Combat-5");
+            //if player has been here before- the correct data should already be loaded
+            //SceneManager.LoadScene ("02c Combat-5");
+            LoadRandomCombatScene();
 		}
 
 
@@ -1072,39 +1086,44 @@ public class GameManager : MonoBehaviour {
 		form.AddField ("login_ts", GameManager.instance.lastLoginTime);
 		form.AddField ("client", "mob");
 
-		#region rss rolls
-		//roll the stats
+		#region BUILDING CONTENTS GENERATION ALGORITHIM HERE
+		//declare possible stats
 		int wood = 0;
         int metal = 0;
 		int food = 0;
 		int water = 0;
-		if (GameManager.instance.activeBldg_lootcode == "S") {
-			int wod = UnityEngine.Random.Range(100, 250);
-            int met = UnityEngine.Random.Range(50, 125);
-			int fud = UnityEngine.Random.Range(0, 12);
-			int wat = UnityEngine.Random.Range(0, 12);
 
-			float odds = 0.5f;
+        //determine core odds
+        float max_percentage = 0.75f; //players start with 75% chance to find stuff day1min1
+        float coreFalloffOdds = CalculateCoreFalloffOdds(max_percentage); //this will return a %value represented 0.0-1.0 so it can be used in the rolls
+        float coreInversFalloffOdds = 1.0f-coreFalloffOdds;//this will increase 
+        Debug.Log("Calculating core Falloff odds at: " + coreFalloffOdds + " and his inverse at: " + coreInversFalloffOdds);
+
+        #region roll resources based on location type
+        //roll based on type
+        if (GameManager.instance.activeBldg_lootcode == "S") { //S-for supply. raw materials most likely here
+			int wod = UnityEngine.Random.Range(20, 110);
+            int met = UnityEngine.Random.Range(5, 90);
+			int fud = UnityEngine.Random.Range(0, 10);
+			int wat = UnityEngine.Random.Range(0, 10);
+
+			
 			float roll = UnityEngine.Random.Range(0.0f, 1.0f);
-			if (roll <= odds) {
+			if (roll <= coreInversFalloffOdds) {
 				fud =0;
 			}
 			roll = UnityEngine.Random.Range(0.0f, 1.0f);
-			if (roll <= odds) {
+			if (roll <= coreInversFalloffOdds) {
 				wat =0;
 			}
 
             float supply_roll = UnityEngine.Random.Range(0.0f, 1.0f);
-            if (supply_roll < 0.05f)
-            {
-                //empty
-                wod = 0;
-                met = 0;
-            }else if (supply_roll < 0.45f)
+            //supply locations will always have a 15% chance of being empty
+            if (supply_roll < 0.15f) 
             {
                 //wood
                 met = 0;
-            }else if (supply_roll < 0.85f)
+            }else if (supply_roll < 0.15f)
             {
                 //metal
                 wod = 0;
@@ -1115,42 +1134,51 @@ public class GameManager : MonoBehaviour {
 			food = fud;
 			water = wat;
 
-		} else if (GameManager.instance.activeBldg_lootcode == "F") {
+		} else if (GameManager.instance.activeBldg_lootcode == "F") { //F-for food.
 
 			int wod = UnityEngine.Random.Range(0, 20);
             int met = UnityEngine.Random.Range(0, 15);
-			int fud = UnityEngine.Random.Range(50, 150);
+			int fud = UnityEngine.Random.Range(5, 45);
 			int wat = UnityEngine.Random.Range(0, 30);
 
-			float odds = 0.5f;
-			float roll = UnityEngine.Random.Range(0.0f, 1.0f);
-			if (roll <= odds) {
+			
+			float roll = UnityEngine.Random.Range(0.0f, 1.0f); //players roll
+			if (roll <= coreInversFalloffOdds) { //using coreInverseFalloff gives a float that increases with time- approaching 1.0- 100%
 				wod =0;
                 met = 0;
 			}
 			roll = UnityEngine.Random.Range(0.0f, 1.0f);
-			if (roll <= odds) {
+			if (roll <= coreInversFalloffOdds) {
 				wat =0;
 			}
+            if (roll <= coreInversFalloffOdds)
+            {
+                fud = 0;
+            }
+
 			wood = wod;
             metal = met;
 			food = fud;
 			water = wat;
 			
-		} else if (GameManager.instance.activeBldg_lootcode == "W") {
+		} else if (GameManager.instance.activeBldg_lootcode == "W") { //W for water.
 
-			int wod = UnityEngine.Random.Range(0, 20);
-            int met = UnityEngine.Random.Range(0, 20);
+			int wod = UnityEngine.Random.Range(0, 10);
+            int met = UnityEngine.Random.Range(0, 10);
 			int fud = UnityEngine.Random.Range(0, 20);
-			int wat = UnityEngine.Random.Range(50, 150);
+			int wat = UnityEngine.Random.Range(5, 55);
 
-			float odds = 0.5f;
+			
 			float roll = UnityEngine.Random.Range(0.0f, 1.0f);
-			if (roll <= odds) {
+			if (roll <= coreInversFalloffOdds) {
 				fud =0;
 			}
+            if(roll<= coreInversFalloffOdds)
+            {
+                wat = 0;
+            }
 			roll = UnityEngine.Random.Range(0.0f, 1.0f);
-			if (roll <= odds) {
+			if (roll <= coreInversFalloffOdds) {
 				wod =0;
                 met = 0;
 			}
@@ -1159,25 +1187,17 @@ public class GameManager : MonoBehaviour {
 			food = fud;
 			water = wat;
 
-		} else if (GameManager.instance.activeBldg_lootcode == "G") {
+		} else if (GameManager.instance.activeBldg_lootcode == "G") {//G for general
 
-			int wod = UnityEngine.Random.Range(0, 80);
-            int met = UnityEngine.Random.Range(0, 60);
+			int wod = UnityEngine.Random.Range(0, 40);
+            int met = UnityEngine.Random.Range(0, 40);
             int fud = UnityEngine.Random.Range(0, 45);
 			int wat = UnityEngine.Random.Range(0, 45);
 
-			float odds = 0.5f;
 			float roll = UnityEngine.Random.Range(0.0f, 1.0f);
-			if (roll <= odds) {
+			if (roll <= coreInversFalloffOdds) {
 				fud =0;
-			}
-			roll = UnityEngine.Random.Range(0.0f, 1.0f);
-			if (roll <= odds) {
 				wat =0;
-			}
-            roll = UnityEngine.Random.Range(0.0f, 1.0f);
-            if (roll <= odds)
-            {
                 wod = 0;
                 met = 0;
             }
@@ -1187,9 +1207,55 @@ public class GameManager : MonoBehaviour {
 			water = wat;
 
 		}
-		int zombie_pop = UnityEngine.Random.Range(5, 25);
-		//DateTime new_bldg_datetime = DateTime.Parse("12:01am 1/1/2000");
-		GameManager.instance.activeBldg_zombies = zombie_pop;
+
+
+        #endregion
+
+        #region Zombie population rolls
+        //ZOMBIE ROLLS
+        //int zombie_pop = UnityEngine.Random.Range(5, 25); //depreciated- rolls should be dynamic now
+
+        int zombie_pop = 0;//initialize count
+        //find out how long the player has been alive
+        double days_alive = (DateTime.Now - GameManager.instance.timeCharacterStarted).TotalDays;
+        if (days_alive < 1)
+        {
+            //on the first day
+            zombie_pop = UnityEngine.Random.Range(0, 5);
+        }else if (days_alive < 2)
+        {
+            //day 2...heating up...
+            zombie_pop = UnityEngine.Random.Range(1, 10);
+        }else
+        {
+            //for the rest of the time...
+            zombie_pop = UnityEngine.Random.Range(5, 25);
+        }
+
+        //RANDOMIZER- we want to randomly encounter NO zombies, and NO loot.
+        int num_one = UnityEngine.Random.Range(1, 4);
+        int num_two = UnityEngine.Random.Range(1, 4);
+        if (num_one == num_two)
+        {
+            zombie_pop = 0;
+            int num_three = UnityEngine.Random.Range(1, 4);
+            if (num_three == num_one)
+            {
+                food = 0;
+                water = 0;
+                wood = 0;
+                metal = 0;
+            }
+        }
+        
+
+
+
+        #endregion
+
+        //STORE THE ROLLS TO THE GAMEMANAGER
+        //DateTime new_bldg_datetime = DateTime.Parse("12:01am 1/1/2000");
+        GameManager.instance.activeBldg_zombies = zombie_pop;
 		GameManager.instance.activeBldg_food = food;
 		GameManager.instance.activeBldg_water = water;
 		GameManager.instance.activeBldg_wood = wood;
@@ -1197,7 +1263,9 @@ public class GameManager : MonoBehaviour {
 		GameManager.instance.zombiesToFight = zombie_pop;
 
 		Debug.Log("Wood: "+wood.ToString()+" metal: "+metal.ToString()+" food: "+food.ToString()+" water: "+water.ToString()+" zombies: "+zombie_pop.ToString());
-		#endregion
+		
+        
+        #endregion //THIS IS WHERE BUILDING LOOT IS DETERMINED IN CODE *****
 
 		form.AddField("wood", wood);
         form.AddField("metal", metal);
@@ -1219,7 +1287,10 @@ public class GameManager : MonoBehaviour {
 
 				//if the mission tab is triggering this, don't load player into combat
 				if (mission == false) {
-					SceneManager.LoadScene("02c Combat-5");
+                    //SceneManager.LoadScene("02d Combat-10");
+
+                    LoadRandomCombatScene();
+                    
 				}
 			} else {
 				Debug.Log(newBldgJson[1].ToString());
@@ -1228,6 +1299,23 @@ public class GameManager : MonoBehaviour {
 			Debug.Log(www.error);
 		}
 	}
+
+    void LoadRandomCombatScene ()
+    {
+        int roll = UnityEngine.Random.Range(1, 3);
+        if ( roll == 1 )
+        {
+            SceneManager.LoadScene("02c Combat-5");
+        }
+        else if ( roll == 2 )
+        {
+            SceneManager.LoadScene("02d Combat-10");
+        }
+        else
+        {
+            SceneManager.LoadScene("02e Combat-15");
+        }
+    }
 
 	public void AddTimePlayed () {
 		timeCharacterStarted  = timeCharacterStarted.AddHours(-1.0);
@@ -1541,4 +1629,27 @@ public class GameManager : MonoBehaviour {
 		}
 
 	}
+
+    public float CalculateCoreFalloffOdds(float max_odds)
+    {
+        float odds = 0.0f;
+
+        if (GameManager.instance.daysSurvived < GameManager.DaysUntilOddsFlat)
+        {
+            DateTime now = System.DateTime.Now;
+            double days_alive = (now - GameManager.instance.timeCharacterStarted).TotalDays;
+
+            int exponent = 8;
+            //float max_percentage = 0.5f; //this starts us at 50/50 odds.
+            double full_value = Mathf.Pow(GameManager.DaysUntilOddsFlat, exponent) / max_odds;
+
+            float inverse_day_value = (float)(GameManager.DaysUntilOddsFlat - days_alive);
+            float current_value = (float)(Mathf.Pow(inverse_day_value, exponent) / full_value);
+            Debug.Log("calculating players odds to be at " + current_value +" based on a max % of: "+ max_odds+" and the days alive count at: "+days_alive);
+            odds = current_value;
+        }
+
+        return odds; //value is represeneted 0.0f-1.0f as 0%-100%
+    }
+
 }

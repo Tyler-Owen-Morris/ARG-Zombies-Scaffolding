@@ -3,6 +3,10 @@ using System.Collections;
 
 public static class GamePreferences {
 
+    public static string MusicVolume = "MusicVolume";
+    public static string SFXVolume = "SFXVolume";
+    public static string PermitPublicFBPic = "PermitPublicFBPic";
+/*
 	public static string TotalSurvivors = "TotalSurvivors";
 	public static string ActiveSurvivors = "ActiveSurvivors";
 	public static string DayTimeCharacterCreated = "DayTimeCharacterCreated";
@@ -20,7 +24,33 @@ public static class GamePreferences {
 	public static string GunCount = "GunCount";
 	public static string ShivDurability = "ShivDurability";
 	public static string ClubDurability = "ClubDurability";
+    */
+    public static float GetMusicVolume ()
+    {
+        return PlayerPrefs.GetFloat(GamePreferences.MusicVolume);
+    }
+    public static void SetMusicVolume (float value)
+    {
+        PlayerPrefs.SetFloat(GamePreferences.MusicVolume, value);
+    }
 
+    public static float GetSFXVolume ()
+    {
+        return PlayerPrefs.GetFloat(GamePreferences.SFXVolume);
+    }
+    public static void SetSFXVolume(float value)
+    {
+        PlayerPrefs.SetFloat(GamePreferences.SFXVolume, value);
+    }
+
+    public static int GetPermitPublicFBPic()
+    {
+        return PlayerPrefs.GetInt(GamePreferences.PermitPublicFBPic);
+    }
+    public static void SetPermitPublicFBPic(int value)
+    {
+        PlayerPrefs.SetInt(GamePreferences.PermitPublicFBPic,value);
+    }
 
 	//this used to be how game data was stored in "preferences" memory between plays. it's commented to find places where it needs to be removed.
 	/*

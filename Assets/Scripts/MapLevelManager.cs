@@ -182,7 +182,9 @@ public class MapLevelManager : MonoBehaviour {
 //	}
     
     void Awake () {
-    	missionCompletePrefab = Resources.Load<GameObject>("Prefabs/MissionCompletePanelPrefab");
+        levelLoadingPanel.SetActive(true);//turn on the loading panel first thing every time.
+
+        missionCompletePrefab = Resources.Load<GameObject>("Prefabs/MissionCompletePanelPrefab");
 
     	if (FB.IsLoggedIn == true)  {
         	FB.API ("/me?fields=name", HttpMethod.GET, DisplayUsername);
@@ -194,6 +196,7 @@ public class MapLevelManager : MonoBehaviour {
         bldgSpawner = GameObject.Find("Building Populator").GetComponent<BuildingSpawner>();
 
         SetEndGameButtonText(); //this is going to be handled 1x on map level load for dynamic changes over time.
+
     }
 
     void OnEnable()
@@ -232,6 +235,14 @@ public class MapLevelManager : MonoBehaviour {
     }
     */
 
+    public void UploadMyProfileImage ()
+    {
+        byte[] bytes = GameManager.instance.profile_image_texture.EncodeToPNG();
+        Debug.Log("encode says: "+bytes+"reading off of "+GameManager.instance.profile_image_texture.ToString());
+        ProfileImageManager myPIM = FindObjectOfType<ProfileImageManager>();
+        myPIM.SyncPlayerProfileImageWithServer();
+    }
+
 	void OnLevelFinishedLoading (Scene scene, LoadSceneMode mode) {
 		//UpdateTheUI();
 		InvokeRepeating("CheckAndUpdateMap", 10.0f, 10.0f);
@@ -240,8 +251,9 @@ public class MapLevelManager : MonoBehaviour {
 		CheckForStarvationDehydration();
 		UpdateTheUI();
 
-        
-		/* 
+        ProfileImageManager myPIM = FindObjectOfType<ProfileImageManager>();
+        myPIM.SyncPlayerProfileImageWithServer();
+		 
 		//if the player is the last one left alive, activate the gameover button.
 		JsonData survivorJson = JsonMapper.ToObject(GameManager.instance.survivorJsonText);
 		if (survivorJson.Count > 1) {
@@ -250,7 +262,7 @@ public class MapLevelManager : MonoBehaviour {
 			Debug.Log("Turning end game panel button on");
 			endGameButton.SetActive(true);
 		}
-		*/
+		
 	}
 
     void SetEndGameButtonText ()
@@ -399,6 +411,8 @@ public class MapLevelManager : MonoBehaviour {
 	public void RegenerateStamina () {
 		int stamRegen = 4; //1 stamina every 15 sec, counted every 1min
 
+
+        //calculate any distance bonus from last regen
 		if (Input.location.status == LocationServiceStatus.Running) {
 			if (lastStamUpdateLat != 0 && lastStamUpdateLng != 0) {
 				float distanceFromLastUpdate = CalculateDistanceToTarget(lastStamUpdateLat, lastStamUpdateLng);
@@ -528,6 +542,7 @@ public class MapLevelManager : MonoBehaviour {
 
 		bldgSpawner.PlaceHomebaseGraphic();
 		bldgSpawner.UpdateBuildings();
+        
         StartCoroutine(SetCurrentLocationText());
 	}
 
@@ -547,39 +562,43 @@ public class MapLevelManager : MonoBehaviour {
             my_gear_string += "Greenhouse: " + GameManager.instance.greenhouse.ToString() + "\n";
         my_gear_string += "\n";
         int shiv_count = 0;
+        int shank_count = 0;
+        int basicKnife_count = 0;
         int huntKnife_count = 0;
+        int crude_club_cout = 0;
+        int R_club_count = 0;
         int bat_count = 0;
         int hammer_count = 0;
+        int zip_gun_count = 0;
+        int zip_gun2_count = 0;
         int twentytwo_count = 0;
         int shotty_count = 0;
         foreach (GameObject weapon in GameManager.instance.weaponCardList)
         {
             BaseWeapon myWep = weapon.GetComponent<BaseWeapon>();
-            if (myWep.name == "crude shiv")
-                shiv_count++;
-            if (myWep.name == "hunting knife")
-                huntKnife_count++;
-            if (myWep.name == "baseball bat")
-                bat_count++;
-            if (myWep.name == "sledgehammer")
-                hammer_count++;
-            if (myWep.name == ".22 revolver")
-                twentytwo_count++;
-            if (myWep.name == "shotgun")
-                shotty_count++;
+            if (myWep.name == "crude shiv")shiv_count++;
+            if (myWep.name == "shank") shank_count++;
+            if (myWep.name == "basic knife") basicKnife_count++;
+            if (myWep.name == "hunting knife")huntKnife_count++;
+            if (myWep.name == "crude club") crude_club_cout++;
+            if (myWep.name == "deadly bat") bat_count++;
+            if (myWep.name == "sledgehammer")hammer_count++;
+            if (myWep.name == "zip gun") zip_gun_count++;
+            if (myWep.name == "zip gun 2.0") zip_gun2_count++;
+            if (myWep.name == ".22 revolver")twentytwo_count++;
+            if (myWep.name == "shotgun")shotty_count++;
         }
-        if (shiv_count > 0)
-            my_gear_string += "Shivs: " + shiv_count.ToString() + "\n";
-        if (huntKnife_count > 0)
-            my_gear_string += "Hunting Knives: " + huntKnife_count + "\n";
-        if (bat_count > 0)
-            my_gear_string += "Baseball Bats: " + bat_count + "\n";
-        if (hammer_count > 0)
-            my_gear_string += "Sledgehammers: " + hammer_count + "\n";
-        if (twentytwo_count > 0)
-            my_gear_string += ".22 Revolvers: " + twentytwo_count + "\n";
-        if (shotty_count > 0)
-            my_gear_string += "Shotguns: " + shotty_count + "\n";
+        if (shiv_count > 0)my_gear_string += "Shivs: " + shiv_count.ToString() + "\n";
+        if (shank_count > 0) my_gear_string += "Shanks: " + shank_count + "\n";
+        if (basicKnife_count > 0) my_gear_string += "Basic Knives: " + basicKnife_count + "\n";
+        if (huntKnife_count > 0) my_gear_string += "Hunting Knives: " + huntKnife_count + "\n";
+        if (crude_club_cout > 0) my_gear_string += "Crude Clubs: " + crude_club_cout + "\n";
+        if (bat_count > 0)my_gear_string += "Baseball Bats: " + bat_count + "\n";
+        if (hammer_count > 0)my_gear_string += "Sledgehammers: " + hammer_count + "\n";
+        if (zip_gun_count>0) my_gear_string+="Zip Guns: "+zip_gun_count+"\n";
+        if (zip_gun2_count>0) my_gear_string+= "Zip Guns 2.0: "+zip_gun2_count+"\n";
+        if (twentytwo_count > 0)my_gear_string += ".22 Revolvers: " + twentytwo_count + "\n";
+        if (shotty_count > 0)my_gear_string += "Shotguns: " + shotty_count + "\n";
 
         gearText.text = my_gear_string;//located in inventory panel/equipment panel
 
@@ -688,6 +707,7 @@ public class MapLevelManager : MonoBehaviour {
         GameManager.instance.activeBldg_metal = myBuilding.metal_inside;
 		GameManager.instance.activeBldg_food = myBuilding.food_inside;
 		GameManager.instance.activeBldg_water = myBuilding.water_inside;
+        GameManager.instance.activeBldg_zombies = myBuilding.zombiePopulation;//depreciated 1.26.17
 		GameManager.instance.zombiesToFight = myBuilding.zombiePopulation;
 		GameManager.instance.activeBldg_lootcode = myBuilding.loot_code;
 		GameManager.instance.activeBldg_lastclear = myBuilding.last_cleared;
@@ -1327,7 +1347,8 @@ public class MapLevelManager : MonoBehaviour {
 	}
 
 	public void DeactivateBuildingInspector () {
-        InvokeRepeating("CheckAndUpdateMap", 10f, 10f);
+        activeBuilding.gameObject.tag = "building"; //re-tag the gameobject so that it may be deleted
+        InvokeRepeating("CheckAndUpdateMap", 0f, 10f);
 		buildingPanel.SetActive(false);
         clearedBuildingPanel.SetActive(false);
 	}

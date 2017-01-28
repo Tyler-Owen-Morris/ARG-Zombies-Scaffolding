@@ -7,7 +7,7 @@ public class MusicManager : MonoBehaviour {
 	public AudioClip[] levelMusicChangeArray;
 	private static MusicManager instance;
 	
-	private AudioSource audioSource;
+	public AudioSource audioSource;
 	private Scene activeScene;
 	
 	// Use this for initialization
@@ -17,6 +17,8 @@ public class MusicManager : MonoBehaviour {
 	
 	void Start () {
 		audioSource = GetComponent<AudioSource>();
+        audioSource.volume = GamePreferences.GetMusicVolume();
+        
 	}
 
     void OnEnable()

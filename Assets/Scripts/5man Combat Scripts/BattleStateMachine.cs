@@ -43,7 +43,7 @@ public class BattleStateMachine : MonoBehaviour {
 	[SerializeField]
 	public bool autoAttackIsOn= false;
 
-	public int zombiesKilled = 0, brokenWeapon_surv_id;
+	public int zombiesKilled = 0, brokenWeapon_surv_id, zombies_in_front;
 	public Text zombieCounter, ammmoCounter, survivorBitText, failedToRunText;
     public GameObject blazeOfGloryImage;
     public CombatWeaponListPopulator my_CWLP;
@@ -51,7 +51,7 @@ public class BattleStateMachine : MonoBehaviour {
     public Sprite[] zombie_sprite_array;
     public Texture[] zombie_texture_array;
 
-	public AudioClip knifeSound, clubSound, pistolSound, shotgunSound;
+	public AudioClip knifeSound, clubSound, pistolSound, shotgunSound, foundZombieIntroSound;
 	public AudioClip[] zombieSounds, survivorUnarmedSounds;
 	public AudioSource myAudioSource;
 
@@ -66,6 +66,7 @@ public class BattleStateMachine : MonoBehaviour {
     //private int totalSurvivorsFound = 0;
     void Awake () {
 		LoadInSurvivorCardData();
+       
 	}
 
 	void Start () {
@@ -74,12 +75,17 @@ public class BattleStateMachine : MonoBehaviour {
 
 		myAudioSource = GetComponent<AudioSource>();
 		myAudioSource.playOnAwake = false;
+        myAudioSource.volume = GamePreferences.GetSFXVolume();//set the SFX audio source to GamePref volume value
 
 		survivorList.AddRange (GameObject.FindGameObjectsWithTag("survivor"));
 		zombieList.AddRange (GameObject.FindGameObjectsWithTag("zombie"));
-		AdjustForLessThan5Zombies ();
+        //AdjustForLessThan5Zombies ();
+        RemoveAnyExcessZombieModels();
 
 		UpdateUINumbers();
+        PlayIntroSound();
+
+        zombies_in_front = zombieList.Count;
 	}
 
     void OnEnable()
@@ -95,13 +101,26 @@ public class BattleStateMachine : MonoBehaviour {
     }
 
     void OnLevelFinishedLoading (Scene scene, LoadSceneMode mode) {
-		if (GameManager.instance.blazeOfGloryActive == true) {
+        //restart music volume
+        MusicManager theMusicManager = FindObjectOfType<MusicManager>();
+        theMusicManager.audioSource.volume = GamePreferences.GetMusicVolume();
+
+        //check if blaze of glory has been activated
+        if (GameManager.instance.blazeOfGloryActive == true) {
 			InitiateBlazeOfGlory();
 		} else
         {
             blazeOfGloryImage.SetActive(false);
         }
 	}
+
+    void PlayIntroSound ()
+    {
+        if (GameManager.instance.zombiesToFight  > 0)
+        {
+            myAudioSource.PlayOneShot(foundZombieIntroSound);
+        }
+    }
 
 	void InitiateBlazeOfGlory () {
         blazeOfGloryImage.SetActive(true);
@@ -202,6 +221,21 @@ public class BattleStateMachine : MonoBehaviour {
 			}
 		}
 	}
+
+    void RemoveAnyExcessZombieModels ()
+    {
+        GameObject[] zombies = GameObject.FindGameObjectsWithTag("zombie");
+        if (zombies.Length < GameManager.instance.zombiesToFight || GameManager.instance.zombiesToFight==0)
+        {
+            int removeNum = zombies.Length - GameManager.instance.zombiesToFight;
+            for (int i = 0; i < removeNum; i++)
+            {
+                zombieList[0].SetActive(false);
+                zombieList[0].GetComponent<ZombieStateMachine>().myTypeText.text = "";
+                zombieList.RemoveAt(0);
+            }
+        }
+    }
 
 	void AdjustForLessThan5Zombies () {
 		if (GameManager.instance.zombiesToFight < 5) {
@@ -549,7 +583,7 @@ public class BattleStateMachine : MonoBehaviour {
 			odds = current_value;
 		}
 
-		return odds;
+		return odds; //value is represeneted 0.0f-1.0f as 0%-100%
 	}
 
 	//this is activated on the GUI button press.

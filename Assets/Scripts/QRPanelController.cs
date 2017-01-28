@@ -114,6 +114,8 @@ public class QRPanelController : MonoBehaviour {
 	}
 
 	void DetermineTypeOfScannedCode (string scannedText) {
+        mapLvlMgr = FindObjectOfType<MapLevelManager>();
+
 		string decrypted_text = decryptData(scannedText);
 		JsonData scannedJson = JsonMapper.ToObject(decrypted_text);
 		Debug.Log("Scanned Text: "+scannedText+" || DECRYPTED TEXT: "+decrypted_text);

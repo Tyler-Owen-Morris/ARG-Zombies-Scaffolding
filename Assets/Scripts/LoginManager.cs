@@ -17,7 +17,7 @@ public class LoginManager : MonoBehaviour {
 
 	public GameObject registrationPanel, loggedInPanel, survivorDraftPanel, newCharConfirmationPanel, userDataObject;
     public Text currentGameClock, player_name, player_food, player_water, firstTimeText;
-    public Image loginProfilePic;
+    public Image loginProfilePic, tmp_TestProfilePicBlobLoader;
 	public Button continueButton;
 	public IGraphResult fbFriendsResult;
 	public JsonData staticSurvivorData, facebookSurvivorData;
@@ -28,9 +28,10 @@ public class LoginManager : MonoBehaviour {
 	private string findUserAcctURL = GameManager.serverURL+"/UserAcctLookup.php";
 	private string fetchStaticSurvivorURL = GameManager.serverURL+"/FetchStaticSurvivor.php";
 	private string zombieStatusURL = GameManager.serverURL+"/GetZombieStatus.php";
-	
-	// Use this for initialization
-	void Start () { 
+    private string profileImageUploadURL = GameManager.serverURL + "/UploadProfileImage.php";
+
+    // Use this for initialization
+    void Start () { 
         if (FB.IsInitialized) {
             FB.ActivateApp();
         } else {
@@ -118,10 +119,18 @@ public class LoginManager : MonoBehaviour {
 				Debug.Log("loaded Login screen with game data already initialized");
             } else {
             	if (FB.IsLoggedIn) {
-            		Debug.Log("Automatically attempting to resume game");
-            		ResumeCharacter();
+                //This was intended to auto-load the game for players already logged in, however, it's just annoying, and I don't want to write the code to fix it 1/26/17
+                //Debug.Log("Automatically attempting to resume game");
+                //ResumeCharacter();
+                Debug.Log("This spot USED TO cause an automatic load to map screen- NOW REMOVED to allow players to go between options+login screens smoothly");
 				}
             }
+    }
+
+    public void LoadSettingsMenu ()
+    {
+        Debug.Log("Loading Options menu");
+        SceneManager.LoadScene("01c Options");
     }
 
     public void ConfirmStartNewCharacter () {
@@ -138,7 +147,7 @@ public class LoginManager : MonoBehaviour {
         if (FB.IsLoggedIn) {
             Debug.Log ("FB is logged in");
 
-            FB.API("me?fields=id,name,first_name,last_name,picture{height,width,url}", HttpMethod.GET, FBCoreCallback);
+            //FB.API("me?fields=id,name,first_name,last_name,picture{height,width,url}", HttpMethod.GET, FBCoreCallback);
 
             /*
             //fetch the name and ID from the FB API.
@@ -147,7 +156,7 @@ public class LoginManager : MonoBehaviour {
 		    FB.API ("/me?fields=last_name", HttpMethod.GET, UpdateUserLastName);
 		    FB.API ("/me", HttpMethod.GET, UpdateUserName);
             */
-			FB.API ("me?fields=picture.width(200).height(200)", HttpMethod.GET, UpdateProfilePicURL);
+			//FB.API ("me?fields=picture.width(200).height(200)", HttpMethod.GET, UpdateProfilePicURL);
             loggedInPanel.SetActive (true);
 
         } else {
@@ -255,6 +264,14 @@ public class LoginManager : MonoBehaviour {
                         loginProfilePic.sprite = GameManager.instance.my_profile_pic;
 
                         continueButton.interactable = true;
+
+
+                        //TEMPORARY!!! ATTEMPT TO LOAD PROFILE IMAGE FROM PHP RETURN
+                        /*
+                        Texture2D server_image = new Texture2D(200,200) ;
+                         zombStatJson[2]["profile_image_blob"].ToString() 
+                        server_image.LoadImage();
+                        */
                     }
                     else
                     {
@@ -362,7 +379,7 @@ public class LoginManager : MonoBehaviour {
 		}else{
 			Debug.Log(result.Error);
 		}
-        StartCoroutine(CheckZombieStatus());
+        //StartCoroutine(CheckZombieStatus());
 	}
 
     IEnumerator SetPlayerProfilePic (string pic_url)
@@ -375,8 +392,12 @@ public class LoginManager : MonoBehaviour {
             Debug.Log("setting player Profile Pic");
             int height = www.texture.height;
             int width = www.texture.width;
-            GameManager.instance.my_profile_pic = Sprite.Create(www.texture, new Rect(0, 0, width, height), new Vector2());
 
+            var bytes = www.texture.EncodeToPNG();
+            Debug.Log("Picture Encoded into PNG reads bytes out as: " + bytes.ToString());
+            GameManager.instance.my_profile_pic = Sprite.Create(www.texture, new Rect(0, 0, width, height), new Vector2());
+            GameManager.instance.profile_image_texture = www.texture;
+            //we will verify this is the correct image when we load into the map level- along with loading all other survivor images.
         }
         else
         {
@@ -384,7 +405,49 @@ public class LoginManager : MonoBehaviour {
         }
     }
 
-	private void UpdateSurvivorDraftWindow (IGraphResult result) {
+    public void SendPlayerProfilePicToServer ()
+    {
+        StartCoroutine(UpdateMyProfileImageOnTheServer());
+    }
+
+    IEnumerator UpdateMyProfileImageOnTheServer()
+    {
+        yield return new WaitForEndOfFrame();
+        //declare the texture we're going to use
+        var tex = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
+        tex.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0); //this take a screenshot of the entire screen
+        //tex.ReadPixels(loginProfilePic.rectTransform.rect, 0, 0); //this attempts to just take the rect of the player profile picture.
+        tex.Apply();
+        var bytes = tex.EncodeToPNG()/*GameManager.instance.my_profile_pic.texture.EncodeToPNG()*/;
+        Debug.Log("******************************<<<<<<<<<<<<<<<Encoding profile image to binary:" + bytes.ToString());
+
+        GameManager.instance.lastLoginTime = "12/31/1999 11:59:59";
+        WWWForm form = new WWWForm();
+        form.AddField("id", GameManager.instance.userId);
+        form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+        form.AddField("client", "mob");
+
+        form.AddField("action", "upload image");
+        form.AddBinaryData("profileImage", bytes, GameManager.instance.userId + ".png");
+        Debug.Log("attempting to send player profile pic to the server as a BLOB " + bytes.ToString());
+
+        //upload to the server
+        WWW www = new WWW(profileImageUploadURL, form);
+        yield return www;
+        Debug.Log(www.text);
+
+        if (www.error == null)
+        {
+            Debug.Log("no web error reported from upload");
+            JsonData jsonReturn = JsonMapper.ToObject(www.text);
+        }
+        else
+        {
+            Debug.Log(www.error);
+        }
+    }
+
+    private void UpdateSurvivorDraftWindow (IGraphResult result) {
 		if (result.Error == null) {
 			//store the data object for later use in next friend being updated.
 			fbFriendsResult = result;

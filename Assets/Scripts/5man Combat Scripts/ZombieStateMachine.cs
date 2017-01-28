@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine.UI;
 using SpriteColorFX;
+using UnityEngine.SceneManagement;
 
 public class ZombieStateMachine : MonoBehaviour {
 
@@ -47,7 +48,10 @@ public class ZombieStateMachine : MonoBehaviour {
 		BSM = FindObjectOfType<BattleStateMachine>();
 		myTypeText.text = zombie.zombieType.ToString();
         SetMySprite();
+        
 	}
+
+    
 
     void SetMySprite()
     {
@@ -130,7 +134,9 @@ public class ZombieStateMachine : MonoBehaviour {
 				StartCoroutine (TakeAction());
 			break;
 			case (TurnState.DEAD):
-				if (GameManager.instance.zombiesToFight >= 6) {
+                //BattleStateMachine stores the #of zombies in the scene on start
+                //by making this comparison on death, we maintain that number
+				if (GameManager.instance.zombiesToFight >= BSM.zombies_in_front+1) { 
 					//kill me and refresh me.
 					StartCoroutine(DeathAction(true));
 				} else {

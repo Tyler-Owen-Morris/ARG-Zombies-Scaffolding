@@ -8,9 +8,12 @@ using UnityEngine.SceneManagement;
 public class GameOverLevelManager : MonoBehaviour {
 
 	private string zombieStatusURL = GameManager.serverURL+"/GetZombieStatus.php";
+    private string twitterUploadURL = "https://api.twitter.com/1.1/statuses/update.json";
+    private string twitterNoAuthPostURL = "https://api.twitter.com/1.1/statuses/update_with_media.json?status=I've%20died%20and%20become%20a%20Zombie%20in%20%23ARGZombies%20-Will%20someone%20please%20%23killmyzombie%3F";
 
-	public GameObject zombieQRpanel;
+    public GameObject zombieQRpanel;
 	public Text myScoreText, myZombieText;
+    public Texture2D screenie;
 	public String[] stillZombieTextArray;
 
 	void Awake () {
@@ -130,6 +133,39 @@ public class GameOverLevelManager : MonoBehaviour {
 			Debug.Log(www.error);
 		}
 	}
+
+    public void TweetMyDeath ()
+    {
+        StartCoroutine(TweetScreenshot());
+    }
+
+    IEnumerator TweetScreenshot() {
+        //we should only read off the screen after all rendering is complete
+        yield return new WaitForEndOfFrame();
+
+        int width = Screen.width;
+        int height = Screen.height;
+        Texture2D tex = new Texture2D(width, height, TextureFormat.RGB24, false);
+        screenie = tex;
+        //read contents into rect
+        tex.ReadPixels(new Rect(0, 0, width, height), 0, 0);
+        tex.Apply();
+
+        //encode texture into jpg
+        var bytes = tex.EncodeToJPG();
+        Destroy(tex);
+
+        WWWForm form = new WWWForm();
+        form.AddBinaryData("", bytes,  "-zombieBarcode.jpg");
+        form.AddField("media", "media");
+
+        //WWW www = new WWW(twitterUploadURL, form);
+        WWW www = new WWW(twitterNoAuthPostURL, form);
+        yield return www;
+        Debug.Log(www.text);
+
+        
+    }
 
 	//good news, tricky bullshit works
 	IEnumerator AttemptAtTrickyBullshit () {

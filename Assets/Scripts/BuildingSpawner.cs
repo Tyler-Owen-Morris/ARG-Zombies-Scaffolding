@@ -161,12 +161,12 @@ public class BuildingSpawner : MonoBehaviour {
                 {
                     Debug.Log(www2.error);
                 }
-                Turn60GoogleJsonIntoBuildings();
+                //Turn60GoogleJsonIntoBuildings();
             }
             else
             {
                 GameManager.instance.locationJsonText = www.text;
-                Turn60GoogleJsonIntoBuildings();
+                //Turn60GoogleJsonIntoBuildings();
             }
             
 
@@ -177,6 +177,7 @@ public class BuildingSpawner : MonoBehaviour {
 
         //        GameManager.instance.locationJsonText = www.text;
         //        TurnGoogleJsonIntoBuildings();
+        Turn60GoogleJsonIntoBuildings();
         googleBldgsNeedUpdate = false;
 
     }
@@ -395,500 +396,540 @@ public class BuildingSpawner : MonoBehaviour {
       	SpawnOutpostsToMap(); 
     }
 
+    public bool CurrentlyPlacing60Bldgs = false;
     public void Turn60GoogleJsonIntoBuildings()
     {
-
-        //destroy the existing buildings
-        GameObject[] oldBldgs = GameObject.FindGameObjectsWithTag("building");
-        foreach (GameObject oldBldg in oldBldgs)
+        if (CurrentlyPlacing60Bldgs)
         {
-            Destroy(oldBldg.gameObject);
-        }
-
-        //destroy the existing walls
-        GameObject[] oldWalls = GameObject.FindGameObjectsWithTag("walllocation");
-        foreach(GameObject wall in oldWalls)
-        {
-            Destroy(wall.gameObject);
-        }
-
-
-        Debug.Log(GameManager.instance.googleBldgJsonTextpg1);
-        JsonData GoogleBldgJsonpg1 = JsonMapper.ToObject(GameManager.instance.googleBldgJsonTextpg1);
-
-        double m_per_pixel_mapBG = GetMetersPerPixelOfGoogleMapImage();
-        GoogleMap my_GM = FindObjectOfType<GoogleMap>();
-        int map_img_size = Mathf.FloorToInt(Screen.height / 2);
-        double map_height_in_meters = (m_per_pixel_mapBG * map_img_size);
-        double m_per_screen_pixel = map_height_in_meters / Screen.height;
-        Debug.Log("Calculating m/px-BG: " + m_per_pixel_mapBG + "  Map width in meters: " + map_height_in_meters + "  and meters/pixel for building placement: " + m_per_screen_pixel);
-      
-        #region first 20 bldgs
-        for (int i = 0; i < GoogleBldgJsonpg1["results"].Count; i++)
-        {
-            string myName = (string)GoogleBldgJsonpg1["results"][i]["name"];
-            string myBldgID = (string)GoogleBldgJsonpg1["results"][i]["id"];
-            JsonData thisEntry = JsonMapper.ToObject(JsonMapper.ToJson(GoogleBldgJsonpg1["results"][i]));
-            string my_photo_ref = "";
-            if (thisEntry.Keys.Contains("photos"))
-            {
-                my_photo_ref = (string)GoogleBldgJsonpg1["results"][i]["photos"][0]["photo_reference"];
-            }
-            float lat = (float)(double)GoogleBldgJsonpg1["results"][i]["geometry"]["location"]["lat"];
-            float lng = (float)(double)GoogleBldgJsonpg1["results"][i]["geometry"]["location"]["lng"];
-
-
-            //Debug.Log (name + lat + lng);
-
-            //calculate the average latitude between the two locations, and then calculate the meters/DEGREE lat/lon
-            float latMid = (Input.location.lastData.latitude + lat) / 2f;
-            m_per_deg_lat = 111132.954 - 559.822 * Mathf.Cos(2 * latMid) + 1.175 * Mathf.Cos(4 * latMid);
-            m_per_deg_lon = 111132.954 * Mathf.Cos(latMid);
-
-            //Debug.Log ("for the " + name + " building, meters per degree calculated as " + m_per_deg_lat + " m/deg lat, and " + m_per_deg_lon +" m/deg lon");
-            double deltaLatitude = 0;
-            double deltaLongitude = 0;
-            if (Input.location.status == LocationServiceStatus.Running)
-            {
-                deltaLatitude = (Input.location.lastData.latitude - lat);
-                deltaLongitude = (Input.location.lastData.longitude - lng);
-            }
-            else
-            {
-                deltaLatitude = (37.70883f - lat);
-                deltaLongitude = (-122.4293 - lng);
-            }
-            double xDistMeters = deltaLongitude * m_per_deg_lon;
-            double yDistMeters = deltaLatitude * m_per_deg_lat;
-            float xScreenDist = (float)(xDistMeters * m_per_screen_pixel);
-            float yScreenDist = (float)(yDistMeters * m_per_screen_pixel);
-
-
-
-            PopulatedBuilding instance = Instantiate(populatedBuildingPrefab);
-            instance.GenerateZombies();
-            instance.SetToUnknown();
-            instance.name = myName;
-            instance.buildingName = myName;
-            instance.buildingID = myBldgID;
-            instance.photo_reference = my_photo_ref;
-            instance.myLat = lat;
-            instance.myLng = lng;
-            float xCoord = (float)(screenCenter.x - (xScreenDist));
-            float yCoord = (float)(screenCenter.y - (yScreenDist));
-            Vector3 pos = new Vector3(xCoord, yCoord, 0);
-
-            instance.transform.SetParent(bldgHolder.transform);
-            instance.transform.position = pos;
-
-            //determine the loot class of the building
-            string type_bldg = GoogleBldgJsonpg1["results"][i]["types"][0].ToString();
-            instance.google_type = type_bldg;
-            if (type_bldg == "locality" || type_bldg == "bus_station" || type_bldg=="point_of_interest")
-            {
-                //these are NOT buildings- delete the instance and continue the loop to the next entry.
-                //Destroy(instance.gameObject);
-                Image theImage = instance.gameObject.GetComponent<Image>();
-                theImage.sprite = non_bldg_sprite;
-                instance.gameObject.tag = "walllocation"; //ensure that this PopulatedBuilding gameobject does not get filtered with building location updates
-                instance.loot_code = "A";
-                continue;
-            }
-            else if (type_bldg == "bakery" || type_bldg == "cafe" || type_bldg == "convenience_store" || type_bldg == "food" || type_bldg == "grocery_or_supermarket" || type_bldg == "restaurant")
-            {
-                //food likely
-                instance.loot_code = "F";
-            }
-            else if (type_bldg == "aquarium" || type_bldg == "bar" || type_bldg == "liquor_store" || type_bldg == "spa" || type_bldg == "zoo")
-            {
-                //water likely
-                instance.loot_code = "W";
-            }
-            else if (type_bldg == "bicycle_store" || type_bldg == "bowling_alley" || type_bldg == "car_repair" || type_bldg == "electrician" || type_bldg == "general_contractor" || type_bldg == "hardware_store" || type_bldg == "hospital" || type_bldg == "police" || type_bldg == "plumber")
-            {
-                //supply likely
-                instance.loot_code = "S";
-            }
-            else
-            {
-                //generic loot class
-                instance.loot_code = "G";
-            }
-
-            //instance.CheckForDeactivation();
-            //Debug.Log("placed "+instance.name+" at coords: "+xCoord+" x and "+yCoord+" y");
-        }
-        #endregion
-
-        #region second 20 bldgs
-        if (GameManager.instance.googleBldgJsonTextpg2 != "")
-        {
-            JsonData GoogleBldgJsonpg2 = JsonMapper.ToObject(GameManager.instance.googleBldgJsonTextpg2);
-            if (GoogleBldgJsonpg2["status"].ToString() != "INVALID_REQUEST")
-            {
-                for (int i = 0; i < GoogleBldgJsonpg2["results"].Count; i++)
-                {
-                    string myName = (string)GoogleBldgJsonpg2["results"][i]["name"];
-                    string myBldgID = (string)GoogleBldgJsonpg2["results"][i]["id"];
-                    JsonData thisEntry = JsonMapper.ToObject(JsonMapper.ToJson(GoogleBldgJsonpg2["results"][i]));
-                    string my_photo_ref = "";
-                    if (thisEntry.Keys.Contains("photos"))
-                    {
-                        my_photo_ref = (string)GoogleBldgJsonpg2["results"][i]["photos"][0]["photo_reference"];
-                    }
-                    float lat = (float)(double)GoogleBldgJsonpg2["results"][i]["geometry"]["location"]["lat"];
-                    float lng = (float)(double)GoogleBldgJsonpg2["results"][i]["geometry"]["location"]["lng"];
-
-
-                    //Debug.Log (name + lat + lng);
-
-                    //calculate the average latitude between the two locations, and then calculate the meters/DEGREE lat/lon
-                    float latMid = (Input.location.lastData.latitude + lat) / 2f;
-                    m_per_deg_lat = 111132.954 - 559.822 * Mathf.Cos(2 * latMid) + 1.175 * Mathf.Cos(4 * latMid);
-                    m_per_deg_lon = 111132.954 * Mathf.Cos(latMid);
-
-                    //Debug.Log ("for the " + name + " building, meters per degree calculated as " + m_per_deg_lat + " m/deg lat, and " + m_per_deg_lon +" m/deg lon");
-                    double deltaLatitude = 0;
-                    double deltaLongitude = 0;
-                    if (Input.location.status == LocationServiceStatus.Running)
-                    {
-                        deltaLatitude = (Input.location.lastData.latitude - lat);
-                        deltaLongitude = (Input.location.lastData.longitude - lng);
-                    }
-                    else
-                    {
-                        deltaLatitude = (37.70883f - lat);
-                        deltaLongitude = (-122.4293 - lng);
-                    }
-                    double xDistMeters = deltaLongitude * m_per_deg_lon;
-                    double yDistMeters = deltaLatitude * m_per_deg_lat;
-                    float xScreenDist = (float)(xDistMeters * m_per_screen_pixel);
-                    float yScreenDist = (float)(yDistMeters * m_per_screen_pixel);
-
-
-
-                    PopulatedBuilding instance = Instantiate(populatedBuildingPrefab);
-                    instance.GenerateZombies();
-                    instance.SetToUnknown();
-                    instance.name = myName;
-                    instance.buildingName = myName;
-                    instance.buildingID = myBldgID;
-                    instance.photo_reference = my_photo_ref;
-                    instance.myLat = lat;
-                    instance.myLng = lng;
-                    float xCoord = (float)(screenCenter.x - (xScreenDist));
-                    float yCoord = (float)(screenCenter.y - (yScreenDist));
-                    Vector3 pos = new Vector3(xCoord, yCoord, 0);
-
-                    instance.transform.SetParent(bldgHolder.transform);
-                    instance.transform.position = pos;
-
-                    //determine the loot class of the building
-                    string type_bldg = GoogleBldgJsonpg2["results"][i]["types"][0].ToString();
-                    instance.google_type = type_bldg;
-                    if (type_bldg == "locality" || type_bldg == "bus_station" || type_bldg == "point_of_interest")
-                    {
-                        //these are NOT buildings- delete the instance and continue the loop to the next entry.
-                        //Destroy(instance.gameObject);
-                        Image theImage = instance.gameObject.GetComponent<Image>();
-                        theImage.sprite = non_bldg_sprite;
-                        instance.gameObject.tag = "walllocation"; //ensure that this PopulatedBuilding gameobject does not get filtered with building location updates
-                        instance.loot_code = "A";
-                        continue;
-                    }
-                    else if (type_bldg == "bakery" || type_bldg == "cafe" || type_bldg == "convenience_store" || type_bldg == "food" || type_bldg == "grocery_or_supermarket" || type_bldg == "restaurant")
-                    {
-                        //food likely
-                        instance.loot_code = "F";
-                    }
-                    else if (type_bldg == "aquarium" || type_bldg == "bar" || type_bldg == "liquor_store" || type_bldg == "spa" || type_bldg == "zoo")
-                    {
-                        //water likely
-                        instance.loot_code = "W";
-                    }
-                    else if (type_bldg == "bicycle_store" || type_bldg == "bowling_alley" || type_bldg == "car_repair" || type_bldg == "electrician" || type_bldg == "general_contractor" || type_bldg == "hardware_store" || type_bldg == "hospital" || type_bldg == "police" || type_bldg == "plumber")
-                    {
-                        //supply likely
-                        instance.loot_code = "S";
-                    }
-                    else
-                    {
-                        //generic loot class
-                        instance.loot_code = "G";
-                    }
-
-                    //instance.CheckForDeactivation();
-                    //Debug.Log("placed "+instance.name+" at coords: "+xCoord+" x and "+yCoord+" y");
-                }
-            }else
-            {
-                Debug.Log("Second page of Google Map Results returned INVALID_REQUEST- Likely we are refreshing too fast");
-            }
-        }else { Debug.Log("no second page of results loaded onto game manager, building load failed"); }
-        #endregion
-
-        #region last 20 bldgs
-
-        if (GameManager.instance.googleBldgJsonTextpg3 != "")
-        {
-
-            JsonData googleBldgJsonpg3 = JsonMapper.ToObject(GameManager.instance.googleBldgJsonTextpg3);
-            if (googleBldgJsonpg3["status"].ToString() != "INVALID_REQUEST")
-            {
-                for (int i = 0; i < googleBldgJsonpg3["results"].Count; i++)
-                {
-                    string myName = (string)googleBldgJsonpg3["results"][i]["name"];
-                    string myBldgID = (string)googleBldgJsonpg3["results"][i]["id"];
-                    JsonData thisEntry = JsonMapper.ToObject(JsonMapper.ToJson(googleBldgJsonpg3["results"][i]));
-                    string my_photo_ref = "";
-                    if (thisEntry.Keys.Contains("photos"))
-                    {
-                        my_photo_ref = (string)googleBldgJsonpg3["results"][i]["photos"][0]["photo_reference"];
-                    }
-                    float lat = (float)(double)googleBldgJsonpg3["results"][i]["geometry"]["location"]["lat"];
-                    float lng = (float)(double)googleBldgJsonpg3["results"][i]["geometry"]["location"]["lng"];
-
-
-                    //Debug.Log (name + lat + lng);
-
-                    //calculate the average latitude between the two locations, and then calculate the meters/DEGREE lat/lon
-                    float latMid = (Input.location.lastData.latitude + lat) / 2f;
-                    m_per_deg_lat = 111132.954 - 559.822 * Mathf.Cos(2 * latMid) + 1.175 * Mathf.Cos(4 * latMid);
-                    m_per_deg_lon = 111132.954 * Mathf.Cos(latMid);
-
-                    //Debug.Log ("for the " + name + " building, meters per degree calculated as " + m_per_deg_lat + " m/deg lat, and " + m_per_deg_lon +" m/deg lon");
-                    double deltaLatitude = 0;
-                    double deltaLongitude = 0;
-                    if (Input.location.status == LocationServiceStatus.Running)
-                    {
-                        deltaLatitude = (Input.location.lastData.latitude - lat);
-                        deltaLongitude = (Input.location.lastData.longitude - lng);
-                    }
-                    else
-                    {
-                        deltaLatitude = (37.70883f - lat);
-                        deltaLongitude = (-122.4293 - lng);
-                    }
-                    double xDistMeters = deltaLongitude * m_per_deg_lon;
-                    double yDistMeters = deltaLatitude * m_per_deg_lat;
-                    float xScreenDist = (float)(xDistMeters * m_per_screen_pixel);
-                    float yScreenDist = (float)(yDistMeters * m_per_screen_pixel);
-
-
-
-                    PopulatedBuilding instance = Instantiate(populatedBuildingPrefab);
-                    instance.GenerateZombies();
-                    instance.SetToUnknown();
-                    instance.name = myName;
-                    instance.buildingName = myName;
-                    instance.buildingID = myBldgID;
-                    instance.photo_reference = my_photo_ref;
-                    instance.myLat = lat;
-                    instance.myLng = lng;
-                    float xCoord = (float)(screenCenter.x - (xScreenDist));
-                    float yCoord = (float)(screenCenter.y - (yScreenDist));
-                    Vector3 pos = new Vector3(xCoord, yCoord, 0);
-
-                    instance.transform.SetParent(bldgHolder.transform);
-                    instance.transform.position = pos;
-
-                    //determine the loot class of the building
-                    string type_bldg = googleBldgJsonpg3["results"][i]["types"][0].ToString();
-                    instance.google_type = type_bldg;
-                    if (type_bldg == "locality" || type_bldg == "bus_station" || type_bldg == "point_of_interest")
-                    {
-                        //these are NOT buildings- delete the instance and continue the loop to the next entry.
-                        //Destroy(instance.gameObject);
-                        Image theImage = instance.gameObject.GetComponent<Image>();
-                        theImage.sprite = non_bldg_sprite;
-                        instance.gameObject.tag = "walllocation"; //ensure that this PopulatedBuilding gameobject does not get filtered with building location updates
-                        instance.loot_code = "A";
-                        continue;
-                    }
-                    else if (type_bldg == "bakery" || type_bldg == "cafe" || type_bldg == "convenience_store" || type_bldg == "food" || type_bldg == "grocery_or_supermarket" || type_bldg == "restaurant")
-                    {
-                        //food likely
-                        instance.loot_code = "F";
-                    }
-                    else if (type_bldg == "aquarium" || type_bldg == "bar" || type_bldg == "liquor_store" || type_bldg == "spa" || type_bldg == "zoo")
-                    {
-                        //water likely
-                        instance.loot_code = "W";
-                    }
-                    else if (type_bldg == "bicycle_store" || type_bldg == "bowling_alley" || type_bldg == "car_repair" || type_bldg == "electrician" || type_bldg == "general_contractor" || type_bldg == "hardware_store" || type_bldg == "hospital" || type_bldg == "police" || type_bldg == "plumber")
-                    {
-                        //supply likely
-                        instance.loot_code = "S";
-                    }
-                    else
-                    {
-                        //generic loot class
-                        instance.loot_code = "G";
-                    }
-
-                    //instance.CheckForDeactivation();
-                    //Debug.Log("placed "+instance.name+" at coords: "+xCoord+" x and "+yCoord+" y");
-                }
-            }else
-            {
-                Debug.Log("Third page of Google Map Results returned INVALID_REQUEST- Likely we are refreshing too fast");
-            }
+            return;//if this function is already running, exit
         }
         else
         {
-            Debug.Log("GameManager did not load a third page of building results from google");
-        }
-        #endregion
+            CurrentlyPlacing60Bldgs = true;
 
-        #region updated buildings against game-data
-        //activate all buildings without inactive entries
-        GameObject[] buildings = GameObject.FindGameObjectsWithTag("building");
-        if (GameManager.instance.clearedBldgJsonText != "")
-        {
-            JsonData clearedJson = JsonMapper.ToObject(GameManager.instance.clearedBldgJsonText);
-
-            foreach (GameObject building in buildings)
+            if (GameManager.instance.googleBldgJsonTextpg1 == "")
             {
-                int cleared = 0;
-                PopulatedBuilding myBuilding = building.GetComponent<PopulatedBuilding>();
-                //Set all buildings to the "unentered" datetime by default
-                myBuilding.last_cleared = DateTime.Parse("11:59pm 12/31/1999");
+                Debug.Log("invalid JSON stored on GameManager");
+                CurrentlyPlacing60Bldgs = false;
+                return;//exit the function
+            }
 
-                //go through the player record of buildings they've cleared
-                for (int i = 0; i < clearedJson.Count; i++)
+            //destroy the existing buildings
+            GameObject[] oldBldgs = GameObject.FindGameObjectsWithTag("building");
+            foreach (GameObject oldBldg in oldBldgs)
+            {
+                Destroy(oldBldg.gameObject);
+            }
+
+            //destroy the existing walls
+            GameObject[] oldWalls = GameObject.FindGameObjectsWithTag("walllocation");
+            foreach (GameObject wall in oldWalls)
+            {
+                Destroy(wall.gameObject);
+            }
+
+
+            Debug.Log(GameManager.instance.googleBldgJsonTextpg1);
+            JsonData GoogleBldgJsonpg1 = JsonMapper.ToObject(GameManager.instance.googleBldgJsonTextpg1);
+
+            double m_per_pixel_mapBG = GetMetersPerPixelOfGoogleMapImage();
+            GoogleMap my_GM = FindObjectOfType<GoogleMap>();
+            int map_img_size = Mathf.FloorToInt(Screen.height / 2);
+            double map_height_in_meters = (m_per_pixel_mapBG * map_img_size);
+            double m_per_screen_pixel = map_height_in_meters / Screen.height;
+            Debug.Log("Calculating m/px-BG: " + m_per_pixel_mapBG + "  Map width in meters: " + map_height_in_meters + "  and meters/pixel for building placement: " + m_per_screen_pixel);
+
+            #region first 20 bldgs
+            for (int i = 0; i < GoogleBldgJsonpg1["results"].Count; i++)
+            {
+                string myName = (string)GoogleBldgJsonpg1["results"][i]["name"];
+                string myBldgID = (string)GoogleBldgJsonpg1["results"][i]["id"];
+                JsonData thisEntry = JsonMapper.ToObject(JsonMapper.ToJson(GoogleBldgJsonpg1["results"][i]));
+                string my_photo_ref = "";
+                if (thisEntry.Keys.Contains("photos"))
                 {
-                    //Debug.Log(myBuilding.buildingName+" comparing to "+clearedJson[i]["bldg_name"].ToString());
-                    //if the spawned building matches the record, populate it
-                    if (myBuilding.buildingName == clearedJson[i]["bldg_name"].ToString())
+                    my_photo_ref = (string)GoogleBldgJsonpg1["results"][i]["photos"][0]["photo_reference"];
+                }
+                float lat = (float)(double)GoogleBldgJsonpg1["results"][i]["geometry"]["location"]["lat"];
+                float lng = (float)(double)GoogleBldgJsonpg1["results"][i]["geometry"]["location"]["lng"];
+
+
+                //Debug.Log (name + lat + lng);
+
+                //calculate the average latitude between the two locations, and then calculate the meters/DEGREE lat/lon
+                float latMid = (Input.location.lastData.latitude + lat) / 2f;
+                m_per_deg_lat = 111132.954 - 559.822 * Mathf.Cos(2 * latMid) + 1.175 * Mathf.Cos(4 * latMid);
+                m_per_deg_lon = 111132.954 * Mathf.Cos(latMid);
+
+                //Debug.Log ("for the " + name + " building, meters per degree calculated as " + m_per_deg_lat + " m/deg lat, and " + m_per_deg_lon +" m/deg lon");
+                double deltaLatitude = 0;
+                double deltaLongitude = 0;
+                if (Input.location.status == LocationServiceStatus.Running)
+                {
+                    deltaLatitude = (Input.location.lastData.latitude - lat);
+                    deltaLongitude = (Input.location.lastData.longitude - lng);
+                }
+                else
+                {
+                    deltaLatitude = (37.70883f - lat);
+                    deltaLongitude = (-122.4293 - lng);
+                }
+                double xDistMeters = deltaLongitude * m_per_deg_lon;
+                double yDistMeters = deltaLatitude * m_per_deg_lat;
+                float xScreenDist = (float)(xDistMeters * m_per_screen_pixel);
+                float yScreenDist = (float)(yDistMeters * m_per_screen_pixel);
+
+
+
+                PopulatedBuilding instance = Instantiate(populatedBuildingPrefab);
+                instance.GenerateZombies();
+                instance.SetToUnknown();
+                instance.name = myName;
+                instance.buildingName = myName;
+                instance.buildingID = myBldgID;
+                instance.photo_reference = my_photo_ref;
+                instance.myLat = lat;
+                instance.myLng = lng;
+                float xCoord = (float)(screenCenter.x - (xScreenDist));
+                float yCoord = (float)(screenCenter.y - (yScreenDist));
+                Vector3 pos = new Vector3(xCoord, yCoord, 0);
+
+                instance.transform.SetParent(bldgHolder.transform);
+                instance.transform.position = pos;
+
+                //determine the loot class of the building
+                string type_bldg = GoogleBldgJsonpg1["results"][i]["types"][0].ToString();
+                instance.google_type = type_bldg;
+                if (type_bldg == "locality" || type_bldg == "bus_station" || type_bldg == "point_of_interest")
+                {
+                    //these are NOT buildings- delete the instance and continue the loop to the next entry.
+                    //Destroy(instance.gameObject);
+                    Image theImage = instance.gameObject.GetComponent<Image>();
+                    theImage.sprite = non_bldg_sprite;
+                    instance.gameObject.tag = "walllocation"; //ensure that this PopulatedBuilding gameobject does not get filtered with building location updates
+                    instance.loot_code = "A";
+                    continue;
+                }
+                else if (type_bldg == "bakery" || type_bldg == "cafe" || type_bldg == "convenience_store" || type_bldg == "food" || type_bldg == "grocery_or_supermarket" || type_bldg == "restaurant")
+                {
+                    //food likely
+                    instance.loot_code = "F";
+                }
+                else if (type_bldg == "aquarium" || type_bldg == "bar" || type_bldg == "liquor_store" || type_bldg == "spa" || type_bldg == "zoo")
+                {
+                    //water likely
+                    instance.loot_code = "W";
+                }
+                else if (type_bldg == "bicycle_store" || type_bldg == "bowling_alley" || type_bldg == "car_repair" || type_bldg == "electrician" || type_bldg == "general_contractor" || type_bldg == "hardware_store" || type_bldg == "hospital" || type_bldg == "police" || type_bldg == "plumber")
+                {
+                    //supply likely
+                    instance.loot_code = "S";
+                }
+                else
+                {
+                    //generic loot class
+                    instance.loot_code = "G";
+                }
+
+                //instance.CheckForDeactivation();
+                //Debug.Log("placed "+instance.name+" at coords: "+xCoord+" x and "+yCoord+" y");
+            }
+            #endregion
+
+            #region second 20 bldgs
+            if (GameManager.instance.googleBldgJsonTextpg2 != "")
+            {
+                JsonData GoogleBldgJsonpg2 = JsonMapper.ToObject(GameManager.instance.googleBldgJsonTextpg2);
+                if (GoogleBldgJsonpg2["status"].ToString() != "INVALID_REQUEST")
+                {
+                    for (int i = 0; i < GoogleBldgJsonpg2["results"].Count; i++)
                     {
-                        //load in the saved building data
-                        myBuilding.wood_inside = (int)clearedJson[i]["wood"];
-                        myBuilding.metal_inside = (int)clearedJson[i]["metal"];
-                        myBuilding.food_inside = (int)clearedJson[i]["food"];
-                        myBuilding.water_inside = (int)clearedJson[i]["water"];
-                        myBuilding.zombiePopulation = (int)clearedJson[i]["zombies"];
-                        myBuilding.last_cleared = DateTime.Parse(clearedJson[i]["time_cleared"].ToString());
-
-                        if (clearedJson[i]["last_looted_food"].ToString() != "0000-00-00 00:00:00") //this is a blank entry in current DB config
+                        string myName = (string)GoogleBldgJsonpg2["results"][i]["name"];
+                        string myBldgID = (string)GoogleBldgJsonpg2["results"][i]["id"];
+                        JsonData thisEntry = JsonMapper.ToObject(JsonMapper.ToJson(GoogleBldgJsonpg2["results"][i]));
+                        string my_photo_ref = "";
+                        if (thisEntry.Keys.Contains("photos"))
                         {
-                            myBuilding.last_looted_food = DateTime.Parse(clearedJson[i]["last_looted_food"].ToString());
+                            my_photo_ref = (string)GoogleBldgJsonpg2["results"][i]["photos"][0]["photo_reference"];
                         }
-                        if (clearedJson[i]["last_looted_water"].ToString() != "0000-00-00 00:00:00") //this is a blank entry in current DB config
-                        {
-                            myBuilding.last_looted_water = DateTime.Parse(clearedJson[i]["last_looted_water"].ToString());
-                        }
+                        float lat = (float)(double)GoogleBldgJsonpg2["results"][i]["geometry"]["location"]["lat"];
+                        float lng = (float)(double)GoogleBldgJsonpg2["results"][i]["geometry"]["location"]["lng"];
 
-                        //CHECK ITEMS
-                        if (clearedJson[i]["has_trap"].ToString() == "1")
+
+                        //Debug.Log (name + lat + lng);
+
+                        //calculate the average latitude between the two locations, and then calculate the meters/DEGREE lat/lon
+                        float latMid = (Input.location.lastData.latitude + lat) / 2f;
+                        m_per_deg_lat = 111132.954 - 559.822 * Mathf.Cos(2 * latMid) + 1.175 * Mathf.Cos(4 * latMid);
+                        m_per_deg_lon = 111132.954 * Mathf.Cos(latMid);
+
+                        //Debug.Log ("for the " + name + " building, meters per degree calculated as " + m_per_deg_lat + " m/deg lat, and " + m_per_deg_lon +" m/deg lon");
+                        double deltaLatitude = 0;
+                        double deltaLongitude = 0;
+                        if (Input.location.status == LocationServiceStatus.Running)
                         {
-                            myBuilding.has_traps = true;
+                            deltaLatitude = (Input.location.lastData.latitude - lat);
+                            deltaLongitude = (Input.location.lastData.longitude - lng);
                         }
                         else
                         {
-                            myBuilding.has_traps = false;
+                            deltaLatitude = (37.70883f - lat);
+                            deltaLongitude = (-122.4293 - lng);
                         }
-                        if (clearedJson[i]["has_barrel"].ToString() == "1")
+                        double xDistMeters = deltaLongitude * m_per_deg_lon;
+                        double yDistMeters = deltaLatitude * m_per_deg_lat;
+                        float xScreenDist = (float)(xDistMeters * m_per_screen_pixel);
+                        float yScreenDist = (float)(yDistMeters * m_per_screen_pixel);
+
+
+
+                        PopulatedBuilding instance = Instantiate(populatedBuildingPrefab);
+                        instance.GenerateZombies();
+                        instance.SetToUnknown();
+                        instance.name = myName;
+                        instance.buildingName = myName;
+                        instance.buildingID = myBldgID;
+                        instance.photo_reference = my_photo_ref;
+                        instance.myLat = lat;
+                        instance.myLng = lng;
+                        float xCoord = (float)(screenCenter.x - (xScreenDist));
+                        float yCoord = (float)(screenCenter.y - (yScreenDist));
+                        Vector3 pos = new Vector3(xCoord, yCoord, 0);
+
+                        instance.transform.SetParent(bldgHolder.transform);
+                        instance.transform.position = pos;
+
+                        //determine the loot class of the building
+                        string type_bldg = GoogleBldgJsonpg2["results"][i]["types"][0].ToString();
+                        instance.google_type = type_bldg;
+                        if (type_bldg == "locality" || type_bldg == "bus_station" || type_bldg == "point_of_interest")
                         {
-                            myBuilding.has_barrel = true;
+                            //these are NOT buildings- delete the instance and continue the loop to the next entry.
+                            //Destroy(instance.gameObject);
+                            Image theImage = instance.gameObject.GetComponent<Image>();
+                            theImage.sprite = non_bldg_sprite;
+                            instance.gameObject.tag = "walllocation"; //ensure that this PopulatedBuilding gameobject does not get filtered with building location updates
+                            instance.loot_code = "A";
+                            continue;
+                        }
+                        else if (type_bldg == "bakery" || type_bldg == "cafe" || type_bldg == "convenience_store" || type_bldg == "food" || type_bldg == "grocery_or_supermarket" || type_bldg == "restaurant")
+                        {
+                            //food likely
+                            instance.loot_code = "F";
+                        }
+                        else if (type_bldg == "aquarium" || type_bldg == "bar" || type_bldg == "liquor_store" || type_bldg == "spa" || type_bldg == "zoo")
+                        {
+                            //water likely
+                            instance.loot_code = "W";
+                        }
+                        else if (type_bldg == "bicycle_store" || type_bldg == "bowling_alley" || type_bldg == "car_repair" || type_bldg == "electrician" || type_bldg == "general_contractor" || type_bldg == "hardware_store" || type_bldg == "hospital" || type_bldg == "police" || type_bldg == "plumber")
+                        {
+                            //supply likely
+                            instance.loot_code = "S";
                         }
                         else
                         {
-                            myBuilding.has_barrel = false;
-                        }
-                        if (clearedJson[i]["has_greenhouse"].ToString() == "1")
-                        {
-                            myBuilding.has_greenhouse = true;
-                        }
-                        else
-                        {
-                            myBuilding.has_greenhouse = false;
+                            //generic loot class
+                            instance.loot_code = "G";
                         }
 
-                        //Debug.Log(myBuilding.buildingName+" Matched buildings, Active: "+clearedJson[i]["active"].ToString());
-                        if (clearedJson[i]["active"].ToString() == "0")
+                        //instance.CheckForDeactivation();
+                        //Debug.Log("placed "+instance.name+" at coords: "+xCoord+" x and "+yCoord+" y");
+                    }
+                }
+                else
+                {
+                    Debug.Log("Second page of Google Map Results returned INVALID_REQUEST- Likely we are refreshing too fast");
+                }
+            }
+            else { Debug.Log("no second page of results loaded onto game manager, building load failed"); }
+            #endregion
+
+            #region last 20 bldgs
+
+            if (GameManager.instance.googleBldgJsonTextpg3 != "")
+            {
+
+                JsonData googleBldgJsonpg3 = JsonMapper.ToObject(GameManager.instance.googleBldgJsonTextpg3);
+                if (googleBldgJsonpg3["status"].ToString() != "INVALID_REQUEST")
+                {
+                    for (int i = 0; i < googleBldgJsonpg3["results"].Count; i++)
+                    {
+                        string myName = (string)googleBldgJsonpg3["results"][i]["name"];
+                        string myBldgID = (string)googleBldgJsonpg3["results"][i]["id"];
+                        JsonData thisEntry = JsonMapper.ToObject(JsonMapper.ToJson(googleBldgJsonpg3["results"][i]));
+                        string my_photo_ref = "";
+                        if (thisEntry.Keys.Contains("photos"))
                         {
-                            //Debug.Log(myBuilding.buildingName+" has been found to be clear- not being activated");
-                            myBuilding.ActivateMe(); //all buildings should now be active
-                            cleared = 1;
+                            my_photo_ref = (string)googleBldgJsonpg3["results"][i]["photos"][0]["photo_reference"];
+                        }
+                        float lat = (float)(double)googleBldgJsonpg3["results"][i]["geometry"]["location"]["lat"];
+                        float lng = (float)(double)googleBldgJsonpg3["results"][i]["geometry"]["location"]["lng"];
+
+
+                        //Debug.Log (name + lat + lng);
+
+                        //calculate the average latitude between the two locations, and then calculate the meters/DEGREE lat/lon
+                        float latMid = (Input.location.lastData.latitude + lat) / 2f;
+                        m_per_deg_lat = 111132.954 - 559.822 * Mathf.Cos(2 * latMid) + 1.175 * Mathf.Cos(4 * latMid);
+                        m_per_deg_lon = 111132.954 * Mathf.Cos(latMid);
+
+                        //Debug.Log ("for the " + name + " building, meters per degree calculated as " + m_per_deg_lat + " m/deg lat, and " + m_per_deg_lon +" m/deg lon");
+                        double deltaLatitude = 0;
+                        double deltaLongitude = 0;
+                        if (Input.location.status == LocationServiceStatus.Running)
+                        {
+                            deltaLatitude = (Input.location.lastData.latitude - lat);
+                            deltaLongitude = (Input.location.lastData.longitude - lng);
+                        }
+                        else
+                        {
+                            deltaLatitude = (37.70883f - lat);
+                            deltaLongitude = (-122.4293 - lng);
+                        }
+                        double xDistMeters = deltaLongitude * m_per_deg_lon;
+                        double yDistMeters = deltaLatitude * m_per_deg_lat;
+                        float xScreenDist = (float)(xDistMeters * m_per_screen_pixel);
+                        float yScreenDist = (float)(yDistMeters * m_per_screen_pixel);
+
+
+
+                        PopulatedBuilding instance = Instantiate(populatedBuildingPrefab);
+                        instance.GenerateZombies();
+                        instance.SetToUnknown();
+                        instance.name = myName;
+                        instance.buildingName = myName;
+                        instance.buildingID = myBldgID;
+                        instance.photo_reference = my_photo_ref;
+                        instance.myLat = lat;
+                        instance.myLng = lng;
+                        float xCoord = (float)(screenCenter.x - (xScreenDist));
+                        float yCoord = (float)(screenCenter.y - (yScreenDist));
+                        Vector3 pos = new Vector3(xCoord, yCoord, 0);
+
+                        instance.transform.SetParent(bldgHolder.transform);
+                        instance.transform.position = pos;
+
+                        //determine the loot class of the building
+                        string type_bldg = googleBldgJsonpg3["results"][i]["types"][0].ToString();
+                        instance.google_type = type_bldg;
+                        if (type_bldg == "locality" || type_bldg == "bus_station" || type_bldg == "point_of_interest")
+                        {
+                            //these are NOT buildings- delete the instance and continue the loop to the next entry.
+                            //Destroy(instance.gameObject);
+                            Image theImage = instance.gameObject.GetComponent<Image>();
+                            theImage.sprite = non_bldg_sprite;
+                            instance.gameObject.tag = "walllocation"; //ensure that this PopulatedBuilding gameobject does not get filtered with building location updates
+                            instance.loot_code = "A";
+                            continue;
+                        }
+                        else if (type_bldg == "bakery" || type_bldg == "cafe" || type_bldg == "convenience_store" || type_bldg == "food" || type_bldg == "grocery_or_supermarket" || type_bldg == "restaurant")
+                        {
+                            //food likely
+                            instance.loot_code = "F";
+                        }
+                        else if (type_bldg == "aquarium" || type_bldg == "bar" || type_bldg == "liquor_store" || type_bldg == "spa" || type_bldg == "zoo")
+                        {
+                            //water likely
+                            instance.loot_code = "W";
+                        }
+                        else if (type_bldg == "bicycle_store" || type_bldg == "bowling_alley" || type_bldg == "car_repair" || type_bldg == "electrician" || type_bldg == "general_contractor" || type_bldg == "hardware_store" || type_bldg == "hospital" || type_bldg == "police" || type_bldg == "plumber")
+                        {
+                            //supply likely
+                            instance.loot_code = "S";
+                        }
+                        else
+                        {
+                            //generic loot class
+                            instance.loot_code = "G";
+                        }
+
+                        //instance.CheckForDeactivation();
+                        //Debug.Log("placed "+instance.name+" at coords: "+xCoord+" x and "+yCoord+" y");
+                    }
+                }
+                else
+                {
+                    Debug.Log("Third page of Google Map Results returned INVALID_REQUEST- Likely we are refreshing too fast");
+                }
+            }
+            else
+            {
+                Debug.Log("GameManager did not load a third page of building results from google");
+            }
+            #endregion
+
+            #region updated buildings against game-data
+            //activate all buildings without inactive entries
+            GameObject[] buildings = GameObject.FindGameObjectsWithTag("building");
+            /*
+            PopulatedBuilding[] populated_buildings = new PopulatedBuilding[buildings.Length];
+            int pos = 0;
+            foreach (GameObject bldg in buildings)
+            {
+                //load the populated buildings into the array we just created
+                populated_buildings[pos] = bldg.GetComponent<PopulatedBuilding>();
+                pos++;
+            }*/
+
+            if (GameManager.instance.clearedBldgJsonText != "") //if we have cleared bldg records
+            {
+                JsonData clearedJson = JsonMapper.ToObject(GameManager.instance.clearedBldgJsonText);
+                
+                foreach (GameObject building in buildings)
+                {
+                    int cleared = 0;
+                    PopulatedBuilding myBuilding = building.GetComponent<PopulatedBuilding>();
+                    //Set all buildings to the "unentered" datetime by default
+                    myBuilding.last_cleared = DateTime.Parse("11:59pm 12/31/1999");
+
+                    //go through the player record of buildings they've cleared
+                    for (int i = 0; i < clearedJson.Count; i++)
+                    {
+                        //Debug.Log(myBuilding.buildingName+" comparing to "+clearedJson[i]["bldg_name"].ToString());
+                        //if the spawned building matches the record, populate it
+                        if (myBuilding.buildingName == clearedJson[i]["bldg_name"].ToString())
+                        {
+                            //Debug.Log("found cleared building data for building loaded to map- JSON output:  " + JsonMapper.ToJson(clearedJson[i]));
+                            //load in the saved building data
+                            myBuilding.wood_inside = (int)clearedJson[i]["wood"];
+                            myBuilding.metal_inside = (int)clearedJson[i]["metal"];
+                            myBuilding.food_inside = (int)clearedJson[i]["food"];
+                            myBuilding.water_inside = (int)clearedJson[i]["water"];
+                            myBuilding.zombiePopulation = (int)clearedJson[i]["zombies"];
+                            myBuilding.last_cleared = DateTime.Parse(clearedJson[i]["time_cleared"].ToString());
+
+                            if (clearedJson[i]["last_looted_food"].ToString() != "0000-00-00 00:00:00") //this is a blank entry in current DB config
+                            {
+                                myBuilding.last_looted_food = DateTime.Parse(clearedJson[i]["last_looted_food"].ToString());
+                            }
+                            if (clearedJson[i]["last_looted_water"].ToString() != "0000-00-00 00:00:00") //this is a blank entry in current DB config
+                            {
+                                myBuilding.last_looted_water = DateTime.Parse(clearedJson[i]["last_looted_water"].ToString());
+                            }
+
+                            //CHECK ITEMS
+                            if (clearedJson[i]["has_trap"].ToString() == "1")
+                            {
+                                myBuilding.has_traps = true;
+                            }
+                            else
+                            {
+                                myBuilding.has_traps = false;
+                            }
+                            if (clearedJson[i]["has_barrel"].ToString() == "1")
+                            {
+                                myBuilding.has_barrel = true;
+                            }
+                            else
+                            {
+                                myBuilding.has_barrel = false;
+                            }
+                            if (clearedJson[i]["has_greenhouse"].ToString() == "1")
+                            {
+                                myBuilding.has_greenhouse = true;
+                            }
+                            else
+                            {
+                                myBuilding.has_greenhouse = false;
+                            }
+
+                            //Debug.Log(myBuilding.buildingName+" Matched buildings, Active: "+clearedJson[i]["active"].ToString());
+                            if (clearedJson[i]["active"].ToString() == "0")
+                            {
+                                //Debug.Log(myBuilding.buildingName+" has been found to be clear- not being activated");
+                                myBuilding.ActivateMe(); //all buildings should now be active
+                                cleared = 1;
+                                break;
+                            }
+
+                            
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    }
+
+                    //ActivateMe is now the catch all building initilizer.
+                    myBuilding.ActivateMe();
+
+                    /*
+                    if (cleared == 0) {
+                        myBuilding.ActivateMe();
+                    }
+                   */
+                }
+
+                
+            }
+            else
+            {
+                foreach (GameObject building in buildings)
+                {
+                    PopulatedBuilding myBuilding = building.GetComponent<PopulatedBuilding>();
+                    myBuilding.last_cleared = DateTime.Parse("11:59pm 12/31/1999");
+                    myBuilding.ActivateMe();
+                }
+            }
+            #endregion
+
+            #region social location icon updater
+
+            GameObject[] walls = GameObject.FindGameObjectsWithTag("walllocation");
+
+            if (GameManager.instance.myWallsJsonText != "")
+            {
+                JsonData wallJson = JsonMapper.ToObject(GameManager.instance.myWallsJsonText);
+
+                foreach (GameObject wall in walls) //cycling through the walls loaded on the map
+                {
+                    PopulatedBuilding myWall = wall.gameObject.GetComponent<PopulatedBuilding>();
+                    myWall.ActivateMe();//initialize the building
+                    string my_name = myWall.buildingName;
+                    bool match = false;
+
+                    for (int i = 0; i < wallJson.Count; i++)  //cycling through the buildings tagged by the player
+                    {
+                        if (my_name == wallJson[i]["bldg_name"].ToString()) //has this player already tagged this location
+                        {
+                            myWall.Tagged(); //activates the checkmark icon on the non-building locations
+                            match = true;
+                            Debug.Log(this.gameObject.name + " FOUND A WALL ENTRY MATCH @ " + wallJson[i]["bldg_name"].ToString());
                             break;
                         }
                     }
-                    else
+                    if (match == true)
                     {
                         continue;
                     }
-                }
-
-                //ActivateMe is now the catch all building initilizer.
-                myBuilding.ActivateMe();
-
-                /*
-                if (cleared == 0) {
-					myBuilding.ActivateMe();
-				}
-                */
-            }
-        }
-        else
-        {
-            foreach (GameObject building in buildings)
-            {
-                PopulatedBuilding myBuilding = building.GetComponent<PopulatedBuilding>();
-                myBuilding.last_cleared = DateTime.Parse("11:59pm 12/31/1999");
-                myBuilding.ActivateMe();
-            }
-        }
-        #endregion
-
-        #region social location icon updater
-
-        GameObject[] walls = GameObject.FindGameObjectsWithTag("walllocation");
-
-        if(GameManager.instance.myWallsJsonText != "")
-        {
-            JsonData wallJson = JsonMapper.ToObject(GameManager.instance.myWallsJsonText);
-
-            foreach (GameObject wall in walls)
-            {
-                PopulatedBuilding myWall = wall.gameObject.GetComponent<PopulatedBuilding>();
-                myWall.ActivateMe();
-                string my_name = myWall.buildingName;
-                bool match = false;
-                for (int i = 0; i < wallJson.Count; i++)
-                {
-                    if (my_name == wallJson[i]["bldg_name"].ToString())
+                    else
                     {
-                        myWall.Tagged(); //activates the checkmark icon on the non-building locations
-                        match = true;
-                        break;
+                        myWall.UnTagged();
                     }
                 }
-                if (match == true) {
-                    continue;
-                }else
+            }
+            else
+            {
+                //if there are no tagged buildings returning from the server- then turn all buildings to untagged.
+                foreach (GameObject wall in walls)
                 {
+                    PopulatedBuilding myWall = wall.gameObject.GetComponent<PopulatedBuilding>();
+                    myWall.ActivateMe();
                     myWall.UnTagged();
                 }
             }
-        }else
-        {
-            //if there are no tagged buildings returning from the server- then turn all buildings to untagged.
-            foreach(GameObject wall in walls)
-            {
-                PopulatedBuilding myWall = wall.gameObject.GetComponent<PopulatedBuilding>();
-                myWall.ActivateMe();
-                myWall.UnTagged();
-            }
-        }
 
-        #endregion
+            #endregion
 
-        PlaceHomebaseGraphic();
-        //StartCoroutine(GameManager.instance.FetchOutpostData());
-        SpawnOutpostsToMap();
+            PlaceHomebaseGraphic();
+            //StartCoroutine(GameManager.instance.FetchOutpostData());
+            SpawnOutpostsToMap();
 
-        MapLevelManager myMapMgr = FindObjectOfType<MapLevelManager>();
-        myMapMgr.levelLoadingPanel.SetActive(false); //at the end of loading main map objects- turn off "loading panel"
+            MapLevelManager myMapMgr = FindObjectOfType<MapLevelManager>();
+            myMapMgr.levelLoadingPanel.SetActive(false); //at the end of loading main map objects- turn off "loading panel"
+            CurrentlyPlacing60Bldgs = false;//turn off the boolean so this may be run again.
+        } //this was to prevent multiple calls of this fucntion happening 
     }
 
 

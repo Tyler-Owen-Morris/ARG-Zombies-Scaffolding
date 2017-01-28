@@ -416,11 +416,11 @@ public class ClearedBuildingPanelManager : MonoBehaviour {
                     ,"trap"));
             } else
             {
-                StartCoroutine(PostTempTrapText("you have no traps to place"));
+                StartCoroutine(PostTempTrapText("you have no fortifications to use"));
             }
         }else
         {
-            trapStatusText.text = "trap is planted";
+            trapStatusText.text = "entrances fortified";
         }
     }
 
@@ -533,6 +533,7 @@ public class ClearedBuildingPanelManager : MonoBehaviour {
                 Debug.Log(www.error);
             }
             gearPlacementInProgress = false;
+            Debug.Log("Gear Placement in Progress bool: " + gearPlacementInProgress.ToString());
         }
     }
 

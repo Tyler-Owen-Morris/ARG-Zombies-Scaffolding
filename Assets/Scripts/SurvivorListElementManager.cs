@@ -8,7 +8,7 @@ public class SurvivorListElementManager : MonoBehaviour {
 
 	public Text survivorNameText, survivorStatsText, myInjuredText, mySliderText;
 	public Image survivorPortraitSprite;
-	public GameObject mySurvivorCard, myMissionText;
+	public GameObject mySurvivorCard, myMissionText, myDeadText;
 	public Button teamButton, equipButton;
 	public Slider myStamSlider;
 	private MapLevelManager mapLevelManager;
@@ -132,5 +132,14 @@ public class SurvivorListElementManager : MonoBehaviour {
 		equipButton.gameObject.SetActive(false);
 		myMissionText.gameObject.SetActive(true);
 		myInjuredText.gameObject.SetActive(false);
+        myDeadText.SetActive(false);
 	}
+
+    public void SetMeToDead ()
+    {
+        teamButton.gameObject.SetActive(false);
+        equipButton.gameObject.SetActive(false);
+        myMissionText.gameObject.SetActive(false);
+        myInjuredText.gameObject.SetActive(false);
+        myDeadText.SetActive(true);    }
 }

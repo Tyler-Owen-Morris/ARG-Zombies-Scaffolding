@@ -10,7 +10,8 @@ public class FadeToCombatPanelManager : MonoBehaviour {
     public float animSpeed = 700.0f;
     public float scaleSpeed = 50.0f;
     private Color currentColor = Color.black;
-    private Color startingColor = Color.white;
+    private Color startingColor = Color.white, iconStartingColor=Color.white;
+    private MusicManager theMusicManager;
 
     public Image myImage;
 
@@ -19,6 +20,7 @@ public class FadeToCombatPanelManager : MonoBehaviour {
         myMapMgr = FindObjectOfType<MapLevelManager>();
         myImage = GetComponent<Image>();
         currentColor.a = 0;
+        theMusicManager = FindObjectOfType<MusicManager>();
 	}
 	
 	
@@ -57,8 +59,14 @@ public class FadeToCombatPanelManager : MonoBehaviour {
             //scale building up to simulate zoom
             while (ScaleBldgUp()) { yield return null; }
 
+            //fade music down
+            while (ScaleMusicDown()) { yield return null; }
+
             //fade building out
             while (FadeBldgOut()) { yield return null; }
+
+            //fade icon out
+            while (FadeIconOut()) { yield return null; }
 
             //final stepis to call out to the GameManager for the actual load
             GameManager.instance.LoadBuildingCombat();
@@ -80,6 +88,13 @@ public class FadeToCombatPanelManager : MonoBehaviour {
         return 10 >= (animated_bldg.transform.localScale.x);
     }
 
+    private bool ScaleMusicDown()
+    {
+        float new_volume = theMusicManager.audioSource.volume -= (Time.deltaTime);
+        theMusicManager.audioSource.volume = new_volume;
+        return 0 <= new_volume;//return true until 0, then return false
+    }
+
     private bool FadePanelUp ()
     {
         float alphaChange = Time.deltaTime;
@@ -95,6 +110,27 @@ public class FadeToCombatPanelManager : MonoBehaviour {
         startingColor.a -= alphaChange;
         animated_bldg.GetComponent<Image>().color = startingColor;
         return 0 < animated_bldg.GetComponent<Image>().color.a;
+    }
+
+    private bool FadeIconOut()
+    {
+        PopulatedBuilding myBldgObject = animated_bldg.GetComponent<PopulatedBuilding>();
+        iconStartingColor = myBldgObject.populated_bldg_image.GetComponent<Image>().color;
+        float alphaChange = Time.deltaTime;
+        iconStartingColor.a -= alphaChange;
+        if (myBldgObject.populated_bldg_image.activeInHierarchy)
+        {
+            myBldgObject.populated_bldg_image.GetComponent<Image>().color = iconStartingColor;
+            return 0 < iconStartingColor.a;
+        }
+        if (myBldgObject.building_unknown_image.activeInHierarchy)
+        {
+            myBldgObject.building_unknown_image.GetComponent<Text>().color = iconStartingColor;
+            return 0 < iconStartingColor.a;
+        }else
+        {
+            return true;
+        }
     }
 
     public void BeginCombatTransitionAnimation ()

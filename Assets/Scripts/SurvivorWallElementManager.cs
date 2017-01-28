@@ -6,7 +6,7 @@ using LitJson;
 public class SurvivorWallElementManager : MonoBehaviour {
 
     public Text surv_name;
-    public GameObject onTeamTextObject;
+    public GameObject onTeamTextObject, deadTextObject;
     public Button addToTeamButton;
     public string surv_id;
 
@@ -14,7 +14,10 @@ public class SurvivorWallElementManager : MonoBehaviour {
 
     void Awake()
     {
+        //turn off all of the text objects until we know our status
         onTeamTextObject.SetActive(false);
+        deadTextObject.SetActive(false);
+        
         myMapLvlMgr = GameObject.FindObjectOfType<MapLevelManager>();
     }
 
@@ -26,11 +29,31 @@ public class SurvivorWallElementManager : MonoBehaviour {
         JsonData rawSurvivorJson = JsonMapper.ToObject(GameManager.instance.survivorJsonText);
         for(int i = 0; i < rawSurvivorJson.Count; i++)
         {
-            if (survivor_id==rawSurvivorJson[i]["entry_id"].ToString() && rawSurvivorJson[i]["dead"].ToString()=="0" && rawSurvivorJson[i]["abandonded"].ToString() == "0")
+            if (survivor_id==rawSurvivorJson[i]["entry_id"].ToString() )
             {
-                //if they're in the players json, not dead, and not abandoned, they're already added
-                addToTeamButton.interactable = false;
-                onTeamTextObject.SetActive(true);
+                if ( rawSurvivorJson[i]["dead"].ToString() == "1")
+                {
+                    //set me to dead
+                    addToTeamButton.interactable = false;
+                    onTeamTextObject.SetActive(false);
+                    deadTextObject.SetActive(true);
+                }else if (rawSurvivorJson[i]["abandonded"].ToString() == "0")
+                {
+                    //if not dead and not abandoned- set to alive and already recruited.
+                    addToTeamButton.interactable = false;
+                    onTeamTextObject.SetActive(true);
+                    deadTextObject.SetActive(false);
+                }
+                else
+                {
+                    //the player lost the survivor in the past- they may recruit them now if they wish
+                    addToTeamButton.interactable = true;
+                    onTeamTextObject.SetActive(false);
+                    deadTextObject.SetActive(false);
+                }
+
+
+                
             }
         } 
 

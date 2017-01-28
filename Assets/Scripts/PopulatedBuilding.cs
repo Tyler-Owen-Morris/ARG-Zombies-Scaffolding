@@ -7,11 +7,11 @@ using System;
 public class PopulatedBuilding : MonoBehaviour {
 
 	public int zombiePopulation = 0, wood_inside, metal_inside, food_inside, water_inside;
-    public bool has_traps, has_barrel, has_greenhouse;
+    public bool has_traps, has_barrel, has_greenhouse, has_my_tag=false;
 	public DateTime last_cleared, last_looted_supply, last_looted_food, last_looted_water;
 	public string buildingName, buildingID, google_type, loot_code, photo_reference;
     public GameObject name_on_wall_image, clear_bldg_image, populated_bldg_image, building_unknown_image, trap_indicator_image, barrel_indicator_image, greenhouse_indicator_image;
-	public Button button;
+    public Button button;
 	public bool active = false;
 	public float myLat, myLng;
 
@@ -57,9 +57,11 @@ public class PopulatedBuilding : MonoBehaviour {
 	*/
 
 	public void ClickedOn () {
-		//GameManager.instance.LoadIntoCombat(zombiePopulation, buildingName);
+        //GameManager.instance.LoadIntoCombat(zombiePopulation, buildingName);
+
+        this.gameObject.tag = "Untagged"; //remove the building tag from the gameobject
+
 	    mapLevelManager.ActivateBuildingInspector(this.gameObject.GetComponent<PopulatedBuilding>());
-		
 	}
 
     public void SetToUnknown()
@@ -104,6 +106,14 @@ public class PopulatedBuilding : MonoBehaviour {
 
 	public void ActivateMe () {
 		active = true;
+        if (has_my_tag == false)
+        {
+            name_on_wall_image.SetActive(false);
+        }else
+        {
+            name_on_wall_image.SetActive(true);
+        }
+
 		Image myImage = this.gameObject.GetComponent<Image>();
 		if (myImage != null) {
 			myImage.color = Color.white;

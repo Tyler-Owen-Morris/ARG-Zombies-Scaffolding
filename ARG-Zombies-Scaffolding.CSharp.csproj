@@ -256,6 +256,7 @@
     <Compile Include="Assets\Scripts\GamePreferences.cs" />
     <Compile Include="Assets\Scripts\GoogleMap.cs" />
     <Compile Include="Assets\Scripts\Health.cs" />
+    <Compile Include="Assets\Scripts\HeartbeatSoundManager.cs" />
     <Compile Include="Assets\Scripts\IAPManager.cs" />
     <Compile Include="Assets\Scripts\JSONObject.cs" />
     <Compile Include="Assets\Scripts\LevelManager.cs" />
