@@ -949,6 +949,12 @@ public class GameManager : MonoBehaviour {
 		//Debug.Log ("The SetDaysSurvived function has returned: " + days + " Days since character created");
 	}
 
+    public TimeSpan GetCurrentTimeAlive ()
+    {
+        TimeSpan time_alive = (DateTime.Now - GameManager.instance.serverTimeOffset) - GameManager.instance.timeCharacterStarted;
+        return time_alive;
+    }
+
 	public void StartNewCharacter () {
 		//Record the date and time the character is created- will be compared to get Days alive later.
 		timeCharacterStarted = System.DateTime.Now;
@@ -974,26 +980,10 @@ public class GameManager : MonoBehaviour {
 		GameManager.instance.homebaseLong = 0.0f;
 		GameManager.instance.lastLoginTime = "12/31/1999 11:59:59";
         GameManager.instance.activeBldg_zombies = 1; //set up the 1 zombie for the weapon-select combat
-        GameManager.instance.activeBldg_zAcross = 1;
+        GameManager.instance.activeBldg_zAcross = 1; //set up the building data for weapon-select combat
 		playerInTutorial = true;
 
 		StartCoroutine (NewCharacterUpdateServer());
-
-
-		//pass all the rolled info to the gamePreferences - aka permenent memory
-//		GamePreferences.SetShivCount(shivCount);
-//		GamePreferences.SetClubCount(clubCount);
-//		GamePreferences.SetGunCount(gunCount);
-//		GamePreferences.SetShivDurability(shivDurability);
-//		GamePreferences.SetClubDurability(clubDurability);
-//		GamePreferences.SetSupply(supply);
-//		GamePreferences.SetTotalSurvivors (totalSurvivors);
-//		GamePreferences.SetActiveSurvivors (survivorsActive);
-//		GamePreferences.SetWaterCount (waterCount);
-//		GamePreferences.SetFoodCount (foodCount);
-		//this.SetPublicPlayerHealth (100);
-		//Debug.Log ("GameManager started a new character- food / water: " + foodCount +" / "+ waterCount );
-
 
 		//Debug.Log ("Character started at: " + timeCharacterStarted);
 	}

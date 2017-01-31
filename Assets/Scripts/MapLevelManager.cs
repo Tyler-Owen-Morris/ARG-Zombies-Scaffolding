@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 
 public class MapLevelManager : MonoBehaviour {
 
-    public GameObject levelLoadingPanel, fadeToCombatPanel, survivorListGrid, survivorWallPanel, survivorWallConfirmationPanel, survivorWallEmptyTextObject, exitGamePanel, missionCompletePanel, inventoryPanel, buildingPanel, clearedBuildingPanel, qrPanel, personelPanel, gearPanel, homebasePanel, homebaseConfirmationPanel, outpostSelectionPanel, outpostConfirmationPanel, missionStartConfirmationPanel, OutpostQRPanel, enterBldgButton, unequippedWeaponsPanel, mapLevelCanvas, hungerThirstWarningPanel, endGamePanel, endGameButton, bogConfirmationPanel;
+    public GameObject googleMapPanel, streetBackgroundPanel, buildingHolderPanel, levelLoadingPanel, fadeToCombatPanel, survivorListGrid, survivorWallPanel, survivorWallConfirmationPanel, survivorWallEmptyTextObject, exitGamePanel, missionCompletePanel, inventoryPanel, buildingPanel, clearedBuildingPanel, qrPanel, personelPanel, gearPanel, homebasePanel, homebaseConfirmationPanel, outpostSelectionPanel, outpostConfirmationPanel, missionStartConfirmationPanel, OutpostQRPanel, enterBldgButton, unequippedWeaponsPanel, mapLevelCanvas, hungerThirstWarningPanel, endGamePanel, endGameButton, bogConfirmationPanel;
 
 	[SerializeField]
 	public Text survivorWallDescriptionText, survivorWallBldgNametext, woodText, metalText, justDayAlivetext, daysAliveText, survivorsAliveText, currentLatText, currentLonText, locationReportText, zombieKillText, foodText, waterText, gearText, expirationText, playerNameText, clearedBuildingNameText, bldgNameText, bldgWoodText, bldgMetalText, bldgFoodText, bldgWaterText, clearedBldgWoodText, clearedBldgMetalText, clearedBldgFoodText, clearedBldgWaterText, zombieCountText, bldgDistText, homebaseLatText, homebaseLonText, missionConfirmationText;
@@ -29,13 +29,14 @@ public class MapLevelManager : MonoBehaviour {
 
 	private float lastUpdateLat = 0.0f, lastUpdateLng = 0.0f;
 	private float lastStamUpdateLat = 0.0f, lastStamUpdateLng = 0.0f;
-    private bool runGameClock = false;
+    private bool runGameClock = false, updateZoomLevel =true;
 
 	private int zombieCount, outpost_index;
 	public string bldgName, active_bldg_id;
 	public PopulatedBuilding activeBuilding;
     public Image building_image;
     public Text buildingTypeText, buildingTypeDescription;
+    public Slider zoomSlider;
 
 	public int active_gearing_survivor_id, to_equip_weapon_id, to_unequip_weapon_id;
 
@@ -216,7 +217,14 @@ public class MapLevelManager : MonoBehaviour {
             UpdateTimeAliveClock();
             //UpdateButtonSizes();
         }
+
+        if (updateZoomLevel)
+        {
+            UpdateZoomLevel();
+        }
     }
+
+
 
     /*
     public int pub_x, pub_y;
@@ -631,6 +639,21 @@ public class MapLevelManager : MonoBehaviour {
         }
         expirationText.text = my_rss_expiration_string;
 
+    }
+
+    public void NewZoomLevel ()
+    {
+        updateZoomLevel = true;
+    }
+
+    private void UpdateZoomLevel ()
+    {
+        //change the scale of the 2 relevant panels to match the slider value.
+        Vector3 zoom = new Vector3(zoomSlider.value, zoomSlider.value, 0);
+        streetBackgroundPanel.GetComponent<RectTransform>().localScale = zoom;
+        buildingHolderPanel.GetComponent<RectTransform>().localScale = zoom;
+        googleMapPanel.GetComponent<RectTransform>().localScale = zoom;
+        updateZoomLevel = false;
     }
 
     private void UpdateTimeAliveClock() {

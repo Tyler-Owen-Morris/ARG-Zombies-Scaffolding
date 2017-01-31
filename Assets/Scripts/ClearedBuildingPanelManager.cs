@@ -26,7 +26,7 @@ public class ClearedBuildingPanelManager : MonoBehaviour {
         currentMapManager = MapLevelManager.FindObjectOfType<MapLevelManager>();
         if (currentMapManager.activeBuilding.has_traps == true)
         {
-            trapStatusText.text = "trap is planted";
+            trapStatusText.text = "entrances are barricaded";
             trapProgressSlider.gameObject.SetActive(true);
             CalculateTrapStatus();
         }else

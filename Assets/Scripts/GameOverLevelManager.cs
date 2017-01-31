@@ -24,7 +24,7 @@ public class GameOverLevelManager : MonoBehaviour {
 			zombieQRpanel.SetActive(false);
 		}
 
-		GameManager.instance.my_score = GameManager.instance.gameOverTime - GameManager.instance.timeCharacterStarted;
+		GameManager.instance.my_score = GameManager.instance.gameOverTime - (GameManager.instance.timeCharacterStarted-GameManager.instance.serverTimeOffset);
 	}
 
 	// Use this for initialization

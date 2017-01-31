@@ -242,7 +242,8 @@ public class SurvivorStateMachine : MonoBehaviour {
         {
             myTurnResult.dead = 0;
         }
-        BSM.turnResultList.Add(myTurnResult);
+        BSM.turnResultJsonString += "{\"attackType\":\"survivor\",\"survivor_id\":"+survivor_id+",\"weapon_id\":"+weapon_id+",\"dead\":"+myTurnResult.dead+"},";
+        //BSM.turnResultList.Add(myTurnResult);
     }
 
 	private int CalculateMyDamage () {

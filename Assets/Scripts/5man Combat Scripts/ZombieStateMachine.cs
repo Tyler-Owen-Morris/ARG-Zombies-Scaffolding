@@ -223,6 +223,11 @@ public class ZombieStateMachine : MonoBehaviour {
 					odds += 0.5f;
 				}
 
+                if ((GameManager.instance.GetCurrentTimeAlive().TotalDays) < 2)//if we're within the first 2 days- players can't die to zombies
+                {
+                    odds = 0.0f;
+                }
+
 			} else {
 				odds += 1.1f;//starting odds for a survivor to get bitten.
 			}
@@ -279,7 +284,9 @@ public class ZombieStateMachine : MonoBehaviour {
         {
             myTurnresult.dead = 0;
         }
-        BSM.turnResultList.Add(myTurnresult);
+
+        BSM.turnResultJsonString += "{\"attackType\":\"zombie\",\"survivor_id\":" + surv_id + ",\"weapon_id\":0,\"dead\":" + myTurnresult.dead + "},";
+        //BSM.turnResultList.Add(myTurnresult);
     }
 
 

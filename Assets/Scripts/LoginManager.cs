@@ -149,13 +149,13 @@ public class LoginManager : MonoBehaviour {
     	}
     }
 
-    
+    //this is called automatically on mobile- as user is persistently logged in after 1st login
     void SetInit () {
         FB.ActivateApp();
         if (FB.IsLoggedIn) {
             Debug.Log ("FB is logged in");
 
-            //FB.API("me?fields=id,name,first_name,last_name,picture{height,width,url}", HttpMethod.GET, FBCoreCallback);
+            FB.API("me?fields=id,name,first_name,last_name,picture{height,width,url}", HttpMethod.GET, FBCoreCallback);
 
             /*
             //fetch the name and ID from the FB API.
@@ -164,7 +164,7 @@ public class LoginManager : MonoBehaviour {
 		    FB.API ("/me?fields=last_name", HttpMethod.GET, UpdateUserLastName);
 		    FB.API ("/me", HttpMethod.GET, UpdateUserName);
             */
-			//FB.API ("me?fields=picture.width(200).height(200)", HttpMethod.GET, UpdateProfilePicURL);
+			FB.API ("me?fields=picture.width(200).height(200)", HttpMethod.GET, UpdateProfilePicURL);
             loggedInPanel.SetActive (true);
 
         } else {
@@ -195,6 +195,7 @@ public class LoginManager : MonoBehaviour {
         
     }
     
+    //this is only called after manual login
     void AuthCallBack (IResult result) {
         
         if (result.Error != null) {
@@ -310,6 +311,16 @@ public class LoginManager : MonoBehaviour {
                     }
 				} else if (stat == 1) {
 					Debug.Log("Player is a zombie ==> force loading game over scene");
+                    //must load start and end times into game manager before loading Game over scene.
+                    GameManager.instance.timeCharacterStarted = DateTime.Parse(zombStatJson[2]["char_created_DateTime"].ToString());
+                    string end_time = zombStatJson[2]["game_over_datetime"].ToString();
+                    if (end_time != "")
+                    {
+                        GameManager.instance.gameOverTime = DateTime.Parse(end_time);
+                    } else
+                    {
+                        Debug.Log("Your death did not store a date-time properly.");
+                    }
 					GameManager.instance.playerIsZombie = true;
 					SceneManager.LoadScene("03b Game Over");
 				} else if (stat == 2) {
@@ -332,6 +343,7 @@ public class LoginManager : MonoBehaviour {
 		}
     }
 
+    //once logged in, we fetch the core data, and this is the callback function
     private void FBCoreCallback(IResult result)
     {
         if (result.Error == null)
@@ -347,7 +359,7 @@ public class LoginManager : MonoBehaviour {
             GameManager.instance.myProfilePicURL = picJson["picture"]["data"]["url"].ToString();
             StartCoroutine(SetPlayerProfilePic(picJson["picture"]["data"]["url"].ToString()));
             */
-            StartCoroutine(CheckZombieStatus());
+            StartCoroutine(CheckZombieStatus()); //this should be the only place we call this, as it is contained in the main FB callback function
         }
         else
         {

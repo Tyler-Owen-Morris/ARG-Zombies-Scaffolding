@@ -955,6 +955,7 @@ public class BuildingSpawner : MonoBehaviour {
         }
         //double my_value = 156543.03392f *( Mathf.Cos((my_lat*Mathf.PI) / 180 ) / Mathf.Pow(2,zoom));
         double my_value = (Mathf.Cos(my_lat*Mathf.PI/180)*2*Mathf.PI*6378137)/(256*Mathf.Pow(2, zoom));
+        my_value = my_value * FindObjectOfType<MapLevelManager>().zoomSlider.value; //scale the value to the current zoom level
         //my_value = 2.38865f;
         Debug.Log("Calculating m/pixel of original google image to be: " + my_value);
         return my_value;

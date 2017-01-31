@@ -34,7 +34,8 @@ public class BattleStateMachine : MonoBehaviour {
 	public List <TurnHandler> TurnList = new List <TurnHandler> ();
 	public List <GameObject> survivorList = new List<GameObject>();
 	public List <GameObject> zombieList = new List<GameObject>();
-    public List<TurnResultHolder> turnResultList = new List<TurnResultHolder>();
+    //public List<TurnResultHolder> turnResultList = new List<TurnResultHolder>();
+    public string turnResultJsonString = "";
 
 	public GameObject playerTarget;
 	public GameObject weaponBrokenPanel, autoAttackToggle, survivorBitPanel, playerBitPanel, failedRunAwayPanel, runButton, attackButton, cheatSaveButton;
@@ -1193,12 +1194,35 @@ public class BattleStateMachine : MonoBehaviour {
 
     public void DumpTurnsToServer (bool clr)
     {
-        //construct array of turns
-        
-        string json_data = JsonConvert.SerializeObject(turnResultList);
-        Debug.Log(json_data);
-        //forward to coroutine to POST to web
-        StartCoroutine(PostTurnsToServer(json_data, clr));
+        Debug.Log(turnResultJsonString);
+        if (turnResultJsonString != null || turnResultJsonString != "")
+        {
+
+            string json_data = "";
+            if (turnResultJsonString.Length > 2)
+            {
+                json_data = "[" + turnResultJsonString.Substring(turnResultJsonString.Length - 1) + "]";//every entry ends with a comma, remove the comma and put caps on the json
+            }else
+            {
+                json_data = "[]";
+            }
+            Debug.Log(json_data);
+            
+            StartCoroutine(PostTurnsToServer(json_data, clr));
+        }else
+        {
+            Debug.Log("***");
+            //check building status being passed
+            if (clr)
+            {
+                GameManager.instance.BuildingIsCleared(false); //false means no survivors found, and this should load us to victory etc
+            }else
+            {
+                //this means player ran before making any turns- we don't care 
+                Debug.Log("this should only be happening when player is running away before making turns");
+            }
+            
+        }
     }
 
     IEnumerator PostTurnsToServer (string json_string, bool clear)
@@ -1227,7 +1251,8 @@ public class BattleStateMachine : MonoBehaviour {
             JsonData turnPostResultJson = JsonMapper.ToObject(www.text);
             if (turnPostResultJson[0].ToString() == "Success")
             {
-                turnResultList.Clear();
+                turnResultJsonString = ""; //using a string instead of a list. conversion from list>json was not going well on devices.
+//                turnResultList.Clear();
                 if (clear)
                 {
                     GameManager.instance.BuildingIsCleared(false); //if clear, proceed to victory screen, false indicates no survivors found (ever)
