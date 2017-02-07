@@ -53,7 +53,9 @@ public class WeaponListPopulator : MonoBehaviour {
 					myWLEM.modifier = weaponData.modifier;
 					myWLEM.stam_cost = weaponData.stam_cost;
 					myWLEM.durability = weaponData.durability;
-
+                    myWLEM.max_durability = weaponData.max_durability;
+                    myWLEM.weaponText.text = weaponData.name;
+                    myWLEM.SetDurabilitySlider();
 				}
 				  
 			}
@@ -83,11 +85,14 @@ public class WeaponListPopulator : MonoBehaviour {
 				WLEM.modifier = weaponData.modifier;
 				WLEM.stam_cost = weaponData.stam_cost;
 				WLEM.durability = weaponData.durability;
+                WLEM.max_durability = weaponData.max_durability;
+                WLEM.miss_chance = weaponData.miss_chance;
 
 				string myDisplayString = "";
 				myDisplayString += WLEM.name;
-				myDisplayString += " attk: "+WLEM.base_dmg.ToString()+" modifier: "+ weaponData.modifier.ToString();
+				//myDisplayString += " attk: "+WLEM.base_dmg.ToString()+" modifier: "+ weaponData.modifier.ToString();
 				WLEM.weaponText.text = myDisplayString;
+                WLEM.SetupMyData();
 			}
 		}
 	}

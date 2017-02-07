@@ -46,6 +46,7 @@ public class BattleStateMachine : MonoBehaviour {
 
 	public int zombiesKilled = 0, brokenWeapon_surv_id;
 	public Text zombieCounter, ammmoCounter, survivorBitText, failedToRunText;
+    public Toggle my_image_toggle; 
     public GameObject blazeOfGloryImage;
     public CombatWeaponListPopulator my_CWLP;
 
@@ -1201,7 +1202,7 @@ public class BattleStateMachine : MonoBehaviour {
             string json_data = "";
             if (turnResultJsonString.Length > 2)
             {
-                json_data = "[" + turnResultJsonString.Substring(turnResultJsonString.Length - 1) + "]";//every entry ends with a comma, remove the comma and put caps on the json
+                json_data = "[" + turnResultJsonString.Substring(0, turnResultJsonString.Length - 1) + "]";//every entry ends with a comma, remove the comma and put caps on the json
             }else
             {
                 json_data = "[]";
@@ -1264,6 +1265,33 @@ public class BattleStateMachine : MonoBehaviour {
         }else
         {
             Debug.Log(www.error);
+        }
+    }
+
+    public void TogglePlayerPortraitSprite()
+    {
+        bool onOff = false;
+        if (my_image_toggle.isOn)
+        {
+            onOff = true;
+        }
+
+        GameObject[] suvList = GameObject.FindGameObjectsWithTag("survivor");
+        if (onOff)
+        {//on players
+            for (int i=0; i<suvList.Length; i++) { 
+                SurvivorStateMachine mySSM = suvList[i].GetComponent<SurvivorStateMachine>();
+                mySSM.myStamSlider.gameObject.transform.FindChild("Profile pic").gameObject.SetActive(false) ;
+                mySSM.my_face.gameObject.SetActive(true);
+            }
+        }else
+        {//on healthbars
+            for (int i = 0; i < suvList.Length; i++)
+            {
+                SurvivorStateMachine mySSM = suvList[i].GetComponent<SurvivorStateMachine>();
+                mySSM.myStamSlider.gameObject.transform.FindChild("Profile pic").gameObject.SetActive(true);
+                mySSM.my_face.gameObject.SetActive(false);
+            }
         }
     }
 }

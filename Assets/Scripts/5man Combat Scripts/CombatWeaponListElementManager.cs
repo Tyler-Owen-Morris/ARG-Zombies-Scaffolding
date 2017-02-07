@@ -7,7 +7,7 @@ public class CombatWeaponListElementManager : MonoBehaviour {
     public Text weaponText;
     public GameObject myWeaponPlayCard;
 
-    public int weaponID, equippedID, base_dmg, modifier, stam_cost, durability;
+    public int weaponID, equippedID, base_dmg, modifier, stam_cost, durability, max_durability, miss_chance;
 
     void Start ()
     {
@@ -23,6 +23,8 @@ public class CombatWeaponListElementManager : MonoBehaviour {
             base_dmg = myWeapon.base_dmg;
             modifier = myWeapon.modifier;
             durability = myWeapon.durability;
+            max_durability = myWeapon.max_durability;
+            miss_chance = myWeapon.miss_chance;
             this.name = myWeapon.gameObject.name;
         }
 

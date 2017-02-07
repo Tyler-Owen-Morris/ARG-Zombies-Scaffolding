@@ -22,12 +22,12 @@ namespace Assets.Scripts.Fitbit
         /// </summary>
         private const string _consumerSecret = "1a761965ce558d433ada1aa9b23ab398";
         private const string _clientId = "227YT4";
-        private const string _callbackURL = "http://test.debuginc.com/envdump.php/";
+        private const string _callbackURL = "http://argzombie.com/FitbitCallback.php/";
         //If you're making an app for Android, fill in your custom scheme here from Fitbit
         //if you don't know how to do the callback through a native browser on a mobile device 
         //http://technicalartistry.blogspot.ca/2016/01/fitbit-unity-oauth-2-and-native.html 
         //can probably help :)
-        private const string CustomAndroidScheme = "http://test.debuginc.com/envdump.php/";
+        private const string CustomAndroidScheme = "http://argzombie.com/FitbitCallback.php";
 
         private const string _tokenUrl = "https://api.fitbit.com/oauth2/token";
         private const string _baseGetUrl = "https://api.fitbit.com/1/user/-/";

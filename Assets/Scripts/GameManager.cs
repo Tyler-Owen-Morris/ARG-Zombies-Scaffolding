@@ -543,6 +543,8 @@ public class GameManager : MonoBehaviour {
 						instance.modifier = (int)weaponJson[1][i]["modifier"];
 						instance.stam_cost = (int)weaponJson[1][i]["stam_cost"];
 						instance.durability = (int)weaponJson[1][i]["durability"];
+                        instance.max_durability = (int)weaponJson[1][i]["max_durability"];
+                        instance.miss_chance = (int)weaponJson[1][i]["miss_chance"];
 
 						if (weaponJson[1][i]["type"].ToString() == "knife") {
 							instance.weaponType = BaseWeapon.WeaponType.KNIFE;
@@ -688,6 +690,8 @@ public class GameManager : MonoBehaviour {
 				instance.modifier = (int)weaponJson[i]["modifier"];
 				instance.stam_cost = (int)weaponJson[i]["stam_cost"];
 				instance.durability = (int)weaponJson[i]["durability"];
+                instance.max_durability = (int)weaponJson[i]["max_durability"];
+                instance.miss_chance = (int)weaponJson[i]["miss_chance"];
 
 				if (weaponJson[i]["type"].ToString() == "knife") {
 					instance.weaponType = BaseWeapon.WeaponType.KNIFE;

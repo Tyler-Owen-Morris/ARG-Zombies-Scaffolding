@@ -127,6 +127,7 @@ public class SurvivorStateMachine : MonoBehaviour {
 				int myDmg = CalculateMyDamage();
 				Debug.Log ("Survivor hit the zombie for " +myDmg+ " damage");
 				targetZombie.zombie.curHP = targetZombie.zombie.curHP - myDmg;
+                Debug.Log("Survivor sees the zombie HP at: "+ targetZombie.zombie.curHP+" *******<<<<<<<<<<<<<<<<");
                 SpawnCombatDamageText(targetZombie.gameObject, myDmg);
 				bool isDed = targetZombie.CheckForDeath();
                 //DO NOT send each attack to server- store results to list.
@@ -166,7 +167,13 @@ public class SurvivorStateMachine : MonoBehaviour {
 				Debug.Log ("Survivor hit the zombie for " +myDmg+ " damage");
 				targetZombie.zombie.curHP = targetZombie.zombie.curHP - myDmg;
 				bool isDed = targetZombie.CheckForDeath();
-				StartCoroutine(SendAttackToServer(survivor.survivor_id, 0, isDed));
+                if (isDed)
+                {
+                    targetZombie.currentState = ZombieStateMachine.TurnState.DEAD;
+                    Debug.Log("Manually calling the zombie dead");
+                }
+                StoreAttack(survivor.survivor_id, 0, isDed);
+                //StartCoroutine(SendAttackToServer(survivor.survivor_id, 0, isDed));
 				//adjust the local data and update the UI
 				survivor.curStamina -= 5;
 				UpdateStaminaBar();
@@ -443,39 +450,43 @@ public class SurvivorStateMachine : MonoBehaviour {
 			sprite.SetActive(false);
 		}
 		if (this.survivor.weaponEquipped != null) {
-			//Debug.Log(this.survivor.name + " believes to have a weapon equipped , wep name: " + this.survivor.weaponEquipped.name);
+            //Debug.Log(this.survivor.name + " believes to have a weapon equipped , wep name: " + this.survivor.weaponEquipped.name);
 
-			//this should change to get the name
-			if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name == "crude shiv" || this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name=="shank") {
+            //this should change to get the name
+            string wep_name = this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name;
+            if ( wep_name == "crude shiv" || wep_name =="shank" ) {
 				myWepSprites[0].SetActive(true);
 				//Debug.Log (this.survivor.name + " is equipping a knife sprite");
-			} else if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name == "deadly bat" || this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name == "baseball bat") {
+			} else if (wep_name == "deadly bat" || wep_name == "baseball bat") {
 				myWepSprites[1].SetActive(true);
 				//Debug.Log (this.survivor.name + " is equipping a club sprite");
-			} else if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name == ".22 Revolver" || this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name == ".22 revolver") {
+			} else if (wep_name == ".22 Revolver" || wep_name == ".22 revolver") {
 				myWepSprites[2].SetActive(true);
 				//Debug.Log (this.survivor.name + " is equipping a gun sprite");
-			}else if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name == "hunting knife" ) {
+			}else if (wep_name == "hunting knife" || wep_name == "basic knife") {
 				myWepSprites[3].SetActive(true);
 				//Debug.Log (this.survivor.name + " is equipping a gun sprite");
-			}else if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name == "sledgehammer" ) {
+			}else if (wep_name == "sledgehammer" ) {
 				myWepSprites[4].SetActive(true);
 				//Debug.Log (this.survivor.name + " is equipping a gun sprite");
-			}else if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name == "shotgun" ) {
+			}else if (wep_name == "shotgun" ) {
 				myWepSprites[5].SetActive(true);
 				//Debug.Log (this.survivor.name + " is equipping a gun sprite");
-			}else if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name == "zip gun")
+			}else if (wep_name == "zip gun")
             {
                 myWepSprites[6].SetActive(true);
-            }else if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name == "zip gun 2.0")
+            }else if (wep_name == "zip gun 2.0")
             {
                 myWepSprites[7].SetActive(true);
-            }else if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name == "crude club")
+            }else if (wep_name == "crude club")
             {
                 myWepSprites[8].SetActive(true);
-            }else if (this.survivor.weaponEquipped.GetComponent<BaseWeapon>().name == "reinforced club")
+            }else if (wep_name == "reinforced club")
             {
                 myWepSprites[9].SetActive(true);
+            }else
+            {
+                Debug.Log("unable to find a sprite match for currently equipped weapon: " + wep_name);
             }
 		} else {
 			Debug.Log("Warning: No weapon equipped!!!");

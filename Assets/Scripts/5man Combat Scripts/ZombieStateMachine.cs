@@ -142,11 +142,13 @@ public class ZombieStateMachine : MonoBehaviour {
 			case (TurnState.DEAD):
                 //BattleStateMachine stores the #of zombies in the scene on start
                 //by making this comparison on death, we maintain that number
-				if (GameManager.instance.activeBldg_zombies >= GameManager.instance.activeBldg_zAcross+1) { 
-					//kill me and refresh me.
-					StartCoroutine(DeathAction(true));
+				if (GameManager.instance.activeBldg_zombies >= GameManager.instance.activeBldg_zAcross+1) {
+                    //kill me and refresh me.
+                    Debug.Log(">>>>>>>>>>>>>>>>>>>>>>>>> death action called with replace");
+                    StartCoroutine(DeathAction(true));
 				} else {
-					//Kill me and do not refresh.
+                    //Kill me and do not refresh.
+                    Debug.Log(">>>>>>>>>>>>>>>>>>>>>>>>> death action called without replace");
 					StartCoroutine(DeathAction(false));
 				}
 			break;
@@ -155,11 +157,14 @@ public class ZombieStateMachine : MonoBehaviour {
 	}
 
 	public bool CheckForDeath () {
+        Debug.Log(gameObject.name+" checking for death with "+zombie.curHP+" HP");
 		if (zombie.curHP <= 0 ) {
-			currentState = TurnState.DEAD;
+			this.currentState = TurnState.DEAD;
 			BSM.zombieList.Remove(this.gameObject);
+            Debug.Log("****************>>>>>>>>>>>>> Zombie found itself as DEAD :::: "+currentState.ToString());
 			return true;
 		} else {
+            Debug.Log("******************>>>>>>>>>>>>>>>>>>> Zombie found itself as ALIVE");
 			return false;
 		}
 	}
@@ -309,6 +314,7 @@ public class ZombieStateMachine : MonoBehaviour {
 	}
 
 	private IEnumerator DeathAction (bool refresh) {
+        Debug.Log(gameObject.name+" calling death");
 		if (deathActionStarted) {
 			yield break;
 		} else {

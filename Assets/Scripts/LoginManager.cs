@@ -188,7 +188,7 @@ public class LoginManager : MonoBehaviour {
         List<string> permissions = new List<string>();
         permissions.Add("public_profile");
         permissions.Add("user_friends");
-        permissions.Add("email");
+        //permissions.Add("email");
         
         
         FB.LogInWithReadPermissions (permissions, AuthCallBack);
