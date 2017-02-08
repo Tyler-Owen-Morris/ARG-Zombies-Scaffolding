@@ -896,7 +896,7 @@ public class BuildingSpawner : MonoBehaviour {
                         {
                             myWall.Tagged(); //activates the checkmark icon on the non-building locations
                             match = true;
-                            Debug.Log(this.gameObject.name + " FOUND A WALL ENTRY MATCH @ " + wallJson[i]["bldg_name"].ToString());
+                            //Debug.Log(this.gameObject.name + " FOUND A WALL ENTRY MATCH @ " + wallJson[i]["bldg_name"].ToString());
                             break;
                         }
                     }

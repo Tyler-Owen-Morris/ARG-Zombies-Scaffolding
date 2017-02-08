@@ -41,7 +41,7 @@ public class WeaponListElementManager : MonoBehaviour {
         float max_dur = max_durability;
         float value = (dur/max_dur);
         durabilitySlider.value = value;
-        Debug.Log(value);
+        //Debug.Log(value);
         if (value > 0.75f)
         {
             durabilitySliderBG.color = Color.green;

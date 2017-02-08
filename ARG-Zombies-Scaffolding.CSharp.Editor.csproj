@@ -152,6 +152,10 @@
       <Project>{78440D30-3588-3B11-6D45-7048844B3E67}</Project>
       <Name>ARG-Zombies-Scaffolding.CSharp</Name>
     </ProjectReference>
+    <ProjectReference Include="ARG-Zombies-Scaffolding.CSharp.Editor.Plugins.csproj">
+      <Project>{5FFDEB8B-6098-7699-4470-622E84D6A746}</Project>
+      <Name>ARG-Zombies-Scaffolding.CSharp.Editor.Plugins</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\FacebookSDK\SDK\Editor\FacebookBuild.cs" />

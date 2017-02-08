@@ -150,7 +150,7 @@ public class ProfileImageManager : MonoBehaviour {
             Destroy(profile_image.gameObject);
         }else
         {
-            Debug.Log("Invalid URL- this guy just gets a default profile pic");
+            //Debug.Log("Invalid URL- this guy just gets a default profile pic");
         }
     }
 
@@ -174,7 +174,7 @@ public class ProfileImageManager : MonoBehaviour {
                 profileImages.Add(my_imageHolder);
 
 
-                Debug.Log("Created new ProfileImage record");
+                //Debug.Log("Created new ProfileImage record");
             }
             else
             {
@@ -185,7 +185,7 @@ public class ProfileImageManager : MonoBehaviour {
                 my_imageHolder.survivor_id = survivor_id;
                 my_imageHolder.img_url = url;
                 profileImages.Add(my_imageHolder);
-                Debug.Log("Failed to fetch Image from: " + url+" loading default pic instead");
+               // Debug.Log("Failed to fetch Image from: " + url+" loading default pic instead");
             }
         }else
         {
@@ -196,7 +196,7 @@ public class ProfileImageManager : MonoBehaviour {
             my_imageHolder.survivor_id = survivor_id;
             my_imageHolder.img_url = url;
             profileImages.Add(my_imageHolder);
-            Debug.Log("creating default sprite for " + survivor_id+" suv id" );
+            //Debug.Log("creating default sprite for " + survivor_id+" suv id" );
         }
     }
 }

@@ -47,7 +47,7 @@ public class GameManager : MonoBehaviour {
 	public string userLastName;
 	public string userName;
 
-	public static string serverURL = "http://www.argzombie.com/ARGZ_SERVER";
+	public static string serverURL = "http://www.argzombie.com/ARGZ_DEV_SERVER";
 	public static string QR_encryption_key = "12345678901234567890123456789012";
 
 	private string startNewCharURL = serverURL+"/StartNewCharacter.php";
@@ -667,11 +667,11 @@ public class GameManager : MonoBehaviour {
 	public void CreateWeaponsFromGameManagerJson () {
 		//wipe all old data clean.
 		GameObject[] oldWeapons = GameObject.FindGameObjectsWithTag("weaponcard");
-		Debug.Log(oldWeapons.Length+" weapons found to be destoyed");
-		Debug.Log("There are "+GameManager.instance.weaponCardList.Count+" items in the list before clearing");
+		//Debug.Log(oldWeapons.Length+" weapons found to be destoyed");
+		//Debug.Log("There are "+GameManager.instance.weaponCardList.Count+" items in the list before clearing");
 		GameManager.instance.weaponCardList.Clear();
 		//GameManager.instance.weaponCardList = new List<GameObject>();
-		Debug.Log("There are "+GameManager.instance.weaponCardList.Count+" items in the card list after clear");
+		//Debug.Log("There are "+GameManager.instance.weaponCardList.Count+" items in the card list after clear");
 		//destroy the old weapons
 		foreach (GameObject weaponCard in oldWeapons) {
 			Destroy(weaponCard.gameObject);
