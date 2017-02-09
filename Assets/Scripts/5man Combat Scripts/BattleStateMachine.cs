@@ -54,7 +54,7 @@ public class BattleStateMachine : MonoBehaviour {
     public Sprite[] zombie_sprite_array;
     public Texture[] zombie_texture_array;
 
-	public AudioClip knifeSound, clubSound, pistolSound, shotgunSound, foundZombieIntroSound;
+	public AudioClip missSound, knifeSound, clubSound, pistolSound, shotgunSound, foundZombieIntroSound;
 	public AudioClip[] zombieSounds, survivorUnarmedSounds;
 	public AudioSource myAudioSource;
 
@@ -404,7 +404,13 @@ public class BattleStateMachine : MonoBehaviour {
 	
 	}
 
-	public void PlayWeaponSound (BaseWeapon.WeaponType myWepType, string wepName) {
+	public void PlayWeaponSound (BaseWeapon.WeaponType myWepType, string wepName, int dmg) {
+        if (dmg == 0)
+        {
+            myAudioSource.PlayOneShot(missSound);
+            return;//play the miss and exit
+        }
+
 		if (myWepType == BaseWeapon.WeaponType.KNIFE) {
 			//play the knife stab
 			myAudioSource.PlayOneShot(knifeSound);

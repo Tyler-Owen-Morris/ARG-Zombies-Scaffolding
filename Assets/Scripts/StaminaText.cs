@@ -26,6 +26,15 @@ public class StaminaText : MonoBehaviour {
 
     public void SetDamageText (string myDmg)
     {
-        stamText.text = myDmg.ToString();
+        if (myDmg == "0")
+        {
+            stamText.text = "miss!";
+            this.GetComponent<Text>().color = Color.blue;
+            Debug.Log("StamText color is: " + GetComponent<Text>().color.ToString());
+        }
+        else
+        {
+            stamText.text = myDmg.ToString();
+        }
     }
 }

@@ -118,13 +118,16 @@ public class SurvivorStateMachine : MonoBehaviour {
 				} else {
 					myGunShot.SetActive(true);
 				}
-				BSM.PlayWeaponSound(myWeapon.weaponType, myWeapon.name);
-				//animate weapon fx
-				yield return new WaitForSeconds(0.5f);
+				
+				
 
 				//do damage
 				ZombieStateMachine targetZombie = plyrTarget.GetComponent<ZombieStateMachine>();
 				int myDmg = CalculateMyDamage();
+                BSM.PlayWeaponSound(myWeapon.weaponType, myWeapon.name, myDmg);
+                //animate weapon fx
+				yield return new WaitForSeconds(0.5f);
+
 				Debug.Log ("Survivor hit the zombie for " +myDmg+ " damage");
 				targetZombie.zombie.curHP = targetZombie.zombie.curHP - myDmg;
                 Debug.Log("Survivor sees the zombie HP at: "+ targetZombie.zombie.curHP+" *******<<<<<<<<<<<<<<<<");
@@ -255,34 +258,37 @@ public class SurvivorStateMachine : MonoBehaviour {
 
 	private int CalculateMyDamage () {
 		ZombieStateMachine myTarget = plyrTarget.GetComponent<ZombieStateMachine>();
+        float miss_chance = 0.0f;
 		int myDmg = 0;
 		myDmg += survivor.baseAttack;
 		if (survivor.weaponEquipped != null) {
-			if (survivor.weaponEquipped.GetComponent<BaseWeapon>().weaponType == BaseWeapon.WeaponType.KNIFE) {
-				int wepDmg = survivor.weaponEquipped.GetComponent<BaseWeapon>().base_dmg + Random.Range(0, survivor.weaponEquipped.GetComponent<BaseWeapon>().modifier);
+            BaseWeapon my_weapon = survivor.weaponEquipped.GetComponent<BaseWeapon>();
+            miss_chance = my_weapon.miss_chance * 0.01f;//stored as int 0-100 - multiply by 1/100th to get %value 0-1
+			if (my_weapon.weaponType == BaseWeapon.WeaponType.KNIFE) {
+				int wepDmg = my_weapon.base_dmg + Random.Range(0, my_weapon.modifier);
 				if (myTarget.zombie.zombieType == BaseZombie.Type.FAT) {
 					float multiplier = Random.Range(0.9f, 1.25f);
 					myDmg = Mathf.RoundToInt((myDmg + wepDmg) * multiplier);
 					Debug.Log ("KNIFE on FAT zombie is safe. multiplier is "+multiplier+" making final damage= " +myDmg);
-					return myDmg;
+					//return myDmg;
 				} else if (myTarget.zombie.zombieType == BaseZombie.Type.NORMAL) {
 					float multiplier = Random.Range(0.6f, 1.0f);
 					myDmg = Mathf.RoundToInt((myDmg + wepDmg) * multiplier);
 					Debug.Log ("KNIFE on NORMAL zombie is weak. multiplier is "+multiplier+" making final damage= " +myDmg);
-					return myDmg;
+					//return myDmg;
 				} else if (myTarget.zombie.zombieType == BaseZombie.Type.SKINNY) {
 					float multiplier = Random.Range(1.1f, 2.1f);
 					myDmg = Mathf.RoundToInt((myDmg + wepDmg) * multiplier);
 					Debug.Log ("KNIFE on SKINNY zombie is super strong. multiplier is "+multiplier+" making final damage= " +myDmg);
-					return myDmg;
+					//return myDmg;
 				}else {
 					myDmg = Mathf.RoundToInt((myDmg + wepDmg));
 					Debug.Log ("No Zombie type found- returning dmg without multiplier: "+ myDmg);
-					return myDmg;
+					//return myDmg;
 				}
 
-			} else if (survivor.weaponEquipped.GetComponent<BaseWeapon>().weaponType == BaseWeapon.WeaponType.CLUB) {
-				int wepDmg = survivor.weaponEquipped.GetComponent<BaseWeapon>().base_dmg + Random.Range(0, survivor.weaponEquipped.GetComponent<BaseWeapon>().modifier);
+			} else if (my_weapon.weaponType == BaseWeapon.WeaponType.CLUB) {
+				int wepDmg = my_weapon.base_dmg + Random.Range(0, my_weapon.modifier);
 				if (myTarget.zombie.zombieType == BaseZombie.Type.FAT) {
 					float multiplier = Random.Range(0.6f, 1.0f);
 					myDmg = Mathf.RoundToInt((myDmg + wepDmg) * multiplier);
@@ -304,8 +310,8 @@ public class SurvivorStateMachine : MonoBehaviour {
 					//return myDmg;
 				}
 		
-			} else if (survivor.weaponEquipped.GetComponent<BaseWeapon>().weaponType == BaseWeapon.WeaponType.GUN && GameManager.instance.ammo > 0) {
-				int wepDmg = survivor.weaponEquipped.GetComponent<BaseWeapon>().base_dmg + Random.Range(0, survivor.weaponEquipped.GetComponent<BaseWeapon>().modifier);
+			} else if (my_weapon.weaponType == BaseWeapon.WeaponType.GUN && GameManager.instance.ammo > 0) {
+				int wepDmg = my_weapon.base_dmg + Random.Range(0, my_weapon.modifier);
 				if (myTarget.zombie.zombieType == BaseZombie.Type.FAT) {
 					float multiplier = Random.Range(1.1f, 2.25f);
 					myDmg = Mathf.RoundToInt((myDmg + wepDmg) * multiplier);
@@ -329,8 +335,8 @@ public class SurvivorStateMachine : MonoBehaviour {
 				//this is where we remove the ammo from the game. server should execute the amo reduction when the attack is sent
 				GameManager.instance.ammo--;
 				BSM.UpdateUINumbers();
-			} else if (survivor.weaponEquipped.GetComponent<BaseWeapon>().weaponType == BaseWeapon.WeaponType.GUN && GameManager.instance.ammo < 1) {
-				int wepDmg = survivor.weaponEquipped.GetComponent<BaseWeapon>().base_dmg + Random.Range(0, survivor.weaponEquipped.GetComponent<BaseWeapon>().modifier);
+			} else if (my_weapon.weaponType == BaseWeapon.WeaponType.GUN && GameManager.instance.ammo < 1) {
+				int wepDmg = my_weapon.base_dmg + Random.Range(0, my_weapon.modifier);
 				if (myTarget.zombie.zombieType == BaseZombie.Type.FAT) {
 					float multiplier = Random.Range(1.1f, 2.25f);
 					myDmg = Mathf.RoundToInt((myDmg + wepDmg) * multiplier);
@@ -367,18 +373,32 @@ public class SurvivorStateMachine : MonoBehaviour {
 
 		//if player is out of stamina, their attack is halved
 		if (survivor.curStamina < 1) {
-			myDmg = Mathf.RoundToInt(myDmg/2);
+			myDmg = Mathf.RoundToInt(myDmg*0.75f);
 		}
+
+        float miss_roll = Random.Range(0.0f, 1.0f);
+        if (miss_roll < miss_chance)
+        {
+            myDmg = 0;
+            Debug.Log("PLAYER MISSED!!! MISS MISS MISS MISS MISSSSYS MISSSYYYYYY MISS SMSSSSS!!!!!!!!");
+        }
 
 		return myDmg;
 	}
 
     void SpawnCombatDamageText (GameObject trgt, int val)
     {
+        GameObject[] deleteThese = GameObject.FindGameObjectsWithTag("deleteme");
+        foreach (GameObject dlt in deleteThese)
+        {
+            Destroy(dlt);
+        }
+
         //spawn empty game object, attach to canvas, and locate in correct position.
         GameObject canvas = GameObject.Find("Canvas");
         GameObject empty = new GameObject();
         empty.name = "deleteme";
+        empty.tag = "deleteme";
         GameObject zombie_pos = Instantiate(empty);
         zombie_pos.transform.SetParent(canvas.transform, false);
         Camera myCamera = FindObjectOfType<Camera>();
