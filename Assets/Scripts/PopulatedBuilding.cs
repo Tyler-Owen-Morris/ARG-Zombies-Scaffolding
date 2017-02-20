@@ -109,9 +109,12 @@ public class PopulatedBuilding : MonoBehaviour {
         if (has_my_tag == false)
         {
             name_on_wall_image.SetActive(false);
+            Debug.Log(this.name+" is finding itself without a tag, deactivating tick");
+
         }else
         {
             name_on_wall_image.SetActive(true);
+            Debug.Log(this.name + " is Activating, and sees itself as having a tag");
         }
 
 		Image myImage = this.gameObject.GetComponent<Image>();

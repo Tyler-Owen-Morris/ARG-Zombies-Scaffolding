@@ -47,7 +47,7 @@ public class GameManager : MonoBehaviour {
 	public string userLastName;
 	public string userName;
 
-	public static string serverURL = "http://www.argzombie.com/ARGZ_DEV_SERVER";
+	public static string serverURL = "http://game.argzombie.com/ARGZ_SERVER";
 	public static string QR_encryption_key = "12345678901234567890123456789012";
 
 	private string startNewCharURL = serverURL+"/StartNewCharacter.php";
@@ -236,7 +236,8 @@ public class GameManager : MonoBehaviour {
 					} else {
 						GameManager.instance.playerIsZombie = false;
 					}
-					SceneManager.LoadScene("03b Game Over");
+                    SceneManager.LoadScene("02b Zombie Mode");
+//					SceneManager.LoadScene("03b Game Over");
 				}
 				GameManager.instance.lastLoginTime = fullGameData[1]["mob_login_ts"].ToString();
 				if (fullGameData[1]["high_score"].ToString() != "") {
@@ -392,7 +393,8 @@ public class GameManager : MonoBehaviour {
 		WWW www = new WWW(gameOverStarvationURL, form);
 		yield return www;
 		Debug.Log(www.text);
-		SceneManager.LoadScene("03b Game Over");
+        SceneManager.LoadScene("02b Zombie Mode");
+		//SceneManager.LoadScene("03b Game Over");
 	}
 
 	public IEnumerator KillUrself () {
@@ -420,7 +422,8 @@ public class GameManager : MonoBehaviour {
 		Debug.Log(www.text);
 
 		if (www.error == null) {
-			SceneManager.LoadScene("03b Game Over");
+            SceneManager.LoadScene("02b Zombie Mode");
+            //SceneManager.LoadScene("03b Game Over");
 		} else {
 			Debug.Log(www.error);
 		}
@@ -1528,7 +1531,8 @@ public class GameManager : MonoBehaviour {
 						
 						//Player has been bit in combat. All end-game data has already been stored, but player played to the end of combat.
 						GameManager.instance.playerIsZombie = true;
-						SceneManager.LoadScene("03b Game Over");
+                        SceneManager.LoadScene("02a Zombie Mode");
+						//SceneManager.LoadScene("03b Game Over");
 
 					}
 				} else {
@@ -1558,7 +1562,8 @@ public class GameManager : MonoBehaviour {
 					Debug.Log(www.text);
 
 					if (www.error == null) {
-						SceneManager.LoadScene("03b Game Over");
+                        SceneManager.LoadScene("02b Zombie Mode");
+                        //SceneManager.LoadScene("03b Game Over");
 					} else {
 						Debug.Log(www.error);
 					}

@@ -881,32 +881,39 @@ public class BuildingSpawner : MonoBehaviour {
 
             if (GameManager.instance.myWallsJsonText != "")
             {
+                //load json from GameManager for walls the player has tagged
                 JsonData wallJson = JsonMapper.ToObject(GameManager.instance.myWallsJsonText);
 
-                foreach (GameObject wall in walls) //cycling through the walls loaded on the map
+                foreach (GameObject wall in walls) //cycling through the walls in the currently loaded scene
                 {
                     PopulatedBuilding myWall = wall.gameObject.GetComponent<PopulatedBuilding>();
                     myWall.ActivateMe();//initialize the building
                     string my_name = myWall.buildingName;
+                    DateTime min_time = DateTime.Now - TimeSpan.FromHours(24);
                     bool match = false;
 
                     for (int i = 0; i < wallJson.Count; i++)  //cycling through the buildings tagged by the player
                     {
-                        if (my_name == wallJson[i]["bldg_name"].ToString()) //has this player already tagged this location
+                        DateTime my_tagged_time = DateTime.Parse(wallJson[i]["tag_time"].ToString());
+                        
+                        if (my_name == wallJson[i]["bldg_name"].ToString() && my_tagged_time >= min_time) //has this player already tagged this location
                         {
                             myWall.Tagged(); //activates the checkmark icon on the non-building locations
-                            match = true;
-                            //Debug.Log(this.gameObject.name + " FOUND A WALL ENTRY MATCH @ " + wallJson[i]["bldg_name"].ToString());
-                            break;
+                            match = true; //set the local bool
+                            Debug.Log(this.gameObject.name + " FOUND A WALL ENTRY MATCH @ " + wallJson[i]["bldg_name"].ToString());
+                            break;// exit the for loop
                         }
                     }
+                    //if we get through the json loop w/o a match, then we need to be untagged
                     if (match == true)
                     {
-                        continue;
+                        Debug.Log("There should be a Debug line DIRECTLY ABOVE this- showing the matched/tagged wall object");
+                        continue; //go to the next wall from the scene.
                     }
                     else
                     {
                         myWall.UnTagged();
+                        Debug.Log(myWall.gameObject.name + " WALL found no matching walls on player JSON- Setting to UNTAGGED");
                     }
                 }
             }

@@ -259,6 +259,7 @@
     <Compile Include="Assets\Scripts\Health.cs" />
     <Compile Include="Assets\Scripts\HeartbeatSoundManager.cs" />
     <Compile Include="Assets\Scripts\IAPManager.cs" />
+    <Compile Include="Assets\Scripts\Intro_ImageLoader.cs" />
     <Compile Include="Assets\Scripts\JSONObject.cs" />
     <Compile Include="Assets\Scripts\LevelManager.cs" />
     <Compile Include="Assets\Scripts\LoginManager.cs" />
@@ -282,6 +283,7 @@
     <Compile Include="Assets\Scripts\SetStartVolume.cs" />
     <Compile Include="Assets\Scripts\StaminaText.cs" />
     <Compile Include="Assets\Scripts\StoryDrag.cs" />
+    <Compile Include="Assets\Scripts\StoryPanelManager.cs" />
     <Compile Include="Assets\Scripts\SuicideButtonShuffler.cs" />
     <Compile Include="Assets\Scripts\SurvivorListElementManager.cs" />
     <Compile Include="Assets\Scripts\SurvivorListPopulator.cs" />
@@ -296,6 +298,7 @@
     <Compile Include="Assets\Scripts\WeaponListElementManager.cs" />
     <Compile Include="Assets\Scripts\WeaponListPopulator.cs" />
     <Compile Include="Assets\Scripts\WeaponSelectManager.cs" />
+    <Compile Include="Assets\Scripts\ZombieModeManager.cs" />
     <Compile Include="Assets\Scripts\ZombieQRController.cs" />
     <Compile Include="Assets\SpriteColorFX\Demos\Blend\Scripts\Blender.cs" />
     <Compile Include="Assets\SpriteColorFX\Demos\Blend\Scripts\Flare.cs" />

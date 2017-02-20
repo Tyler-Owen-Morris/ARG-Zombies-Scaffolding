@@ -154,9 +154,9 @@ public class LoginManager : MonoBehaviour {
         FB.ActivateApp();
         if (FB.IsLoggedIn) {
             Debug.Log ("FB is logged in");
-
+            
             FB.API("me?fields=id,name,first_name,last_name,picture{height,width,url}", HttpMethod.GET, FBCoreCallback);
-
+            
             /*
             //fetch the name and ID from the FB API.
             FB.API ("/me?fields=id", HttpMethod.GET, UpdateUserId);
@@ -322,7 +322,8 @@ public class LoginManager : MonoBehaviour {
                         Debug.Log("Your death did not store a date-time properly.");
                     }
 					GameManager.instance.playerIsZombie = true;
-					SceneManager.LoadScene("03b Game Over");
+                    SceneManager.LoadScene("02b Zombie Mode");
+                    //SceneManager.LoadScene("03b Game Over");
 				} else if (stat == 2) {
 					Debug.Log("Player is dead, but not a zombie");
                     currentGameClock.gameObject.SetActive(false);

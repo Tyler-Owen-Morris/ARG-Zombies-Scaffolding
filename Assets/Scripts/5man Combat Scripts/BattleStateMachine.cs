@@ -37,7 +37,7 @@ public class BattleStateMachine : MonoBehaviour {
     //public List<TurnResultHolder> turnResultList = new List<TurnResultHolder>();
     public string turnResultJsonString = "";
 
-	public GameObject playerTarget;
+	public GameObject playerTarget, storyElementHolder;
 	public GameObject weaponBrokenPanel, autoAttackToggle, survivorBitPanel, playerBitPanel, failedRunAwayPanel, runButton, attackButton, cheatSaveButton;
 	public AmputationButtonManager amputationButton;
 	public GameObject playerPos1, playerPos2, playerPos3, playerPos4, playerPos5;
@@ -65,6 +65,7 @@ public class BattleStateMachine : MonoBehaviour {
 	private string restoreSurvivorURL = GameManager.serverURL+"/RestoreSurvivor.php";
 	private string combatSuicideURL = GameManager.serverURL+"/CombatSuicide.php";
     private string equipWeaponURL = GameManager.serverURL + "/EquipWeapon.php";
+    private string storyRequestURL = GameManager.serverURL + "/StoryRequest.php";
 
     //private int totalSurvivorsFound = 0;
     void Awake () {
@@ -1020,6 +1021,13 @@ public class BattleStateMachine : MonoBehaviour {
 		battleState = PerformAction.WAIT;
 	}
 
+    //this call starts the coroutine to check 'run result' with the server, and load story elements upon load
+    public void AttemptRunAway()
+    {
+        StartCoroutine(SendRunRequest());
+    }   
+
+    //this function decides the result of run-away in client, and does not load any story elements.
 	public void PlayerChoosesRunAway () {
 
         DumpTurnsToServer(false); //send all stored turn data to server
@@ -1087,6 +1095,69 @@ public class BattleStateMachine : MonoBehaviour {
             StartCoroutine(GameManager.instance.LoadAllGameData());
 		}
 	}
+
+    private bool runReqStarted = false;
+    IEnumerator SendRunRequest ()
+    {
+        if (runReqStarted)
+        {
+            yield break;
+        }
+        else
+        {
+            runReqStarted = true;
+            DumpTurnsToServer(false);//false means bldg not clear
+
+            WWWForm form = new WWWForm();
+            form.AddField("id", GameManager.instance.userId);
+            form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+            form.AddField("client", "mob");
+            form.AddField("type", "run");
+            float univ_roll = UnityEngine.Random.Range(0.0f, 100.0f); //we are going to use a universal 0-100 pass from client to determine result
+            form.AddField("roll", univ_roll.ToString());
+
+            WWW www = new WWW(storyRequestURL, form);
+            yield return www;
+
+            if (www.error == null)
+            {
+                Debug.Log(www.text);
+                JsonData story_JSON = JsonMapper.ToObject(www.text);
+                if (story_JSON[0].ToString() == "Success")
+                {
+                    //get the needed numbers
+                    int index_no = int.Parse(story_JSON[1]["index"].ToString());
+                    int img_count = int.Parse(story_JSON[1]["img_count"].ToString());
+
+                    //load the prefab
+                    StoryPanelManager storyPanelPrefab = Resources.Load<StoryPanelManager>("Prefabs/StoryElementPanelPrefab");
+                    if (storyPanelPrefab == null)
+                    {
+                        Debug.Log("******************WARNING: NOT LOADING STORY PANEL PREFAB FROM RESOURCES*********");
+
+                    }
+
+                    //begin the for loop to instantiate the prefabs.
+                    for (int i = 0; i < img_count; i++)
+                    {
+                        StoryPanelManager instance = Instantiate(storyPanelPrefab, storyElementHolder.gameObject.transform) as StoryPanelManager;
+                        string my_img_name = index_no + "_" + (i+1) + ".png";
+                        instance.FetchMyStoryImage(my_img_name);
+                    }
+
+                }
+                else
+                {
+                    Debug.Log("Failed to get a run result from server- continuing local function as a fallback");
+                    PlayerChoosesRunAway(); //This is the OLD function that determines results locally
+                }
+            }
+            else
+            {
+                Debug.Log(www.error);
+            }
+        }
+    }
 
     public void WeaponDestroyed (int surv_id)
     {
