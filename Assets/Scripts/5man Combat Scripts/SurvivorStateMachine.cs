@@ -15,6 +15,7 @@ public class SurvivorStateMachine : MonoBehaviour {
     public SpriteRenderer my_face;
 
 	private BattleStateMachine BSM;
+    private BossBattleStateMachine BBSM;
 	private Vector3 startPosition;
 
 	//stuff for taking a turn
@@ -37,6 +38,7 @@ public class SurvivorStateMachine : MonoBehaviour {
 
 	void Start () {
 		BSM = FindObjectOfType<BattleStateMachine>();
+        BBSM = FindObjectOfType<BossBattleStateMachine>();
 		isSelected = false;
 		currentState = TurnState.INITIALIZING;
 		startPosition = gameObject.transform.position;
@@ -70,7 +72,14 @@ public class SurvivorStateMachine : MonoBehaviour {
 				
 			break;
 			case (TurnState.INITIALIZING):
-				BSM.survivorTurnList.Add (this.gameObject);
+                if (BSM != null) {
+                    BSM.survivorTurnList.Add(this.gameObject);
+                    Debug.Log(this.gameObject.name + " is sending it's gameobject to the BSM- NOT BOSS COMBAT");
+                }
+                if (BBSM != null) {
+                    BBSM.survivorTurnList.Add(this.gameObject);
+                    Debug.Log(this.gameObject.name + " is sending its gameobject to the BBSM- YES BOSS COMBAT");
+                }
 				currentState = TurnState.WAITING;
 			break;
 			case (TurnState.DONE):

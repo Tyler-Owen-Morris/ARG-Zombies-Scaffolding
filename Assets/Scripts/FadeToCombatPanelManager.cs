@@ -38,6 +38,7 @@ public class FadeToCombatPanelManager : MonoBehaviour {
             yield break;
         }else
         {
+            Debug.Log("animation running..." + Time.time);
             anim_started = true;
 
             //get the active building object- move it above the panel. child to self
@@ -70,6 +71,7 @@ public class FadeToCombatPanelManager : MonoBehaviour {
 
             //final stepis to call out to the GameManager for the actual load
             GameManager.instance.LoadBuildingCombat();
+            Debug.Log("animation complete");
             animate = false;
         }
 

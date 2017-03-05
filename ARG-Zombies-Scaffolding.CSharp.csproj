@@ -225,6 +225,8 @@
     <Compile Include="Assets\Scripts\5man Combat Scripts\BaseWeapon.cs" />
     <Compile Include="Assets\Scripts\5man Combat Scripts\BaseZombie.cs" />
     <Compile Include="Assets\Scripts\5man Combat Scripts\BattleStateMachine.cs" />
+    <Compile Include="Assets\Scripts\5man Combat Scripts\BossBattleStateMachine.cs" />
+    <Compile Include="Assets\Scripts\5man Combat Scripts\BossStateMachine.cs" />
     <Compile Include="Assets\Scripts\5man Combat Scripts\CombatWeaponListElementManager.cs" />
     <Compile Include="Assets\Scripts\5man Combat Scripts\CombatWeaponListPopulator.cs" />
     <Compile Include="Assets\Scripts\5man Combat Scripts\ContinueRunningButtonManager.cs" />

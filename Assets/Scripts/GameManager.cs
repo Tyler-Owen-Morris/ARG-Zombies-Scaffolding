@@ -1052,12 +1052,19 @@ public class GameManager : MonoBehaviour {
 //		GamePreferences.SetHomebaseLongitude(lon);
 	}
 
+    public void LoadBossCombat (string boss)
+    {
+        activeBldg_name = boss;
+
+        SceneManager.LoadScene("02c Combat-Boss");
+    }
+
 	public void LoadAltCombat (int zomb,string bldg_name) {
 		activeBldg_name = bldg_name;
         activeBldg_zombies = zomb;
 		//zombiesToFight = zomb;
         
-        SceneManager.LoadScene("02e Combat-15");//all combat is handled in this one scene now
+        SceneManager.LoadScene("02e Combat-15");//all zombie combat is handled in this one scene now
         //LoadRandomCombatScene();
     }
 

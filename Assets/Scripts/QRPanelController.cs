@@ -109,13 +109,41 @@ public class QRPanelController : MonoBehaviour {
 			scanLineObj.SetActive(false);
 		}
 
-		//This needs to first verify the type of scan that it is.
-		DetermineTypeOfScannedCode(dataText);
+        //This needs to first verify the type of scan that it is.
+        //DetermineTypeOfScannedCode(dataText);
+
+        CheckForBossQRScan(dataText); //boss check comes before decryption check.
 	}
 
+    void CheckForBossQRScan (string scanText)
+    {
+        
+        Debug.Log("String scanned as: " + scanText );
+       
+        if (scanText == "http://www.argzombies.com/owen1.php")
+        {
+           GameManager.instance.LoadBossCombat("owen");
+        }
+        else if (scanText == "http://www.argzombies.com/david1.php")
+        {
+            GameManager.instance.LoadBossCombat("david");
+        }
+        else
+        {
+            DetermineTypeOfScannedCode(scanText);
+        }
+    }
+
 	void DetermineTypeOfScannedCode (string scannedText) {
+        if (scannedText.Contains("http://"))
+        {
+            Debug.Log("this is not a valid game barcode");
+            PostQRResultText("ARG Zombies does not recognize this barcoe");
+            return;
+        }
         mapLvlMgr = FindObjectOfType<MapLevelManager>();
 
+        //internal game codes need to be decrypted
 		string decrypted_text = decryptData(scannedText);
 		JsonData scannedJson = JsonMapper.ToObject(decrypted_text);
 		Debug.Log("Scanned Text: "+scannedText+" || DECRYPTED TEXT: "+decrypted_text);

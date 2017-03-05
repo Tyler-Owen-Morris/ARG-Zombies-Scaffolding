@@ -71,7 +71,6 @@ public class BattleStateMachine : MonoBehaviour {
     void Awake () {
         battleState = PerformAction.COMPLETED;//this will idle the machine until the load can complete
 		LoadInSurvivorCardData();
-       
 	}
 
 	void Start () {
@@ -85,7 +84,6 @@ public class BattleStateMachine : MonoBehaviour {
 		survivorList.AddRange (GameObject.FindGameObjectsWithTag("survivor"));
 		zombieList.AddRange (GameObject.FindGameObjectsWithTag("zombie"));
         //AdjustForLessThan5Zombies ();
-        
 
 		UpdateUINumbers();
         PlayIntroSound();
