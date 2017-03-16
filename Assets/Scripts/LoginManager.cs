@@ -10,13 +10,13 @@ using System;
 public class LoginManager : MonoBehaviour {
 
 	[SerializeField]
-	private Text loginPasswordText, loginEmailText, registerEmail, registerPassword, registerPassword2;
+	//private Text loginPasswordText, loginEmailText, registerEmail, registerPassword, registerPassword2; // no longer used
 	private int survivorsDrafted = 0;
     public bool runGameClock = false;
     private DateTime time_game_start;
     private bool confirm_new_char = true;
 
-	public GameObject registrationPanel, loggedInPanel, survivorDraftPanel, newCharConfirmationPanel, userDataObject;
+	public GameObject registrationPanel, loggedInPanel, survivorDraftPanel, newCharConfirmationPanel, aliveDeadChoicePanel, userDataObject;
     public Text currentGameClock, player_name, player_food, player_water, firstTimeText;
     public Image loginProfilePic, tmp_TestProfilePicBlobLoader;
 	public Button continueButton;
@@ -30,6 +30,7 @@ public class LoginManager : MonoBehaviour {
 	private string fetchStaticSurvivorURL = GameManager.serverURL+"/FetchStaticSurvivor.php";
 	private string zombieStatusURL = GameManager.serverURL+"/GetZombieStatus.php";
     private string profileImageUploadURL = GameManager.serverURL + "/UploadProfileImage.php";
+    private string playAsZombieURL = GameManager.serverURL + "PlayAsZombie.php";
 
     // Use this for initialization
     void Start () { 
@@ -789,4 +790,59 @@ public class LoginManager : MonoBehaviour {
         GameManager.instance.StartNewCharacter();
 			
 	}
+
+    public void ToggleAliveDeadChoicePanel()
+    {
+        if (aliveDeadChoicePanel.activeInHierarchy)
+        {
+            aliveDeadChoicePanel.SetActive(false);
+        }
+        else
+        {
+            aliveDeadChoicePanel.SetActive(true);
+        }
+    }
+
+    public void PlayAsZombie()
+    {
+        //just start the coroutine 
+        StartCoroutine(StartZombieGame());
+    }
+
+    IEnumerator StartZombieGame()
+    {
+        GameManager.instance.lastLoginTime = "12/31/1999 11:59:59";
+        WWWForm form = new WWWForm();
+        form.AddField("id", GameManager.instance.userId);
+        form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+        form.AddField("client", "mob");
+
+        WWW www = new WWW(playAsZombieURL, form);
+        yield return www;
+        Debug.Log(www.text);
+
+        if (www.error == null)
+        {
+            //parse json
+            JsonData jsonResult = JsonMapper.ToObject(www.text);
+
+            if (jsonResult[0].ToString() == "Success")
+            {
+                Debug.Log("Player has successfully started a game as a zombie");
+                GameManager.instance.playerIsZombie = true;
+                SceneManager.LoadScene("02b Zombie Mode");
+
+            }
+            else if (jsonResult[0].ToString() == "Failed")
+            {
+                Debug.Log(jsonResult[1].ToString());
+            }
+        }
+        else
+        {
+            Debug.LogWarning(www.error);
+        }
+
+    }
+
 }

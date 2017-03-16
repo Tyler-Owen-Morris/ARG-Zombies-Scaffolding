@@ -30,7 +30,6 @@ public class BossBattleStateMachine : MonoBehaviour {
 
     public List<TurnHandler> turnList = new List<TurnHandler>();
     public List<GameObject> survivorList = new List<GameObject>();
-    public List<GameObject> bossList = new List<GameObject>();
     public GameObject boss;
 
     public string turnResultJsonString = "";
@@ -312,7 +311,7 @@ public class BossBattleStateMachine : MonoBehaviour {
                 {
                     battleState = PerformAction.SELECTACTION;
                 }
-                else if (boss.activeInHierarchy==false)
+                else if (boss.GetComponent<BossStateMachine>().curHP <= 0 )
                 {
                     // end of the boss
                     Debug.Log("End boss fight called");
@@ -386,13 +385,18 @@ public class BossBattleStateMachine : MonoBehaviour {
 
     }
 
+    public void AutoAttackTogglePressed()
+    {
+        autoAttackIsOn = autoAttackToggle.GetComponent<Toggle>().isOn;
+    }
+
     public void AttackButtonPressed()
     {
         TurnHandler myAttack = new TurnHandler();
         myAttack.attacker = survivorTurnList[0].name;
         myAttack.type = "survivor";
         myAttack.AttackersGameObject = survivorTurnList[0];
-        myAttack.TargetsGameObject = bossList[0].gameObject; //always target the boss
+        myAttack.TargetsGameObject = boss; //always target the boss
 
         CollectAction(myAttack);
         survivorTurnList.RemoveAt(0);
@@ -407,13 +411,13 @@ public class BossBattleStateMachine : MonoBehaviour {
     {
         //clear and reset the lists
         turnList.Clear();
-        bossList.Clear();
+       
         survivorList.Clear();
         survivorList.AddRange(GameObject.FindGameObjectsWithTag("survivor"));
-        bossList.Add(GameObject.Find("Boss"));
+
 
         //tell the boss to pick his turn
-        BossStateMachine BossSM = bossList[0].GetComponent<BossStateMachine>();
+        BossStateMachine BossSM = boss.GetComponent<BossStateMachine>();
         BossSM.bossTurnState = BossStateMachine.TurnState.CHOOSEACTION;
         
         //let all the players add their turn to the list
@@ -456,7 +460,7 @@ public class BossBattleStateMachine : MonoBehaviour {
                 survivor.GetComponent<SpriteRenderer>().enabled = false;
                 survivor.GetComponent<SurvivorStateMachine>().DisableAllWeaponSprites();
             }
-            bossList[0].GetComponent<SpriteRenderer>().enabled = false;
+            boss.GetComponent<SpriteRenderer>().enabled = false;
 
             //update and show the panel.
             survivorBitText.text = bitSurvivor.survivor.name + " has been bit by the zombie!\nWhat will you do?";

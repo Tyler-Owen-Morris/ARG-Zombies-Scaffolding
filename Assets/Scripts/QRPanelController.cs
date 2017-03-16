@@ -128,6 +128,10 @@ public class QRPanelController : MonoBehaviour {
         {
             GameManager.instance.LoadBossCombat("david");
         }
+        else if (scanText == "http://www.argzombies.com/superzombie.php" || scanText == "http://www.argzombies.com/superzombie")
+        {
+            GameManager.instance.LoadBossCombat("superzombie");
+        }
         else
         {
             DetermineTypeOfScannedCode(scanText);

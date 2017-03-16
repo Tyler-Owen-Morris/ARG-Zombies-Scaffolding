@@ -74,18 +74,19 @@ public class SurvivorStateMachine : MonoBehaviour {
 			case (TurnState.INITIALIZING):
                 if (BSM != null) {
                     BSM.survivorTurnList.Add(this.gameObject);
-                    Debug.Log(this.gameObject.name + " is sending it's gameobject to the BSM- NOT BOSS COMBAT");
+                    //Debug.Log(this.gameObject.name + " is sending it's gameobject to the BSM- NOT BOSS COMBAT");
                 }
                 if (BBSM != null) {
                     BBSM.survivorTurnList.Add(this.gameObject);
-                    Debug.Log(this.gameObject.name + " is sending its gameobject to the BBSM- YES BOSS COMBAT");
+                    //Debug.Log(this.gameObject.name + " is sending its gameobject to the BBSM- YES BOSS COMBAT");
                 }
 				currentState = TurnState.WAITING;
 			break;
 			case (TurnState.DONE):
 				mySelectedIcon.SetActive(false);
 				isSelected = false;
-				BSM.playerGUI = BattleStateMachine.PlayerInput.ACTIVATE;
+                if (BSM != null) { BSM.playerGUI = BattleStateMachine.PlayerInput.ACTIVATE; }
+                if (BBSM != null) { BBSM.playerGUI = BossBattleStateMachine.PlayerInput.ACTIVATE; }
 			break;
 			case (TurnState.ACTION):
 				StartCoroutine(TakeAction());
@@ -132,16 +133,36 @@ public class SurvivorStateMachine : MonoBehaviour {
 
 				//do damage
 				ZombieStateMachine targetZombie = plyrTarget.GetComponent<ZombieStateMachine>();
+                BossStateMachine targetBoss = plyrTarget.GetComponent<BossStateMachine>();
+                //one of the above will return null.
+
 				int myDmg = CalculateMyDamage();
-                BSM.PlayWeaponSound(myWeapon.weaponType, myWeapon.name, myDmg);
+                if (BSM != null) { BSM.PlayWeaponSound(myWeapon.weaponType, myWeapon.name, myDmg); } //tell normal battle state machine to play sound
+                if (BBSM != null) { BBSM.PlayWeaponSound(myWeapon.weaponType, myWeapon.name, myDmg); } //tell BOSS battle state machine to play sound
                 //animate weapon fx
 				yield return new WaitForSeconds(0.5f);
 
-				Debug.Log ("Survivor hit the zombie for " +myDmg+ " damage");
-				targetZombie.zombie.curHP = targetZombie.zombie.curHP - myDmg;
-                Debug.Log("Survivor sees the zombie HP at: "+ targetZombie.zombie.curHP+" *******<<<<<<<<<<<<<<<<");
-                SpawnCombatDamageText(targetZombie.gameObject, myDmg);
-				bool isDed = targetZombie.CheckForDeath();
+                bool isDed = false;
+                if (targetZombie != null)
+                {
+                    Debug.Log("Survivor hit the zombie for " + myDmg + " damage");
+                    targetZombie.zombie.curHP = targetZombie.zombie.curHP - myDmg;
+                    Debug.Log("Survivor sees the zombie HP at: " + targetZombie.zombie.curHP + " *******<<<<<<<<<<<<<<<<");
+                    SpawnCombatDamageText(targetZombie.gameObject, myDmg);
+                    isDed = targetZombie.CheckForDeath();
+                } else if (targetBoss != null)
+                {
+                    Debug.Log("Survivor hit the BOSS for "+myDmg+" damage");
+                    targetBoss.curHP = targetBoss.curHP - myDmg;
+                    SpawnCombatDamageText(targetBoss.gameObject, myDmg);
+                    isDed = targetBoss.CheckForDeath();
+                }else
+                {
+                    Debug.Log("unable to identify target state machine type.");
+
+                }
+
+
                 //DO NOT send each attack to server- store results to list.
                 //StartCoroutine(SendAttackToServer(survivor.survivor_id, myWeapon.weapon_id, isDed)); //no longer updating server on each attack.
                 StoreAttack(survivor.survivor_id, myWeapon.weapon_id, isDed);
@@ -193,8 +214,9 @@ public class SurvivorStateMachine : MonoBehaviour {
 			}
 			//return to start position, gun shots should already be there.
 			while (MoveTowardsTarget(startPosition)) {yield return null;}
-			//remove from list
-			BSM.TurnList.RemoveAt(0);
+            //remove from list
+            if (BSM != null) { BSM.TurnList.RemoveAt(0); }
+            if (BBSM != null) { BBSM.turnList.RemoveAt(0); }
 
 			if (iAmBit == true) {
 				turnsTillTurning--;
@@ -203,8 +225,9 @@ public class SurvivorStateMachine : MonoBehaviour {
 				}
 			}
 
-			//reset BSM ->
-			BSM.battleState = BattleStateMachine.PerformAction.WAIT;
+            //reset BSM ->
+            if (BSM != null) { BSM.battleState = BattleStateMachine.PerformAction.WAIT; }
+            if (BBSM != null) { BBSM.battleState = BossBattleStateMachine.PerformAction.WAIT; }
 
 			gameObject.GetComponent<SpriteRenderer>().sortingOrder = startRenderLayer;
 			actionStarted = false;
@@ -261,7 +284,18 @@ public class SurvivorStateMachine : MonoBehaviour {
         {
             myTurnResult.dead = 0;
         }
-        BSM.turnResultJsonString += "{\"attackType\":\"survivor\",\"survivor_id\":"+survivor_id+",\"weapon_id\":"+weapon_id+",\"dead\":"+myTurnResult.dead+"},";
+
+        if (BSM != null) { BSM.turnResultJsonString +=
+            "{\"attackType\":\"survivor\",\"survivor_id\":" + survivor_id + ",\"weapon_id\":" + weapon_id + ",\"dead\":" + myTurnResult.dead + "},";
+        } else if (BBSM != null)
+        {
+           BBSM.turnResultJsonString +=
+                "{\"attackType\":\"survivor\",\"survivor_id\":" + survivor_id + ",\"weapon_id\":" + weapon_id + ",\"dead\":" + myTurnResult.dead + "},";
+        }
+        else
+        {
+            Debug.LogError("Unable to locate battle manager");
+        }
         //BSM.turnResultList.Add(myTurnResult);
     }
 
@@ -273,7 +307,36 @@ public class SurvivorStateMachine : MonoBehaviour {
 		if (survivor.weaponEquipped != null) {
             BaseWeapon my_weapon = survivor.weaponEquipped.GetComponent<BaseWeapon>();
             miss_chance = my_weapon.miss_chance * 0.01f;//stored as int 0-100 - multiply by 1/100th to get %value 0-1
-			if (my_weapon.weaponType == BaseWeapon.WeaponType.KNIFE) {
+
+            if (myTarget == null)
+            {
+                BossStateMachine bossCheck = plyrTarget.GetComponent<BossStateMachine>();
+                if (bossCheck != null)
+                {
+                    if (my_weapon != null)
+                    {
+                        int wepDmg = my_weapon.base_dmg + Random.Range(0, my_weapon.modifier);
+                        myDmg += wepDmg;
+                    }
+
+                    float boss_miss_roll = Random.Range(0.0f, 1.0f);
+                    if (boss_miss_roll < miss_chance)
+                    {
+                        myDmg = 0;
+                        Debug.Log("PLAYER MISSED!!! MISS MISS MISS MISS MISSSSYS MISSSYYYYYY MISS SMSSSSS!!!!!!!!");
+                    }
+
+                    Debug.Log("Player DMG against BOSS is: " + myDmg);
+                    return myDmg;
+                }
+                else
+                {
+                    Debug.Log("Survivor unable to determine enemy state machine- Zombie and Boss have both returned null");
+                }
+            }
+
+            //handle all NON-BOSS combat interactions
+            if (my_weapon.weaponType == BaseWeapon.WeaponType.KNIFE) {
 				int wepDmg = my_weapon.base_dmg + Random.Range(0, my_weapon.modifier);
 				if (myTarget.zombie.zombieType == BaseZombie.Type.FAT) {
 					float multiplier = Random.Range(0.9f, 1.25f);
@@ -380,7 +443,7 @@ public class SurvivorStateMachine : MonoBehaviour {
 			//return myDmg;
 		}
 
-		//if player is out of stamina, their attack is halved
+		//if player is out of stamina, their attack is 3/4th'd
 		if (survivor.curStamina < 1) {
 			myDmg = Mathf.RoundToInt(myDmg*0.75f);
 		}

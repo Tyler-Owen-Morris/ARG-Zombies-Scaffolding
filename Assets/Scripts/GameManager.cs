@@ -47,7 +47,7 @@ public class GameManager : MonoBehaviour {
 	public string userLastName;
 	public string userName;
 
-	public static string serverURL = "http://game.argzombie.com/ARGZ_SERVER";
+	public static string serverURL = "http://game.argzombie.com/ARGZ_DEV_SERVER";
 	public static string QR_encryption_key = "12345678901234567890123456789012";
 
 	private string startNewCharURL = serverURL+"/StartNewCharacter.php";
@@ -1293,11 +1293,11 @@ public class GameManager : MonoBehaviour {
         GameManager.instance.activeBldg_zAcross = zombies_across;
 
 		Debug.Log("Wood: "+wood.ToString()+" metal: "+metal.ToString()+" food: "+food.ToString()+" water: "+water.ToString()+" zombies: "+zombie_pop.ToString());
-		
-        
+        SceneManager.LoadScene("02e Combat-15");
+
         #endregion //THIS IS WHERE BUILDING LOOT IS DETERMINED IN CODE *****
 
-		form.AddField("wood", wood);
+        form.AddField("wood", wood);
         form.AddField("metal", metal);
 		form.AddField("food", food);
 		form.AddField("water", water);
@@ -1318,8 +1318,9 @@ public class GameManager : MonoBehaviour {
 
 				//if the mission tab is triggering this, don't load player into combat
 				if (mission == false) {
+                    Debug.Log("Successfully registered new building on the server");
                     //SceneManager.LoadScene("02d Combat-10");
-                    SceneManager.LoadScene("02e Combat-15");
+                    //SceneManager.LoadScene("02e Combat-15"); //now calling earlier in this coroutine
                     //LoadRandomCombatScene();
                     
 				}

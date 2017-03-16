@@ -12,7 +12,7 @@ public class BossStateMachine : MonoBehaviour {
     public Sprite[] myBossSprites;//0- Owen 1-David 2-SuperZombie
 
     //private variables
-    private BattleStateMachine BSM;
+    private BossBattleStateMachine BBSM;
     private Vector3 startPosition, spawnPoint;
     private Quaternion startRoation;
 
@@ -37,7 +37,7 @@ public class BossStateMachine : MonoBehaviour {
         startRoation = gameObject.transform.rotation;
         spawnPoint = new Vector3(startPosition.x + 600f, startPosition.y, startPosition.z);
         bossTurnState = TurnState.WAITING;
-        BSM = FindObjectOfType<BattleStateMachine>();
+        BBSM = FindObjectOfType<BossBattleStateMachine>();
 
         SetUpTheBoss();
 	}
@@ -60,6 +60,15 @@ public class BossStateMachine : MonoBehaviour {
             baseHP = health;
             curHP = health;
             baseAttack = 15;
+            Debug.Log("Setting up the David boss");
+        }
+        else if (GameManager.instance.activeBldg_name == "superzombie")
+        {
+            mySpriteR.sprite = myBossSprites[1];
+            int health = 500;
+            baseHP = health;
+            curHP = health;
+            baseAttack = 20;
             Debug.Log("Setting up the David boss");
         }
         else
@@ -97,9 +106,9 @@ public class BossStateMachine : MonoBehaviour {
         myAttack.attacker = this.gameObject.name;
         myAttack.type = "zombie";
         myAttack.AttackersGameObject = this.gameObject;
-        myAttack.TargetsGameObject = BSM.survivorList[Random.Range(0, BSM.survivorList.Count)];
+        myAttack.TargetsGameObject = BBSM.survivorList[Random.Range(0, BBSM.survivorList.Count)];
 
-        BSM.CollectAction(myAttack);
+        BBSM.CollectAction(myAttack);
     }
 
     private IEnumerator TakeAction()
@@ -118,8 +127,8 @@ public class BossStateMachine : MonoBehaviour {
             if (target == null)
             {
                 //pick a new target.
-                int ind = Random.Range(0, BSM.survivorList.Count - 1);
-                target = BSM.survivorList[ind];
+                int ind = Random.Range(0, BBSM.survivorList.Count - 1);
+                target = BBSM.survivorList[ind];
             }
 
             //animate the enemy near the hero to attack
@@ -129,7 +138,7 @@ public class BossStateMachine : MonoBehaviour {
 
             while (MoveTowardsEnemy(targetPosition)) { yield return null; }
             //animate weaponfx
-            BSM.PlayZombieAttackSound();
+            BBSM.PlayZombieAttackSound();
             yield return new WaitForSeconds(0.25f);
 
             //do damage
@@ -184,7 +193,7 @@ public class BossStateMachine : MonoBehaviour {
             {
                 //TARGET HAS BEEN BITTEN
                 Debug.Log("Survivor " + targetSurvivor.survivor.name + " has been bitten!!!");
-                BSM.SurvivorHasBeenBit(targetSurvivor);
+                BBSM.SurvivorHasBeenBit(targetSurvivor);
                 survivorBit = true;
             }
 
@@ -197,16 +206,16 @@ public class BossStateMachine : MonoBehaviour {
             while (MoveTowardsEnemy(firstPosition)) { yield return null; }
 
             //remove turn from list
-            BSM.TurnList.RemoveAt(0);
+            BBSM.turnList.RemoveAt(0);
 
-            //reset BSM -> Wait
+            //reset BBSM -> Wait
             if (survivorBit)
             {
-                BSM.battleState = BattleStateMachine.PerformAction.BITECASE;
+                BBSM.battleState = BossBattleStateMachine.PerformAction.BITECASE;
             }
             else
             {
-                BSM.battleState = BattleStateMachine.PerformAction.WAIT;
+                BBSM.battleState = BossBattleStateMachine.PerformAction.WAIT;
             }
 
             gameObject.GetComponent<SpriteRenderer>().sortingOrder = startRenderLayer;
@@ -225,29 +234,34 @@ public class BossStateMachine : MonoBehaviour {
         else
         {
             deathActionStarted = true;
-            BSM.zombieList.Remove(gameObject);
+           // BBSM.bossList.Remove(gameObject); //list object removed for single game object
             GameManager.instance.activeBldg_zombies--;
-            BSM.UpdateUINumbers();
-            BSM.zombiesKilled++;
+            BBSM.UpdateUINumbers();
+            BBSM.zombiesKilled++;
 
-            if (BSM.playerTarget != null)
+            /*
+            if (BBSM.playerTarget != null)
             {
-                BSM.playerTarget.GetComponent<ZombieStateMachine>().iAmPlayerTarget = false;
-                BSM.playerTarget.GetComponent<ZombieStateMachine>().myTargetGraphic.SetActive(false);
-                BSM.playerTarget = null;
+                BBSM.playerTarget.GetComponent<ZombieStateMachine>().iAmPlayerTarget = false;
+                BBSM.playerTarget.GetComponent<ZombieStateMachine>().myTargetGraphic.SetActive(false);
+                BBSM.playerTarget = null;
             }
+            */
 
             //animate zombie to the ground.
             Quaternion downPos = new Quaternion(0, 0, -40, 0);
             while (RotateToTarget(downPos)) { yield return null; }
             //move to off screen Death/Spawn target
             while (MoveTowardsEnemy(spawnPoint)) { yield return null; }
-            
-            
-            this.gameObject.SetActive(false);
-           
 
-            Destroy(this.gameObject);
+
+            //this.gameObject.SetActive(false);
+
+            //This should send the combat results to server, and then call GameManager to notify building clear/combat over
+            //then GameManager will handle load into victory screen through GameManger.BuildingClearCalled()
+            BBSM.DumpTurnsToServer(true);
+
+            //Destroy(this.gameObject);  //don't destroy the boss, this was for zombie killing
             bossTurnState = TurnState.WAITING;
             
             deathActionStarted = false;
@@ -269,8 +283,8 @@ public class BossStateMachine : MonoBehaviour {
             myTurnresult.dead = 0;
         }
 
-        BSM.turnResultJsonString += "{\"attackType\":\"zombie\",\"survivor_id\":" + surv_id + ",\"weapon_id\":0,\"dead\":" + myTurnresult.dead + "},";
-        //BSM.turnResultList.Add(myTurnresult);
+        BBSM.turnResultJsonString += "{\"attackType\":\"zombie\",\"survivor_id\":" + surv_id + ",\"weapon_id\":0,\"dead\":" + myTurnresult.dead + "},";
+        //BBSM.turnResultList.Add(myTurnresult);
     }
 
     private bool RefreshRotate(Quaternion goal)
@@ -286,6 +300,21 @@ public class BossStateMachine : MonoBehaviour {
     private bool MoveTowardsEnemy(Vector3 goal)
     {
         return goal != (transform.position = Vector3.MoveTowards(transform.position, goal, animSpeed * Time.deltaTime));
+    }
+
+    public bool CheckForDeath()
+    {
+        if (curHP <= 0)
+        {
+            this.bossTurnState = TurnState.DEAD;
+            Debug.Log("****************>>>>>>>>>>>>> BOSS found itself as DEAD :::: " + bossTurnState.ToString());
+            return true;
+        }
+        else
+        {
+            Debug.Log("******************>>>>>>>>>>>>>>>>>>> BOSS found itself as ALIVE");
+            return false;
+        }
     }
 
 }

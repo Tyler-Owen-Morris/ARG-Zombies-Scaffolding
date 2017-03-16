@@ -1287,7 +1287,7 @@ public class BattleStateMachine : MonoBehaviour {
             StartCoroutine(PostTurnsToServer(json_data, clr));
         }else
         {
-            Debug.Log("***");
+            //Debug.Log("***");
             //check building status being passed
             if (clr)
             {
