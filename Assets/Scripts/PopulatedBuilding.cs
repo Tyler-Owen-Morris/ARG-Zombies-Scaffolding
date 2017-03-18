@@ -6,12 +6,12 @@ using System;
 
 public class PopulatedBuilding : MonoBehaviour {
 
-	public int zombiePopulation = 0, supply_inside, food_inside, water_inside ;
-    public bool has_traps, has_barrel, has_greenhouse;
+	public int zombiePopulation = 0, wood_inside, metal_inside, food_inside, water_inside, zombies_across=1;
+    public bool has_traps, has_barrel, has_greenhouse, has_my_tag=false;
 	public DateTime last_cleared, last_looted_supply, last_looted_food, last_looted_water;
-	public string buildingName, buildingID, loot_code;
-    public GameObject clear_bldg_image, populated_bldg_image, building_unknown_image, trap_indicator_image, barrel_indicator_image, greenhouse_indicator_image;
-	public Button button;
+	public string buildingName, buildingID, google_type, loot_code, photo_reference;
+    public GameObject name_on_wall_image, clear_bldg_image, populated_bldg_image, building_unknown_image, trap_indicator_image, barrel_indicator_image, greenhouse_indicator_image;
+    public Button button;
 	public bool active = false;
 	public float myLat, myLng;
 
@@ -21,6 +21,7 @@ public class PopulatedBuilding : MonoBehaviour {
 	void Awake () {
 		//GenerateZombies(); //now being called from building spawner.
 		mapLevelManager = FindObjectOfType<MapLevelManager>();
+        name_on_wall_image.SetActive(false);
 	}
 
 	public void GenerateZombies () {
@@ -56,15 +57,18 @@ public class PopulatedBuilding : MonoBehaviour {
 	*/
 
 	public void ClickedOn () {
-		//GameManager.instance.LoadIntoCombat(zombiePopulation, buildingName);
+        //GameManager.instance.LoadIntoCombat(zombiePopulation, buildingName);
+
+        this.gameObject.tag = "Untagged"; //remove the building tag from the gameobject
+
 	    mapLevelManager.ActivateBuildingInspector(this.gameObject.GetComponent<PopulatedBuilding>());
-		
 	}
 
     public void SetToUnknown()
     {
         clear_bldg_image.SetActive(false);
         populated_bldg_image.SetActive(false);
+        //name_on_wall_image.SetActive(false);
         building_unknown_image.SetActive(true);
     }
     
@@ -72,6 +76,7 @@ public class PopulatedBuilding : MonoBehaviour {
     {
         clear_bldg_image.SetActive(false);
         populated_bldg_image.SetActive(true);
+        //name_on_wall_image.SetActive(false);
         building_unknown_image.SetActive(false);
     }
 
@@ -79,11 +84,39 @@ public class PopulatedBuilding : MonoBehaviour {
     {
         clear_bldg_image.SetActive(true);
         populated_bldg_image.SetActive(false);
+        //name_on_wall_image.SetActive(false);
+        building_unknown_image.SetActive(false);
+    }
+
+    public void Tagged ()
+    {
+        clear_bldg_image.SetActive(false);
+        populated_bldg_image.SetActive(false);
+        name_on_wall_image.SetActive(true);
+        building_unknown_image.SetActive(false);
+    }
+
+    public void UnTagged ()
+    {
+        clear_bldg_image.SetActive(false);
+        populated_bldg_image.SetActive(false);
+        name_on_wall_image.SetActive(false);
         building_unknown_image.SetActive(false);
     }
 
 	public void ActivateMe () {
 		active = true;
+        if (has_my_tag == false)
+        {
+            name_on_wall_image.SetActive(false);
+            //Debug.Log(this.name+" is finding itself without a tag, deactivating tick");
+
+        }else
+        {
+            name_on_wall_image.SetActive(true);
+            Debug.Log(this.name + " is Activating, and sees itself as having a tag");
+        }
+
 		Image myImage = this.gameObject.GetComponent<Image>();
 		if (myImage != null) {
 			myImage.color = Color.white;
@@ -109,6 +142,7 @@ public class PopulatedBuilding : MonoBehaviour {
         if (has_traps == true)
         {
             trap_indicator_image.SetActive(true);
+            SetToClear();
         }else
         {
             trap_indicator_image.SetActive(false);

@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ARG-Zombies-Scaffolding.CSh
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ARG-Zombies-Scaffolding.CSharp", "ARG-Zombies-Scaffolding.CSharp.csproj", "{78440D30-3588-3B11-6D45-7048844B3E67}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ARG-Zombies-Scaffolding.CSharp.Editor.Plugins", "ARG-Zombies-Scaffolding.CSharp.Editor.Plugins.csproj", "{5FFDEB8B-6098-7699-4470-622E84D6A746}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ARG-Zombies-Scaffolding.CSharp.Editor", "ARG-Zombies-Scaffolding.CSharp.Editor.csproj", "{FC4DDE00-0450-E7CE-F30E-327E6DF1C7E1}"
 EndProject
 Global
@@ -21,6 +23,10 @@ Global
 		{78440D30-3588-3B11-6D45-7048844B3E67}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{78440D30-3588-3B11-6D45-7048844B3E67}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{78440D30-3588-3B11-6D45-7048844B3E67}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5FFDEB8B-6098-7699-4470-622E84D6A746}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FFDEB8B-6098-7699-4470-622E84D6A746}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FFDEB8B-6098-7699-4470-622E84D6A746}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FFDEB8B-6098-7699-4470-622E84D6A746}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FC4DDE00-0450-E7CE-F30E-327E6DF1C7E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FC4DDE00-0450-E7CE-F30E-327E6DF1C7E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FC4DDE00-0450-E7CE-F30E-327E6DF1C7E1}.Release|Any CPU.ActiveCfg = Release|Any CPU

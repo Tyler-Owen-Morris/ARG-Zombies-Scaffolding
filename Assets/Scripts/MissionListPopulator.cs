@@ -21,7 +21,8 @@ public class MissionListPopulator : MonoBehaviour {
 		}
 
 		if (GameManager.instance.missionJsonText != "") {
-			//load in the json, and go through it creating, and populating the missions to the scroll list.
+            //load in the json, and go through it creating, and populating the missions to the scroll list.
+            Debug.Log(GameManager.instance.missionJsonText);
 			JsonData mission_json = JsonMapper.ToObject(GameManager.instance.missionJsonText);
 
 			for(int i=0; i < mission_json.Count; i++) {

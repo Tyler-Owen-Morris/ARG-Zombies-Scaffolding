@@ -22,7 +22,7 @@ TextureImporter:
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
-    enableMipMap: 1
+    enableMipMap: 0
     linearTexture: 0
     correctGamma: 0
     fadeOut: 0
@@ -61,11 +61,14 @@ TextureImporter:
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spritePixelsToUnits: 100
   alphaIsTransparency: 1
+  spriteTessellationDetail: -1
   textureType: 8
   buildTargetSettings: []
   spriteSheet:
+    serializedVersion: 2
     sprites:
-    - name: gameCombatUI_0
+    - serializedVersion: 2
+      name: gameCombatUI_0
       rect:
         serializedVersion: 2
         x: 2
@@ -75,32 +78,10 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -7, y: -48}
-        - {x: -7, y: -50}
-        - {x: -6, y: -51}
-        - {x: 24, y: -51}
-        - {x: 24, y: -47}
-        - {x: 207, y: -47}
-        - {x: 208, y: -51}
-        - {x: 239, y: -51}
-        - {x: 239, y: -47}
-        - {x: 480, y: -47}
-        - {x: 484, y: -45}
-        - {x: 484, y: -33}
-        - {x: 400, y: 51}
-        - {x: -402, y: 51}
-        - {x: -484, y: -31}
-        - {x: -484, y: -45}
-        - {x: -483, y: -46}
-        - {x: -481, y: -46}
-        - {x: -480, y: -47}
-        - {x: -228, y: -47}
-        - {x: -227, y: -51}
-        - {x: -196, y: -51}
-        - {x: -196, y: -47}
-        - {x: -8, y: -47}
-    - name: gameCombatUI_1
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: gameCombatUI_1
       rect:
         serializedVersion: 2
         x: 2
@@ -111,7 +92,9 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: gameCombatUI_2
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: gameCombatUI_2
       rect:
         serializedVersion: 2
         x: 16
@@ -121,16 +104,10 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -28.5, y: 152.5}
-        - {x: -58.5, y: 111.5}
-        - {x: -58.5, y: -150.5}
-        - {x: -52.5, y: -152.5}
-        - {x: 30.5, y: -152.5}
-        - {x: 58.5, y: -149.5}
-        - {x: 58.5, y: 129.5}
-        - {x: 38.5, y: 152.5}
-    - name: gameCombatUI_3
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: gameCombatUI_3
       rect:
         serializedVersion: 2
         x: 135
@@ -140,21 +117,10 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: 48, y: 124.5}
-        - {x: -28, y: 124.5}
-        - {x: -61, y: 92.5}
-        - {x: -61, y: -100.5}
-        - {x: -48, y: -124.5}
-        - {x: -16, y: -124.5}
-        - {x: 26, y: -113.5}
-        - {x: 33, y: -94.5}
-        - {x: 27, y: -123.5}
-        - {x: 29, y: -124.5}
-        - {x: 46, y: -124.5}
-        - {x: 61, y: -115.5}
-        - {x: 61, y: 36.5}
-    - name: gameCombatUI_4
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: gameCombatUI_4
       rect:
         serializedVersion: 2
         x: 259
@@ -164,34 +130,10 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: 33, y: 124}
-        - {x: -13, y: 124}
-        - {x: -15, y: 110}
-        - {x: -12, y: 93}
-        - {x: -8, y: 80}
-        - {x: -2, y: 75}
-        - {x: -61, y: 35}
-        - {x: -61, y: 15}
-        - {x: -55, y: 12}
-        - {x: -50, y: 9}
-        - {x: -40, y: 12}
-        - {x: -32, y: 25}
-        - {x: -9, y: 36}
-        - {x: -36, y: 16}
-        - {x: -40, y: 8}
-        - {x: -18, y: -4}
-        - {x: -9, y: -106}
-        - {x: 0, y: -118}
-        - {x: 23, y: -108}
-        - {x: 30, y: -104}
-        - {x: 27, y: -118}
-        - {x: 30, y: -124}
-        - {x: 49, y: -124}
-        - {x: 61, y: -114}
-        - {x: 61, y: -7}
-        - {x: 50, y: 94}
-    - name: gameCombatUI_5
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: gameCombatUI_5
       rect:
         serializedVersion: 2
         x: 135
@@ -202,7 +144,9 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: gameCombatUI_6
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: gameCombatUI_6
       rect:
         serializedVersion: 2
         x: 2
@@ -212,16 +156,10 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -59.5, y: 27.5}
-        - {x: -61.5, y: 25.5}
-        - {x: -61.5, y: -25.5}
-        - {x: -59.5, y: -27.5}
-        - {x: 59.5, y: -27.5}
-        - {x: 61.5, y: -25.5}
-        - {x: 61.5, y: 25.5}
-        - {x: 59.5, y: 27.5}
-    - name: gameCombatUI_7
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: gameCombatUI_7
       rect:
         serializedVersion: 2
         x: 127
@@ -231,16 +169,10 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -59.5, y: 27.5}
-        - {x: -61.5, y: 25.5}
-        - {x: -61.5, y: -25.5}
-        - {x: -59.5, y: -27.5}
-        - {x: 59.5, y: -27.5}
-        - {x: 61.5, y: -25.5}
-        - {x: 61.5, y: 25.5}
-        - {x: 59.5, y: 27.5}
-    - name: gameCombatUI_8
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: gameCombatUI_8
       rect:
         serializedVersion: 2
         x: 252
@@ -250,16 +182,10 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -59.5, y: 27.5}
-        - {x: -61.5, y: 25.5}
-        - {x: -61.5, y: -25.5}
-        - {x: -59.5, y: -27.5}
-        - {x: 59.5, y: -27.5}
-        - {x: 61.5, y: -25.5}
-        - {x: 61.5, y: 25.5}
-        - {x: 59.5, y: 27.5}
-    - name: gameCombatUI_9
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: gameCombatUI_9
       rect:
         serializedVersion: 2
         x: 377
@@ -269,16 +195,10 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -59.5, y: 27.5}
-        - {x: -61.5, y: 25.5}
-        - {x: -61.5, y: -25.5}
-        - {x: -59.5, y: -27.5}
-        - {x: 59.5, y: -27.5}
-        - {x: 61.5, y: -25.5}
-        - {x: 61.5, y: 25.5}
-        - {x: 59.5, y: 27.5}
-    - name: gameCombatUI_10
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: gameCombatUI_10
       rect:
         serializedVersion: 2
         x: 502
@@ -289,7 +209,9 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: gameCombatUI_11
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: gameCombatUI_11
       rect:
         serializedVersion: 2
         x: 2
@@ -300,7 +222,9 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: gameCombatUI_12
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: gameCombatUI_12
       rect:
         serializedVersion: 2
         x: 415
@@ -311,7 +235,9 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: gameCombatUI_13
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: gameCombatUI_13
       rect:
         serializedVersion: 2
         x: 415
@@ -322,7 +248,9 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: gameCombatUI_14
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: gameCombatUI_14
       rect:
         serializedVersion: 2
         x: 625
@@ -333,6 +261,7 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      tessellationDetail: -1
     outline: []
   spritePackingTag: 
   userData: 

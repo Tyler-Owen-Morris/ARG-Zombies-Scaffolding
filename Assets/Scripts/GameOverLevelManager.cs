@@ -8,9 +8,12 @@ using UnityEngine.SceneManagement;
 public class GameOverLevelManager : MonoBehaviour {
 
 	private string zombieStatusURL = GameManager.serverURL+"/GetZombieStatus.php";
+    private string twitterUploadURL = "https://api.twitter.com/1.1/statuses/update.json";
+    private string twitterNoAuthPostURL = "https://api.twitter.com/1.1/statuses/update_with_media.json?status=I've%20died%20and%20become%20a%20Zombie%20in%20%23ARGZombies%20-Will%20someone%20please%20%23killmyzombie%3F";
 
-	public GameObject zombieQRpanel;
+    public GameObject zombieQRpanel;
 	public Text myScoreText, myZombieText;
+    public Texture2D screenie;
 	public String[] stillZombieTextArray;
 
 	void Awake () {
@@ -21,7 +24,7 @@ public class GameOverLevelManager : MonoBehaviour {
 			zombieQRpanel.SetActive(false);
 		}
 
-		GameManager.instance.my_score = GameManager.instance.gameOverTime - GameManager.instance.timeCharacterStarted;
+		GameManager.instance.my_score = GameManager.instance.gameOverTime - (GameManager.instance.timeCharacterStarted-GameManager.instance.serverTimeOffset);
 	}
 
 	// Use this for initialization
@@ -29,28 +32,28 @@ public class GameOverLevelManager : MonoBehaviour {
 		string myTextString = "You have lasted: \n\n";
 		if (GameManager.instance.my_score > TimeSpan.FromDays(1)) {
 			int total_days = (int)Mathf.Floor((float)GameManager.instance.my_score.TotalDays);
-			myTextString += total_days.ToString()+" Days";
+			myTextString += total_days.ToString()+" Days ";
 			GameManager.instance.my_score = GameManager.instance.my_score-TimeSpan.FromDays(total_days);
 		}
 		if (GameManager.instance.my_score > TimeSpan.FromHours(1)) {
 			int total_hours = (int)Mathf.Floor((float)GameManager.instance.my_score.TotalHours);
-			myTextString += total_hours.ToString().PadLeft(2, '0')+" Hr";
+			myTextString += total_hours.ToString().PadLeft(2, '0')+" Hr ";
 			GameManager.instance.my_score = GameManager.instance.my_score-TimeSpan.FromDays(total_hours);
 		} else {
-			myTextString += "00 Hr";
+			myTextString += "00 Hr ";
 		}
 		if (GameManager.instance.my_score > TimeSpan.FromMinutes(1)) {
 			int total_minutes = (int)Mathf.Floor((float)GameManager.instance.my_score.TotalMinutes);
-			myTextString += total_minutes.ToString().PadLeft(2, '0')+" Min";
+			myTextString += total_minutes.ToString().PadLeft(2, '0')+" Min ";
 			GameManager.instance.my_score = GameManager.instance.my_score-TimeSpan.FromDays(total_minutes);
 		} else {
-			myTextString += "00 Min";
+			myTextString += "00 Min ";
 		}
 		if (GameManager.instance.my_score > TimeSpan.FromSeconds(1)) {
 			int total_seconds = (int)Mathf.Floor((float)GameManager.instance.my_score.TotalSeconds);
-			myTextString += total_seconds.ToString().PadLeft(2, '0')+" sec";
+			myTextString += total_seconds.ToString().PadLeft(2, '0')+" sec ";
 		} else {
-			myTextString += "00 sec";
+			myTextString += "00 sec ";
 		}
 		myScoreText.text = myTextString;
 	}
@@ -130,6 +133,39 @@ public class GameOverLevelManager : MonoBehaviour {
 			Debug.Log(www.error);
 		}
 	}
+
+    public void TweetMyDeath ()
+    {
+        StartCoroutine(TweetScreenshot());
+    }
+
+    IEnumerator TweetScreenshot() {
+        //we should only read off the screen after all rendering is complete
+        yield return new WaitForEndOfFrame();
+
+        int width = Screen.width;
+        int height = Screen.height;
+        Texture2D tex = new Texture2D(width, height, TextureFormat.RGB24, false);
+        screenie = tex;
+        //read contents into rect
+        tex.ReadPixels(new Rect(0, 0, width, height), 0, 0);
+        tex.Apply();
+
+        //encode texture into jpg
+        var bytes = tex.EncodeToJPG();
+        Destroy(tex);
+
+        WWWForm form = new WWWForm();
+        form.AddBinaryData("", bytes,  "-zombieBarcode.jpg");
+        form.AddField("media", "media");
+
+        //WWW www = new WWW(twitterUploadURL, form);
+        WWW www = new WWW(twitterNoAuthPostURL, form);
+        yield return www;
+        Debug.Log(www.text);
+
+        
+    }
 
 	//good news, tricky bullshit works
 	IEnumerator AttemptAtTrickyBullshit () {

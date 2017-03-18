@@ -8,7 +8,7 @@ public class SurvivorListElementManager : MonoBehaviour {
 
 	public Text survivorNameText, survivorStatsText, myInjuredText, mySliderText;
 	public Image survivorPortraitSprite;
-	public GameObject mySurvivorCard, myMissionText;
+	public GameObject mySurvivorCard, myMissionText, myDeadText;
 	public Button teamButton, equipButton;
 	public Slider myStamSlider;
 	private MapLevelManager mapLevelManager;
@@ -22,10 +22,24 @@ public class SurvivorListElementManager : MonoBehaviour {
 		entry_id = survPlayCard.entry_id;
 		team_pos = survPlayCard.team_pos;
 		mapLevelManager = GameObject.Find("Map Level Manager").GetComponent<MapLevelManager>();
-		StartCoroutine(UpdateMyProfilePic());
+		//StartCoroutine(UpdateMyProfilePic());
+        SetProfilePic();
 		this.transform.localScale = new Vector3(1,1,1);
 		UpdateMyText();
 	}
+
+    void SetProfilePic ()
+    {
+        ProfileImageManager PIM = FindObjectOfType<ProfileImageManager>();
+        survivorPortraitSprite.sprite = PIM.GetMyProfilePic(entry_id, survPlayCard.profilePicURL);
+
+        if (survPlayCard.team_pos == 5)
+        {
+            Image survivorPic = survivorPortraitSprite;
+            survivorPic.sprite = GameManager.instance.my_profile_pic;
+
+        }
+    }
 
 	IEnumerator UpdateMyProfilePic() {
         if (survPlayCard.team_pos == 5)
@@ -69,7 +83,7 @@ public class SurvivorListElementManager : MonoBehaviour {
 		mySliderText.text = myStamString;
 		float val = (float)temp_stam / (float)survPlayCard.survivor.baseStamina;
 		myStamSlider.value = val;
-		Debug.Log(val.ToString());
+		//Debug.Log(val.ToString());
 	}
 
 	public void SetInjuryText (int injury_id) {
@@ -118,5 +132,14 @@ public class SurvivorListElementManager : MonoBehaviour {
 		equipButton.gameObject.SetActive(false);
 		myMissionText.gameObject.SetActive(true);
 		myInjuredText.gameObject.SetActive(false);
+        myDeadText.SetActive(false);
 	}
+
+    public void SetMeToDead ()
+    {
+        teamButton.gameObject.SetActive(false);
+        equipButton.gameObject.SetActive(false);
+        myMissionText.gameObject.SetActive(false);
+        myInjuredText.gameObject.SetActive(false);
+        myDeadText.SetActive(true);    }
 }

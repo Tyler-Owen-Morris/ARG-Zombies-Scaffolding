@@ -12,6 +12,7 @@ public class ClearedBuildingPanelManager : MonoBehaviour {
     public GameObject lootConfirmationPanel;
 
     private string lootByTypeURL = GameManager.serverURL + "/LootByType.php";
+    private string placeGearURL = GameManager.serverURL + "/PlaceGear.php";
     private string loot_type;
     private int loot_qty;
     
@@ -25,7 +26,7 @@ public class ClearedBuildingPanelManager : MonoBehaviour {
         currentMapManager = MapLevelManager.FindObjectOfType<MapLevelManager>();
         if (currentMapManager.activeBuilding.has_traps == true)
         {
-            trapStatusText.text = "trap is planted";
+            trapStatusText.text = "entrances are barricaded";
             trapProgressSlider.gameObject.SetActive(true);
             CalculateTrapStatus();
         }else
@@ -59,10 +60,10 @@ public class ClearedBuildingPanelManager : MonoBehaviour {
         if (to_loot == "supply")
         {
             //confirm there is supply to loot.
-            if (currentMapManager.activeBuilding.supply_inside > 0)
+            if (currentMapManager.activeBuilding.wood_inside > 0 || currentMapManager.activeBuilding.metal_inside > 0)
             {
                 loot_type = to_loot;
-                loot_qty = currentMapManager.activeBuilding.supply_inside;
+                loot_qty = currentMapManager.activeBuilding.metal_inside;
                 lootConfirmationPanel.SetActive(true);
             }
         }else if (to_loot == "food")
@@ -126,28 +127,27 @@ public class ClearedBuildingPanelManager : MonoBehaviour {
             JsonData lootJSON = JsonMapper.ToObject(www.text);
             if (lootJSON[0].ToString() == "Success")
             {
-                if (type == "supply")
-                {
-                    GameManager.instance.supply += loot_qty;
-                    currentMapManager.activeBuilding.supply_inside = 0;
-                    currentMapManager.activeBuilding.last_looted_supply = DateTime.Now;
-                    currentMapManager.clearedBldgSupplyText.text = "0";
-                    currentMapManager.UpdateTheUI();
-                    CalculateTrapStatus();
-                }else if (type == "food")
+				GameManager.instance.clearedBldgJsonText = JsonMapper.ToJson(lootJSON[2]);
+				Debug.Log (GameManager.instance.clearedBldgJsonText);
+
+                if (type == "food")
                 {
                     GameManager.instance.foodCount += loot_qty;
+                    greenhouseProgressSlider.value = 0;
                     currentMapManager.activeBuilding.food_inside = 0;
                     currentMapManager.activeBuilding.last_looted_food = DateTime.Now;
                     currentMapManager.clearedBldgFoodText.text = "0";
+                    yield return new WaitForSeconds(0.1f);
                     CalculateGreenhouseStatus();
                     currentMapManager.UpdateTheUI();
                 }else if (type == "water")
                 {
                     GameManager.instance.waterCount += loot_qty;
+                    waterBarrelProgressSlider.value = 0;
                     currentMapManager.activeBuilding.water_inside = 0;
                     currentMapManager.activeBuilding.last_looted_water = DateTime.Now;
                     currentMapManager.clearedBldgWaterText.text = "0";
+                    yield return new WaitForSeconds(0.1f);
                     CalculateBarrelStatus();
                     currentMapManager.UpdateTheUI();
                 }
@@ -165,10 +165,12 @@ public class ClearedBuildingPanelManager : MonoBehaviour {
 
     public void CalculateTrapStatus ()
     {
+        currentMapManager = MapLevelManager.FindObjectOfType<MapLevelManager>();
         //calculate days trap has been in place.
         int days_to_fill = 5;
         float interval = 1.0f/days_to_fill;
         int days_active = Mathf.FloorToInt((float)(DateTime.Now - currentMapManager.activeBuilding.last_looted_supply).TotalDays);
+        Debug.Log(days_active.ToString()+": days active <<<<<<<<<<<<<<<<<<<<<<");
         float slider_value = interval * (float)days_active;
         Debug.Log("Trap slider value calculated to be: " + slider_value.ToString());
 
@@ -188,37 +190,55 @@ public class ClearedBuildingPanelManager : MonoBehaviour {
         //store the "active supply" amounts in game data based on full days.
         if (days_active < 1)
         {
-            currentMapManager.activeBuilding.supply_inside = 0;
-            currentMapManager.clearedBldgSupplyText.text = "0";
+            currentMapManager.activeBuilding.wood_inside = 0;
+            currentMapManager.activeBuilding.metal_inside = 0;
+            currentMapManager.clearedBldgWoodText.text = "0";
+            currentMapManager.clearedBldgMetalText.text = "0";
         }else if (days_active < 2)
         {
-            currentMapManager.activeBuilding.supply_inside = 5;
-            currentMapManager.clearedBldgSupplyText.text = "5";
+            int n = 5;
+            currentMapManager.activeBuilding.wood_inside = n;
+            currentMapManager.activeBuilding.metal_inside = n;
+            currentMapManager.clearedBldgWoodText.text = n.ToString();
+            currentMapManager.clearedBldgMetalText.text = n.ToString();
         }
         else if (days_active < 3)
         {
-            currentMapManager.activeBuilding.supply_inside = 10;
-            currentMapManager.clearedBldgSupplyText.text = "10";
+            int n = 10;
+            currentMapManager.activeBuilding.wood_inside = n;
+            currentMapManager.activeBuilding.metal_inside = n;
+            currentMapManager.clearedBldgWoodText.text = n.ToString();
+            currentMapManager.clearedBldgMetalText.text = n.ToString();
         }
         else if (days_active < 4)
         {
-            currentMapManager.activeBuilding.supply_inside = 20;
-            currentMapManager.clearedBldgSupplyText.text = "20";
+            int n = 20;
+            currentMapManager.activeBuilding.wood_inside = n;
+            currentMapManager.activeBuilding.metal_inside = n;
+            currentMapManager.clearedBldgWoodText.text = n.ToString();
+            currentMapManager.clearedBldgMetalText.text = n.ToString();
         }
         else if (days_active< 5)
         {
-            currentMapManager.activeBuilding.supply_inside = 35;
-            currentMapManager.clearedBldgSupplyText.text = "35";
+            int n = 35;
+            currentMapManager.activeBuilding.wood_inside = n;
+            currentMapManager.activeBuilding.metal_inside = n;
+            currentMapManager.clearedBldgWoodText.text = n.ToString();
+            currentMapManager.clearedBldgMetalText.text = n.ToString();
         }
         else
         {
-            currentMapManager.activeBuilding.supply_inside = 45;
-            currentMapManager.clearedBldgSupplyText.text = "45";
+            int n = 5;
+            currentMapManager.activeBuilding.wood_inside = n;
+            currentMapManager.activeBuilding.metal_inside = n;
+            currentMapManager.clearedBldgWoodText.text = n.ToString();
+            currentMapManager.clearedBldgMetalText.text = n.ToString();
         }
     }
 
     public void CalculateBarrelStatus()
     {
+        currentMapManager = MapLevelManager.FindObjectOfType<MapLevelManager>();
         //calculate days barrel has been in place.
         int days_to_fill = 10;
         float interval = 1.0f / days_to_fill;
@@ -302,6 +322,7 @@ public class ClearedBuildingPanelManager : MonoBehaviour {
 
     public void CalculateGreenhouseStatus ()
     {
+        currentMapManager = MapLevelManager.FindObjectOfType<MapLevelManager>();
         //calculate days barrel has been in place.
         int days_to_fill = 20;
         float interval = 1.0f / days_to_fill;
@@ -349,7 +370,7 @@ public class ClearedBuildingPanelManager : MonoBehaviour {
         else if (days_active < 14)
         {
             currentMapManager.activeBuilding.food_inside = 4;
-            currentMapManager.clearedBldgSupplyText.text = "4";
+            currentMapManager.clearedBldgFoodText.text = "4";
         }
         else if (days_active < 15)
         {
@@ -398,11 +419,11 @@ public class ClearedBuildingPanelManager : MonoBehaviour {
                     ,"trap"));
             } else
             {
-                StartCoroutine(PostTempTrapText("you have no traps to place"));
+                StartCoroutine(PostTempTrapText("you have no fortifications to use"));
             }
         }else
         {
-            trapStatusText.text = "trap is planted";
+            trapStatusText.text = "entrances fortified";
         }
     }
 
@@ -463,7 +484,9 @@ public class ClearedBuildingPanelManager : MonoBehaviour {
             form.AddField("bldg_id", bldg_id);
             form.AddField("type", type);
 
-            WWW www = new WWW(currentMapManager.placeGearURL, form);
+            
+            Debug.Log(placeGearURL);
+            WWW www = new WWW(placeGearURL, form);
             yield return www;
             Debug.Log(www.text);
 
@@ -472,12 +495,14 @@ public class ClearedBuildingPanelManager : MonoBehaviour {
                 JsonData gearPlaceJSON = JsonMapper.ToObject(www.text);
                 if (gearPlaceJSON[0].ToString() == "Success")
                 {
+                    currentMapManager = FindObjectOfType<MapLevelManager>();//reassure you have current maplvlmgr
                     Debug.Log(gearPlaceJSON[1].ToString());
                     //update the UI manually to avoid costly server pulls
                     if (type == "trap")
                     {
                         GameManager.instance.trap--;
                         currentMapManager.activeBuilding.has_traps = true;
+                        currentMapManager.activeBuilding.trap_indicator_image.SetActive(true);
                         currentMapManager.activeBuilding.last_looted_supply = DateTime.Now;
                         InitilizeMyText();
                     }
@@ -485,6 +510,7 @@ public class ClearedBuildingPanelManager : MonoBehaviour {
                     {
                         GameManager.instance.barrel--;
                         currentMapManager.activeBuilding.has_barrel = true;
+                        currentMapManager.activeBuilding.barrel_indicator_image.SetActive(true);
                         currentMapManager.activeBuilding.last_looted_water = DateTime.Now;
                         InitilizeMyText();
                     }
@@ -492,6 +518,7 @@ public class ClearedBuildingPanelManager : MonoBehaviour {
                     {
                         GameManager.instance.greenhouse--;
                         currentMapManager.activeBuilding.has_greenhouse = true;
+                        currentMapManager.activeBuilding.greenhouse_indicator_image.SetActive(true);
                         currentMapManager.activeBuilding.last_looted_food = DateTime.Now;
                         InitilizeMyText();
                     }
@@ -500,12 +527,16 @@ public class ClearedBuildingPanelManager : MonoBehaviour {
                 {
                     Debug.Log(gearPlaceJSON[1].ToString());
                 }
+
+                GameManager.instance.clearedBldgJsonText = JsonMapper.ToJson(gearPlaceJSON[2]);
+                Debug.Log(GameManager.instance.clearedBldgJsonText);
             }
             else
             {
                 Debug.Log(www.error);
             }
             gearPlacementInProgress = false;
+            Debug.Log("Gear Placement in Progress bool: " + gearPlacementInProgress.ToString());
         }
     }
 

@@ -77,11 +77,19 @@ TextureImporter:
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spritePixelsToUnits: 100
   alphaIsTransparency: 1
+  spriteTessellationDetail: -1
   textureType: 8
-  buildTargetSettings: []
+  buildTargetSettings:
+  - buildTarget: Android
+    maxTextureSize: 1024
+    textureFormat: -1
+    compressionQuality: 50
+    allowsAlphaSplitting: 0
   spriteSheet:
+    serializedVersion: 2
     sprites:
-    - name: weapon_sprites_by_im_not_crying-d5q0584_0
+    - serializedVersion: 2
+      name: weapon_sprites_by_im_not_crying-d5q0584_0
       rect:
         serializedVersion: 2
         x: 11
@@ -92,7 +100,9 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: weapon_sprites_by_im_not_crying-d5q0584_1
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: weapon_sprites_by_im_not_crying-d5q0584_1
       rect:
         serializedVersion: 2
         x: 70
@@ -102,15 +112,10 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -25, y: 17.5}
-        - {x: -26, y: 12.5}
-        - {x: -26, y: -17.5}
-        - {x: -5, y: -17.5}
-        - {x: 9, y: -12.5}
-        - {x: 26, y: 0.5}
-        - {x: 26, y: 17.5}
-    - name: weapon_sprites_by_im_not_crying-d5q0584_2
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: weapon_sprites_by_im_not_crying-d5q0584_2
       rect:
         serializedVersion: 2
         x: 134
@@ -120,13 +125,10 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -31.5, y: 17}
-        - {x: -31.5, y: -17}
-        - {x: -8.5, y: -17}
-        - {x: 31.5, y: 7}
-        - {x: 31.5, y: 17}
-    - name: weapon_sprites_by_im_not_crying-d5q0584_3
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: weapon_sprites_by_im_not_crying-d5q0584_3
       rect:
         serializedVersion: 2
         x: 198
@@ -137,7 +139,9 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: weapon_sprites_by_im_not_crying-d5q0584_4
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: weapon_sprites_by_im_not_crying-d5q0584_4
       rect:
         serializedVersion: 2
         x: 269
@@ -147,16 +151,10 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: 24.5, y: 16.5}
-        - {x: -24.5, y: 16.5}
-        - {x: -25.5, y: 15.5}
-        - {x: -25.5, y: -16.5}
-        - {x: -10.5, y: -16.5}
-        - {x: -8.5, y: -15.5}
-        - {x: 25.5, y: 0.5}
-        - {x: 25.5, y: 15.5}
-    - name: weapon_sprites_by_im_not_crying-d5q0584_5
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: weapon_sprites_by_im_not_crying-d5q0584_5
       rect:
         serializedVersion: 2
         x: 357
@@ -167,7 +165,9 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: weapon_sprites_by_im_not_crying-d5q0584_6
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: weapon_sprites_by_im_not_crying-d5q0584_6
       rect:
         serializedVersion: 2
         x: 417
@@ -178,7 +178,9 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: weapon_sprites_by_im_not_crying-d5q0584_7
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: weapon_sprites_by_im_not_crying-d5q0584_7
       rect:
         serializedVersion: 2
         x: 477
@@ -189,7 +191,9 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: weapon_sprites_by_im_not_crying-d5q0584_8
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: weapon_sprites_by_im_not_crying-d5q0584_8
       rect:
         serializedVersion: 2
         x: 537
@@ -200,7 +204,9 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: weapon_sprites_by_im_not_crying-d5q0584_9
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: weapon_sprites_by_im_not_crying-d5q0584_9
       rect:
         serializedVersion: 2
         x: 600
@@ -211,7 +217,9 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: weapon_sprites_by_im_not_crying-d5q0584_10
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: weapon_sprites_by_im_not_crying-d5q0584_10
       rect:
         serializedVersion: 2
         x: 0
@@ -222,7 +230,9 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: weapon_sprites_by_im_not_crying-d5q0584_11
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: weapon_sprites_by_im_not_crying-d5q0584_11
       rect:
         serializedVersion: 2
         x: 67
@@ -233,7 +243,9 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: weapon_sprites_by_im_not_crying-d5q0584_12
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: weapon_sprites_by_im_not_crying-d5q0584_12
       rect:
         serializedVersion: 2
         x: 133
@@ -244,7 +256,9 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: weapon_sprites_by_im_not_crying-d5q0584_13
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: weapon_sprites_by_im_not_crying-d5q0584_13
       rect:
         serializedVersion: 2
         x: 198
@@ -255,7 +269,9 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: weapon_sprites_by_im_not_crying-d5q0584_14
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: weapon_sprites_by_im_not_crying-d5q0584_14
       rect:
         serializedVersion: 2
         x: 266
@@ -266,7 +282,9 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: weapon_sprites_by_im_not_crying-d5q0584_15
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: weapon_sprites_by_im_not_crying-d5q0584_15
       rect:
         serializedVersion: 2
         x: 357
@@ -277,7 +295,9 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: weapon_sprites_by_im_not_crying-d5q0584_16
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: weapon_sprites_by_im_not_crying-d5q0584_16
       rect:
         serializedVersion: 2
         x: 415
@@ -288,7 +308,9 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: weapon_sprites_by_im_not_crying-d5q0584_17
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: weapon_sprites_by_im_not_crying-d5q0584_17
       rect:
         serializedVersion: 2
         x: 473
@@ -299,7 +321,9 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: weapon_sprites_by_im_not_crying-d5q0584_18
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: weapon_sprites_by_im_not_crying-d5q0584_18
       rect:
         serializedVersion: 2
         x: 534
@@ -310,7 +334,9 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: weapon_sprites_by_im_not_crying-d5q0584_19
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: weapon_sprites_by_im_not_crying-d5q0584_19
       rect:
         serializedVersion: 2
         x: 597
@@ -321,7 +347,9 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: weapon_sprites_by_im_not_crying-d5q0584_20
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: weapon_sprites_by_im_not_crying-d5q0584_20
       rect:
         serializedVersion: 2
         x: 1
@@ -332,7 +360,9 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: weapon_sprites_by_im_not_crying-d5q0584_21
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: weapon_sprites_by_im_not_crying-d5q0584_21
       rect:
         serializedVersion: 2
         x: 69
@@ -343,7 +373,9 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: weapon_sprites_by_im_not_crying-d5q0584_22
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: weapon_sprites_by_im_not_crying-d5q0584_22
       rect:
         serializedVersion: 2
         x: 144
@@ -353,15 +385,10 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -13.5, y: 16.5}
-        - {x: -17.5, y: 5.5}
-        - {x: -17.5, y: -16.5}
-        - {x: 1.5, y: -16.5}
-        - {x: 8.5, y: -13.5}
-        - {x: 17.5, y: -8.5}
-        - {x: 17.5, y: 16.5}
-    - name: weapon_sprites_by_im_not_crying-d5q0584_23
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: weapon_sprites_by_im_not_crying-d5q0584_23
       rect:
         serializedVersion: 2
         x: 202
@@ -371,13 +398,10 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -26, y: 17}
-        - {x: -26, y: -17}
-        - {x: 6, y: -17}
-        - {x: 26, y: -7}
-        - {x: 26, y: 17}
-    - name: weapon_sprites_by_im_not_crying-d5q0584_24
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: weapon_sprites_by_im_not_crying-d5q0584_24
       rect:
         serializedVersion: 2
         x: 264
@@ -388,7 +412,9 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: weapon_sprites_by_im_not_crying-d5q0584_25
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: weapon_sprites_by_im_not_crying-d5q0584_25
       rect:
         serializedVersion: 2
         x: 344
@@ -399,7 +425,9 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: weapon_sprites_by_im_not_crying-d5q0584_26
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: weapon_sprites_by_im_not_crying-d5q0584_26
       rect:
         serializedVersion: 2
         x: 407
@@ -410,7 +438,9 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: weapon_sprites_by_im_not_crying-d5q0584_27
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: weapon_sprites_by_im_not_crying-d5q0584_27
       rect:
         serializedVersion: 2
         x: 470
@@ -421,7 +451,9 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: weapon_sprites_by_im_not_crying-d5q0584_28
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: weapon_sprites_by_im_not_crying-d5q0584_28
       rect:
         serializedVersion: 2
         x: 533
@@ -432,7 +464,9 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: weapon_sprites_by_im_not_crying-d5q0584_29
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: weapon_sprites_by_im_not_crying-d5q0584_29
       rect:
         serializedVersion: 2
         x: 596
@@ -443,7 +477,9 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: weapon_sprites_by_im_not_crying-d5q0584_30
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: weapon_sprites_by_im_not_crying-d5q0584_30
       rect:
         serializedVersion: 2
         x: 5
@@ -454,6 +490,7 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      tessellationDetail: -1
     outline: []
   spritePackingTag: 
   userData: 

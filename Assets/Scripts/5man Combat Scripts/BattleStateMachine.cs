@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using LitJson;
+using Newtonsoft.Json;
 
 public class BattleStateMachine : MonoBehaviour {
 
@@ -32,45 +33,64 @@ public class BattleStateMachine : MonoBehaviour {
 
 	public List <TurnHandler> TurnList = new List <TurnHandler> ();
 	public List <GameObject> survivorList = new List<GameObject>();
-	public List<GameObject> zombieList = new List<GameObject>();
+	public List <GameObject> zombieList = new List<GameObject>();
+    //public List<TurnResultHolder> turnResultList = new List<TurnResultHolder>();
+    public string turnResultJsonString = "";
 
-	public GameObject playerTarget;
-	public GameObject autoAttackToggle, survivorBitPanel, playerBitPanel, failedRunAwayPanel, runButton, attackButton, cheatSaveButton;
+	public GameObject playerTarget, storyElementHolder;
+	public GameObject weaponBrokenPanel, autoAttackToggle, survivorBitPanel, playerBitPanel, failedRunAwayPanel, runButton, attackButton, cheatSaveButton;
 	public AmputationButtonManager amputationButton;
 	public GameObject playerPos1, playerPos2, playerPos3, playerPos4, playerPos5;
 	[SerializeField]
 	public bool autoAttackIsOn= false;
 
-	public int zombiesKilled = 0;
+	public int zombiesKilled = 0, brokenWeapon_surv_id;
 	public Text zombieCounter, ammmoCounter, survivorBitText, failedToRunText;
+    public Toggle my_image_toggle; 
+    public GameObject blazeOfGloryImage;
+    public CombatWeaponListPopulator my_CWLP;
 
-	public AudioClip knifeSound, clubSound, pistolSound, shotgunSound;
+    public GameObject[] fixed_order_zombie_array; //we delete in a specific order from this array to ensure the zombies are spread out nicely
+    public Sprite[] zombie_sprite_array;
+    public Texture[] zombie_texture_array;
+
+	public AudioClip missSound, knifeSound, clubSound, pistolSound, shotgunSound, foundZombieIntroSound;
 	public AudioClip[] zombieSounds, survivorUnarmedSounds;
 	public AudioSource myAudioSource;
 
 	public SurvivorStateMachine survivorWithBite;
+    private string postTurnsURL = GameManager.serverURL + "/PostTurns.php";
 	private string destroySurvivorURL = GameManager.serverURL+"/DestroySurvivor.php";
 	private string injuredSurvivorURL = GameManager.serverURL+"/InjuredSurvivor.php";
 	private string restoreSurvivorURL = GameManager.serverURL+"/RestoreSurvivor.php";
 	private string combatSuicideURL = GameManager.serverURL+"/CombatSuicide.php";
+    private string equipWeaponURL = GameManager.serverURL + "/EquipWeapon.php";
+    private string storyRequestURL = GameManager.serverURL + "/StoryRequest.php";
 
-	//private int totalSurvivorsFound = 0;
-	void Awake () {
+    //private int totalSurvivorsFound = 0;
+    void Awake () {
+        battleState = PerformAction.COMPLETED;//this will idle the machine until the load can complete
 		LoadInSurvivorCardData();
 	}
 
 	void Start () {
-		battleState = PerformAction.WAIT;
-		playerGUI = PlayerInput.ACTIVATE;
-
 		myAudioSource = GetComponent<AudioSource>();
 		myAudioSource.playOnAwake = false;
-
+        myAudioSource.volume = GamePreferences.GetSFXVolume();//set the SFX audio source to GamePref volume value
+        
+        //before we create the zombielist- we need to get the #'s correct
+        SetZombieModelsForThisBuilding();//this should set the correct number of zombie models that should be in the scene.
+                
 		survivorList.AddRange (GameObject.FindGameObjectsWithTag("survivor"));
 		zombieList.AddRange (GameObject.FindGameObjectsWithTag("zombie"));
-		AdjustForLessThan5Zombies ();
+        //AdjustForLessThan5Zombies ();
 
 		UpdateUINumbers();
+        PlayIntroSound();
+
+        //AFTER all other pieces of data are loaded- set the battlestate to start the machine
+        battleState = PerformAction.WAIT;//this should start the machine moving.
+		playerGUI = PlayerInput.ACTIVATE;
 	}
 
     void OnEnable()
@@ -81,15 +101,34 @@ public class BattleStateMachine : MonoBehaviour {
     void OnDisable()
     {
         SceneManager.sceneLoaded -= OnLevelFinishedLoading;
+        //include a call to the turn list "dumper"
+        DumpTurnsToServer(false);//boolean indicates building has NOT been cleared
     }
 
     void OnLevelFinishedLoading (Scene scene, LoadSceneMode mode) {
-		if (GameManager.instance.blazeOfGloryActive == true) {
+        //restart music volume
+        MusicManager theMusicManager = FindObjectOfType<MusicManager>();
+        theMusicManager.audioSource.volume = GamePreferences.GetMusicVolume();
+
+        //check if blaze of glory has been activated
+        if (GameManager.instance.blazeOfGloryActive == true) {
 			InitiateBlazeOfGlory();
-		}
+		} else
+        {
+            blazeOfGloryImage.SetActive(false);
+        }
 	}
 
+    void PlayIntroSound ()
+    {
+        if (GameManager.instance.activeBldg_zombies  > 0)
+        {
+            myAudioSource.PlayOneShot(foundZombieIntroSound);
+        }
+    }
+
 	void InitiateBlazeOfGlory () {
+        blazeOfGloryImage.SetActive(true);
 		cheatSaveButton.SetActive(false);
 		runButton.SetActive(false);
 		attackButton.SetActive(false);
@@ -115,6 +154,9 @@ public class BattleStateMachine : MonoBehaviour {
 				mySurvivorStateMachine.survivor.survivor_id = myPlayCard.entry_id;
 				mySurvivorStateMachine.teamPos = myPlayCard.team_pos;
 				mySurvivorStateMachine.sliderNameText.text = myPlayCard.survivor.name;
+                mySurvivorStateMachine.my_face.sprite = GameManager.instance.my_profile_pic;
+                mySurvivorStateMachine.myStamSlider.gameObject.transform.FindChild("Profile pic").GetComponent<Image>().sprite = GameManager.instance.my_profile_pic;
+                mySurvivorStateMachine.my_face.gameObject.SetActive(false);
 			} else if (myPlayCard.team_pos == 4) {
 				SurvivorStateMachine mySurvivorStateMachine = playerPos2.GetComponent<SurvivorStateMachine>();
 				mySurvivorStateMachine.survivor.name = myPlayCard.survivor.name;
@@ -125,7 +167,8 @@ public class BattleStateMachine : MonoBehaviour {
 				mySurvivorStateMachine.survivor.survivor_id = myPlayCard.entry_id;
 				mySurvivorStateMachine.teamPos = myPlayCard.team_pos;
 				mySurvivorStateMachine.sliderNameText.text = myPlayCard.survivor.name;
-			} else if (myPlayCard.team_pos == 3) {
+                mySurvivorStateMachine.SetMyPofilePic(myPlayCard.profilePicURL);
+            } else if (myPlayCard.team_pos == 3) {
 				SurvivorStateMachine mySurvivorStateMachine = playerPos3.GetComponent<SurvivorStateMachine>();
 				mySurvivorStateMachine.survivor.name = myPlayCard.survivor.name;
 				mySurvivorStateMachine.survivor.baseStamina = myPlayCard.survivor.baseStamina; 
@@ -135,7 +178,8 @@ public class BattleStateMachine : MonoBehaviour {
 				mySurvivorStateMachine.survivor.survivor_id = myPlayCard.entry_id;
 				mySurvivorStateMachine.teamPos = myPlayCard.team_pos;
 				mySurvivorStateMachine.sliderNameText.text = myPlayCard.survivor.name;
-			} else if (myPlayCard.team_pos == 2) {
+                mySurvivorStateMachine.SetMyPofilePic(myPlayCard.profilePicURL);
+            } else if (myPlayCard.team_pos == 2) {
 				SurvivorStateMachine mySurvivorStateMachine = playerPos4.GetComponent<SurvivorStateMachine>();
 				mySurvivorStateMachine.survivor.name = myPlayCard.survivor.name;
 				mySurvivorStateMachine.survivor.baseStamina = myPlayCard.survivor.baseStamina; 
@@ -145,7 +189,8 @@ public class BattleStateMachine : MonoBehaviour {
 				mySurvivorStateMachine.survivor.survivor_id = myPlayCard.entry_id;
 				mySurvivorStateMachine.teamPos = myPlayCard.team_pos;
 				mySurvivorStateMachine.sliderNameText.text = myPlayCard.survivor.name;
-			} else if (myPlayCard.team_pos == 1) {
+                mySurvivorStateMachine.SetMyPofilePic(myPlayCard.profilePicURL);
+            } else if (myPlayCard.team_pos == 1) {
 				SurvivorStateMachine mySurvivorStateMachine = playerPos5.GetComponent<SurvivorStateMachine>();
 				mySurvivorStateMachine.survivor.name = myPlayCard.survivor.name;
 				mySurvivorStateMachine.survivor.baseStamina = myPlayCard.survivor.baseStamina; 
@@ -155,7 +200,8 @@ public class BattleStateMachine : MonoBehaviour {
 				mySurvivorStateMachine.survivor.survivor_id = myPlayCard.entry_id;
 				mySurvivorStateMachine.teamPos = myPlayCard.team_pos;
 				mySurvivorStateMachine.sliderNameText.text = myPlayCard.survivor.name;
-			}
+                mySurvivorStateMachine.SetMyPofilePic(myPlayCard.profilePicURL);
+            }
 		}
 
 		//if there are less than 5 survivors, remove the gameObjects starting with 5 and working up.
@@ -181,9 +227,76 @@ public class BattleStateMachine : MonoBehaviour {
 		}
 	}
 
+    void SetZombieModelsForThisBuilding()
+    {
+        
+
+        GameObject[] zombies = GameObject.FindGameObjectsWithTag("zombie");//grab all the models in the scene
+        Debug.Log("The game sees: " + zombies.Length+" zombies");
+        int z_across = GameManager.instance.activeBldg_zAcross; //grab how many there SHOULD be
+        Debug.Log("I found: " + zombies.Length + " zombies in the scene, and " + GameManager.instance.activeBldg_zAcross + " zombies across, and "+GameManager.instance.activeBldg_zombies+" zombies to fight according to game data");
+        if(zombies.Length > z_across || zombies.Length > GameManager.instance.activeBldg_zombies || GameManager.instance.activeBldg_zombies==0) 
+        {
+            if (GameManager.instance.activeBldg_zombies == 0)
+            {
+                for (int i = 0; i < zombies.Length; i++)
+                {
+                    Destroy(zombies[i]); //destroy everything.
+                }
+                Debug.Log("I am trying to destroy all of the zombies.");
+            }
+            else
+            {
+                //remove all excess zombie gameobjects
+                int removeNum = 0;
+                int across_rem_num = zombies.Length - z_across;
+                int to_fight_remove_num = zombies.Length - GameManager.instance.activeBldg_zombies;
+                if (to_fight_remove_num >= across_rem_num)
+                {
+                    removeNum = to_fight_remove_num;
+                }else
+                {
+                    removeNum = across_rem_num;
+                }
+                for (int i = 0; i < removeNum; i++)
+                {
+                    Debug.Log("Destroying object number: " + i + " "+fixed_order_zombie_array[i].gameObject.name);
+                    //zombieList.Remove(tmp); //this funtion is now called before the list is formed
+                    //int list_index = zombieList.IndexOf(zombies[i]);//get its index in the list
+                    //zombieList.RemoveAt(list_index);//remove from list
+                    //zombies[i].gameObject.SetActive(false); //overkill
+                    Destroy(fixed_order_zombie_array[i].gameObject);//destroy from gamespace
+                }
+                Debug.Log("I am trying to remove "+removeNum+"zombies");
+            }
+        }
+
+        /* //all deletes should be handled above- we don't need to do this 2x now.
+        GameObject[] zombies2 = GameObject.FindGameObjectsWithTag("zombie");//look again in the scene at how many zombie models are there
+        Debug.Log("The game sees: " + zombies2.Length + " zombies");
+        if (zombies2.Length > GameManager.instance.activeBldg_zombies )
+        {
+              int removeNum = zombies2.Length - GameManager.instance.activeBldg_zombies;
+              for (int i = 0; i < removeNum; i++)
+              {
+                  zombies2[i].SetActive(false);
+                  zombies2[i].GetComponent<ZombieStateMachine>().myTypeText.text = "";
+                  //zombieList.RemoveAt(i);//we are now referencing the local array and allowing the deletes to take place in the update.
+              }
+         }
+        */
+
+        GameObject[] zombies3 = GameObject.FindGameObjectsWithTag("zombie");
+        foreach (GameObject zomb in zombies3)
+        {
+            zomb.gameObject.SetActive(true);
+        }
+        Debug.Log("at the end of setting up, the game still sees: " + zombies3.Length + " zombies in the game");
+    }
+
 	void AdjustForLessThan5Zombies () {
-		if (GameManager.instance.zombiesToFight < 5) {
-			int removeNum = 5 - GameManager.instance.zombiesToFight;
+		if (GameManager.instance.activeBldg_zombies < 5) {
+			int removeNum = 5 - GameManager.instance.activeBldg_zombies;
 			for (int i = 0; i < removeNum; i++) {
 				zombieList[0].SetActive(false);
 				zombieList[0].GetComponent<ZombieStateMachine>().myTypeText.text = "";
@@ -191,23 +304,36 @@ public class BattleStateMachine : MonoBehaviour {
 			} 
 		}
 	}
+
+    void CleanZombieList() {
+        for (int i  =0; i < zombieList.Count; i++)
+        {
+            if (zombieList[i]== null)
+            {
+                zombieList.RemoveAt(i); //this will destroy the loop, so we must break to avoid an error
+                break;
+            }
+        }
+    }
 	
 	// Update is called once per frame
 	void Update () {
+
+        CleanZombieList();//we call this each frame, it will remove empty entries in the zombieList, and allow victory to get called
 
 		switch (battleState) {
 			case (PerformAction.WAIT):
 				if (TurnList.Count > 0) {
 					battleState = PerformAction.SELECTACTION;
-				} else if (zombieList.Count < 1) {
-					// end of the building
-					Debug.Log ("End building called");
-					int earned_supply = CalculateSupplyEarned();
-					int earned_water = CalculateWaterFound();
-					int earned_food = CalculateFoodFound();
-                    bool found_survivor = CalculateSurvivorFound();
-                    
-					GameManager.instance.BuildingIsCleared(found_survivor);
+				} else if (zombieList.Count < 1 /*|| GameManager.instance.activeBldg_zombies==0*/) {
+                    // end of the building
+                    Debug.Log ("End building called");
+//					int earned_wood = CalculateWoodEarned();
+//                    int earned_metal = CalculateMetalFound();
+//					int earned_water = CalculateWaterFound();
+//					int earned_food = CalculateFoodFound();
+//                    bool found_survivor = CalculateSurvivorFound();
+                    DumpTurnsToServer(true);
 					battleState = PerformAction.COMPLETED;
 				}else if (autoAttackIsOn && survivorTurnList.Count > 0) {
 					//continue auto attack
@@ -277,7 +403,13 @@ public class BattleStateMachine : MonoBehaviour {
 	
 	}
 
-	public void PlayWeaponSound (BaseWeapon.WeaponType myWepType, string wepName) {
+	public void PlayWeaponSound (BaseWeapon.WeaponType myWepType, string wepName, int dmg) {
+        if (dmg == 0)
+        {
+            myAudioSource.PlayOneShot(missSound);
+            return;//play the miss and exit
+        }
+
 		if (myWepType == BaseWeapon.WeaponType.KNIFE) {
 			//play the knife stab
 			myAudioSource.PlayOneShot(knifeSound);
@@ -351,12 +483,12 @@ public class BattleStateMachine : MonoBehaviour {
 	*/
 
 	public void UpdateUINumbers () {
-		zombieCounter.text = GameManager.instance.zombiesToFight.ToString();
+		zombieCounter.text = GameManager.instance.activeBldg_zombies.ToString();
 		ammmoCounter.text = "Ammo: "+GameManager.instance.ammo.ToString();
 	}
 
-	int CalculateSupplyEarned () {
-        return GameManager.instance.activeBldg_supply;
+	int CalculateWoodEarned () {
+        return GameManager.instance.activeBldg_wood;
         
         /*
         int supply_in_bldg = GameManager.instance.activeBldg_supply;
@@ -387,6 +519,10 @@ public class BattleStateMachine : MonoBehaviour {
 		return sum;
 		*/
 	}
+    int CalculateMetalFound ()
+    {
+        return GameManager.instance.activeBldg_metal;
+    }
 
 	int CalculateWaterFound () {
         return GameManager.instance.activeBldg_water;
@@ -451,7 +587,11 @@ public class BattleStateMachine : MonoBehaviour {
 	}
 
 	bool CalculateSurvivorFound () {
+        return false; //temporarily disabling ability to find survivors in buildings- 1-17-2017
+
 		float odds =0.0f;
+
+        GameManager.instance.daysSurvived = Mathf.FloorToInt((float)(DateTime.Now- (GameManager.instance.timeCharacterStarted + GameManager.instance.serverTimeOffset)).TotalDays);
 
 		if (GameManager.instance.daysSurvived < GameManager.DaysUntilOddsFlat) {
 			DateTime now = System.DateTime.Now;
@@ -490,6 +630,7 @@ public class BattleStateMachine : MonoBehaviour {
 		*/
 
 		float roll = UnityEngine.Random.Range(0.0f, 1.0f);
+        Debug.Log(roll.ToString() + " is player roll, and " + odds + " are calculated player odds");
 		if (roll < odds) {
 			Debug.Log("survivor found!");
 			return true;
@@ -504,7 +645,7 @@ public class BattleStateMachine : MonoBehaviour {
 
 		if (GameManager.instance.daysSurvived < GameManager.DaysUntilOddsFlat) {
 			DateTime now = System.DateTime.Now;
-			double days_alive = (now-GameManager.instance.timeCharacterStarted).TotalDays;
+			double days_alive = (now- GameManager.instance.timeCharacterStarted ).TotalDays;
 
 			int exponent = 8;
 			float max_percentage = 0.5f; //this starts us at 50/50 odds.
@@ -516,7 +657,7 @@ public class BattleStateMachine : MonoBehaviour {
 			odds = current_value;
 		}
 
-		return odds;
+		return odds; //value is represeneted 0.0f-1.0f as 0%-100%
 	}
 
 	//this is activated on the GUI button press.
@@ -677,7 +818,18 @@ public class BattleStateMachine : MonoBehaviour {
 
 		//close the decision window & reset turns
 		survivorBitPanel.SetActive(false);
-		ResetAllTurns(); //this is to ensure the inactive player is not falsely targeted by a zombie. 
+        //ResetAllTurns(); //this is to ensure the inactive player is not falsely targeted by a zombie. 
+
+        //instead of resetting all turns- go through the list, and remove the null record
+        for (int i=0; i < survivorList.Count; i++)
+        {
+            if (survivorList[i] == null)
+            {
+                survivorList.RemoveAt(i);
+                break;
+            }
+        }
+
 
 		//pop up text to notify player
 
@@ -719,8 +871,16 @@ public class BattleStateMachine : MonoBehaviour {
 		}
 		GameManager.instance.activeSurvivorCardList.Remove(destroyMe2);
 		Destroy(destroyMe2);
-		//remove from the survivorlist on battlestatemachine
-
+        //remove from the survivorlist on battlestatemachine
+        //look for a null entry on the survivorList on this object- remove it before resetting turns
+        for (int i = 0; i < survivorList.Count; i++)
+        {
+            if (survivorList[i] == null)
+            {
+                survivorList.RemoveAt(i);
+                break;
+            }
+        }
 
 		//disable the survivor panel
 		survivorBitPanel.SetActive(false);
@@ -780,7 +940,7 @@ public class BattleStateMachine : MonoBehaviour {
 		}else{
 			Debug.Log(www.error);
 		}
-		ResetAllTurns();
+		//ResetAllTurns();
 	}
 
 	IEnumerator SendDeadSurvivorToServer(int idToDestroy) {
@@ -845,27 +1005,32 @@ public class BattleStateMachine : MonoBehaviour {
 		}
 	}
 
+    public void PlayerPartiallyWatchedAD ()
+    {
+        //no stamina gain is assessed- no need to update server.
+        survivorWithBite = null; //off the chopping block
+        playerBitPanel.SetActive(false); //panel gone
+        battleState = PerformAction.WAIT; // resume battle state machine
+    }
+
 	//this is called from the run away failed panel
 	public void TurnAndFight () {
 		failedRunAwayPanel.SetActive(false);
 		battleState = PerformAction.WAIT;
 	}
 
+    //this call starts the coroutine to check 'run result' with the server, and load story elements upon load
+    public void AttemptRunAway()
+    {
+        StartCoroutine(SendRunRequest());
+    }   
+
+    //this function decides the result of run-away in client, and does not load any story elements.
 	public void PlayerChoosesRunAway () {
 
-		survivorList.RemoveAll(GameObject => GameObject == null);
+		running = true;
 
-		/*
-		//clean the list of any destroyed game-objects
-		for (int i = survivorList.Count; 0 < i ; i--) {
-			if (survivorList[i] != null) {
-				continue;
-			} else {
-				//since the list will collapse, we need to repeat the same position in the next loop
-				survivorList.RemoveAt(i);
-			}
-		}
-		*/
+        survivorList.RemoveAll(GameObject => GameObject == null);
 
 		int got_away = 0;
 		int running_away = survivorList.Count;
@@ -892,6 +1057,21 @@ public class BattleStateMachine : MonoBehaviour {
 
 			float roll = UnityEngine.Random.Range(0.0f, 100.0f);
 			if (roll <= odds) {
+                //check that it was not the player character
+                if (mySSM.teamPos == 5)
+                {
+                    GameObject[] battle_survivors = GameObject.FindGameObjectsWithTag("survivor");
+                    if (battle_survivors.Length <= 1)
+                    {
+                        //if the player is the last one alive, then they died...
+                        StartCoroutine(GameManager.instance.PlayerBit());
+                    }
+                    else
+                    {
+                        continue; //no game over, just go to next survivor
+                    }
+                }
+
 				//this survivor has failed to run away.
 				StartCoroutine(SendDeadSurvivorToServer(mySSM.survivor.survivor_id));
 				failedToRunText.text = mySSM.survivor.name+" fell behind and was overcome by zombies. they didn't make it.\n what will you do?";
@@ -909,7 +1089,295 @@ public class BattleStateMachine : MonoBehaviour {
 
 		//if everyone got away, go to map level. Otherwise the above loop has been broken with a dead survivor.
 		if (got_away == running_away) {
-			SceneManager.LoadScene("02a Map Level");
+			//SceneManager.LoadScene("02a Map Level");
+            //StartCoroutine(GameManager.instance.LoadAllGameData());
+
+			DumpTurnsToServer(false); //send all stored turn data to server
 		}
 	}
+
+    private bool runReqStarted = false;
+    IEnumerator SendRunRequest ()
+    {
+        if (runReqStarted)
+        {
+            yield break;
+        }
+        else
+        {
+            runReqStarted = true;
+            DumpTurnsToServer(false);//false means bldg not clear
+
+            WWWForm form = new WWWForm();
+            form.AddField("id", GameManager.instance.userId);
+            form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+            form.AddField("client", "mob");
+            form.AddField("type", "run");
+            float univ_roll = UnityEngine.Random.Range(0.0f, 100.0f); //we are going to use a universal 0-100 pass from client to determine result
+            form.AddField("roll", univ_roll.ToString());
+
+            WWW www = new WWW(storyRequestURL, form);
+            yield return www;
+
+            if (www.error == null)
+            {
+                Debug.Log(www.text);
+                JsonData story_JSON = JsonMapper.ToObject(www.text);
+                if (story_JSON[0].ToString() == "Success")
+                {
+                    //get the needed numbers
+                    int index_no = int.Parse(story_JSON[1]["index"].ToString());
+                    int img_count = int.Parse(story_JSON[1]["img_count"].ToString());
+
+                    //load the prefab
+                    StoryPanelManager storyPanelPrefab = Resources.Load<StoryPanelManager>("Prefabs/StoryElementPanelPrefab");
+                    if (storyPanelPrefab == null)
+                    {
+                        Debug.Log("******************WARNING: NOT LOADING STORY PANEL PREFAB FROM RESOURCES*********");
+
+                    }
+
+                    //begin the for loop to instantiate the prefabs.
+                    for (int i = 0; i < img_count; i++)
+                    {
+                        StoryPanelManager instance = Instantiate(storyPanelPrefab, storyElementHolder.gameObject.transform) as StoryPanelManager;
+                        string my_img_name = index_no + "_" + (i+1) + ".png";
+                        instance.FetchMyStoryImage(my_img_name);
+                    }
+
+                }
+                else
+                {
+                    Debug.Log("Failed to get a run result from server- continuing local function as a fallback");
+                    PlayerChoosesRunAway(); //This is the OLD function that determines results locally
+                }
+            }
+            else
+            {
+                Debug.Log(www.error);
+            }
+        }
+    }
+
+    public void WeaponDestroyed (int surv_id)
+    {
+        brokenWeapon_surv_id = surv_id;
+        battleState = PerformAction.BITECASE; //this is used to temporarily pause the BSM
+        
+        if (my_CWLP != null)
+        {
+            weaponBrokenPanel.SetActive(true);
+            my_CWLP.PopulateUnequippedWeapons();
+        }else
+        {
+            Debug.Log("Unable to locate Weapon list populator");
+        }
+        
+    }
+
+    public void DontEquipNewWeapon ()
+    {
+        foreach (GameObject surv in survivorList)
+        {
+            SurvivorStateMachine my_SSM = surv.GetComponent<SurvivorStateMachine>();
+            if (my_SSM != null)
+            {
+                my_SSM.UpdateWeaponSprite();
+            }else
+            {
+                Debug.Log("No SurvivorStateMachine able to be located for "+surv.name);
+            }
+        }
+        Time.timeScale = 1.0f; //resume normal speed
+        weaponBrokenPanel.SetActive(false);
+        battleState = PerformAction.WAIT;
+    }
+
+    public void EquipNewWeapon(int wep_id) {
+        Time.timeScale = 1.0f;//resume normal speed
+        StartCoroutine(EquipWeaponToSurvivor(brokenWeapon_surv_id, wep_id));
+        Debug.Log("Sending weapon equip to server; surv ID: " + brokenWeapon_surv_id + " wep id: " + wep_id);
+    }
+
+    IEnumerator EquipWeaponToSurvivor(int survivor_id, int weapon_id)
+    {
+        WWWForm form = new WWWForm();
+        form.AddField("id", GameManager.instance.userId);
+        form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+        form.AddField("client", "mob");
+        form.AddField("survivor_id", survivor_id);
+        form.AddField("weapon_id", weapon_id);
+
+        WWW www = new WWW(equipWeaponURL, form);
+        yield return www;
+        Debug.Log(www.text);
+
+        if (www.error == null)
+        {
+            string serverString = www.text.ToString();
+            JsonData weaponEquipJson = JsonMapper.ToObject(serverString);
+
+            if (weaponEquipJson[0].ToString() == "Success")
+            {
+                Debug.Log(weaponEquipJson[1].ToString());
+                GameManager.instance.weaponCardList.Clear();
+                GameManager.instance.weaponCardList.AddRange(GameObject.FindGameObjectsWithTag("weaponcard"));
+
+
+                //find the weapon to be equipped.
+                foreach (GameObject weapon in GameManager.instance.weaponCardList)
+                {
+                    BaseWeapon my_wep = weapon.GetComponent<BaseWeapon>();
+                    if (my_wep.weapon_id == weapon_id)
+                    {
+                        //find the survivor, and update and associate the objects in game data
+                        my_wep.equipped_id = survivor_id;
+                        foreach (GameObject survivor in survivorList)
+                        {
+                            SurvivorStateMachine my_surv = survivor.GetComponent<SurvivorStateMachine>();
+                            if (my_surv.survivor.survivor_id == survivor_id)
+                            {
+                                my_surv.survivor.weaponEquipped = my_wep.gameObject;
+                                my_surv.UpdateWeaponSprite();
+                                weaponBrokenPanel.SetActive(false);
+                                Debug.Log("New weapon sucessfully equipped");
+                                battleState = PerformAction.WAIT;
+                                break;
+                            }else
+                            {
+                                continue;
+                            }
+                        }
+                    }else
+                    {
+                        continue;
+                    }
+                }
+
+                Debug.Log("Unable to associate weapon and survivor records");
+
+            }
+            else if (weaponEquipJson[0].ToString() == "Failed")
+            {
+                Debug.Log(weaponEquipJson[1].ToString());
+            }
+
+
+        }
+        else
+        {
+            Debug.Log(www.error);
+        }
+    }
+
+    public void DumpTurnsToServer (bool clr)
+    {
+		//DontDestroyOnLoad (this.gameObject);//if the player is running away, protect the BSM from 
+        Debug.Log(turnResultJsonString);
+        if (turnResultJsonString != null || turnResultJsonString != "")
+        {
+			//if turns were made- fix the string, and start the coroutine to post the turns
+            string json_data = "";
+            if (turnResultJsonString.Length > 2)
+            {
+                json_data = "[" + turnResultJsonString.Substring(0, turnResultJsonString.Length - 1) + "]";//every entry ends with a comma, remove the comma and put caps on the json
+            }else
+            {
+                json_data = "[]";
+            }
+            Debug.Log(json_data);
+            
+            StartCoroutine(PostTurnsToServer(json_data, clr));
+        }else
+        {
+            //Debug.Log("***");
+            //check building status being passed
+            if (clr)
+            {
+                GameManager.instance.BuildingIsCleared(false); //false means no survivors found, and this should load us to victory etc
+            }else
+            {
+                //this means player ran before making any turns- we don't care 
+                Debug.Log("this should only be happening when player is running away before making turns");
+            }
+            
+        }
+    }
+
+	private bool running = false;
+    IEnumerator PostTurnsToServer (string json_string, bool clear)
+    {
+        WWWForm form = new WWWForm();
+        form.AddField("id", GameManager.instance.userId);
+        form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+        form.AddField("client", "mob");
+
+        form.AddField("turns", json_string);
+        form.AddField("bldg_name", GameManager.instance.activeBldg_name);
+		form.AddField ("bldg_id", GameManager.instance.activeBldg_id);
+        if (clear)
+        {
+            form.AddField("clear", 1);
+        }else
+        {
+            form.AddField("clear", 0);
+        }
+
+        WWW www = new WWW(postTurnsURL, form);
+        yield return www;
+        Debug.Log(www.text);
+
+        if (www.error == null)
+        {
+            JsonData turnPostResultJson = JsonMapper.ToObject(www.text);
+            if (turnPostResultJson[0].ToString() == "Success")
+            {
+				//GameManager.instance.clearedBldgJsonText = turnPostResultJson [3].ToString (); //update the core data
+
+                turnResultJsonString = ""; //using a string instead of a list. conversion from list>json was not going well on devices.
+//                turnResultList.Clear();
+                if (clear)
+                {
+                    GameManager.instance.BuildingIsCleared(false); //if clear, proceed to victory screen, false indicates no survivors found (ever)
+                }
+				if (running) {
+					StartCoroutine(GameManager.instance.LoadAllGameData());
+					SceneManager.LoadScene("02a Map Level");
+				}
+            }else
+            {
+                Debug.Log(turnPostResultJson[1].ToString());
+            }
+        }else
+        {
+            Debug.Log(www.error);
+        }
+    }
+
+    public void TogglePlayerPortraitSprite()
+    {
+        bool onOff = false;
+        if (my_image_toggle.isOn)
+        {
+            onOff = true;
+        }
+
+        GameObject[] suvList = GameObject.FindGameObjectsWithTag("survivor");
+        if (onOff)
+        {//on players
+            for (int i=0; i<suvList.Length; i++) { 
+                SurvivorStateMachine mySSM = suvList[i].GetComponent<SurvivorStateMachine>();
+                mySSM.myStamSlider.gameObject.transform.FindChild("Profile pic").gameObject.SetActive(false) ;
+                mySSM.my_face.gameObject.SetActive(true);
+            }
+        }else
+        {//on healthbars
+            for (int i = 0; i < suvList.Length; i++)
+            {
+                SurvivorStateMachine mySSM = suvList[i].GetComponent<SurvivorStateMachine>();
+                mySSM.myStamSlider.gameObject.transform.FindChild("Profile pic").gameObject.SetActive(true);
+                mySSM.my_face.gameObject.SetActive(false);
+            }
+        }
+    }
 }

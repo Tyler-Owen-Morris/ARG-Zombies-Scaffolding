@@ -35,11 +35,6 @@ public class QRPanelController : MonoBehaviour {
 		AcceptButtonPressed();
 		mapLvlMgr = MapLevelManager.FindObjectOfType<MapLevelManager>();
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 
 	void qrEncodeFinished(Texture2D tex)
 	{
@@ -114,11 +109,45 @@ public class QRPanelController : MonoBehaviour {
 			scanLineObj.SetActive(false);
 		}
 
-		//This needs to first verify the type of scan that it is.
-		DetermineTypeOfScannedCode(dataText);
+        //This needs to first verify the type of scan that it is.
+        //DetermineTypeOfScannedCode(dataText);
+
+        CheckForBossQRScan(dataText); //boss check comes before decryption check.
 	}
 
+    void CheckForBossQRScan (string scanText)
+    {
+        
+        Debug.Log("String scanned as: " + scanText );
+       
+        if (scanText == "http://www.argzombies.com/owen1.php")
+        {
+           GameManager.instance.LoadBossCombat("owen");
+        }
+        else if (scanText == "http://www.argzombies.com/david1.php")
+        {
+            GameManager.instance.LoadBossCombat("david");
+        }
+        else if (scanText == "http://www.argzombies.com/superzombie.php" || scanText == "http://www.argzombies.com/superzombie")
+        {
+            GameManager.instance.LoadBossCombat("superzombie");
+        }
+        else
+        {
+            DetermineTypeOfScannedCode(scanText);
+        }
+    }
+
 	void DetermineTypeOfScannedCode (string scannedText) {
+        if (scannedText.Contains("http://"))
+        {
+            Debug.Log("this is not a valid game barcode");
+            PostQRResultText("ARG Zombies does not recognize this barcoe");
+            return;
+        }
+        mapLvlMgr = FindObjectOfType<MapLevelManager>();
+
+        //internal game codes need to be decrypted
 		string decrypted_text = decryptData(scannedText);
 		JsonData scannedJson = JsonMapper.ToObject(decrypted_text);
 		Debug.Log("Scanned Text: "+scannedText+" || DECRYPTED TEXT: "+decrypted_text);
@@ -126,7 +155,7 @@ public class QRPanelController : MonoBehaviour {
 		if (scannedJson[0].ToString() == "player") {
 			if(scannedJson[1].ToString() != GameManager.instance.userId) {
 				StartCoroutine(mapLvlMgr.PostTempLocationText("pairing with survivor"));
-				StartCoroutine(SendQRPairToServer(scannedText));
+				StartCoroutine(SendQRPairToServer(decrypted_text));
 			}else{
 				StartCoroutine(mapLvlMgr.PostTempLocationText("Players may not pair with themselves"));
                 PostQRResultText("Players may not pair with themselves");
@@ -134,7 +163,7 @@ public class QRPanelController : MonoBehaviour {
 			}
 		} else if (scannedJson[0].ToString() == "outpost") {
 			StartCoroutine(mapLvlMgr.PostTempLocationText("attempting to join outpost"));
-			StartCoroutine(SendOutpostRequestToServer(scannedJson));
+			StartCoroutine(SendOutpostRequestToServer(decrypted_text));
 		} else if (scannedJson[0].ToString() == "homebase") {
 			//check if this homebase belongs to the player.
 			string base_owner_id = scannedJson[1].ToString();
@@ -148,7 +177,8 @@ public class QRPanelController : MonoBehaviour {
                 if (CalculateDistanceToTarget(base_lat, base_lng) <= 50.0f)
                 {
                     //player is in range of their homebase
-                    StartCoroutine(mapLvlMgr.PostTempLocationText("Checking in at homebase"));
+                    StartCoroutine(mapLvlMgr.PostTempLocationText("Checking in at Homebase"));
+                    PostQRResultText("Checking in at Homebase");
                     StartCoroutine(PlayerCheckinToHomebase(base_lat, base_lng));
                 }else
                 {
@@ -272,7 +302,7 @@ public class QRPanelController : MonoBehaviour {
 			if (DateTime.Now < upperLimit && DateTime.Now > lowerLimit) {
 				Debug.Log("The QR code contains a valid time");
 
-				float distanceAllowedInMeters = 25.0f;
+				float distanceAllowedInMeters = 100.0f;
 				float requestLat = float.Parse(requestingJSON[3].ToString());
 				float requestLng = float.Parse(requestingJSON[4].ToString());
 

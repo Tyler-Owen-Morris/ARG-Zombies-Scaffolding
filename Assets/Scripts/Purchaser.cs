@@ -8,6 +8,7 @@ using UnityEngine.Purchasing;
 public class Purchaser : MonoBehaviour, IStoreListener
 {
     private static IStoreController m_StoreController;          // The Unity Purchasing system.
+    private IAppleExtensions m_AppleExtensions;
     private static IExtensionProvider m_StoreExtensionProvider; // The store-specific Purchasing subsystems.
     
     // Product identifiers for all products capable of being purchased: 
@@ -53,6 +54,7 @@ public class Purchaser : MonoBehaviour, IStoreListener
         if (IsInitialized())
         {
             // ... we are done here.
+            Debug.Log("Purchaser already initialized...");
             return;
         }
         
@@ -205,6 +207,7 @@ public class Purchaser : MonoBehaviour, IStoreListener
         
         // Overall Purchasing system, configured with products for this application.
         m_StoreController = controller;
+        m_AppleExtensions = extensions.GetExtension<IAppleExtensions>();
         // Store specific subsystem, for accessing device-specific store features.
         m_StoreExtensionProvider = extensions;
     }

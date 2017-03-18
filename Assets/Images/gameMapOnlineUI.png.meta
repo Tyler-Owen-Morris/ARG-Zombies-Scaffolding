@@ -30,7 +30,7 @@ TextureImporter:
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
-    enableMipMap: 1
+    enableMipMap: 0
     linearTexture: 0
     correctGamma: 0
     fadeOut: 0
@@ -69,11 +69,14 @@ TextureImporter:
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spritePixelsToUnits: 100
   alphaIsTransparency: 1
+  spriteTessellationDetail: -1
   textureType: 8
   buildTargetSettings: []
   spriteSheet:
+    serializedVersion: 2
     sprites:
-    - name: gameMapOnlineUI_0
+    - serializedVersion: 2
+      name: gameMapOnlineUI_0
       rect:
         serializedVersion: 2
         x: 2
@@ -83,12 +86,10 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -640, y: -361}
-        - {x: 640, y: -361}
-        - {x: 640, y: 361}
-        - {x: -640, y: 361}
-    - name: gameMapOnlineUI_1
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: gameMapOnlineUI_1
       rect:
         serializedVersion: 2
         x: 1284
@@ -98,15 +99,10 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -95, y: 54.5}
-        - {x: -102, y: 45.5}
-        - {x: -102, y: -54.5}
-        - {x: 74, y: -54.5}
-        - {x: 102, y: -34.5}
-        - {x: 102, y: 42.5}
-        - {x: 31, y: 54.5}
-    - name: gameMapOnlineUI_2
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: gameMapOnlineUI_2
       rect:
         serializedVersion: 2
         x: 1490
@@ -116,14 +112,10 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -95, y: 37.5}
-        - {x: -95, y: -27.5}
-        - {x: -84, y: -37.5}
-        - {x: 75, y: -37.5}
-        - {x: 95, y: -18.5}
-        - {x: 95, y: 37.5}
-    - name: gameMapOnlineUI_3
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: gameMapOnlineUI_3
       rect:
         serializedVersion: 2
         x: 1681
@@ -133,14 +125,10 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -94.5, y: 37.5}
-        - {x: -94.5, y: -27.5}
-        - {x: -83.5, y: -37.5}
-        - {x: 76.5, y: -37.5}
-        - {x: 94.5, y: -19.5}
-        - {x: 94.5, y: 37.5}
-    - name: gameMapOnlineUI_4
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: gameMapOnlineUI_4
       rect:
         serializedVersion: 2
         x: 1872
@@ -150,14 +138,10 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -86, y: 34}
-        - {x: -86, y: -24}
-        - {x: -75, y: -34}
-        - {x: 67, y: -34}
-        - {x: 86, y: -17}
-        - {x: 86, y: 34}
-    - name: gameMapOnlineUI_5
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: gameMapOnlineUI_5
       rect:
         serializedVersion: 2
         x: 1284
@@ -167,15 +151,10 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -87, y: 37.5}
-        - {x: -89, y: 35.5}
-        - {x: -89, y: -36.5}
-        - {x: -85, y: -37.5}
-        - {x: 83, y: -37.5}
-        - {x: 89, y: -19.5}
-        - {x: 89, y: 37.5}
-    - name: gameMapOnlineUI_6
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: gameMapOnlineUI_6
       rect:
         serializedVersion: 2
         x: 1488
@@ -185,14 +164,10 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -90.5, y: 37.5}
-        - {x: -90.5, y: -26.5}
-        - {x: -76.5, y: -37.5}
-        - {x: 70.5, y: -37.5}
-        - {x: 90.5, y: -17.5}
-        - {x: 90.5, y: 37.5}
-    - name: gameMapOnlineUI_7
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: gameMapOnlineUI_7
       rect:
         serializedVersion: 2
         x: 1672
@@ -202,14 +177,10 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -88, y: 37.5}
-        - {x: -89, y: 36.5}
-        - {x: -89, y: -37.5}
-        - {x: 84, y: -37.5}
-        - {x: 89, y: -28.5}
-        - {x: 89, y: 37.5}
-    - name: gameMapOnlineUI_8
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: gameMapOnlineUI_8
       rect:
         serializedVersion: 2
         x: 1872
@@ -219,13 +190,10 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -77, y: 77}
-        - {x: -77, y: -75}
-        - {x: -75, y: -77}
-        - {x: 77, y: -77}
-        - {x: 77, y: 77}
-    - name: gameMapOnlineUI_9
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: gameMapOnlineUI_9
       rect:
         serializedVersion: 2
         x: 1284
@@ -235,13 +203,10 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -77, y: 77}
-        - {x: -77, y: -75}
-        - {x: -75, y: -77}
-        - {x: 77, y: -77}
-        - {x: 77, y: 77}
-    - name: gameMapOnlineUI_10
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: gameMapOnlineUI_10
       rect:
         serializedVersion: 2
         x: 1464
@@ -251,14 +216,10 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -86.5, y: 37.5}
-        - {x: -88.5, y: 35.5}
-        - {x: -88.5, y: -37.5}
-        - {x: 81.5, y: -37.5}
-        - {x: 88.5, y: -19.5}
-        - {x: 88.5, y: 37.5}
-    - name: gameMapOnlineUI_11
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: gameMapOnlineUI_11
       rect:
         serializedVersion: 2
         x: 1643
@@ -268,17 +229,10 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: 53, y: 36}
-        - {x: -50, y: 36}
-        - {x: -67, y: 31}
-        - {x: -69, y: 24}
-        - {x: -69, y: -30}
-        - {x: -60, y: -36}
-        - {x: 69, y: -36}
-        - {x: 69, y: 27}
-        - {x: 66, y: 29}
-    - name: gameMapOnlineUI_12
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: gameMapOnlineUI_12
       rect:
         serializedVersion: 2
         x: 1783
@@ -288,13 +242,10 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -42.5, y: 42.5}
-        - {x: -42.5, y: -42.5}
-        - {x: 42.5, y: -42.5}
-        - {x: 42.5, y: 39.5}
-        - {x: 39.5, y: 42.5}
-    - name: gameMapOnlineUI_13
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: gameMapOnlineUI_13
       rect:
         serializedVersion: 2
         x: 1870
@@ -304,16 +255,10 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -38.5, y: 41.5}
-        - {x: -41.5, y: 38.5}
-        - {x: -41.5, y: -38.5}
-        - {x: -38.5, y: -41.5}
-        - {x: 37.5, y: -41.5}
-        - {x: 41.5, y: -37.5}
-        - {x: 41.5, y: 38.5}
-        - {x: 38.5, y: 41.5}
-    - name: gameMapOnlineUI_14
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: gameMapOnlineUI_14
       rect:
         serializedVersion: 2
         x: 1643
@@ -323,12 +268,10 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -41.5, y: 41.5}
-        - {x: -41.5, y: -41.5}
-        - {x: 41.5, y: -41.5}
-        - {x: 41.5, y: 41.5}
-    - name: gameMapOnlineUI_15
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: gameMapOnlineUI_15
       rect:
         serializedVersion: 2
         x: 1728
@@ -338,14 +281,10 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -23.5, y: 25.5}
-        - {x: -25.5, y: 23.5}
-        - {x: -25.5, y: -23.5}
-        - {x: -23.5, y: -25.5}
-        - {x: 25.5, y: -25.5}
-        - {x: 25.5, y: 25.5}
-    - name: gameMapOnlineUI_16
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: gameMapOnlineUI_16
       rect:
         serializedVersion: 2
         x: 1781
@@ -355,14 +294,10 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -23.5, y: 25.5}
-        - {x: -25.5, y: 23.5}
-        - {x: -25.5, y: -23.5}
-        - {x: -23.5, y: -25.5}
-        - {x: 25.5, y: -25.5}
-        - {x: 25.5, y: 25.5}
-    - name: gameMapOnlineUI_17
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: gameMapOnlineUI_17
       rect:
         serializedVersion: 2
         x: 1834
@@ -373,7 +308,9 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: gameMapOnlineUI_18
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: gameMapOnlineUI_18
       rect:
         serializedVersion: 2
         x: 1728
@@ -383,14 +320,10 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -23.5, y: 25.5}
-        - {x: -25.5, y: 23.5}
-        - {x: -25.5, y: -23.5}
-        - {x: -23.5, y: -25.5}
-        - {x: 25.5, y: -25.5}
-        - {x: 25.5, y: 25.5}
-    - name: gameMapOnlineUI_19
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: gameMapOnlineUI_19
       rect:
         serializedVersion: 2
         x: 3
@@ -400,138 +333,10 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: 192.5, y: 80}
-        - {x: 192.5, y: 90}
-        - {x: 190.5, y: 90}
-        - {x: 191.5, y: 91}
-        - {x: 191.5, y: 93}
-        - {x: 190.5, y: 94}
-        - {x: 192.5, y: 97}
-        - {x: 192.5, y: 99}
-        - {x: 189.5, y: 103}
-        - {x: 189.5, y: 218}
-        - {x: 190.5, y: 219}
-        - {x: 190.5, y: 272}
-        - {x: 191.5, y: 273}
-        - {x: 191.5, y: 333}
-        - {x: 190.5, y: 334}
-        - {x: 190.5, y: 353}
-        - {x: 189.5, y: 354}
-        - {x: 189.5, y: 361}
-        - {x: 188.5, y: 362}
-        - {x: 188.5, y: 366}
-        - {x: 185.5, y: 370}
-        - {x: 185.5, y: 371}
-        - {x: 183.5, y: 374}
-        - {x: 174.5, y: 378}
-        - {x: 171.5, y: 378}
-        - {x: 170.5, y: 379}
-        - {x: 163.5, y: 379}
-        - {x: 162.5, y: 380}
-        - {x: 133.5, y: 380}
-        - {x: 132.5, y: 379}
-        - {x: 132.5, y: 463}
-        - {x: 131.5, y: 464}
-        - {x: 131.5, y: 474}
-        - {x: 130.5, y: 475}
-        - {x: 129.5, y: 487}
-        - {x: 128.5, y: 488}
-        - {x: 128.5, y: 491}
-        - {x: 127.5, y: 492}
-        - {x: 127.5, y: 495}
-        - {x: 126.5, y: 496}
-        - {x: 124.5, y: 504}
-        - {x: 122.5, y: 507}
-        - {x: 122.5, y: 509}
-        - {x: 120.5, y: 514}
-        - {x: 118.5, y: 516}
-        - {x: 115.5, y: 522}
-        - {x: 111.5, y: 525}
-        - {x: 111.5, y: 526}
-        - {x: 101.5, y: 536}
-        - {x: 100.5, y: 536}
-        - {x: 96.5, y: 540}
-        - {x: 95.5, y: 540}
-        - {x: 93.5, y: 543}
-        - {x: 87.5, y: 546}
-        - {x: 85.5, y: 548}
-        - {x: 74.5, y: 553}
-        - {x: 72.5, y: 553}
-        - {x: 67.5, y: 556}
-        - {x: 65.5, y: 556}
-        - {x: 62.5, y: 558}
-        - {x: 60.5, y: 558}
-        - {x: 59.5, y: 559}
-        - {x: 57.5, y: 559}
-        - {x: 53.5, y: 561}
-        - {x: 50.5, y: 561}
-        - {x: 49.5, y: 562}
-        - {x: 46.5, y: 562}
-        - {x: 45.5, y: 563}
-        - {x: 42.5, y: 563}
-        - {x: 41.5, y: 564}
-        - {x: 37.5, y: 564}
-        - {x: 36.5, y: 565}
-        - {x: 25.5, y: 566}
-        - {x: 24.5, y: 567}
-        - {x: -25.5, y: 567}
-        - {x: -26.5, y: 566}
-        - {x: -33.5, y: 566}
-        - {x: -34.5, y: 565}
-        - {x: -38.5, y: 565}
-        - {x: -39.5, y: 564}
-        - {x: -44.5, y: 564}
-        - {x: -45.5, y: 563}
-        - {x: -52.5, y: 562}
-        - {x: -56.5, y: 560}
-        - {x: -59.5, y: 560}
-        - {x: -60.5, y: 559}
-        - {x: -62.5, y: 559}
-        - {x: -63.5, y: 558}
-        - {x: -71.5, y: 556}
-        - {x: -76.5, y: 553}
-        - {x: -78.5, y: 553}
-        - {x: -91.5, y: 547}
-        - {x: -93.5, y: 545}
-        - {x: -96.5, y: 544}
-        - {x: -97.5, y: 542}
-        - {x: -98.5, y: 542}
-        - {x: -101.5, y: 540}
-        - {x: -105.5, y: 538}
-        - {x: -108.5, y: 534}
-        - {x: -109.5, y: 534}
-        - {x: -123.5, y: 520}
-        - {x: -123.5, y: 519}
-        - {x: -126.5, y: 516}
-        - {x: -126.5, y: 515}
-        - {x: -130.5, y: 511}
-        - {x: -134.5, y: 502}
-        - {x: -134.5, y: 500}
-        - {x: -136.5, y: 496}
-        - {x: -136.5, y: 491}
-        - {x: -137.5, y: 490}
-        - {x: -137.5, y: 482}
-        - {x: -138.5, y: 481}
-        - {x: -138.5, y: 437}
-        - {x: -137.5, y: 436}
-        - {x: -137.5, y: 380}
-        - {x: -139.5, y: 380}
-        - {x: -140.5, y: 379}
-        - {x: -152.5, y: 379}
-        - {x: -153.5, y: 378}
-        - {x: -176.5, y: 378}
-        - {x: -177.5, y: 377}
-        - {x: -180.5, y: 377}
-        - {x: -181.5, y: 376}
-        - {x: -185.5, y: 375}
-        - {x: -192.5, y: 368}
-        - {x: -192.5, y: -567}
-        - {x: 188.5, y: -567}
-        - {x: 188.5, y: -371}
-        - {x: 189.5, y: -370}
-        - {x: 189.5, y: 80}
-    - name: gameMapOnlineUI_20
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: gameMapOnlineUI_20
       rect:
         serializedVersion: 2
         x: 2
@@ -541,13 +346,10 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -77, y: 77}
-        - {x: -77, y: -75}
-        - {x: -75, y: -77}
-        - {x: 77, y: -77}
-        - {x: 77, y: 77}
-    - name: gameMapOnlineUI_21
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: gameMapOnlineUI_21
       rect:
         serializedVersion: 2
         x: 158
@@ -557,13 +359,10 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -77, y: 77}
-        - {x: -77, y: -75}
-        - {x: -75, y: -77}
-        - {x: 77, y: -77}
-        - {x: 77, y: 77}
-    - name: gameMapOnlineUI_22
+      outline: []
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: gameMapOnlineUI_22
       rect:
         serializedVersion: 2
         x: 314
@@ -573,12 +372,8 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -77, y: 77}
-        - {x: -77, y: -75}
-        - {x: -75, y: -77}
-        - {x: 77, y: -77}
-        - {x: 77, y: 77}
+      outline: []
+      tessellationDetail: -1
     outline: []
   spritePackingTag: 
   userData: 

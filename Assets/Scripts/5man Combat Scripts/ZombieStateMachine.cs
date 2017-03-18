@@ -1,12 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using SpriteColorFX;
+using UnityEngine.SceneManagement;
 
 public class ZombieStateMachine : MonoBehaviour {
 
 	public BaseZombie zombie;
 	public GameObject myTargetGraphic;
 	public Text myTypeText;
+    [SerializeField]
+    public ZombieColorProfile[] zombieColorProfileArray;
 
 	private BattleStateMachine BSM;
 	private Vector3 startPosition;
@@ -43,7 +47,83 @@ public class ZombieStateMachine : MonoBehaviour {
 		currentState = TurnState.WAITING;
 		BSM = FindObjectOfType<BattleStateMachine>();
 		myTypeText.text = zombie.zombieType.ToString();
+        SetMySprite();
+        
 	}
+
+    
+
+    void SetMySprite()
+    {
+        //find my sprite renderer
+        SpriteRenderer my_spriteRenderer = this.gameObject.GetComponent<SpriteRenderer>();
+        SpriteColorMasks3 spriteRecolorer = GetComponent<SpriteColorMasks3>();
+
+        if (zombie.zombieType == BaseZombie.Type.SKINNY)
+        {
+            my_spriteRenderer.sprite = BSM.zombie_sprite_array[0];
+            spriteRecolorer.textureMask = BSM.zombie_texture_array[0] as Texture2D;
+        }else if (zombie.zombieType == BaseZombie.Type.NORMAL)
+        {
+            my_spriteRenderer.sprite = BSM.zombie_sprite_array[1];
+            spriteRecolorer.textureMask = BSM.zombie_texture_array[1] as Texture2D;
+        }
+        else if (zombie.zombieType == BaseZombie.Type.FAT)
+        {
+            my_spriteRenderer.sprite = BSM.zombie_sprite_array[2];
+            spriteRecolorer.textureMask = BSM.zombie_texture_array[2] as Texture2D;
+        }
+        spriteRecolorer.pixelOp = SpriteColorHelper.PixelOp.Overlay;
+        //RecolorMySprite(); //this picks from pre-selected color pallates
+        DisableMyColorizer(); //this function was created to undo all the colorshifting at runtime-instead of removing the components from the game
+        //spriteRecolorer.colorMaskRed = GimmieRandomColor();
+        //spriteRecolorer.colorMaskGreen = GimmieRandomColor();
+        //spriteRecolorer.colorMaskBlue = GimmieRandomColor();
+
+        //Debug.Log(spriteRecolorer.colorMaskRed.ToString() +"R :: "+spriteRecolorer.colorMaskGreen.ToString()+"G :: "+spriteRecolorer.colorMaskBlue.ToString()+"B");
+
+        Debug.Log(this.gameObject.name + " is setting their sprite to a " + zombie.zombieType.ToString() + " zombie");
+    }
+
+    void DisableMyColorizer()
+    {
+        this.GetComponent<SpriteColorMasks3>().enabled=false;
+    }
+
+    Vector4 GimmieRandomColor() {
+        float r = Random.Range(0.0f, 1.0f);
+        float g = Random.Range(0.0f, 1.0f);
+        float b = Random.Range(0.0f, 1.0f);
+        float a = Random.Range(0.0f, 1.0f);
+        return new Vector4(r, g, b, a);
+    }
+
+    [System.Serializable]
+    public class ZombieColorProfile
+    {
+        public SpriteColorHelper.PixelOp comp_type;
+        public Color r_channel;
+        public Color g_channel;
+        public Color b_channel;
+    }
+
+    void RecolorMySprite ()
+    {
+        SpriteColorMasks3 my_spriteRecolorer = GetComponent<SpriteColorMasks3>();
+
+        if (my_spriteRecolorer!= null)
+        {
+            int pos = Random.Range(0, zombieColorProfileArray.Length - 1);
+            my_spriteRecolorer.pixelOp = zombieColorProfileArray[pos].comp_type;
+            my_spriteRecolorer.colorMaskRed = zombieColorProfileArray[pos].r_channel;
+            my_spriteRecolorer.colorMaskGreen = zombieColorProfileArray[pos].g_channel;
+            my_spriteRecolorer.colorMaskBlue = zombieColorProfileArray[pos].b_channel;
+        }
+        else
+        {
+            Debug.Log("no sprite color mask found- leaving default color");
+        }
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -60,11 +140,15 @@ public class ZombieStateMachine : MonoBehaviour {
 				StartCoroutine (TakeAction());
 			break;
 			case (TurnState.DEAD):
-				if (GameManager.instance.zombiesToFight >= 6) {
-					//kill me and refresh me.
-					StartCoroutine(DeathAction(true));
+                //BattleStateMachine stores the #of zombies in the scene on start
+                //by making this comparison on death, we maintain that number
+				if (GameManager.instance.activeBldg_zombies >= GameManager.instance.activeBldg_zAcross+1) {
+                    //kill me and refresh me.
+                    Debug.Log(">>>>>>>>>>>>>>>>>>>>>>>>> death action called with replace");
+                    StartCoroutine(DeathAction(true));
 				} else {
-					//Kill me and do not refresh.
+                    //Kill me and do not refresh.
+                    Debug.Log(">>>>>>>>>>>>>>>>>>>>>>>>> death action called without replace");
 					StartCoroutine(DeathAction(false));
 				}
 			break;
@@ -73,11 +157,14 @@ public class ZombieStateMachine : MonoBehaviour {
 	}
 
 	public bool CheckForDeath () {
+        Debug.Log(gameObject.name+" checking for death with "+zombie.curHP+" HP");
 		if (zombie.curHP <= 0 ) {
-			currentState = TurnState.DEAD;
+			this.currentState = TurnState.DEAD;
 			BSM.zombieList.Remove(this.gameObject);
+            Debug.Log("****************>>>>>>>>>>>>> Zombie found itself as DEAD :::: "+currentState.ToString());
 			return true;
 		} else {
+            Debug.Log("******************>>>>>>>>>>>>>>>>>>> Zombie found itself as ALIVE");
 			return false;
 		}
 	}
@@ -101,15 +188,18 @@ public class ZombieStateMachine : MonoBehaviour {
 			int startRenderLayer = gameObject.GetComponent<SpriteRenderer>().sortingOrder;
 
 			Vector3 targetPosition = new Vector3(0, 0, 0); //just called to initialize the variable.
-			if (target != null) {
-				//animate the enemy near the hero to attack
-				targetPosition = new Vector3(target.transform.position.x + 55.0f, target.transform.position.y, target.transform.position.z);
-				gameObject.GetComponent<SpriteRenderer>().sortingOrder = target.GetComponent<SpriteRenderer>().sortingOrder;
-			} else {
-				currentState = TurnState.CHOOSEACTION;
-				actionStarted = false;
-				StopCoroutine(TakeAction());
-			}
+			
+            if (target == null)
+            {
+                //pick a new target.
+                int ind = Random.Range(0, BSM.survivorList.Count - 1);
+                target = BSM.survivorList[ind];
+            }
+
+			//animate the enemy near the hero to attack
+			targetPosition = new Vector3(target.transform.position.x + 55.0f, target.transform.position.y, target.transform.position.z);
+			gameObject.GetComponent<SpriteRenderer>().sortingOrder = target.GetComponent<SpriteRenderer>().sortingOrder;
+			
 
 			while (MoveTowardsEnemy(targetPosition)) {yield return null;}
 			//animate weaponfx
@@ -119,12 +209,15 @@ public class ZombieStateMachine : MonoBehaviour {
 			//do damage
 			SurvivorStateMachine targetSurvivor = target.GetComponent<SurvivorStateMachine>();
 			int myDmg = CalculateMyDamage ();
-			StartCoroutine(SendZombieAttack(targetSurvivor.survivor.survivor_id, myDmg));
-			Debug.Log ("Zombie hit Survivor for "+myDmg+" damage");
+
+            //StartCoroutine(SendZombieAttack(targetSurvivor.survivor.survivor_id, myDmg)); //no longer updating the server on each attack- now storing attacks for later
+
+            Debug.Log ("Zombie hit Survivor for "+myDmg+" damage");
 			targetSurvivor.survivor.curStamina -= myDmg;
+			SpawnCombatDamageText (target.gameObject, myDmg);
 
 			//check for having bit the player
-			float odds = 0.0f;
+			float odds = 2.0f;
 			bool survivorBit= false;
 			if (targetSurvivor.teamPos == 5) {
 				//this is player character, he has different odds than the team
@@ -133,11 +226,16 @@ public class ZombieStateMachine : MonoBehaviour {
 					//player character cannot get bit
 					odds = 0.0f;
 				} else {
-					odds = 0.5f;
+					odds += 0.5f;
 				}
 
+                if ((GameManager.instance.GetCurrentTimeAlive().TotalDays) < 2)//if we're within the first 2 days- players can't die to zombies
+                {
+                    odds = 0.0f;
+                }
+
 			} else {
-				odds = 1.1f;//starting odds for a survivor to get bitten.
+				odds += 1.1f;//starting odds for a survivor to get bitten.
 			}
 			int cur_stam = targetSurvivor.survivor.curStamina;
 			if (cur_stam < 1) {
@@ -156,9 +254,12 @@ public class ZombieStateMachine : MonoBehaviour {
 				survivorBit = true;
 			}
 
+            //server update is repaced with locally storing the completed attack data here:
+            StoreAttack(targetSurvivor.survivor.survivor_id, survivorBit);
 
-			//return to start position
-			Vector3 firstPosition = startPosition;
+
+            //return to start position
+            Vector3 firstPosition = startPosition;
 			while (MoveTowardsEnemy(firstPosition)) {yield return null;}
 
 			//remove turn from list
@@ -177,6 +278,22 @@ public class ZombieStateMachine : MonoBehaviour {
 		}
 	}
 
+    private void StoreAttack (int surv_id, bool bite)
+    {
+        TurnResultHolder myTurnresult = new TurnResultHolder();
+        myTurnresult.attackType = "zombie";
+        myTurnresult.survivor_id = surv_id;
+        if (bite)
+        {
+            myTurnresult.dead = 1;
+        }else
+        {
+            myTurnresult.dead = 0;
+        }
+
+        BSM.turnResultJsonString += "{\"attackType\":\"zombie\",\"survivor_id\":" + surv_id + ",\"weapon_id\":0,\"dead\":" + myTurnresult.dead + "},";
+        //BSM.turnResultList.Add(myTurnresult);
+    }
 
 
 	IEnumerator SendZombieAttack (int survivorID, int dmg) {
@@ -198,12 +315,13 @@ public class ZombieStateMachine : MonoBehaviour {
 	}
 
 	private IEnumerator DeathAction (bool refresh) {
+        Debug.Log(gameObject.name+" calling death");
 		if (deathActionStarted) {
 			yield break;
 		} else {
 			deathActionStarted = true;
 			BSM.zombieList.Remove(gameObject);
-			GameManager.instance.zombiesToFight --;
+			GameManager.instance.activeBldg_zombies --;
 			BSM.UpdateUINumbers();
 			BSM.zombiesKilled ++;
 
@@ -261,6 +379,7 @@ public class ZombieStateMachine : MonoBehaviour {
 	}
 
 	void ReRollType () {
+        //determine and set new type
 		int roll = Random.Range (1,3);
 		if (roll == 1)  {
 			zombie.zombieType = BaseZombie.Type.FAT;
@@ -269,27 +388,77 @@ public class ZombieStateMachine : MonoBehaviour {
 		} else if (roll == 3) {
 			zombie.zombieType = BaseZombie.Type.SKINNY;
 		}
+
+        //update the UI text and sprite
 		myTypeText.text = zombie.zombieType.ToString();
+        SetMySprite();
 	}
 
 	int CalculateMyDamage () {
-		return zombie.baseAttack;
+		int dmg = Random.Range(4,8);
+		return dmg;
+		//return zombie.baseAttack;
 	}
 
 	//this is being used for players targeting zombies
 	void OnMouseDown () {
+        //provided characters have not already started moving.
 		if (actionStarted == false) {
-			GameObject[] targetReticleObjects = GameObject.FindGameObjectsWithTag("targetReticle");
-			foreach (GameObject targetReticle in targetReticleObjects){
-				ZombieStateMachine ZSM = gameObject.GetComponentInParent<ZombieStateMachine>();
-				ZSM.iAmPlayerTarget =false;
-				targetReticle.SetActive(false);
-			}
-			
+            //turn all target reticles off
+            GameObject[] targetReticleObjects = GameObject.FindGameObjectsWithTag("targetReticle");
+            foreach (GameObject targetReticle in targetReticleObjects)
+            {
+                ZombieStateMachine ZSM = gameObject.GetComponentInParent<ZombieStateMachine>();
+                ZSM.iAmPlayerTarget = false;
+                targetReticle.SetActive(false);
+            }
 
-			iAmPlayerTarget = true;
-			myTargetGraphic.SetActive(true);
-			BSM.playerTarget = this.gameObject;
+            
+            if (BSM.playerTarget != this.gameObject)
+            {
+                //if this is not already player target- set it to player target
+                iAmPlayerTarget = true;
+                myTargetGraphic.SetActive(true);
+                BSM.playerTarget = this.gameObject;
+            }else
+            {
+                //if this is already player target, UN-target this zombie
+                //Debug.Log("un-targeting this zombie");
+                BSM.playerTarget = null;
+                iAmPlayerTarget = false;
+                myTargetGraphic.SetActive(false);
+            }
 		}
+	}
+
+	void SpawnCombatDamageText (GameObject trgt, int val)
+	{
+		GameObject[] deleteThese = GameObject.FindGameObjectsWithTag("deleteme");
+		foreach (GameObject dlt in deleteThese)
+		{
+			Destroy(dlt);
+		}
+
+		//spawn empty game object, attach to canvas, and locate in correct position.
+		GameObject canvas = GameObject.Find("Canvas");
+		GameObject empty = new GameObject();
+		empty.name = "deleteme";
+		empty.tag = "deleteme";
+		GameObject zombie_pos = Instantiate(empty);
+		zombie_pos.transform.SetParent(canvas.transform, false);
+		Camera myCamera = FindObjectOfType<Camera>();
+		Vector3 screen_pos = myCamera.WorldToScreenPoint(trgt.transform.position);
+		Vector3 tmp_pos = screen_pos + new Vector3(0.0f, 100.0f, 0.0f);
+		zombie_pos.transform.position = tmp_pos;
+
+		//get the prefab and instantiate it
+		GameObject dmgTxtPrefab = Resources.Load<GameObject>("Prefabs/Damage Text Prefab");
+		GameObject instance = Instantiate(dmgTxtPrefab);
+		StaminaText dmgText = instance.GetComponent<StaminaText>();
+		Text tText = instance.GetComponent<Text> ();
+		tText.color = Color.green;
+		instance.transform.SetParent(zombie_pos.transform, false);
+		dmgText.SetDamageText(val.ToString());
+
 	}
 }

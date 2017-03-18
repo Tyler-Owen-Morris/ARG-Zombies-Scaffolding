@@ -9,7 +9,7 @@ public class MissionCombatSimulator : MonoBehaviour {
 
 	public string building_id, building_name;
 	public float travel_time_minutes;
-	public int ammo_used, zombies_killed, supply_earned, water_earned, food_earned;
+	public int ammo_used, zombies_killed, wood_earned, metal_earned, water_earned, food_earned;
 	public bool surv1Dead, surv2Dead, surv3Dead, surv4Dead, surv5Dead, survivor_found;
 
 	private string sendMissionURL = GameManager.serverURL+"/StartNewMission.php";
@@ -120,7 +120,8 @@ public class MissionCombatSimulator : MonoBehaviour {
 		} else {
 			form.AddField("survivor5_dead", 0);
 		}
-		form.AddField("supply_found", supply_earned);
+		form.AddField("wood_found", wood_earned);
+        form.AddField("metal_found", metal_earned);
 		form.AddField("water_found", water_earned);
 		form.AddField("food_found", food_earned);
 		form.AddField("ammo_used", ammo_used);
@@ -194,19 +195,20 @@ public class MissionCombatSimulator : MonoBehaviour {
 	}
 
 	private void CalculateAndStoreRewards() {
-		CalculateSupplyEarned();
+		CalculateWoodEarned();
+        CalculateMetalEarned();
 		CalculateFoodFound();
 		CalculateWaterFound();
 		CalculateSurvivorFound();
 	}
 
-	void CalculateSupplyEarned () {
-		int max_supply = GameManager.instance.activeBldg_supply;
+	void CalculateWoodEarned () {
+		int max_wood = GameManager.instance.activeBldg_wood;
 
-		if (max_supply >0 ) {
-			supply_earned = UnityEngine.Random.Range(1, max_supply);
+		if (max_wood >0 ) {
+			wood_earned = UnityEngine.Random.Range(1, max_wood);
 		} else {
-			supply_earned = 0;
+			wood_earned = 0;
 		}
 
 		/*
@@ -221,6 +223,19 @@ public class MissionCombatSimulator : MonoBehaviour {
 		supply_earned = sum;
 		*/
 	}
+
+    void CalculateMetalEarned ()
+    {
+        int max_metal = GameManager.instance.activeBldg_metal;
+
+        if (max_metal > 0)
+        {
+            metal_earned = UnityEngine.Random.Range(1, max_metal);
+        }else
+        {
+            metal_earned = 0;
+        }
+    }
 
 	void CalculateWaterFound () {
 		int max_water = GameManager.instance.activeBldg_water;

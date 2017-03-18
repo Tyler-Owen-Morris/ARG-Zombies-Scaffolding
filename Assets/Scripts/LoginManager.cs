@@ -10,32 +10,30 @@ using System;
 public class LoginManager : MonoBehaviour {
 
 	[SerializeField]
-	private Text loginPasswordText, loginEmailText, registerEmail, registerPassword, registerPassword2;
+	//private Text loginPasswordText, loginEmailText, registerEmail, registerPassword, registerPassword2; // no longer used
 	private int survivorsDrafted = 0;
     public bool runGameClock = false;
     private DateTime time_game_start;
+    private bool confirm_new_char = true;
 
-	public GameObject registrationPanel, loggedInPanel, survivorDraftPanel, newCharConfirmationPanel;
-    public Text currentGameClock;
+	public GameObject registrationPanel, loggedInPanel, survivorDraftPanel, newCharConfirmationPanel, aliveDeadChoicePanel, userDataObject;
+    public Text currentGameClock, player_name, player_food, player_water, firstTimeText;
+    public Image loginProfilePic, tmp_TestProfilePicBlobLoader;
 	public Button continueButton;
 	public IGraphResult fbFriendsResult;
 	public JsonData staticSurvivorData, facebookSurvivorData;
 	public SurvivorPlayCard[] survivorDraftCardArray;
 	public Sprite genericSurvivorPortrait;
 
-
-
-//	private string registerUrl = "http://localhost/ARGZ_SERVER/register.php";
-//	private string playerDataUrl = "http://localhost/ARGZ_SERVER/PlayerData.php";
-//	private string loginUrl = "http://localhost/ARGZ_SERVER/login.php";
-
 	private string newSurvivorUrl = GameManager.serverURL+"/create_new_survivor.php";
-	private string findUserAcctURL = GameManager.serverURL+"/UserAcctLookup.php";
+	//private string findUserAcctURL = GameManager.serverURL+"/UserAcctLookup.php";
 	private string fetchStaticSurvivorURL = GameManager.serverURL+"/FetchStaticSurvivor.php";
 	private string zombieStatusURL = GameManager.serverURL+"/GetZombieStatus.php";
-	
-	// Use this for initialization
-	void Start () { 
+    private string profileImageUploadURL = GameManager.serverURL + "/UploadProfileImage.php";
+    private string playAsZombieURL = GameManager.serverURL + "/PlayAsZombie.php";
+
+    // Use this for initialization
+    void Start () { 
         if (FB.IsInitialized) {
             FB.ActivateApp();
         } else {
@@ -47,13 +45,17 @@ public class LoginManager : MonoBehaviour {
         if (GameManager.instance.gameDataInitialized == true)
         {
             runGameClock = true;
+            loginProfilePic.sprite = GameManager.instance.my_profile_pic;
+            player_name.text = GameManager.instance.userName;
+            player_food.text = GameManager.instance.foodCount.ToString();
+            player_water.text = GameManager.instance.waterCount.ToString();
         }
     }
 
     void Update() {
         if (runGameClock == true)
         {
-            TimeSpan time_alive = (DateTime.Now - GameManager.instance.timeCharacterStarted);
+            TimeSpan time_alive = (DateTime.Now - (GameManager.instance.timeCharacterStarted + GameManager.instance.serverTimeOffset));
             //Debug.Log(time_alive.ToString());
             string my_string = "";
 
@@ -116,36 +118,54 @@ public class LoginManager : MonoBehaviour {
     void OnLevelFinishedLoading (Scene scene, LoadSceneMode mode) {
 			//if the game data hasn't been loaded, then attempt to resume character automatically.
             if (GameManager.instance.gameDataInitialized) {
-				Debug.Log("Why didn't this register as true?!?");
+				Debug.Log("loaded Login screen with game data already initialized");
             } else {
             	if (FB.IsLoggedIn) {
-            		Debug.Log("Automatically attempting to resume game");
-            		ResumeCharacter();
+                //This was intended to auto-load the game for players already logged in, however, it's just annoying, and I don't want to write the code to fix it 1/26/17
+                //Debug.Log("Automatically attempting to resume game");
+                //ResumeCharacter();
+                Debug.Log("This spot USED TO cause an automatic load to map screen- NOW REMOVED to allow players to go between options+login screens smoothly");
 				}
             }
+    }
+
+    public void LoadSettingsMenu ()
+    {
+        Debug.Log("Loading Options menu");
+        SceneManager.LoadScene("01c Options");
     }
 
     public void ConfirmStartNewCharacter () {
     	if(newCharConfirmationPanel.activeInHierarchy) {
     		newCharConfirmationPanel.SetActive(false);
     	} else {
-    		newCharConfirmationPanel.SetActive(true);
+            if (confirm_new_char)
+            {
+                newCharConfirmationPanel.SetActive(true);
+            }else
+            {
+                GameManager.instance.StartNewCharacter();
+            }
+            
     	}
     }
 
-    
+    //this is called automatically on mobile- as user is persistently logged in after 1st login
     void SetInit () {
         FB.ActivateApp();
         if (FB.IsLoggedIn) {
-            Debug.Log ("FB is logged in");
-
+            Debug.Log ("FB is logged in- SetInit");
+            
+            //FB.API("me?fields=id,name,first_name,last_name,picture{height,width,url}", HttpMethod.GET, FBCoreCallback);
+            
+            
             //fetch the name and ID from the FB API.
-			FB.API ("/me?fields=id", HttpMethod.GET, UpdateUserId);
+            FB.API ("/me?fields=id", HttpMethod.GET, UpdateUserId);
 		    FB.API ("/me?fields=first_name", HttpMethod.GET, UpdateUserFirstName);
 		    FB.API ("/me?fields=last_name", HttpMethod.GET, UpdateUserLastName);
 		    FB.API ("/me", HttpMethod.GET, UpdateUserName);
+            
 			FB.API ("me?fields=picture.width(200).height(200)", HttpMethod.GET, UpdateProfilePicURL);
-
             loggedInPanel.SetActive (true);
 
         } else {
@@ -169,13 +189,14 @@ public class LoginManager : MonoBehaviour {
         List<string> permissions = new List<string>();
         permissions.Add("public_profile");
         permissions.Add("user_friends");
-        permissions.Add("email");
+        //permissions.Add("email");
         
         
         FB.LogInWithReadPermissions (permissions, AuthCallBack);
         
     }
     
+    //this is only called after manual login
     void AuthCallBack (IResult result) {
         
         if (result.Error != null) {
@@ -185,12 +206,16 @@ public class LoginManager : MonoBehaviour {
             if (FB.IsLoggedIn) {
                 Debug.Log ("FB is logged in");
                 loggedInPanel.SetActive (true);
+
+                //FB.API("me?fields=id,name,first_name,last_name,picture{height,width,url}", HttpMethod.GET, FBCoreCallback);
+
                 FB.API ("/me?fields=id", HttpMethod.GET, UpdateUserId);
 		        FB.API ("/me?fields=first_name", HttpMethod.GET, UpdateUserFirstName);
 		        FB.API ("/me?fields=last_name", HttpMethod.GET, UpdateUserLastName);
 				FB.API ("/me", HttpMethod.GET, UpdateUserName);
+                
 				FB.API ("me?fields=picture.width(200).height(200)", HttpMethod.GET, UpdateProfilePicURL);
-
+                
             } else {
                 Debug.Log ("FB is NOT logged in");
                 loggedInPanel.SetActive (false);
@@ -202,6 +227,12 @@ public class LoginManager : MonoBehaviour {
 
     //checks if player is a zombie/dead
     IEnumerator CheckZombieStatus() {
+
+        if (GameManager.instance.userId == "")
+        {
+            Debug.Log("preventing blank user id from being sent to the server");
+            yield break;
+        }
     	
     	WWWForm form = new WWWForm();
 		form.AddField("id", GameManager.instance.userId);
@@ -217,22 +248,86 @@ public class LoginManager : MonoBehaviour {
 
 			if (zombStatJson[0].ToString() == "Success") {
 				int stat = (int)zombStatJson[1];
-	
-				if (stat == 0) {
-					//player is alive, and has a character active on server
-					Debug.Log("player is alive, and has an active character on the server");
-                    time_game_start = DateTime.Parse(zombStatJson[2]["char_created_DateTime"].ToString());
-                    GameManager.instance.timeCharacterStarted = time_game_start;
-                    runGameClock = true;
-                    currentGameClock.gameObject.SetActive(true);
-					continueButton.interactable = true;
+
+                if (stat == 0)
+                {
+                    
+                    //problem on first login: no char created date time causes parse error -1/11/17
+                    if (zombStatJson[2]["char_created_DateTime"].ToString() != "")
+                    {
+                        //player is alive, and has a character active on server
+                        Debug.Log("player is alive, and has an active character on the server");
+                        
+                        //SET CLIENT TIME OFFSET
+                        GameManager.instance.serverTimeOffset = DateTime.Now - DateTime.Parse(zombStatJson[3]["NOW()"].ToString());
+                        Debug.Log("Server offset calculated to be: " + GameManager.instance.serverTimeOffset);
+
+
+                        //Set up the clock for active character.
+                        string zombStatJsonString = zombStatJson[2]["char_created_DateTime"].ToString();
+                        if (zombStatJsonString != "") {
+                            time_game_start = DateTime.Parse(zombStatJsonString);
+                        }else
+                        {
+                            confirm_new_char = false;//there is no previous character, we can bypass the confirmation panel on "start new"
+                        }
+
+                        
+
+                        GameManager.instance.timeCharacterStarted = time_game_start;
+                        runGameClock = true;
+                        currentGameClock.gameObject.SetActive(true);
+
+                        //set up the name, stats, and pic
+                        userDataObject.SetActive(true);
+                        player_name.text = GameManager.instance.userName;
+                        player_food.text = zombStatJson[2]["food"].ToString();
+                        player_water.text = zombStatJson[2]["water"].ToString();
+                        loginProfilePic.sprite = GameManager.instance.my_profile_pic;
+
+                        continueButton.interactable = true;
+
+
+                        //TEMPORARY!!! ATTEMPT TO LOAD PROFILE IMAGE FROM PHP RETURN
+                        /*
+                        Texture2D server_image = new Texture2D(200,200) ;
+                         zombStatJson[2]["profile_image_blob"].ToString() 
+                        server_image.LoadImage();
+                        */
+                    }
+                    else
+                    {
+                        //blank created date/time means first login. Setup the login panel.
+                        runGameClock = false;
+                        currentGameClock.gameObject.SetActive(false);
+                        continueButton.interactable = false;
+                        userDataObject.SetActive(false);
+
+
+                        // TODO: POST A TEXT OBJECT INFORMING FIRST TIME PLAYERS TO START A NEW CHARACTER.
+                        firstTimeText.gameObject.SetActive(true);
+
+                    }
 				} else if (stat == 1) {
 					Debug.Log("Player is a zombie ==> force loading game over scene");
+                    //must load start and end times into game manager before loading Game over scene.
+                    GameManager.instance.timeCharacterStarted = DateTime.Parse(zombStatJson[2]["char_created_DateTime"].ToString());
+                    string end_time = zombStatJson[2]["game_over_datetime"].ToString();
+                    if (end_time != "")
+                    {
+                        GameManager.instance.gameOverTime = DateTime.Parse(end_time);
+                    } else
+                    {
+                        Debug.Log("Your death did not store a date-time properly.");
+                    }
 					GameManager.instance.playerIsZombie = true;
-					SceneManager.LoadScene("03b Game Over");
+					GameManager.instance.zm_zombieHordeCount = int.Parse(zombStatJson[2]["zm_hordeCount"].ToString());
+                    SceneManager.LoadScene("02b Zombie Mode");
+                    //SceneManager.LoadScene("03b Game Over");
 				} else if (stat == 2) {
 					Debug.Log("Player is dead, but not a zombie");
                     currentGameClock.gameObject.SetActive(false);
+                    userDataObject.SetActive(false);
 					continueButton.interactable = false;
 				} else {
 					Debug.Log("Zombie Check callback returned invalid status code");
@@ -248,6 +343,30 @@ public class LoginManager : MonoBehaviour {
 			Debug.Log(www.error);
 		}
     }
+
+    //once logged in, we fetch the core data, and this is the callback function
+    private void FBCoreCallback(IResult result)
+    {
+        if (result.Error == null)
+        {
+            //load the user data into GameManager
+            GameManager.instance.userId = result.ResultDictionary["id"].ToString();
+            GameManager.instance.userFirstName = result.ResultDictionary["first_name"].ToString();
+            GameManager.instance.userLastName = result.ResultDictionary["last_name"].ToString();
+            GameManager.instance.userName = result.ResultDictionary["name"].ToString();
+            /*
+            string rawResult = result.RawResult;
+            JsonData picJson = JsonMapper.ToObject(rawResult);
+            GameManager.instance.myProfilePicURL = picJson["picture"]["data"]["url"].ToString();
+            StartCoroutine(SetPlayerProfilePic(picJson["picture"]["data"]["url"].ToString()));
+            */
+            StartCoroutine(CheckZombieStatus()); //this should be the only place we call this, as it is contained in the main FB callback function
+        }
+        else
+        {
+            Debug.Log(result.Error);
+        }
+    }
     
 	private void UpdateUserId (IResult result) {
 		if (result.Error == null) {
@@ -257,7 +376,7 @@ public class LoginManager : MonoBehaviour {
         }
 
 		//ping the server for forced zombie status
-		StartCoroutine(CheckZombieStatus());
+		StartCoroutine(CheckZombieStatus()); //first login bug checking
 	}
 
 	private void UpdateUserFirstName(IResult result) {
@@ -295,6 +414,7 @@ public class LoginManager : MonoBehaviour {
 		}else{
 			Debug.Log(result.Error);
 		}
+        //StartCoroutine(CheckZombieStatus());
 	}
 
     IEnumerator SetPlayerProfilePic (string pic_url)
@@ -305,8 +425,14 @@ public class LoginManager : MonoBehaviour {
         if (www.error == null)
         {
             Debug.Log("setting player Profile Pic");
-            GameManager.instance.my_profile_pic = Sprite.Create(www.texture, new Rect(0, 0, 200, 200), new Vector2());
+            int height = www.texture.height;
+            int width = www.texture.width;
 
+            var bytes = www.texture.EncodeToPNG();
+            Debug.Log("Picture Encoded into PNG reads bytes out as: " + bytes.ToString());
+            GameManager.instance.my_profile_pic = Sprite.Create(www.texture, new Rect(0, 0, width, height), new Vector2());
+            GameManager.instance.profile_image_texture = www.texture;
+            //we will verify this is the correct image when we load into the map level- along with loading all other survivor images.
         }
         else
         {
@@ -314,7 +440,49 @@ public class LoginManager : MonoBehaviour {
         }
     }
 
-	private void UpdateSurvivorDraftWindow (IGraphResult result) {
+    public void SendPlayerProfilePicToServer ()
+    {
+        StartCoroutine(UpdateMyProfileImageOnTheServer());
+    }
+
+    IEnumerator UpdateMyProfileImageOnTheServer()
+    {
+        yield return new WaitForEndOfFrame();
+        //declare the texture we're going to use
+        var tex = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
+        tex.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0); //this take a screenshot of the entire screen
+        //tex.ReadPixels(loginProfilePic.rectTransform.rect, 0, 0); //this attempts to just take the rect of the player profile picture.
+        tex.Apply();
+        var bytes = tex.EncodeToPNG()/*GameManager.instance.my_profile_pic.texture.EncodeToPNG()*/;
+        Debug.Log("******************************<<<<<<<<<<<<<<<Encoding profile image to binary:" + bytes.ToString());
+
+        GameManager.instance.lastLoginTime = "12/31/1999 11:59:59";
+        WWWForm form = new WWWForm();
+        form.AddField("id", GameManager.instance.userId);
+        form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+        form.AddField("client", "mob");
+
+        form.AddField("action", "upload image");
+        form.AddBinaryData("profileImage", bytes, GameManager.instance.userId + ".png");
+        Debug.Log("attempting to send player profile pic to the server as a BLOB " + bytes.ToString());
+
+        //upload to the server
+        WWW www = new WWW(profileImageUploadURL, form);
+        yield return www;
+        Debug.Log(www.text);
+
+        if (www.error == null)
+        {
+            Debug.Log("no web error reported from upload");
+            JsonData jsonReturn = JsonMapper.ToObject(www.text);
+        }
+        else
+        {
+            Debug.Log(www.error);
+        }
+    }
+
+    private void UpdateSurvivorDraftWindow (IGraphResult result) {
 		if (result.Error == null) {
 			//store the data object for later use in next friend being updated.
 			fbFriendsResult = result;
@@ -613,10 +781,69 @@ public class LoginManager : MonoBehaviour {
 	public void StartNewCharacter () {
 		//this should warn the  player that they are going to erase old game data, and verify before executing
 
-
+        //removed this to remove the draft from the beginning of the game.
+        /*
 		survivorDraftPanel.SetActive(true);
-		FB.API("me/friends?fields=name,picture.width(200).height(200)", HttpMethod.GET, UpdateSurvivorDraftWindow);
-		GameManager.instance.StartNewCharacter();
+        FB.API("me/friends?fields=name,picture.width(200).height(200)", HttpMethod.GET, UpdateSurvivorDraftWindow);
+        */
+        GameManager.instance.StartNewCharacter();
 			
 	}
+
+    public void ToggleAliveDeadChoicePanel()
+    {
+        if (aliveDeadChoicePanel.activeInHierarchy)
+        {
+            aliveDeadChoicePanel.SetActive(false);
+        }
+        else
+        {
+            aliveDeadChoicePanel.SetActive(true);
+        }
+    }
+
+    public void PlayAsZombie()
+    {
+        //just start the coroutine 
+        StartCoroutine(StartZombieGame());
+    }
+
+    IEnumerator StartZombieGame()
+    {
+        GameManager.instance.lastLoginTime = "12/31/1999 11:59:59";
+        WWWForm form = new WWWForm();
+        form.AddField("id", GameManager.instance.userId);
+        form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+        form.AddField("client", "mob");
+
+		Debug.Log ("Sending request to: "+ playAsZombieURL);
+        WWW www = new WWW(playAsZombieURL, form);
+        yield return www;
+        Debug.Log(www.text);
+
+        if (www.error == null)
+        {
+            //parse json
+            JsonData jsonResult = JsonMapper.ToObject(www.text);
+
+            if (jsonResult[0].ToString() == "Success")
+            {
+                Debug.Log("Player has successfully started a game as a zombie");
+                GameManager.instance.playerIsZombie = true;
+				GameManager.instance.zm_zombieHordeCount = int.Parse(jsonResult[1]["zm_hordeCount"].ToString());
+                SceneManager.LoadScene("02b Zombie Mode");
+
+            }
+            else if (jsonResult[0].ToString() == "Failed")
+            {
+                Debug.Log(jsonResult[1].ToString());
+            }
+        }
+        else
+        {
+            Debug.LogWarning(www.error);
+        }
+
+    }
+
 }

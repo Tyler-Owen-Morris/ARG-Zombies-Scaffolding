@@ -12,14 +12,17 @@ public class GameManager : MonoBehaviour {
 
 	public static GameManager instance;
 
+    public ProfileImageManager profileImageManager;
+
 	public bool gameDataInitialized = false, updateWeaponAndSurvivorMapLevelUI = false, survivorFound = false, playerInTutorial = false, weaponHasBeenSelected = false, playerIsZombie = false, blazeOfGloryActive = false;
-	public int daysSurvived, supply, ammo, trap, barrel, greenhouse, reportedSupply, reportedWater, reportedFood, playerCurrentStamina, playerMaxStamina, zombiesToFight, foodCount, waterCount, mealCount, distanceCoveredThisSession, zombieKill_HighScore, zombieKill_score;
+	public int daysSurvived, /*supply,*/wood, metal, ammo, trap, barrel, greenhouse, reportedWood, reportedMetal, reportedWater, reportedFood, playerCurrentStamina, playerMaxStamina, foodCount, waterCount, mealCount, distanceCoveredThisSession, zombieKill_HighScore, zombieKill_score, zm_zombieHordeCount;
 	public DateTime timeCharacterStarted, lastHomebaseSetTime, gameOverTime, activeBldg_lastclear;
 	//public PopulatedBuilding active_building;
 	public float homebaseLat, homebaseLong;
 	public string foundSurvivorName, lastLoginTime;
-	public TimeSpan high_score, my_score;
+	public TimeSpan high_score, my_score, serverTimeOffset;
     public Sprite my_profile_pic;
+    public Texture2D profile_image_texture;
 	public int foundSurvivorCurStam, foundSurvivorMaxStam, foundSurvivorAttack, foundSurvivorEntryID;
 	[SerializeField]
 	private GameObject[] weaponOptionsArray;
@@ -27,6 +30,7 @@ public class GameManager : MonoBehaviour {
 	public List <GameObject> activeSurvivorCardList = new List<GameObject>();
 	public List <GameObject> onMissionSurvivorCardList = new List<GameObject>();
 	public List <GameObject> injuredSurvivorCardList = new List<GameObject>();
+    public List <GameObject> deadSurvivorCardList = new List<GameObject>();
 	public List <GameObject> weaponCardList = new List<GameObject>();
 	public GameObject survivorCardHolder;
 	public GameObject weaponCardHolder;
@@ -34,8 +38,8 @@ public class GameManager : MonoBehaviour {
 	private Scene activeScene;
 	//made this public while working on the server "cleared list" data retention. it should go back to private
 	public string activeBldg_name, zombie_to_kill_id ="", activeBldg_lootcode, activeBldg_id;
-	public int activeBldg_supply, activeBldg_food, activeBldg_water, activeBldg_zombies;
-	public string locationJsonText, survivorJsonText, weaponJsonText, clearedBldgJsonText, outpostJsonText, missionJsonText, starvationHungerJsonText, injuryJsonText;
+	public int activeBldg_zAcross, activeBldg_wood, activeBldg_metal, activeBldg_food, activeBldg_water, activeBldg_zombies;
+	public string myWallsJsonText, locationJsonText, googleBldgJsonTextpg1, googleBldgJsonTextpg2, googleBldgJsonTextpg3, survivorJsonText, weaponJsonText, clearedBldgJsonText, outpostJsonText, missionJsonText, starvationHungerJsonText, injuryJsonText, foundSurvivorJsonText, survivorWallJsonText;
 	public JsonData missionData;
 
 	public string userId;
@@ -43,7 +47,7 @@ public class GameManager : MonoBehaviour {
 	public string userLastName;
 	public string userName;
 
-	public static string serverURL = "http://www.argzombie.com/ARGZ_DEV_SERVER";
+	public static string serverURL = "http://game.argzombie.com/ARGZ_SERVER";
 	public static string QR_encryption_key = "12345678901234567890123456789012";
 
 	private string startNewCharURL = serverURL+"/StartNewCharacter.php";
@@ -84,6 +88,7 @@ public class GameManager : MonoBehaviour {
 		survivorPlayCardPrefab = Resources.Load<SurvivorPlayCard>("Prefabs/SurvivorPlayCard");
 		baseWeaponPrefab = Resources.Load<BaseWeapon>("Prefabs/BaseWeaponPrefab");
 
+        profileImageManager = FindObjectOfType<ProfileImageManager>();
 		//ResetAllBuildings();
 	}
 
@@ -110,6 +115,9 @@ public class GameManager : MonoBehaviour {
 			//mapManager.UpdateTheUI();
 			mapManager.theMissionListPopulator.LoadMissionsFromGameManager();
 
+            ProfileImageManager my_prof_img_mgr = FindObjectOfType<ProfileImageManager>();
+            my_prof_img_mgr.LoadProfilePictures();
+
 		} else if (activeScene.name.ToString() == "01a Login") {
 
 			LoginManager loginMgr = FindObjectOfType<LoginManager>();
@@ -135,85 +143,21 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
-//	JsonData CurrentPlayerDataIntoJson () {
-//		string[] playerData = new string[] () ;
-//
-//	}
 
-	//public void UpdateAllStatsToGameMemory () {
-		//this is a big nono, hence it's disabled
-
-		//StartCoroutine(UpdateGameManagerToGameServer());
-	/*
-		GamePreferences.SetShivCount(shivCount);
-		GamePreferences.SetClubCount(clubCount);
-		GamePreferences.SetGunCount(gunCount);
-		GamePreferences.SetShivDurability(shivDurability);
-		GamePreferences.SetClubDurability(clubDurability);
-		GamePreferences.SetSupply(supply);
-		GamePreferences.SetTotalSurvivors (totalSurvivors);
-		GamePreferences.SetActiveSurvivors (survivorsActive);
-		GamePreferences.SetWaterCount (waterCount);
-		GamePreferences.SetFoodCount (foodCount);
-		GamePreferences.SetMealsCount (mealCount);
-		SetPublicPlayerHealth (this.playerCurrentHealth);
-		GamePreferences.SetHomebaseLattitude (homebaseLat);
-		GamePreferences.SetHomebaseLongitude (homebaseLong);
-		*/
-		//removed to update the server
-	//}
-
-//	IEnumerator UpdateGameManagerToGameServer() {
-////		JsonData playerJsonData = CurrentPlayerDataIntoJson();
-////		String playerJsonString = File.ReadAllText(Application.dataPath + "/Resources/Player.json");
-//
-//
-//		WWWForm form = new WWWForm();
-//		form.AddField("id", GameManager.instance.userId );
-//		form.AddField("first_name", GameManager.instance.userFirstName);
-//		form.AddField("last_name", GameManager.instance.userLastName);
-//		form.AddField("curr_stamina", GameManager.instance.playerCurrentStamina);
-//		form.AddField("supply", GameManager.instance.supply);
-//		form.AddField("food", GameManager.instance.foodCount);
-//		form.AddField("water", GameManager.instance.waterCount);
-//		form.AddField("knife_durability", GameManager.instance.shivDurability);
-//		form.AddField("club_durability", GameManager.instance.clubDurability);
-//		form.AddField("home_lat", GameManager.instance.homebaseLat.ToString());
-//		form.AddField("home_lon", GameManager.instance.homebaseLong.ToString());
-//		form.AddField("char_created_DateTime", GameManager.instance.timeCharacterStarted.ToString());
-//
-//		WWW www = new WWW(updateAllStatsURL, form);
-//		yield return www;
-//
-//		if (www.error == null) {
-//			
-//			Debug.Log ("Server successfully updated " + www.text);
-//
-//			yield break;
-//		} else {
-//			Debug.Log("WWW error "+ www.error);
-//		}
-//	}
 
 	IEnumerator NewCharacterUpdateServer () {
-//		WWWForm form1 = new WWWForm();
-//		form1.AddField("id", GameManager.instance.userId);
-//		form1.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
-//		form1.AddField("client", "mob");
-//
-//		//this is now handled in the start new character php script
-//		WWW www1 = new WWW(clearSurvivorDataURL, form1);
-//		yield return www1;
-//		Debug.Log (www1.text);
+
 		
 		WWWForm form = new WWWForm();
 		form.AddField("id", GameManager.instance.userId );
 		form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
 		form.AddField("client", "mob");
+
 		form.AddField("first_name", GameManager.instance.userFirstName);
 		form.AddField("last_name", GameManager.instance.userLastName);
 		form.AddField("name", GameManager.instance.userName);
-		form.AddField("supply", GameManager.instance.supply);
+		form.AddField("wood", GameManager.instance.wood);
+        form.AddField("metal", GameManager.instance.metal);
 		form.AddField("food", GameManager.instance.foodCount);
 		form.AddField("water", GameManager.instance.waterCount);
 		form.AddField("ammo", GameManager.instance.ammo);
@@ -223,13 +167,14 @@ public class GameManager : MonoBehaviour {
 
 		WWW www = new WWW(startNewCharURL, form);
 		yield return www;
-		Debug.Log(www.text);
+		Debug.Log(www.text +" || "+startNewCharURL);
 
 		if (www.error == null) {
 			
 			Debug.Log ("New character successfully started on the server" + www.text);
-			//SceneManager.LoadScene("02a Map Level");
-			yield break;
+            //SceneManager.LoadScene("02a Map Level"); //used to load map level before intro/wep select was added.
+            SceneManager.LoadScene("04a Weapon Select"); //added when survivor draft removed from new character process.
+            yield break;
 		} else {
 			Debug.Log("WWW error "+ www.error);
 		}
@@ -248,7 +193,7 @@ public class GameManager : MonoBehaviour {
 		if (www.error == null) {
 			JsonData fullGameData = JsonMapper.ToObject(www.text);
 
-			//******* 0-success 1-player 2-survivor 3-weapon 4-cleared buildings 5-outposts 6-missions 7-eat/drink/starve ******* THIS IS HOW THE INDEX IS ORGANIZED
+			//******* 0-success 1-player 2-survivor 3-weapon 4-cleared buildings 5-outposts 6-missions 7-eat/drink/starve 8-injuries 9-wall tags ******* THIS IS HOW THE INDEX IS ORGANIZED
 
 			if (fullGameData[0].ToString() =="Success") {
 
@@ -258,8 +203,10 @@ public class GameManager : MonoBehaviour {
 				GameManager.instance.userLastName = fullGameData[1]["last_name"].ToString();
 				GameManager.instance.playerCurrentStamina = (int)fullGameData[1]["curr_stamina"];
 				GameManager.instance.playerMaxStamina = (int)fullGameData[1]["max_stamina"];
-				int sup = Convert.ToInt32(fullGameData[1]["supply"].ToString());
-				GameManager.instance.supply = sup;
+				int wod = Convert.ToInt32(fullGameData[1]["wood"].ToString());
+				GameManager.instance.wood = wod;
+                int met = Convert.ToInt32(fullGameData[1]["metal"].ToString());
+                GameManager.instance.metal = met;
 				int wat = Convert.ToInt32(fullGameData[1]["water"].ToString());
 				GameManager.instance.waterCount = wat;
 				int fud = Convert.ToInt32(fullGameData[1]["food"].ToString());
@@ -289,7 +236,8 @@ public class GameManager : MonoBehaviour {
 					} else {
 						GameManager.instance.playerIsZombie = false;
 					}
-					SceneManager.LoadScene("03b Game Over");
+                    SceneManager.LoadScene("02b Zombie Mode");
+//					SceneManager.LoadScene("03b Game Over");
 				}
 				GameManager.instance.lastLoginTime = fullGameData[1]["mob_login_ts"].ToString();
 				if (fullGameData[1]["high_score"].ToString() != "") {
@@ -308,7 +256,7 @@ public class GameManager : MonoBehaviour {
 				} else {
 					survivorJsonText = "";
 				}
-				Debug.Log(survivorJsonText);
+				//Debug.Log(survivorJsonText);
 
 				//Debug.Log(JsonMapper.ToJson(fullGameData[3]));
 				if (fullGameData[3] != null) {
@@ -319,7 +267,7 @@ public class GameManager : MonoBehaviour {
 
 				if (fullGameData[4] != null) {
 					clearedBldgJsonText = JsonMapper.ToJson(fullGameData[4]);
-					Debug.Log(JsonMapper.ToJson(fullGameData[4]));
+					//Debug.Log(JsonMapper.ToJson(fullGameData[4]));
 				} else {
 					clearedBldgJsonText = "";
 				}
@@ -349,6 +297,14 @@ public class GameManager : MonoBehaviour {
 					injuryJsonText = "";
 				}
 
+                if (fullGameData[9] != null)
+                {
+                    myWallsJsonText = JsonMapper.ToJson(fullGameData[9]);
+                }else
+                {
+                    myWallsJsonText = "";
+                }
+
 				//***************
 				//load the survivor/weapon game objects into the GameManager, and then go to map level
 				CreateSurvivorsFromGameManagerJson();
@@ -368,9 +324,11 @@ public class GameManager : MonoBehaviour {
 					MapLevelManager mapManager = FindObjectOfType<MapLevelManager>();
 					mapManager.UpdateTheUI();
 					mapManager.theMissionListPopulator.LoadMissionsFromGameManager();
-				} else if (SceneManager.GetActiveScene().name == "02c Combat-5") {
-					BattleStateMachine BSM = FindObjectOfType<BattleStateMachine>();
-					BSM.ResetAllTurns();
+				} else if (SceneManager.GetActiveScene().name == "02e Combat-15"/*SceneManager.GetActiveScene().name == "02c Combat-5"*/) {
+                    
+                    //removed a call to the battlestatemachine- It will set itself up as it loads in.
+                    //BattleStateMachine BSM = FindObjectOfType<BattleStateMachine>();
+					//BSM.ResetAllTurns();
 					//game data is only refreshed from combat when a bit player turns zombie mid-combat. Resetting turns should stop zombies from targeting null gameobjects.
 				}
 			}	
@@ -384,7 +342,7 @@ public class GameManager : MonoBehaviour {
 	public IEnumerator PlayerBit () {
 		activeBldg_name = "bite_case";
 		DateTime time_dead = DateTime.Now + TimeSpan.FromMinutes(UnityEngine.Random.Range(5, 25));
-		TimeSpan final_score = time_dead - GameManager.instance.timeCharacterStarted;
+		TimeSpan final_score = time_dead - (GameManager.instance.timeCharacterStarted + GameManager.instance.serverTimeOffset);
 		my_score=final_score;
 		Debug.Log("Player bit, and will turn at "+time_dead.ToString()+" giving a final score of: "+final_score.ToString());
 
@@ -415,8 +373,8 @@ public class GameManager : MonoBehaviour {
 
 	public IEnumerator PlayerDiedofStarvation () {
 		//calculate the players score 
-		DateTime time_dead = GameManager.instance.timeCharacterStarted + TimeSpan.FromHours(6 * GameManager.instance.mealCount);
-		TimeSpan final_score = time_dead - GameManager.instance.timeCharacterStarted;
+		DateTime time_dead = (GameManager.instance.timeCharacterStarted + GameManager.instance.serverTimeOffset) + TimeSpan.FromHours(6 * GameManager.instance.mealCount);
+		TimeSpan final_score = time_dead - (GameManager.instance.timeCharacterStarted + GameManager.instance.serverTimeOffset);
 		my_score = final_score;
 		Debug.Log(final_score.ToString());
 
@@ -435,14 +393,15 @@ public class GameManager : MonoBehaviour {
 		WWW www = new WWW(gameOverStarvationURL, form);
 		yield return www;
 		Debug.Log(www.text);
-		SceneManager.LoadScene("03b Game Over");
+        SceneManager.LoadScene("02b Zombie Mode");
+		//SceneManager.LoadScene("03b Game Over");
 	}
 
 	public IEnumerator KillUrself () {
 		int courageTimer = UnityEngine.Random.Range(1, 20);
 		DateTime game_over_time = DateTime.Now + TimeSpan.FromMinutes(courageTimer);
 		GameManager.instance.gameOverTime = game_over_time;
-		TimeSpan myScore = game_over_time - GameManager.instance.timeCharacterStarted;
+		TimeSpan myScore = game_over_time - (GameManager.instance.timeCharacterStarted + GameManager.instance.serverTimeOffset);
 		my_score = myScore;
 		Debug.Log("My score: "+myScore.ToString()+" GameOverTime: "+gameOverTime.ToString());
 
@@ -463,7 +422,8 @@ public class GameManager : MonoBehaviour {
 		Debug.Log(www.text);
 
 		if (www.error == null) {
-			SceneManager.LoadScene("03b Game Over");
+            SceneManager.LoadScene("02b Zombie Mode");
+            //SceneManager.LoadScene("03b Game Over");
 		} else {
 			Debug.Log(www.error);
 		}
@@ -487,8 +447,11 @@ public class GameManager : MonoBehaviour {
 		if (FB.IsLoggedIn == true) {
 			form.AddField("id", GameManager.instance.userId);
 		} else {
-			GameManager.instance.userId = "10154194346243928";
-			form.AddField("id", GameManager.instance.userId);
+            Debug.Log("player is not logged in, cannot resume game");
+            StopCoroutine(FetchResumePlayerData());
+
+            //GameManager.instance.userId = "10154194346243928";
+			//form.AddField("id", GameManager.instance.userId);
 		}
 		form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
 		form.AddField("client", "mob");
@@ -513,8 +476,10 @@ public class GameManager : MonoBehaviour {
 				GameManager.instance.userLastName = playerJson[1]["last_name"].ToString();
 				GameManager.instance.playerCurrentStamina = (int)playerJson[1]["curr_stamina"];
 				GameManager.instance.playerMaxStamina = (int)playerJson[1]["max_stamina"];
-				int sup = Convert.ToInt32(playerJson[1]["supply"].ToString());
-				GameManager.instance.supply = sup;
+				int wod = Convert.ToInt32(playerJson[1]["wood"].ToString());
+                GameManager.instance.wood = wod;
+                int met = Convert.ToInt32(playerJson[1]["metal"].ToString());
+                GameManager.instance.metal = met;
 				int wat = Convert.ToInt32(playerJson[1]["water"].ToString());
 				GameManager.instance.waterCount = wat;
 				int fud = Convert.ToInt32(playerJson[1]["food"].ToString());
@@ -581,6 +546,8 @@ public class GameManager : MonoBehaviour {
 						instance.modifier = (int)weaponJson[1][i]["modifier"];
 						instance.stam_cost = (int)weaponJson[1][i]["stam_cost"];
 						instance.durability = (int)weaponJson[1][i]["durability"];
+                        instance.max_durability = (int)weaponJson[1][i]["max_durability"];
+                        instance.miss_chance = (int)weaponJson[1][i]["miss_chance"];
 
 						if (weaponJson[1][i]["type"].ToString() == "knife") {
 							instance.weaponType = BaseWeapon.WeaponType.KNIFE;
@@ -620,6 +587,18 @@ public class GameManager : MonoBehaviour {
 			}
 		}
 
+		//verify survivors exist
+		if (GameManager.instance.survivorJsonText=="") {
+
+			LoginManager lgnMgr = FindObjectOfType<LoginManager> ();
+			if (lgnMgr != null) {
+				lgnMgr.PlayAsZombie ();
+			} else {
+				SceneManager.LoadScene ("02b Zombie Mode");
+			}
+			return;
+		}
+
 		//instantiate survivorcard gameobjects into the scene, load data onto the component, and set the parent to the current instance of GameManager.instance.survivorcardholder
 		JsonData survivorJson = JsonMapper.ToObject(GameManager.instance.survivorJsonText);
 		for (int i = 0; i < survivorJson.Count; i++) {
@@ -635,17 +614,27 @@ public class GameManager : MonoBehaviour {
 			//instance.survivor_id = (int)survivorJson[1][i]["survivor_id"];
 			instance.team_pos = (int)survivorJson[i]["team_position"];
 			instance.profilePicURL = survivorJson[i]["profile_pic_url"].ToString();
-			if (survivorJson[i]["onMission"].ToString() == "1") {
+
+
+
+            if (survivorJson[i]["onMission"].ToString() == "1") {
 				instance.onMission = true;
-				onMissionSurvivorCardList.Add(instance.gameObject);
-			} else if (survivorJson[i]["onMission"].ToString() == "0") {
-				if (survivorJson[i]["injured"].ToString() == "0"){
-					instance.onMission = false;
-					activeSurvivorCardList.Add(instance.gameObject);
-				} else {
-					injuredSurvivorCardList.Add(instance.gameObject);
-				}
-			}
+                instance.dead = false;
+				onMissionSurvivorCardList.Add(instance.gameObject);//add to "away on mission" list
+			} else if (survivorJson[i]["injured"].ToString() != "0") { //injuries are stored by injury_id, NOT 0 means injured
+                instance.dead = false;
+                instance.onMission = false;
+				injuredSurvivorCardList.Add(instance.gameObject); //add to injured list
+			} else if (survivorJson[i]["dead"].ToString() == "1"){
+                instance.dead = true;
+                deadSurvivorCardList.Add(instance.gameObject); //add to the dead survivor list
+            }else{
+                instance.onMission = false;
+                instance.dead = false;
+                activeSurvivorCardList.Add(instance.gameObject); //add to the active+alive survivor list
+            }
+
+
 			instance.injury = (int)survivorJson[i]["injured"];
 
 			instance.transform.SetParent(GameManager.instance.survivorCardHolder.transform);
@@ -693,11 +682,11 @@ public class GameManager : MonoBehaviour {
 	public void CreateWeaponsFromGameManagerJson () {
 		//wipe all old data clean.
 		GameObject[] oldWeapons = GameObject.FindGameObjectsWithTag("weaponcard");
-		Debug.Log(oldWeapons.Length+" weapons found to be destoyed");
-		Debug.Log("There are "+GameManager.instance.weaponCardList.Count+" items in the list before clearing");
+		//Debug.Log(oldWeapons.Length+" weapons found to be destoyed");
+		//Debug.Log("There are "+GameManager.instance.weaponCardList.Count+" items in the list before clearing");
 		GameManager.instance.weaponCardList.Clear();
 		//GameManager.instance.weaponCardList = new List<GameObject>();
-		Debug.Log("There are "+GameManager.instance.weaponCardList.Count+" items in the card list after clear");
+		//Debug.Log("There are "+GameManager.instance.weaponCardList.Count+" items in the card list after clear");
 		//destroy the old weapons
 		foreach (GameObject weaponCard in oldWeapons) {
 			Destroy(weaponCard.gameObject);
@@ -716,6 +705,8 @@ public class GameManager : MonoBehaviour {
 				instance.modifier = (int)weaponJson[i]["modifier"];
 				instance.stam_cost = (int)weaponJson[i]["stam_cost"];
 				instance.durability = (int)weaponJson[i]["durability"];
+                instance.max_durability = (int)weaponJson[i]["max_durability"];
+                instance.miss_chance = (int)weaponJson[i]["miss_chance"];
 
 				if (weaponJson[i]["type"].ToString() == "knife") {
 					instance.weaponType = BaseWeapon.WeaponType.KNIFE;
@@ -974,8 +965,14 @@ public class GameManager : MonoBehaviour {
 		Double days = (now - timeCharacterStarted).TotalDays;
 		daysSurvived = Convert.ToInt32(days);
 
-		Debug.Log ("The SetDaysSurvived function has returned: " + days + " Days since character created");
+		//Debug.Log ("The SetDaysSurvived function has returned: " + days + " Days since character created");
 	}
+
+    public TimeSpan GetCurrentTimeAlive ()
+    {
+        TimeSpan time_alive = (DateTime.Now - GameManager.instance.serverTimeOffset) - GameManager.instance.timeCharacterStarted;
+        return time_alive;
+    }
 
 	public void StartNewCharacter () {
 		//Record the date and time the character is created- will be compared to get Days alive later.
@@ -991,34 +988,21 @@ public class GameManager : MonoBehaviour {
 
 		//roll a random number of survivors left alive and set both active and alive to that number.
 
-		GameManager.instance.supply = UnityEngine.Random.Range(20, 70);
+		GameManager.instance.wood = UnityEngine.Random.Range(20, 70);
+        GameManager.instance.metal = UnityEngine.Random.Range(20, 70);
 		GameManager.instance.waterCount = UnityEngine.Random.Range(10, 20);
 		GameManager.instance.foodCount = UnityEngine.Random.Range(15, 30);
 		GameManager.instance.ammo = UnityEngine.Random.Range(0,20);
-		GameManager.instance.playerMaxStamina = 100;
-		GameManager.instance.playerCurrentStamina = 100;
+//		GameManager.instance.playerMaxStamina = 100;
+//		GameManager.instance.playerCurrentStamina = 100;
 		GameManager.instance.homebaseLat = 0.0f;
 		GameManager.instance.homebaseLong = 0.0f;
 		GameManager.instance.lastLoginTime = "12/31/1999 11:59:59";
+        GameManager.instance.activeBldg_zombies = 1; //set up the 1 zombie for the weapon-select combat
+        GameManager.instance.activeBldg_zAcross = 1; //set up the building data for weapon-select combat
 		playerInTutorial = true;
 
 		StartCoroutine (NewCharacterUpdateServer());
-
-
-		//pass all the rolled info to the gamePreferences - aka permenent memory
-//		GamePreferences.SetShivCount(shivCount);
-//		GamePreferences.SetClubCount(clubCount);
-//		GamePreferences.SetGunCount(gunCount);
-//		GamePreferences.SetShivDurability(shivDurability);
-//		GamePreferences.SetClubDurability(clubDurability);
-//		GamePreferences.SetSupply(supply);
-//		GamePreferences.SetTotalSurvivors (totalSurvivors);
-//		GamePreferences.SetActiveSurvivors (survivorsActive);
-//		GamePreferences.SetWaterCount (waterCount);
-//		GamePreferences.SetFoodCount (foodCount);
-		//this.SetPublicPlayerHealth (100);
-		//Debug.Log ("GameManager started a new character- food / water: " + foodCount +" / "+ waterCount );
-
 
 		//Debug.Log ("Character started at: " + timeCharacterStarted);
 	}
@@ -1044,8 +1028,9 @@ public class GameManager : MonoBehaviour {
 	public void PaidRestartOfTheGame () {
 		
 
-		int newSupply = Mathf.RoundToInt(this.supply * 0.75f);
-		this.supply = newSupply;
+		int newWood = Mathf.RoundToInt(this.wood * 0.75f);
+        this.wood = newWood;
+        int newMetal = Mathf.RoundToInt(this.metal * 0.75f);
 		int newFood = Mathf.RoundToInt(this.foodCount / 2);
 		foodCount = newFood;
 		int newWater = Mathf.RoundToInt(this.waterCount / 2);
@@ -1079,17 +1064,29 @@ public class GameManager : MonoBehaviour {
 //		GamePreferences.SetHomebaseLongitude(lon);
 	}
 
+    public void LoadBossCombat (string boss)
+    {
+        activeBldg_name = boss;
+
+        SceneManager.LoadScene("02c Combat-Boss");
+    }
+
 	public void LoadAltCombat (int zomb,string bldg_name) {
 		activeBldg_name = bldg_name;
-		zombiesToFight = zomb;
-		SceneManager.LoadScene ("02c Combat-5");
-	}
+        activeBldg_zombies = zomb;
+		//zombiesToFight = zomb;
+        
+        SceneManager.LoadScene("02e Combat-15");//all zombie combat is handled in this one scene now
+        //LoadRandomCombatScene();
+    }
 
 	public void LoadBuildingCombat () {
 		survivorFound = false;
+        Debug.Log("Calling load into building ****************************");
 
         //store the active building stats for win screen reporting.
-        GameManager.instance.reportedSupply = GameManager.instance.activeBldg_supply;
+        GameManager.instance.reportedWood = GameManager.instance.activeBldg_wood;
+        GameManager.instance.reportedMetal = GameManager.instance.activeBldg_metal;
         GameManager.instance.reportedFood = GameManager.instance.activeBldg_food;
         GameManager.instance.reportedWater = GameManager.instance.activeBldg_water;
 
@@ -1097,8 +1094,10 @@ public class GameManager : MonoBehaviour {
 		if (GameManager.instance.activeBldg_lastclear == DateTime.Parse("11:59pm 12/31/1999")) {
 			StartCoroutine(RollNewBuildingContents(false));
 		} else {
-			//if player has been here before- the correct data should already be loaded
-			SceneManager.LoadScene ("02c Combat-5");
+            //if player has been here before- the correct data should already be loaded
+            //SceneManager.LoadScene ("02c Combat-5");
+            SceneManager.LoadScene("02e Combat-15");
+            //LoadRandomCombatScene();
 		}
 
 
@@ -1110,102 +1109,212 @@ public class GameManager : MonoBehaviour {
 		form.AddField ("login_ts", GameManager.instance.lastLoginTime);
 		form.AddField ("client", "mob");
 
-		#region rss rolls
-		//roll the stats
-		int supply = 0;
+		#region BUILDING CONTENTS GENERATION ALGORITHIM HERE
+		//declare possible stats
+		int wood = 0;
+        int metal = 0;
 		int food = 0;
 		int water = 0;
-		if (GameManager.instance.activeBldg_lootcode == "S") {
-			int sup = UnityEngine.Random.Range(100, 250);
-			int fud = UnityEngine.Random.Range(0, 12);
-			int wat = UnityEngine.Random.Range(0, 12);
 
-			float odds = 0.5f;
+        //determine core odds
+        float max_percentage = 0.75f; //players start with 75% chance to find stuff day1min1
+        float coreFalloffOdds = CalculateCoreFalloffOdds(max_percentage); //this will return a %value represented 0.0-1.0 so it can be used in the rolls
+        float coreInversFalloffOdds = 1.0f-coreFalloffOdds;//this will increase 
+        Debug.Log("Calculating core Falloff odds at: " + coreFalloffOdds + " and his inverse at: " + coreInversFalloffOdds);
+
+        #region roll resources based on location type
+        //roll based on type
+        if (GameManager.instance.activeBldg_lootcode == "S") { //S-for supply. raw materials most likely here
+			int wod = UnityEngine.Random.Range(20, 110);
+            int met = UnityEngine.Random.Range(5, 90);
+			int fud = UnityEngine.Random.Range(0, 10);
+			int wat = UnityEngine.Random.Range(0, 10);
+
+			
 			float roll = UnityEngine.Random.Range(0.0f, 1.0f);
-			if (roll <= odds) {
+			if (roll <= coreInversFalloffOdds) {
 				fud =0;
 			}
 			roll = UnityEngine.Random.Range(0.0f, 1.0f);
-			if (roll <= odds) {
+			if (roll <= coreInversFalloffOdds) {
 				wat =0;
 			}
-			supply = sup;
+
+            float supply_roll = UnityEngine.Random.Range(0.0f, 1.0f);
+            //supply locations will always have a 15% chance of being empty
+            if (supply_roll < 0.15f) 
+            {
+                //wood
+                met = 0;
+            }else if (supply_roll < 0.15f)
+            {
+                //metal
+                wod = 0;
+            } //else let both pass
+        
+			wood = wod;
+            metal = met;
 			food = fud;
 			water = wat;
 
-		} else if (GameManager.instance.activeBldg_lootcode == "F") {
+		} else if (GameManager.instance.activeBldg_lootcode == "F") { //F-for food.
 
-			int sup = UnityEngine.Random.Range(0, 20);
-			int fud = UnityEngine.Random.Range(50, 150);
+			int wod = UnityEngine.Random.Range(0, 20);
+            int met = UnityEngine.Random.Range(0, 15);
+			int fud = UnityEngine.Random.Range(5, 45);
 			int wat = UnityEngine.Random.Range(0, 30);
 
-			float odds = 0.5f;
-			float roll = UnityEngine.Random.Range(0.0f, 1.0f);
-			if (roll <= odds) {
-				sup =0;
+			
+			float roll = UnityEngine.Random.Range(0.0f, 1.0f); //players roll
+			if (roll <= coreInversFalloffOdds) { //using coreInverseFalloff gives a float that increases with time- approaching 1.0- 100%
+				wod =0;
+                met = 0;
 			}
 			roll = UnityEngine.Random.Range(0.0f, 1.0f);
-			if (roll <= odds) {
+			if (roll <= coreInversFalloffOdds) {
 				wat =0;
 			}
-			supply = sup;
+            if (roll <= coreInversFalloffOdds)
+            {
+                fud = 0;
+            }
+
+			wood = wod;
+            metal = met;
 			food = fud;
 			water = wat;
 			
-		} else if (GameManager.instance.activeBldg_lootcode == "W") {
+		} else if (GameManager.instance.activeBldg_lootcode == "W") { //W for water.
 
-			int sup = UnityEngine.Random.Range(0, 20);
+			int wod = UnityEngine.Random.Range(0, 10);
+            int met = UnityEngine.Random.Range(0, 10);
 			int fud = UnityEngine.Random.Range(0, 20);
-			int wat = UnityEngine.Random.Range(50, 150);
+			int wat = UnityEngine.Random.Range(5, 55);
 
-			float odds = 0.5f;
+			
 			float roll = UnityEngine.Random.Range(0.0f, 1.0f);
-			if (roll <= odds) {
+			if (roll <= coreInversFalloffOdds) {
 				fud =0;
 			}
+            if(roll<= coreInversFalloffOdds)
+            {
+                wat = 0;
+            }
 			roll = UnityEngine.Random.Range(0.0f, 1.0f);
-			if (roll <= odds) {
-				sup =0;
+			if (roll <= coreInversFalloffOdds) {
+				wod =0;
+                met = 0;
 			}
-			supply = sup;
+			wood = wod;
+            metal = met;
 			food = fud;
 			water = wat;
 
-		} else if (GameManager.instance.activeBldg_lootcode == "G") {
+		} else if (GameManager.instance.activeBldg_lootcode == "G") {//G for general
 
-			int sup = UnityEngine.Random.Range(0, 80);
-			int fud = UnityEngine.Random.Range(0, 45);
+			int wod = UnityEngine.Random.Range(0, 40);
+            int met = UnityEngine.Random.Range(0, 40);
+            int fud = UnityEngine.Random.Range(0, 45);
 			int wat = UnityEngine.Random.Range(0, 45);
 
-			float odds = 0.5f;
 			float roll = UnityEngine.Random.Range(0.0f, 1.0f);
-			if (roll <= odds) {
+			if (roll <= coreInversFalloffOdds) {
 				fud =0;
-			}
-			roll = UnityEngine.Random.Range(0.0f, 1.0f);
-			if (roll <= odds) {
 				wat =0;
-			}
-			supply = sup;
+                wod = 0;
+                met = 0;
+            }
+			wood = wod;
+            metal = met;
 			food = fud;
 			water = wat;
 
 		}
-		int zombie_pop = UnityEngine.Random.Range(5, 25);
-		//DateTime new_bldg_datetime = DateTime.Parse("12:01am 1/1/2000");
-		GameManager.instance.activeBldg_zombies = zombie_pop;
+
+
+        #endregion
+
+        #region Zombie population rolls
+        //ZOMBIE ROLLS
+        //int zombie_pop = UnityEngine.Random.Range(5, 25); //depreciated- rolls should be dynamic now
+
+        int zombie_pop = 0;//initialize count
+        //find out how long the player has been alive
+        double days_alive = (DateTime.Now - GameManager.instance.timeCharacterStarted).TotalDays;
+        if (days_alive < 1)
+        {
+            //on the first day
+            zombie_pop = UnityEngine.Random.Range(0, 5);
+        }else if (days_alive < 2)
+        {
+            //day 2...heating up...
+            zombie_pop = UnityEngine.Random.Range(1, 10);
+        }else
+        {
+            //for the rest of the time...
+            zombie_pop = UnityEngine.Random.Range(5, 25);
+        }
+
+        /*
+        //RANDOMIZER- we want to randomly encounter NO zombies, and NO loot.
+        int num_one = UnityEngine.Random.Range(1, 4);
+        int num_two = UnityEngine.Random.Range(1, 4);
+        if (num_one == num_two)
+        {
+            zombie_pop = 0;
+            int num_three = UnityEngine.Random.Range(1, 4);
+            if (num_three == num_one)
+            {
+                food = 0;
+                water = 0;
+                wood = 0;
+                metal = 0;
+            }
+        }
+        */
+
+
+        //ZOMBIES ACROSS: this generates the integer that sets how many zombie models load in combat AKA how many a player must fight at once at this location
+        int zombies_across = 1;
+        //this should let us control the odds in 5% chunks
+        int across_roll = UnityEngine.Random.Range(0, 20);
+        if (across_roll < 10)
+        {
+            zombies_across = UnityEngine.Random.Range(2, 6);//lowest
+        }else if (across_roll < 17)
+        {
+            zombies_across = UnityEngine.Random.Range(4, 9);//harder
+        }else
+        {
+            zombies_across = UnityEngine.Random.Range(6, 15);//hardest
+        }
+
+
+
+        #endregion
+
+        //STORE THE ROLLS TO THE GAMEMANAGER
+        //DateTime new_bldg_datetime = DateTime.Parse("12:01am 1/1/2000");
+        GameManager.instance.activeBldg_zombies = zombie_pop;
 		GameManager.instance.activeBldg_food = food;
 		GameManager.instance.activeBldg_water = water;
-		GameManager.instance.activeBldg_supply = supply;
-		GameManager.instance.zombiesToFight = zombie_pop;
+		GameManager.instance.activeBldg_wood = wood;
+        GameManager.instance.activeBldg_metal = metal;
+        GameManager.instance.activeBldg_zombies = zombie_pop;
+		//GameManager.instance.zombiesToFight = zombie_pop;
+        GameManager.instance.activeBldg_zAcross = zombies_across;
 
-		Debug.Log("supply: "+supply.ToString()+" food: "+food.ToString()+" water: "+water.ToString()+" zombies: "+zombie_pop.ToString());
-		#endregion
+		Debug.Log("Wood: "+wood.ToString()+" metal: "+metal.ToString()+" food: "+food.ToString()+" water: "+water.ToString()+" zombies: "+zombie_pop.ToString());
+        SceneManager.LoadScene("02e Combat-15");
 
-		form.AddField("supply", supply);
+        #endregion //THIS IS WHERE BUILDING LOOT IS DETERMINED IN CODE *****
+
+        form.AddField("wood", wood);
+        form.AddField("metal", metal);
 		form.AddField("food", food);
 		form.AddField("water", water);
 		form.AddField("zombies", zombie_pop);
+        form.AddField("zombies_across", zombies_across); //this represents how many zombies the player will fight at once
 		form.AddField("bldg_name", GameManager.instance.activeBldg_name);
 		form.AddField("bldg_id", GameManager.instance.activeBldg_id);
 
@@ -1221,7 +1330,11 @@ public class GameManager : MonoBehaviour {
 
 				//if the mission tab is triggering this, don't load player into combat
 				if (mission == false) {
-					SceneManager.LoadScene("02c Combat-5");
+                    Debug.Log("Successfully registered new building on the server");
+                    //SceneManager.LoadScene("02d Combat-10");
+                    //SceneManager.LoadScene("02e Combat-15"); //now calling earlier in this coroutine
+                    //LoadRandomCombatScene();
+                    
 				}
 			} else {
 				Debug.Log(newBldgJson[1].ToString());
@@ -1230,6 +1343,23 @@ public class GameManager : MonoBehaviour {
 			Debug.Log(www.error);
 		}
 	}
+
+    void LoadRandomCombatScene () //depreciated
+    {
+        int roll = UnityEngine.Random.Range(1, 3);
+        if ( roll == 1 )
+        {
+            SceneManager.LoadScene("02c Combat-5");
+        }
+        else if ( roll == 2 )
+        {
+            SceneManager.LoadScene("02d Combat-10");
+        }
+        else
+        {
+            SceneManager.LoadScene("02e Combat-15");
+        }
+    }
 
 	public void AddTimePlayed () {
 		timeCharacterStarted  = timeCharacterStarted.AddHours(-1.0);
@@ -1276,10 +1406,11 @@ public class GameManager : MonoBehaviour {
 
 	public bool clearedBuildingSendInProgress = false;
 	public void BuildingIsCleared (bool survFound) {
+        GameManager.instance.survivorFound = survFound;
 		if (clearedBuildingSendInProgress == false) {
 			clearedBuildingSendInProgress = true;
 
-			StartCoroutine(SendClearedBuilding(survivorFound));
+			StartCoroutine(SendClearedBuilding(survFound));
 		} 
 	}
 
@@ -1321,16 +1452,73 @@ public class GameManager : MonoBehaviour {
 
 						wwwForm.AddField("bldg_name", GameManager.instance.activeBldg_name);
 						wwwForm.AddField("bldg_id", GameManager.instance.activeBldg_id);
-						//wwwForm.AddField("supply", GameManager.instance.reportedSupply);
-						//wwwForm.AddField("food" , GameManager.instance.reportedFood);
-						//wwwForm.AddField("water", GameManager.instance.reportedWater);
-						if (survivorFound) {
-							wwwForm.AddField("survivor_found", "1");
+                        //wwwForm.AddField("supply", GameManager.instance.reportedSupply);
+                        //wwwForm.AddField("food" , GameManager.instance.reportedFood);
+                        //wwwForm.AddField("water", GameManager.instance.reportedWater);
+
+                        if (survivorFound == true) {
+
+                            //calculate the number of survivors found.
+                            int survivor_count = 1;
+                            int days = Mathf.FloorToInt((float)(DateTime.Now - GameManager.instance.timeCharacterStarted).TotalDays);
+                            if (days < 1)
+                            {
+                                int group_bonus = UnityEngine.Random.Range(1,5);
+                                float odds = 90.0f;
+                                float roll = UnityEngine.Random.Range(0.0f, 100.0f);
+                                if (roll < odds)
+                                {
+                                    survivor_count += group_bonus;
+                                }
+                            }else if (days < 3)
+                            {
+                                int group_bonus = UnityEngine.Random.Range(1, 4);
+                                float odds = 70.0f;
+                                float roll = UnityEngine.Random.Range(0.0f, 100.0f);
+                                if (roll < odds)
+                                {
+                                    survivor_count += group_bonus;
+                                }
+                            }
+                            else if (days < 8)
+                            {
+                                int group_bonus = UnityEngine.Random.Range(1, 2);
+                                float odds = 50.0f;
+                                float roll = UnityEngine.Random.Range(0.0f, 100.0f);
+                                if (roll < odds)
+                                {
+                                    survivor_count += group_bonus;
+                                }
+                            }
+                            else if (days < 15)
+                            {
+                                int group_bonus = UnityEngine.Random.Range(1, 2);
+                                float odds = 25.0f;
+                                float roll = UnityEngine.Random.Range(0.0f, 100.0f);
+                                if (roll < odds)
+                                {
+                                    survivor_count += group_bonus;
+                                }
+                            }
+                            else if (days > 30)
+                            {
+                                int group_bonus = UnityEngine.Random.Range(0, 1);
+                                float odds = 15.0f;
+                                float roll = UnityEngine.Random.Range(0.0f, 100.0f);
+                                if (roll < odds)
+                                {
+                                    survivor_count += group_bonus;
+                                }
+                            }
+
+                            Debug.Log("Found " + survivor_count.ToString() + " survivors to add to the team");
+                            wwwForm.AddField("survivor_found", survivor_count);
 						} else {
+                            Debug.Log("Found no survivors according to GameManager Coroutine");
 							wwwForm.AddField("survivor_found", "0");
 						}
 
-						Debug.Log ("sending cleared building message to the server- bldg_name: "+GameManager.instance.activeBldg_name+" and id: "+GameManager.instance.activeBldg_id);
+						Debug.Log ("sending cleared building message to the server- bldg_name: "+GameManager.instance.activeBldg_name+" and id: "+GameManager.instance.activeBldg_id+" Survivor Found status: "+survivorFound);
 						WWW www = new WWW(buildingClearedURL, wwwForm);
 						yield return www;
 
@@ -1343,13 +1531,17 @@ public class GameManager : MonoBehaviour {
 								Debug.Log(buildingClearReturn[1].ToString());
 
 								//if there has been a survivor added to the players team.
-								if (buildingClearReturn[2].ToString() == "1") {
-									foundSurvivorName = buildingClearReturn[3]["name"].ToString();
-									foundSurvivorCurStam = (int)buildingClearReturn[3]["base_stam"];
-									foundSurvivorMaxStam = (int)buildingClearReturn[3]["base_stam"];
-									foundSurvivorAttack = (int)buildingClearReturn[3]["base_attack"];
-									foundSurvivorEntryID = (int)buildingClearReturn[3]["entry_id"];
-								}
+								if ((int)buildingClearReturn[2] > 0) {
+                                    foundSurvivorJsonText = JsonMapper.ToJson(buildingClearReturn[3]);
+                                    Debug.Log(foundSurvivorJsonText);
+                                    /*
+									foundSurvivorName = buildingClearReturn[3][0]["name"].ToString();
+									foundSurvivorCurStam = (int)buildingClearReturn[3][0]["base_stam"];
+									foundSurvivorMaxStam = (int)buildingClearReturn[3][0]["base_stam"];
+									foundSurvivorAttack = (int)buildingClearReturn[3][0]["base_attack"];
+									foundSurvivorEntryID = (int)buildingClearReturn[3][0]["entry_id"];
+								    */
+                                }
 							}
 						} else {
 							Debug.Log(www.error);
@@ -1359,7 +1551,8 @@ public class GameManager : MonoBehaviour {
 						
 						//Player has been bit in combat. All end-game data has already been stored, but player played to the end of combat.
 						GameManager.instance.playerIsZombie = true;
-						SceneManager.LoadScene("03b Game Over");
+                        SceneManager.LoadScene("02a Zombie Mode");
+						//SceneManager.LoadScene("03b Game Over");
 
 					}
 				} else {
@@ -1389,7 +1582,8 @@ public class GameManager : MonoBehaviour {
 					Debug.Log(www.text);
 
 					if (www.error == null) {
-						SceneManager.LoadScene("03b Game Over");
+                        SceneManager.LoadScene("02b Zombie Mode");
+                        //SceneManager.LoadScene("03b Game Over");
 					} else {
 						Debug.Log(www.error);
 					}
@@ -1481,4 +1675,27 @@ public class GameManager : MonoBehaviour {
 		}
 
 	}
+
+    public float CalculateCoreFalloffOdds(float max_odds)
+    {
+        float odds = 0.0f;
+
+        if (GameManager.instance.daysSurvived < GameManager.DaysUntilOddsFlat)
+        {
+            DateTime now = System.DateTime.Now;
+            double days_alive = (now - GameManager.instance.timeCharacterStarted).TotalDays;
+
+            int exponent = 8;
+            //float max_percentage = 0.5f; //this starts us at 50/50 odds.
+            double full_value = Mathf.Pow(GameManager.DaysUntilOddsFlat, exponent) / max_odds;
+
+            float inverse_day_value = (float)(GameManager.DaysUntilOddsFlat - days_alive);
+            float current_value = (float)(Mathf.Pow(inverse_day_value, exponent) / full_value);
+            Debug.Log("calculating players odds to be at " + current_value +" based on a max % of: "+ max_odds+" and the days alive count at: "+days_alive);
+            odds = current_value;
+        }
+
+        return odds; //value is represeneted 0.0f-1.0f as 0%-100%
+    }
+
 }
