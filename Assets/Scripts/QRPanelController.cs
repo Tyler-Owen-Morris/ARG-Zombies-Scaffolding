@@ -15,6 +15,7 @@ public class QRPanelController : MonoBehaviour {
 	public Text UItext, response_text, camera_on_text, result_text;
 	public string qrGeneratedString, qrScannedString;
 	public MapLevelManager mapLvlMgr;
+    public bool is_homebaseQRpanel; //set in UI to determine which code runs for the different panels.
 
 	private string qrScannedURL = GameManager.serverURL+"/QR_FriendRequest.php";
 	private string outpostRequestURL = GameManager.serverURL+"/QR_OutpostRequest.php";
@@ -174,7 +175,11 @@ public class QRPanelController : MonoBehaviour {
 				//start the coroutine to regenerate player stamina... or do nothing...
 				Debug.Log("Player has scanned their own homebase");
 
-                if (CalculateDistanceToTarget(base_lat, base_lng) <= 50.0f)
+                if (base_lat== 0 && base_lng == 0) {
+                    Debug.Log("This is the first time this player has scanned homebase-this game.");
+                    mapLvlMgr.SetNewHomebaseLocation();
+                }
+                else if (CalculateDistanceToTarget(base_lat, base_lng) <= 50.0f)
                 {
                     //player is in range of their homebase
                     StartCoroutine(mapLvlMgr.PostTempLocationText("Checking in at Homebase"));

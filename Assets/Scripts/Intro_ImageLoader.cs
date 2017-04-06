@@ -5,6 +5,7 @@ using UnityEngine.UI;
 public class Intro_ImageLoader : MonoBehaviour {
 
     public string img_url;
+    public bool done = false;
 
     private Image my_image;
 
@@ -32,6 +33,7 @@ public class Intro_ImageLoader : MonoBehaviour {
                 Sprite my_loaded_img = Sprite.Create(www.texture, new Rect(0,0,wid,heit), vec2);
                 my_image.sprite = my_loaded_img;
                 Debug.Log("loading in image: "+img_url);
+                done = true;
 
             }else
             {

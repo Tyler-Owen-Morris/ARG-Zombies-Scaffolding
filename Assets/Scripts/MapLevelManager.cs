@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 
 public class MapLevelManager : MonoBehaviour {
 
-    public GameObject googleMapPanel, streetBackgroundPanel, buildingHolderPanel, levelLoadingPanel, fadeToCombatPanel, survivorListGrid, survivorWallPanel, survivorWallConfirmationPanel, survivorWallEmptyTextObject, exitGamePanel, missionCompletePanel, inventoryPanel, buildingPanel, clearedBuildingPanel, qrPanel, personelPanel, gearPanel, homebasePanel, homebaseConfirmationPanel, outpostSelectionPanel, outpostConfirmationPanel, missionStartConfirmationPanel, OutpostQRPanel, enterBldgButton, unequippedWeaponsPanel, mapLevelCanvas, hungerThirstWarningPanel, endGamePanel, endGameButton, bogConfirmationPanel;
+    public GameObject homebaseQRpanel, setHomebaseUIPanel, googleMapPanel, streetBackgroundPanel, buildingHolderPanel, levelLoadingPanel, fadeToCombatPanel, survivorListGrid, survivorWallPanel, survivorWallConfirmationPanel, survivorWallEmptyTextObject, exitGamePanel, missionCompletePanel, inventoryPanel, buildingPanel, clearedBuildingPanel, qrPanel, personelPanel, gearPanel, homebasePanel, homebaseConfirmationPanel, outpostSelectionPanel, outpostConfirmationPanel, missionStartConfirmationPanel, OutpostQRPanel, enterBldgButton, unequippedWeaponsPanel, mapLevelCanvas, hungerThirstWarningPanel, endGamePanel, endGameButton, bogConfirmationPanel;
 
 	[SerializeField]
 	public Text survivorWallDescriptionText, survivorWallBldgNametext, woodText, metalText, justDayAlivetext, daysAliveText, survivorsAliveText, currentLatText, currentLonText, locationReportText, zombieKillText, foodText, waterText, gearText, expirationText, playerNameText, clearedBuildingNameText, bldgNameText, bldgWoodText, bldgMetalText, bldgFoodText, bldgWaterText, clearedBldgWoodText, clearedBldgMetalText, clearedBldgFoodText, clearedBldgWaterText, zombieCountText, bldgDistText, homebaseLatText, homebaseLonText, missionConfirmationText;
@@ -501,9 +501,19 @@ public class MapLevelManager : MonoBehaviour {
 
 
 	public void UpdateTheUI () {
-
+        
+        //Load the UI lists from the game manager.
 		theWeaponListPopulator.PopulateWeaponsFromGameManager();
 		theSurvivorListPopulator.RefreshFromGameManagerList();
+
+        //set the HomebaseUI for new players
+        if (GameManager.instance.homebase_set)
+        {
+            setHomebaseUIPanel.SetActive(false); //already set
+        }else
+        {
+            setHomebaseUIPanel.SetActive(true); //not yet set
+        }
         
 		//left UI panel update
         if (GameManager.instance.wood>0)
@@ -1161,7 +1171,7 @@ public class MapLevelManager : MonoBehaviour {
             {
                 if (active_bdg == myWallTagsJson[i]["bldg_name"].ToString())
                 {
-					Debug.Log ("match found for Wall");
+					Debug.Log ("match found for Wall: "+active_bdg);
                     found = true;
                     //break;
                 }
@@ -1754,6 +1764,15 @@ public class MapLevelManager : MonoBehaviour {
 		}
 	}
 
+    public void ToggleHomebaseQRpanel() {
+        if (homebaseQRpanel.activeInHierarchy)
+        {
+            homebaseQRpanel.SetActive(false);
+        }else
+        {
+            homebaseQRpanel.SetActive(true); }
+    }
+
 	IEnumerator UpdateHomebaseLocation () {
 		float newLat = 0f;
 		float newLon = 0f;
@@ -1765,7 +1784,9 @@ public class MapLevelManager : MonoBehaviour {
 			newLon = Input.location.lastData.longitude;
 
 		} else {
-			Debug.Log("Location services not running. Attempting to update the server with Dummy data");
+			Debug.LogWarning("Location services not running. Unable to update Homebase");
+            sendingNewHomebase = false;
+            StopCoroutine(UpdateHomebaseLocation());
 			newLat = 37.80897f;
 			newLon = -122.4292f;
 		}
@@ -1790,6 +1811,7 @@ public class MapLevelManager : MonoBehaviour {
 				Debug.Log (replyJson[1].ToString());
 				GameManager.instance.homebaseLat = newLat;
 				GameManager.instance.homebaseLong = newLon;
+                GameManager.instance.homebase_set = true;
 			} else {
 				//this will handle any error responses from the server when attempting to set new homebase
 				//I expect there will be a time delay, or cost associated with multiple changes, so this  is

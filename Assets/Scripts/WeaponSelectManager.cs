@@ -6,9 +6,10 @@ using LitJson;
 public class WeaponSelectManager : MonoBehaviour {
 
 	public string weaponSelected;
-	public GameObject weaponConfirmationPanel, swipeIndicator;
+	public GameObject weaponConfirmationPanel, swipeIndicator, levelLoadingPanel;
 	public Text weaponPanelText;
 
+    private GameObject[] openingImagePanels;
 	private string sendWeaponChoiceURL = GameManager.serverURL+"/TutorialWeaponChoice.php";
 	private string knifeText = "The knife takes more stamina to use, but comes with consistient kill\nthe survivor who picks a knife is willing to take great risk for great reward\nWill you choose the knife?";
 	private string clubText =  "The club can be easier to miss than a knife, but delivers a punch\neven the most hardened survivors can become exhaused swinging its weight all day\nWill you choose the club?";
@@ -16,9 +17,47 @@ public class WeaponSelectManager : MonoBehaviour {
 
     private int panel_count = 8;
 
+    void Awake() {
+        openingImagePanels = GameObject.FindGameObjectsWithTag("openingimagepanel");
+        if (openingImagePanels.Length < 1) {
+            Debug.LogWarning("did not successfully load the images panels to watch for disabling loading");
+        }
+    }
+
 	void Start () {
-		
+        levelLoadingPanel.SetActive(true);
 	}
+
+    void Update() {
+        if (CheckIfLoadIsComplete())
+        {
+            levelLoadingPanel.SetActive(false);
+           // Debug.Log("Level Load complete nownownownownownoww");
+        }
+    }
+
+    bool CheckIfLoadIsComplete ()
+    {
+        openingImagePanels = GameObject.FindGameObjectsWithTag("openingimagepanel");
+        int completed = openingImagePanels.Length;
+        int loaded = 0;
+        foreach (GameObject panel in openingImagePanels )
+        {
+            Intro_ImageLoader myImgLoader = panel.GetComponent<Intro_ImageLoader>();
+            if (myImgLoader.done)
+            {
+                loaded++;
+            }
+        }
+
+        if (loaded == completed)
+        {
+            return true;
+        }else
+        {
+            return false;
+        }
+    }
 
     public void PanelDestroyed ()
     {

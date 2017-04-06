@@ -887,7 +887,7 @@ public class BuildingSpawner : MonoBehaviour {
                 foreach (GameObject wall in walls) //cycling through the walls in the currently loaded scene
                 {
                     PopulatedBuilding myWall = wall.gameObject.GetComponent<PopulatedBuilding>();
-                    myWall.ActivateMe();//initialize the building
+                    myWall.ActivateMe();//initialize the building- which will set sprite
                     string my_name = myWall.buildingName;
                     DateTime min_time = DateTime.Now - TimeSpan.FromHours(24);
                     bool match = false;

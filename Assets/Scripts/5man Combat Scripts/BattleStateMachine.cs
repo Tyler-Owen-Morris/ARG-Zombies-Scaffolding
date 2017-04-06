@@ -731,9 +731,10 @@ public class BattleStateMachine : MonoBehaviour {
 				GameManager.instance.BuildingIsCleared(false);
 				//this will launch the coroutine, which reacts to the string of active building, and notifies the server of game over, then loads game over scene
 			} else {
-				StartCoroutine(GameManager.instance.PlayerBit());
+                //StartCoroutine(GameManager.instance.PlayerBit());
+                PlayerBite();
 			}
-
+            survivorWithBite = bitSurvivor;
 			Debug.Log ("PLAYER CHARACTER BIT!!!! END GAME SHOULD CALL HERE!~!!!");
 		} else if (bitSurvivor.teamPos != 5) {
 			//This is just a normal survivor dying.
@@ -757,7 +758,7 @@ public class BattleStateMachine : MonoBehaviour {
 		}
 	}
 
-	public void GameOverBiteCallback () {
+	public void PlayerBite () {
 		battleState = PerformAction.BITECASE;
 		playerBitPanel.SetActive(true);
 		KillYourselfButtonManager KYBM = KillYourselfButtonManager.FindObjectOfType<KillYourselfButtonManager>();
@@ -892,9 +893,17 @@ public class BattleStateMachine : MonoBehaviour {
 
 	//this handles a non-player survivor being bit
 	public void PlayerChoosesToFightOn () {
-		//destroy survivor on the server
-		StartCoroutine(SendDeadSurvivorToServer(survivorWithBite.survivor.survivor_id));
-
+        //destroy survivor on the server
+        if (survivorWithBite.teamPos != 5)
+        {
+            //this is a normal survivor, just send the delteded record to the server to also delete.
+            StartCoroutine(SendDeadSurvivorToServer(survivorWithBite.survivor.survivor_id));
+        }else
+        {
+            //this is player character- send the player death to the server to record times.
+            StartCoroutine(GameManager.instance.PlayerBit());
+            playerBitPanel.SetActive(false); //close the player bit window
+        }
 		//notify survivor state machine
 		survivorWithBite.BiteTimerStart();
 
@@ -908,7 +917,7 @@ public class BattleStateMachine : MonoBehaviour {
 			zombie.GetComponent<SpriteRenderer>().enabled = true;
 		}
 
-		//close window
+		//close the survivor bit window
 		survivorBitPanel.SetActive(false);
 
 		//resume combat
@@ -962,8 +971,9 @@ public class BattleStateMachine : MonoBehaviour {
 
 	public void PlayerChoosePurchaseSurvivorSave () {
 		int survIDtoRestore = survivorWithBite.survivor.survivor_id;
-		//disable the bite panel
+		//disable both bite panels
 		survivorBitPanel.SetActive(false);
+        playerBitPanel.SetActive(false);
 		//turn zombies and survivors back on
 		foreach (GameObject surv in survivorList) {
 			surv.SetActive(true);
@@ -983,9 +993,11 @@ public class BattleStateMachine : MonoBehaviour {
 			surv.GetComponent<SurvivorStateMachine>().UpdateWeaponSprite();
 		}
 
+        //add the full watch to turn storing JSON
+        turnResultJsonString += "{\"attackType\":\"fullwatch\",\"survivor_id\":" + survIDtoRestore + ",\"weapon_id\":0,\"dead\":0},";
 
-		//resume combat
-		battleState = PerformAction.WAIT;
+        //resume combats
+        battleState = PerformAction.WAIT;
 	}
 
 	IEnumerator SendRestoreSurvivorToServer(int idToRestore) {

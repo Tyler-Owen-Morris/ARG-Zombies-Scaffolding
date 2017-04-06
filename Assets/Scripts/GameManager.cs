@@ -24,6 +24,7 @@ public class GameManager : MonoBehaviour {
     public Sprite my_profile_pic;
     public Texture2D profile_image_texture;
 	public int foundSurvivorCurStam, foundSurvivorMaxStam, foundSurvivorAttack, foundSurvivorEntryID;
+    public bool homebase_set;
 	[SerializeField]
 	private GameObject[] weaponOptionsArray;
 
@@ -224,7 +225,11 @@ public class GameManager : MonoBehaviour {
 				if (fullGameData[1]["homebase_set_time"].ToString() != "") {
 					DateTime pDate = Convert.ToDateTime(fullGameData[1]["homebase_set_time"].ToString());
 					GameManager.instance.lastHomebaseSetTime = pDate;
-				}
+                    GameManager.instance.homebase_set = true;
+                }else
+                {
+                    GameManager.instance.homebase_set = false;
+                }
 				if (fullGameData[1]["game_over_datetime"].ToString() != "") {
 					DateTime eDate = Convert.ToDateTime(fullGameData[1]["game_over_datetime"].ToString());
 					GameManager.instance.gameOverTime = eDate;
@@ -337,7 +342,7 @@ public class GameManager : MonoBehaviour {
 		}
 
 	}
-
+    
 	//this is only called from the BattleStateMachine in the Combat Scene
 	public IEnumerator PlayerBit () {
 		activeBldg_name = "bite_case";
@@ -363,8 +368,8 @@ public class GameManager : MonoBehaviour {
 		Debug.Log(www.text);
 
 		if (www.error == null) {
-			BattleStateMachine myBSM = BattleStateMachine.FindObjectOfType<BattleStateMachine>();
-			myBSM.GameOverBiteCallback();
+			//BattleStateMachine myBSM = BattleStateMachine.FindObjectOfType<BattleStateMachine>();
+			//myBSM.GameOverBiteCallback();
 		} else {
 			Debug.Log(www.error);
 		}
