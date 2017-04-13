@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 using Facebook.Unity;
 using LitJson;
 using System.IO;
+using UnityEngine.Analytics;
 
 public class GameManager : MonoBehaviour {
 
@@ -175,6 +176,18 @@ public class GameManager : MonoBehaviour {
 			Debug.Log ("New character successfully started on the server" + www.text);
             //SceneManager.LoadScene("02a Map Level"); //used to load map level before intro/wep select was added.
             SceneManager.LoadScene("04a Weapon Select"); //added when survivor draft removed from new character process.
+
+			Analytics.CustomEvent("NewCharacter", new Dictionary<string, object> 
+            {
+            	{"Player ID", GameManager.instance.userId},
+            	{"Username", GameManager.instance.userName},
+            	{"food", GameManager.instance.foodCount},
+            	{"water", GameManager.instance.waterCount},
+            	{"metal", GameManager.instance.metal},
+            	{"wood", GameManager.instance.wood},
+            	{"timeStamp", DateTime.Now.ToString()}
+            });
+
             yield break;
 		} else {
 			Debug.Log("WWW error "+ www.error);
@@ -1547,6 +1560,20 @@ public class GameManager : MonoBehaviour {
 									foundSurvivorEntryID = (int)buildingClearReturn[3][0]["entry_id"];
 								    */
                                 }
+
+                                //store custom event for analytics
+								Analytics.CustomEvent("BuildingClearedSuccessfully", new Dictionary<string, object>
+								{
+									{"userID", GameManager.instance.userId},
+									{"bldg_name", GameManager.instance.activeBldg_name},
+									{"bldg_id", GameManager.instance.activeBldg_id},
+									{"food", GameManager.instance.activeBldg_food},
+									{"water",GameManager.instance.activeBldg_water},
+									{"wood", GameManager.instance.activeBldg_wood},
+									{"metal", GameManager.instance.activeBldg_metal},
+									{"time_alive", GetCurrentTimeAlive()}
+								});
+
 							}
 						} else {
 							Debug.Log(www.error);
@@ -1558,6 +1585,13 @@ public class GameManager : MonoBehaviour {
 						GameManager.instance.playerIsZombie = true;
                         SceneManager.LoadScene("02a Zombie Mode");
 						//SceneManager.LoadScene("03b Game Over");
+
+						Analytics.CustomEvent("DEATH_bitInCombat", new Dictionary<string, object>
+						{
+							{"timestamp", DateTime.Now.ToString()},
+							{"time_alive", GetCurrentTimeAlive()},
+							{"userID", GameManager.instance.userId}
+						});
 
 					}
 				} else {
@@ -1587,6 +1621,13 @@ public class GameManager : MonoBehaviour {
 					Debug.Log(www.text);
 
 					if (www.error == null) {
+
+						Analytics.CustomEvent("DEATH_blazeOfGlory", new Dictionary<string, object>
+						{
+							{"weaponChoice", game_over_time},
+							{"userID", GameManager.instance.userId}
+						});
+
                         SceneManager.LoadScene("02b Zombie Mode");
                         //SceneManager.LoadScene("03b Game Over");
 					} else {
@@ -1618,6 +1659,12 @@ public class GameManager : MonoBehaviour {
 							Debug.Log("This player was no longer a zombie");
 							GameManager.instance.zombie_to_kill_id = "";
 						}
+
+						Analytics.CustomEvent("pvp_zombieKill", new Dictionary<string, object>
+						{
+							{"target_id", GameManager.instance.zombie_to_kill_id},
+							{"userID", GameManager.instance.userId}
+						});
 					}
 
 				} else {
@@ -1634,6 +1681,12 @@ public class GameManager : MonoBehaviour {
 			StartCoroutine(LoadAllGameData());
 			SceneManager.LoadScene("02a Map Level");
 			StopCoroutine(SendClearedBuilding(false));
+
+			//post the tutorial completion
+			Analytics.CustomEvent("tutorialComplete", new Dictionary<string, object>
+			{
+				{"userID", GameManager.instance.userId}
+			});
 		}
 		yield return new WaitForSeconds(2.0f);
 		clearedBuildingSendInProgress=false;

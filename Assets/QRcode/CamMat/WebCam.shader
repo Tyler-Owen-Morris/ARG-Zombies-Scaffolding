@@ -1,4 +1,6 @@
-﻿Shader "Custom/WebCam" {
+﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+Shader "Custom/WebCam" {
     Properties {
         _MainTex("Base (RGB)", 2D) = "white" {}
         [MaterialToggle] isFlip("is Flip", float) = 0
@@ -26,7 +28,7 @@
             v2f vert (appdata v) {
 				
                 v2f o;
-                o.pos = mul(UNITY_MATRIX_MVP, v.vertex); 
+                o.pos = UnityObjectToClipPos(v.vertex); 
                 float x = v.texcoord.x ;
                 float y = v.texcoord.y;
              	if(isFlip)

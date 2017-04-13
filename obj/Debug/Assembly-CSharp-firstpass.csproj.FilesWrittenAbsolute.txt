@@ -56,3 +56,37 @@
 /Users/owenmorris/ARG-Zombies-Scaffolding/Temp/bin/Debug/Unity.CecilTools.dll
 /Users/owenmorris/ARG-Zombies-Scaffolding/Temp/bin/Debug/Mono.Cecil.Pdb.dll
 /Users/owenmorris/ARG-Zombies-Scaffolding/Temp/bin/Debug/Mono.Cecil.Mdb.dll
+/Users/Owen/ARG-Zombies Scaffolding/Temp/bin/Debug/Assembly-CSharp-firstpass.dll.mdb
+/Users/Owen/ARG-Zombies Scaffolding/Temp/bin/Debug/Assembly-CSharp-firstpass.dll
+/Users/Owen/ARG-Zombies Scaffolding/obj/Debug/Assembly-CSharp-firstpass.dll
+/Users/Owen/ARG-Zombies Scaffolding/obj/Debug/Assembly-CSharp-firstpass.dll.mdb
+/Users/Owen/ARG-Zombies Scaffolding/Temp/bin/Debug/UnityEngine.dll
+/Users/Owen/ARG-Zombies Scaffolding/Temp/bin/Debug/UnityEditor.dll
+/Users/Owen/ARG-Zombies Scaffolding/Temp/bin/Debug/UnityEngine.Advertisements.dll
+/Users/Owen/ARG-Zombies Scaffolding/Temp/bin/Debug/UnityEngine.UI.dll
+/Users/Owen/ARG-Zombies Scaffolding/Temp/bin/Debug/UnityEngine.Networking.dll
+/Users/Owen/ARG-Zombies Scaffolding/Temp/bin/Debug/UnityEngine.Analytics.dll
+/Users/Owen/ARG-Zombies Scaffolding/Temp/bin/Debug/UnityEngine.Purchasing.dll
+/Users/Owen/ARG-Zombies Scaffolding/Temp/bin/Debug/Newtonsoft.Json.dll
+/Users/Owen/ARG-Zombies Scaffolding/Temp/bin/Debug/Common.dll
+/Users/Owen/ARG-Zombies Scaffolding/Temp/bin/Debug/Editor.dll
+/Users/Owen/ARG-Zombies Scaffolding/Temp/bin/Debug/Security.dll
+/Users/Owen/ARG-Zombies Scaffolding/Temp/bin/Debug/Stores.dll
+/Users/Owen/ARG-Zombies Scaffolding/Temp/bin/Debug/Apple.dll
+/Users/Owen/ARG-Zombies Scaffolding/Temp/bin/Debug/Tizen.dll
+/Users/Owen/ARG-Zombies Scaffolding/Temp/bin/Debug/winrt.dll
+/Users/Owen/ARG-Zombies Scaffolding/Temp/bin/Debug/QRCode.dll
+/Users/Owen/ARG-Zombies Scaffolding/Temp/bin/Debug/LitJson.dll
+/Users/Owen/ARG-Zombies Scaffolding/Temp/bin/Debug/Mono.Cecil.dll
+/Users/Owen/ARG-Zombies Scaffolding/Temp/bin/Debug/Unity.SerializationLogic.dll
+/Users/Owen/ARG-Zombies Scaffolding/Temp/bin/Debug/Unity.DataContract.dll
+/Users/Owen/ARG-Zombies Scaffolding/Temp/bin/Debug/ICSharpCode.NRefactory.dll
+/Users/Owen/ARG-Zombies Scaffolding/Temp/bin/Debug/Unity.UNetWeaver.dll
+/Users/Owen/ARG-Zombies Scaffolding/Temp/bin/Debug/Unity.UNetWeaver.dll.mdb
+/Users/Owen/ARG-Zombies Scaffolding/Temp/bin/Debug/Unity.CecilTools.dll
+/Users/Owen/ARG-Zombies Scaffolding/Temp/bin/Debug/Mono.Cecil.Pdb.dll
+/Users/Owen/ARG-Zombies Scaffolding/Temp/bin/Debug/Mono.Cecil.Mdb.dll
+/Users/Owen/ARG-Zombies Scaffolding/Temp/bin/Debug/UnityEngine.TestRunner.dll
+/Users/Owen/ARG-Zombies Scaffolding/Temp/bin/Debug/nunit.framework.dll
+/Users/Owen/ARG-Zombies Scaffolding/Temp/bin/Debug/UnityEngine.HoloLens.dll
+/Users/Owen/ARG-Zombies Scaffolding/Temp/bin/Debug/UnityEngine.VR.dll

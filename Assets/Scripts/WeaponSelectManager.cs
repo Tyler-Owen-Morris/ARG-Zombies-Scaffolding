@@ -2,6 +2,8 @@
 using System.Collections;
 using UnityEngine.UI;
 using LitJson;
+using UnityEngine.Analytics;
+using System.Collections.Generic;
 
 public class WeaponSelectManager : MonoBehaviour {
 
@@ -105,6 +107,13 @@ public class WeaponSelectManager : MonoBehaviour {
 
 			if (weaponSelectJSON[0] != null) {
 				if (weaponSelectJSON[0].ToString() == "Success") {
+
+					Analytics.CustomEvent("WeaponSelection", new Dictionary<string, object>
+					{
+						{"weaponChoice", wepSelected},
+						{"userID", GameManager.instance.userId}
+					});
+
 					//This will download the updated waeapons, and survivors to the game data, the bool lets it know to load into the tutorial combat
 					GameManager.instance.weaponHasBeenSelected = true;
 					StartCoroutine(GameManager.instance.LoadAllGameData());

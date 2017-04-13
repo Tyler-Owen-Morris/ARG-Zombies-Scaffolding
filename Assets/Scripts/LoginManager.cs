@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using Facebook.Unity;
 using LitJson;
 using System;
+using UnityEngine.Analytics;
 
 public class LoginManager : MonoBehaviour {
 
@@ -168,6 +169,13 @@ public class LoginManager : MonoBehaviour {
 			FB.API ("me?fields=picture.width(200).height(200)", HttpMethod.GET, UpdateProfilePicURL);
             loggedInPanel.SetActive (true);
 
+            Analytics.CustomEvent("Login-SetInit", new Dictionary<string, object> 
+            {
+            	{"Player ID", GameManager.instance.userId},
+            	{"Username", GameManager.instance.userName},
+            	{"timeStamp", DateTime.Now.ToString()}
+            });
+
         } else {
             Debug.Log ("FB is not logged in");
             loggedInPanel.SetActive (false);
@@ -215,7 +223,15 @@ public class LoginManager : MonoBehaviour {
 				FB.API ("/me", HttpMethod.GET, UpdateUserName);
                 
 				FB.API ("me?fields=picture.width(200).height(200)", HttpMethod.GET, UpdateProfilePicURL);
-                
+
+				//
+				Analytics.CustomEvent("Login-AuthCallback", new Dictionary<string, object> 
+            	{
+            		{"Player ID", GameManager.instance.userId},
+            		{"Username", GameManager.instance.userName},
+            		{"timeStamp", DateTime.Now.ToString()}
+            	});
+
             } else {
                 Debug.Log ("FB is NOT logged in");
                 loggedInPanel.SetActive (false);
@@ -775,6 +791,9 @@ public class LoginManager : MonoBehaviour {
 
 	public void ResumeCharacter () {
 			GameManager.instance.ResumeCharacter();
+
+
+
 			//SceneManager.LoadScene ("02a Map Level");
 	}
 

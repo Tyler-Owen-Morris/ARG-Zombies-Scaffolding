@@ -5,6 +5,8 @@ using Facebook.Unity;
 using LitJson;
 using System;
 using UnityEngine.SceneManagement;
+using UnityEngine.Analytics;
+using System.Collections.Generic;
 
 public class MapLevelManager : MonoBehaviour {
 
@@ -1157,23 +1159,30 @@ public class MapLevelManager : MonoBehaviour {
         surv_purchase_in_progress = false;
     }
 
-	public bool adding_name_to_wall = false;
+
     public void AddMyNameToWall() {
         //check that the player isn't already added to this location within the past 12hr
         if (GameManager.instance.myWallsJsonText != "")
         {
 			Debug.Log ("Looking for WALL match in game json");
-            string active_bdg = GameManager.instance.activeBldg_name;//store active bldg to compare to known valid tags.
+            string active_bdg_id = GameManager.instance.activeBldg_name;//store active bldg to compare to known valid tags.
 			Debug.Log(GameManager.instance.myWallsJsonText);
             JsonData myWallTagsJson = JsonMapper.ToObject(GameManager.instance.myWallsJsonText); //pull valid tags
             bool found = false;//this will notify the reaction after exiting the loop
             for (int i = 0; i < myWallTagsJson.Count; i++)
             {
-                if (active_bdg == myWallTagsJson[i]["bldg_name"].ToString())
+            	
+                if (active_bdg_id == myWallTagsJson[i]["bldg_id"].ToString())
                 {
-					Debug.Log ("match found for Wall: "+active_bdg);
-                    found = true;
-                    //break;
+                	DateTime lastTag = DateTime.Parse(myWallTagsJson[i]["tag_time"].ToString());
+                	DateTime dayAgo = DateTime.Now - TimeSpan.FromDays(1);
+                	if (lastTag < dayAgo) {
+						Debug.Log ("match found for Wall: "+activeBuilding.buildingName);
+                    	found = true;
+                    }else {
+                    	Debug.Log("Match found, but Tag is expired");
+                    }
+
                 }
             }
 
@@ -1192,20 +1201,19 @@ public class MapLevelManager : MonoBehaviour {
         {
 			Debug.Log ("wall Json text found to be empty");
             //player has not added this location continue with send
-            if (adding_name_to_wall == false)
-            {
-                //adding_name_to_wall = true;
-                StartCoroutine(PostNameToWall());
-            }
+            //adding_name_to_wall = true;
+            StartCoroutine(PostNameToWall());
         }
     }
 
+	public bool adding_name_to_wall = false;
     IEnumerator PostNameToWall()
     {
 		if (adding_name_to_wall == true) {
 			Debug.Log ("Coroutine did not finish successfuly last time- this is set to still sending");
 			yield break;
 		} else {
+			adding_name_to_wall=true;
 			Debug.Log ("Begin post wall to web");
 			WWWForm form = new WWWForm ();
 			form.AddField ("id", GameManager.instance.userId);
@@ -1232,6 +1240,13 @@ public class MapLevelManager : MonoBehaviour {
 					survivorWallPanel.SetActive (false);
 					BuildingSpawner myBldgSpawner = FindObjectOfType<BuildingSpawner> ();
 					myBldgSpawner.Turn60GoogleJsonIntoBuildings ();
+
+					Analytics.CustomEvent("WALL_tagged", new Dictionary<string, object>				
+					{
+						{"userID", GameManager.instance.userId},
+						{"bldg_ID", GameManager.instance.activeBldg_id},
+						{"bldg_name", GameManager.instance.activeBldg_name}
+					});
 
 				} else {
 					Debug.Log (namePostReturnJson [1].ToString ());
@@ -1770,7 +1785,9 @@ public class MapLevelManager : MonoBehaviour {
             homebaseQRpanel.SetActive(false);
         }else
         {
-            homebaseQRpanel.SetActive(true); }
+        	ActivateWindowPanel(homebaseQRpanel);
+            //homebaseQRpanel.SetActive(true); 
+        }
     }
 
 	IEnumerator UpdateHomebaseLocation () {
@@ -1820,6 +1837,8 @@ public class MapLevelManager : MonoBehaviour {
 		} else {
 			Debug.Log(www.error);
 		}
+		GameObject not = null;
+		ActivateWindowPanel(not);
 		homebaseConfirmationPanel.SetActive(false);
 		sendingNewHomebase = false;
 		UpdateTheUI();
@@ -2094,8 +2113,7 @@ public class MapLevelManager : MonoBehaviour {
 			window.SetActive (false);
 			Debug.Log ("Deactivating: " + window.name);
 		}
-	
-		toBeActivated.SetActive (true);
+		if (toBeActivated != null) { toBeActivated.SetActive (true); }
 	}
 
 }

@@ -5,6 +5,8 @@ using LitJson;
 using System;
 using System.Text;
 using System.Security.Cryptography;
+using UnityEngine.Analytics;
+using System.Collections.Generic;
 
 public class QRPanelController : MonoBehaviour {
 
@@ -154,6 +156,14 @@ public class QRPanelController : MonoBehaviour {
 		Debug.Log("Scanned Text: "+scannedText+" || DECRYPTED TEXT: "+decrypted_text);
 
 		if (scannedJson[0].ToString() == "player") {
+
+			//register the event for analytics
+			Analytics.CustomEvent("QR_playerScanned", new Dictionary<string, object>
+			{
+				{"userID", GameManager.instance.userId},
+				{"scanned_userID", scannedJson[1].ToString()}
+			});
+			
 			if(scannedJson[1].ToString() != GameManager.instance.userId) {
 				StartCoroutine(mapLvlMgr.PostTempLocationText("pairing with survivor"));
 				StartCoroutine(SendQRPairToServer(decrypted_text));
@@ -166,10 +176,19 @@ public class QRPanelController : MonoBehaviour {
 			StartCoroutine(mapLvlMgr.PostTempLocationText("attempting to join outpost"));
 			StartCoroutine(SendOutpostRequestToServer(decrypted_text));
 		} else if (scannedJson[0].ToString() == "homebase") {
+
 			//check if this homebase belongs to the player.
 			string base_owner_id = scannedJson[1].ToString();
 			float base_lat = float.Parse(scannedJson[2].ToString());
 			float base_lng = float.Parse(scannedJson[3].ToString());
+
+			Analytics.CustomEvent("QR_homebaseScanned", new Dictionary<string, object>				
+			{
+				{"userID", GameManager.instance.userId},
+				{"ownerID", base_owner_id},
+				{"lat", base_lat},
+				{"lng", base_lng}
+			});
 
 			if (base_owner_id.ToString() == GameManager.instance.userId) {
 				//start the coroutine to regenerate player stamina... or do nothing...
@@ -179,7 +198,7 @@ public class QRPanelController : MonoBehaviour {
                     Debug.Log("This is the first time this player has scanned homebase-this game.");
                     mapLvlMgr.SetNewHomebaseLocation();
                 }
-                else if (CalculateDistanceToTarget(base_lat, base_lng) <= 50.0f)
+                else if (CalculateDistanceToTarget(base_lat, base_lng) <= 100.0f)
                 {
                     //player is in range of their homebase
                     StartCoroutine(mapLvlMgr.PostTempLocationText("Checking in at Homebase"));
