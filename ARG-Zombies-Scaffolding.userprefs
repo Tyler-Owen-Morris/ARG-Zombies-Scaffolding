@@ -1,9 +1,9 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/ZM_BuildingSpawner.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/GameManager.cs">
     <Files>
-      <File FileName="Assets/Scripts/LevelManager.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/GameManager.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/LevelManager.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/5man Combat Scripts/BattleStateMachine.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/5man Combat Scripts/WeaponManager.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/5man Combat Scripts/ZombieStateMachine.cs" Line="1" Column="1" />
@@ -16,9 +16,8 @@
       <File FileName="Assets/Scripts/MissionCombatSimulator.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/BuildingSpawner.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/FadeToCombatPanelManager.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/5man Combat Scripts/BossStateMachine.cs" Line="326" Column="26" />
-      <File FileName="Assets/Scripts/5man Combat Scripts/SurvivorStateMachine.cs" Line="158" Column="47" />
-      <File FileName="Assets/ZM_BuildingSpawner.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/5man Combat Scripts/BossStateMachine.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/5man Combat Scripts/SurvivorStateMachine.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
