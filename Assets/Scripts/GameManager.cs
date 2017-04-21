@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour {
 
     public ProfileImageManager profileImageManager;
 
-	public bool gameDataInitialized = false, updateWeaponAndSurvivorMapLevelUI = false, survivorFound = false, playerInTutorial = false, weaponHasBeenSelected = false, playerIsZombie = false, blazeOfGloryActive = false;
+	public bool gameDataInitialized = false, updateWeaponAndSurvivorMapLevelUI = false, survivorFound = false, playerInTutorial = false, weaponHasBeenSelected = false, playerIsZombie = false, blazeOfGloryActive = false, firstSurvivorFound = false;
 	public int daysSurvived, /*supply,*/wood, metal, ammo, trap, barrel, greenhouse, reportedWood, reportedMetal, reportedWater, reportedFood, playerCurrentStamina, playerMaxStamina, foodCount, waterCount, mealCount, distanceCoveredThisSession, zombieKill_HighScore, zombieKill_score, zm_zombieHordeCount;
 	public DateTime timeCharacterStarted, lastHomebaseSetTime, gameOverTime, activeBldg_lastclear;
 	//public PopulatedBuilding active_building;
@@ -242,6 +242,11 @@ public class GameManager : MonoBehaviour {
                 }else
                 {
                     GameManager.instance.homebase_set = false;
+                }
+                if((int)fullGameData[1]["first_scan"] != 1) {
+                	GameManager.instance.firstSurvivorFound=false;
+                }else{
+                	GameManager.instance.firstSurvivorFound=true;
                 }
 				if (fullGameData[1]["game_over_datetime"].ToString() != "") {
 					DateTime eDate = Convert.ToDateTime(fullGameData[1]["game_over_datetime"].ToString());

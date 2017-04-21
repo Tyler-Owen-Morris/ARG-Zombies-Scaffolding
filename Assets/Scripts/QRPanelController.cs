@@ -134,8 +134,15 @@ public class QRPanelController : MonoBehaviour {
         else if (scanText == "http://www.argzombies.com/superzombie.php" || scanText == "http://www.argzombies.com/superzombie")
         {
             GameManager.instance.LoadBossCombat("superzombie");
-        }
-        else
+		}
+		else if (scanText == "https://youtu.be/Sq8WyCNHw1U")  //if they scanned a barcode for removed from reality the film... super magic secret.
+		{
+        	if (mapLvlMgr==null) {
+        		mapLvlMgr = FindObjectOfType<MapLevelManager>();
+        	}
+        	mapLvlMgr.ToggleSuperSecretPanel();
+        	Reset();
+        }else
         {
             DetermineTypeOfScannedCode(scanText);
         }
@@ -194,7 +201,7 @@ public class QRPanelController : MonoBehaviour {
 				//start the coroutine to regenerate player stamina... or do nothing...
 				Debug.Log("Player has scanned their own homebase");
 
-                if (base_lat== 0 && base_lng == 0) {
+                if (GameManager.instance.homebaseLat== 0 && GameManager.instance.homebaseLong == 0) {
                     Debug.Log("This is the first time this player has scanned homebase-this game.");
                     mapLvlMgr.SetNewHomebaseLocation();
                 }
@@ -350,7 +357,12 @@ public class QRPanelController : MonoBehaviour {
 						JsonData qrJson = JsonMapper.ToObject(jsonReturn);
 
 						if (qrJson[0].ToString() == "Success") {
+
 							PostQRResultText("You have successfully paired with "+qrJson[1]["name"].ToString());
+							GameManager.instance.survivorJsonText = JsonMapper.ToJson(qrJson[2]);
+							Debug.Log(GameManager.instance.survivorJsonText);
+							GameManager.instance.CreateSurvivorsFromGameManagerJson();
+
 						} else {
 							string myString = jsonReturn[1].ToString();
                             PostQRResultText(myString);

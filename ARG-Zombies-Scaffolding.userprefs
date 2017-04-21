@@ -2,14 +2,12 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/GameManager.cs">
     <Files>
-      <File FileName="Assets/Scripts/GameManager.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/MapLevelManager.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/GameManager.cs" Line="829" Column="2" />
       <File FileName="Assets/Scripts/LevelManager.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/5man Combat Scripts/BattleStateMachine.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/5man Combat Scripts/WeaponManager.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/5man Combat Scripts/ZombieStateMachine.cs" Line="1" Column="1" />
-      <File FileName="Assets/QRcode/Scripts/QRCodeEncodeController.cs" Line="1" Column="1" />
-      <File FileName="Assets/QRcode/Scripts/QRCodeDecodeController.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/MapLevelManager.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/MusicManager.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/GoogleMap.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/TMP_locationplaceholder.cs" Line="1" Column="1" />
@@ -18,6 +16,10 @@
       <File FileName="Assets/Scripts/FadeToCombatPanelManager.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/5man Combat Scripts/BossStateMachine.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/5man Combat Scripts/SurvivorStateMachine.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/LoginManager.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/Building.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/PopulatedBuilding.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/QRPanelController.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

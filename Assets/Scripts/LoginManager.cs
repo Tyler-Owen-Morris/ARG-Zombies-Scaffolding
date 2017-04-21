@@ -48,15 +48,36 @@ public class LoginManager : MonoBehaviour {
             runGameClock = true;
             loginProfilePic.sprite = GameManager.instance.my_profile_pic;
             player_name.text = GameManager.instance.userName;
-            player_food.text = GameManager.instance.foodCount.ToString();
-            player_water.text = GameManager.instance.waterCount.ToString();
+
+            if (GameManager.instance.foodCount<1) {
+				player_food.text = "0";
+            }else{
+				player_food.text = GameManager.instance.foodCount.ToString();
+            }
+            if(GameManager.instance.waterCount<1){
+            	player_water.text = "0";
+            }else{
+				player_water.text = GameManager.instance.waterCount.ToString();
+            }
+
+
         }
     }
 
     void Update() {
         if (runGameClock == true)
         {
+        	//calculate the ACTUAL time since game started
             TimeSpan time_alive = (DateTime.Now - (GameManager.instance.timeCharacterStarted + GameManager.instance.serverTimeOffset));
+
+            //reset the clock to the gating events
+            if (GameManager.instance.firstSurvivorFound==false) {
+            	time_alive = TimeSpan.FromDays(2);
+            }
+			if(GameManager.instance.homebase_set==false) {
+            	time_alive = TimeSpan.FromDays(1);
+            }
+             
             //Debug.Log(time_alive.ToString());
             string my_string = "";
 
@@ -85,12 +106,13 @@ public class LoginManager : MonoBehaviour {
             if (time_alive > TimeSpan.FromMinutes(1))
             {
                 int tot_min = Mathf.FloorToInt((float)time_alive.TotalMinutes);
-                my_string += tot_min.ToString().PadLeft(2, '0') + " : ";
+                my_string += tot_min.ToString().PadLeft(2, '0') /*+ " : "*/;
                 time_alive = time_alive - TimeSpan.FromMinutes((float)tot_min);
             }else
             {
-                my_string += "00 : ";
+                my_string += "00 ";
             }
+            /*
             //seconds
             if (time_alive > TimeSpan.FromSeconds(1))
             {
@@ -100,6 +122,7 @@ public class LoginManager : MonoBehaviour {
             {
                 my_string += "00";
             }
+            */
 
             currentGameClock.text = my_string;
             //Debug.Log(my_string);
@@ -297,8 +320,18 @@ public class LoginManager : MonoBehaviour {
                         //set up the name, stats, and pic
                         userDataObject.SetActive(true);
                         player_name.text = GameManager.instance.userName;
-                        player_food.text = zombStatJson[2]["food"].ToString();
-                        player_water.text = zombStatJson[2]["water"].ToString();
+						int food = (int)zombStatJson[2]["food"];
+						if(food<1){
+                       	 	player_food.text = "0";
+                       	}else{
+                       		player_food.text = food.ToString();
+                       	}
+						int water = (int)zombStatJson[2]["water"];
+                       	if(water<1){
+                        	player_water.text = "0";
+                        }else{
+                        	player_water.text = water.ToString();
+                        }
                         loginProfilePic.sprite = GameManager.instance.my_profile_pic;
 
                         continueButton.interactable = true;

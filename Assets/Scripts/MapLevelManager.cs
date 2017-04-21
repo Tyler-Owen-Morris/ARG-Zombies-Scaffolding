@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 public class MapLevelManager : MonoBehaviour {
 
-    public GameObject homebaseQRpanel, setHomebaseUIPanel, googleMapPanel, streetBackgroundPanel, buildingHolderPanel, levelLoadingPanel, fadeToCombatPanel, survivorListGrid, survivorWallPanel, survivorWallConfirmationPanel, survivorWallEmptyTextObject, exitGamePanel, missionCompletePanel, inventoryPanel, buildingPanel, clearedBuildingPanel, qrPanel, personelPanel, gearPanel, homebasePanel, homebaseConfirmationPanel, outpostSelectionPanel, outpostConfirmationPanel, missionStartConfirmationPanel, OutpostQRPanel, enterBldgButton, unequippedWeaponsPanel, mapLevelCanvas, hungerThirstWarningPanel, endGamePanel, endGameButton, bogConfirmationPanel;
+    public GameObject findSomeoneInstructionPanel, homebaseInstructionPanel, superSecretPanel, setHomebaseUIPanel, findSomeoneUIPanel, googleMapPanel, streetBackgroundPanel, buildingHolderPanel, levelLoadingPanel, fadeToCombatPanel, survivorListGrid, survivorWallPanel, survivorWallConfirmationPanel, survivorWallEmptyTextObject, exitGamePanel, missionCompletePanel, inventoryPanel, buildingPanel, clearedBuildingPanel, qrPanel, personelPanel, gearPanel, homebasePanel, homebaseConfirmationPanel, outpostSelectionPanel, outpostConfirmationPanel, missionStartConfirmationPanel, OutpostQRPanel, enterBldgButton, unequippedWeaponsPanel, mapLevelCanvas, hungerThirstWarningPanel, endGamePanel, endGameButton, bogConfirmationPanel;
 
 	[SerializeField]
 	public Text survivorWallDescriptionText, survivorWallBldgNametext, woodText, metalText, justDayAlivetext, daysAliveText, survivorsAliveText, currentLatText, currentLonText, locationReportText, zombieKillText, foodText, waterText, gearText, expirationText, playerNameText, clearedBuildingNameText, bldgNameText, bldgWoodText, bldgMetalText, bldgFoodText, bldgWaterText, clearedBldgWoodText, clearedBldgMetalText, clearedBldgFoodText, clearedBldgWaterText, zombieCountText, bldgDistText, homebaseLatText, homebaseLonText, missionConfirmationText;
@@ -509,12 +509,16 @@ public class MapLevelManager : MonoBehaviour {
 		theSurvivorListPopulator.RefreshFromGameManagerList();
 
         //set the HomebaseUI for new players
-        if (GameManager.instance.homebase_set)
-        {
+        if (GameManager.instance.homebase_set){
             setHomebaseUIPanel.SetActive(false); //already set
-        }else
-        {
+        }else{
             setHomebaseUIPanel.SetActive(true); //not yet set
+        }
+
+        if(GameManager.instance.firstSurvivorFound) {
+        	findSomeoneUIPanel.SetActive(false);
+        }else{
+        	findSomeoneUIPanel.SetActive(true);
         }
         
 		//left UI panel update
@@ -678,7 +682,10 @@ public class MapLevelManager : MonoBehaviour {
         TimeSpan time_alive = (DateTime.Now - (GameManager.instance.timeCharacterStarted+GameManager.instance.serverTimeOffset));
         //Debug.Log(time_alive.ToString());
         string my_string = "";
+        if (GameManager.instance.firstSurvivorFound==false) {time_alive = TimeSpan.FromDays(2f);} //if they haven't found a survivor yet, the clock should never progress beyond 2 days
 
+
+        //Build the string
         //days
         int days = 0;
         if (time_alive > TimeSpan.FromDays(1))
@@ -880,6 +887,11 @@ public class MapLevelManager : MonoBehaviour {
                             min_zombie += 1;//6
                             max_zombie += 7;//25
                         }
+                        if (GameManager.instance.firstSurvivorFound == false) { //if the player hasn't finished the 2 opening tasks
+                        	min_zombie = 0;
+                        	max_zombie = 5;
+                        }
+
                         int zomb_pop = UnityEngine.Random.Range(min_zombie, max_zombie);
 
 
@@ -1780,14 +1792,30 @@ public class MapLevelManager : MonoBehaviour {
 	}
 
     public void ToggleHomebaseQRpanel() {
-        if (homebaseQRpanel.activeInHierarchy)
+        if (homebaseInstructionPanel.activeInHierarchy)
         {
-            homebaseQRpanel.SetActive(false);
+            homebaseInstructionPanel.SetActive(false);
         }else
         {
-        	ActivateWindowPanel(homebaseQRpanel);
+        	ActivateWindowPanel(homebaseInstructionPanel);
             //homebaseQRpanel.SetActive(true); 
         }
+    }
+
+    public void ToggleSuperSecretPanel() {
+    	if (superSecretPanel.activeInHierarchy) {
+    		superSecretPanel.SetActive(false);
+    	}else{
+    		ActivateWindowPanel(superSecretPanel);
+    	}
+    }
+
+    public void ToggleFindSomeonePanel () {
+    	if (findSomeoneInstructionPanel.activeInHierarchy) {
+    		findSomeoneInstructionPanel.SetActive(false);
+    	} else {
+    		ActivateWindowPanel(findSomeoneInstructionPanel);
+    	}
     }
 
 	IEnumerator UpdateHomebaseLocation () {
