@@ -9,15 +9,17 @@ public class ZombieModeManager : MonoBehaviour {
     
     public GameObject zombieQRpanel, zombieAdPanel, buildingPanel, buildingSpawnerObject;
     public Text ad_countText, qrPanelText, bldgDistanceText, bldgNameText, hordeCountText;
-    public int adsToRevive, zombieHorde, metersPerZombieGather;
+    public int adsToRevive, zombieHorde, brainsEaten, metersPerZombieGather;
     public string[] zStatusFailedStrings, zStatusProcessingStrings;
 	public ZM_BuildingSpawner buildingSpawner;
+	public BrainSpawner brainSpawner;
 
 	private float lastUpdateLat = 0.0f, lastUpdateLng = 0.0f, lastZombieGatherLat =0, lastZombieGatherLng=0;
     private int ads_watched = 0;
 
 	private string zombieUpdateURL = GameManager.serverURL + "/GatherZombies.php";
 	private string zombieStatusURL = GameManager.serverURL + "/GetZombieStatus.php";
+	private string brainEatingURL = GameManager.serverURL + "/BrainsEaten.php";
 
     void Start ()
     {
@@ -52,6 +54,31 @@ public class ZombieModeManager : MonoBehaviour {
         }else
         {
             StartCoroutine(ZombieChecker());
+        }
+    }
+
+    public void BrainEaten (GameObject brain) {
+    	brainsEaten ++;
+    	Destroy(brain);
+
+    	StartCoroutine(EatenBrain());
+    }
+
+    IEnumerator EatenBrain () {
+		WWWForm form = new WWWForm();
+        form.AddField("id", GameManager.instance.userId);
+        form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+        form.AddField("client", "mob");
+
+        WWW www = new WWW(brainEatingURL, form);
+        yield return www;
+
+        if (www.error == null){
+        	Debug.Log(www.text);
+
+
+        }else{
+        	Debug.LogError(www.error);
         }
     }
 

@@ -71,10 +71,10 @@ public class LoginManager : MonoBehaviour {
             TimeSpan time_alive = (DateTime.Now - (GameManager.instance.timeCharacterStarted + GameManager.instance.serverTimeOffset));
 
             //reset the clock to the gating events
-            if (GameManager.instance.firstSurvivorFound==false) {
+            if (GameManager.instance.firstSurvivorFound==false && time_alive >= TimeSpan.FromDays(2)) {
             	time_alive = TimeSpan.FromDays(2);
             }
-			if(GameManager.instance.homebase_set==false) {
+			if(GameManager.instance.homebase_set==false && time_alive >= TimeSpan.FromDays(1)) {
             	time_alive = TimeSpan.FromDays(1);
             }
              
@@ -301,11 +301,16 @@ public class LoginManager : MonoBehaviour {
                         GameManager.instance.serverTimeOffset = DateTime.Now - DateTime.Parse(zombStatJson[3]["NOW()"].ToString());
                         Debug.Log("Server offset calculated to be: " + GameManager.instance.serverTimeOffset);
 
+						
+
 
                         //Set up the clock for active character.
                         string zombStatJsonString = zombStatJson[2]["char_created_DateTime"].ToString();
                         if (zombStatJsonString != "") {
+
                             time_game_start = DateTime.Parse(zombStatJsonString);
+							GameManager.instance.timeCharacterStarted = time_game_start;
+
                         }else
                         {
                             confirm_new_char = false;//there is no previous character, we can bypass the confirmation panel on "start new"

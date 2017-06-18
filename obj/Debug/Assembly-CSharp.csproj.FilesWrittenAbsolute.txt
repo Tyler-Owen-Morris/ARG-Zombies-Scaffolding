@@ -132,3 +132,4 @@
 /Users/Owen/ARG-Zombies-Scaffolding/Temp/bin/Debug/Mono.Cecil.Mdb.dll
 /Users/Owen/ARG-Zombies-Scaffolding/Temp/bin/Debug/Assembly-CSharp.dll.mdb
 /Users/Owen/ARG-Zombies-Scaffolding/Temp/bin/Debug/Assembly-CSharp.dll
+/Users/Owen/ARG-Zombies-Scaffolding/Temp/bin/Debug/UnityEngine.PlaymodeTestsRunner.dll

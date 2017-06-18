@@ -679,10 +679,10 @@ public class MapLevelManager : MonoBehaviour {
     }
 
     private void UpdateTimeAliveClock() {
-        TimeSpan time_alive = (DateTime.Now - (GameManager.instance.timeCharacterStarted+GameManager.instance.serverTimeOffset));
+        TimeSpan time_alive = (DateTime.Now - (GameManager.instance.timeCharacterStarted + GameManager.instance.serverTimeOffset));
         //Debug.Log(time_alive.ToString());
         string my_string = "";
-        if (GameManager.instance.firstSurvivorFound==false) {time_alive = TimeSpan.FromDays(2f);} //if they haven't found a survivor yet, the clock should never progress beyond 2 days
+        if (GameManager.instance.firstSurvivorFound==false && time_alive >= TimeSpan.FromDays(2)) {time_alive = TimeSpan.FromDays(2f);} //if they haven't found a survivor yet, the clock should never progress beyond 2 days
 
 
         //Build the string

@@ -1,26 +1,35 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/GameManager.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/ZombieModeManager.cs">
     <Files>
-      <File FileName="Assets/Scripts/MapLevelManager.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/GameManager.cs" Line="829" Column="2" />
-      <File FileName="Assets/Scripts/LevelManager.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/5man Combat Scripts/BattleStateMachine.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/5man Combat Scripts/WeaponManager.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/5man Combat Scripts/ZombieStateMachine.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/MusicManager.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/GoogleMap.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/TMP_locationplaceholder.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/MissionCombatSimulator.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/BuildingSpawner.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/FadeToCombatPanelManager.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/5man Combat Scripts/BossStateMachine.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/5man Combat Scripts/SurvivorStateMachine.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/LoginManager.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Building.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/PopulatedBuilding.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/QRPanelController.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/BrainSpawner.cs" Line="60" Column="68" NotebookId="1" />
+      <File FileName="Assets/Scripts/ZombieModeManager.cs" Line="70" Column="80" NotebookId="1" />
+      <File FileName="Assets/Scripts/MapLevelManager.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="Assets/Scripts/GameManager.cs" Line="52" Column="71" NotebookId="2" />
+      <File FileName="Assets/Scripts/LevelManager.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="Assets/Scripts/5man Combat Scripts/BattleStateMachine.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="Assets/Scripts/5man Combat Scripts/WeaponManager.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="Assets/Scripts/5man Combat Scripts/ZombieStateMachine.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="Assets/Scripts/MusicManager.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="Assets/Scripts/GoogleMap.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="Assets/Scripts/TMP_locationplaceholder.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="Assets/Scripts/MissionCombatSimulator.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="Assets/Scripts/FadeToCombatPanelManager.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="Assets/Scripts/5man Combat Scripts/BossStateMachine.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="Assets/Scripts/5man Combat Scripts/SurvivorStateMachine.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="Assets/Scripts/LoginManager.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="Assets/Scripts/Building.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="Assets/Scripts/PopulatedBuilding.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="Assets/Scripts/QRPanelController.cs" Line="1" Column="1" NotebookId="2" />
+      <File FileName="Assets/Scripts/WhackABrain.cs" Line="40" Column="46" NotebookId="2" />
     </Files>
+    <FloatingWindows>
+      <FloatingWindow WindowId="1" X="17" Y="488" Width="1841" Height="1569">
+        <Files>
+          <File FileName="Assets/Scripts/BuildingSpawner.cs" Line="28" Column="5" />
+        </Files>
+      </FloatingWindow>
+    </FloatingWindows>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
