@@ -44,9 +44,9 @@ public class SurvivorStateMachine : MonoBehaviour {
 		startPosition = gameObject.transform.position;
 		UpdateWeaponSprite();
 
-		myGunShot = transform.FindChild("GunShot").gameObject;
-		myClubSlash = transform.FindChild("ClubSlash").gameObject;
-		myKnifeStab = transform.FindChild("KnifeStab").gameObject;
+		myGunShot = transform.Find("GunShot").gameObject;
+		myClubSlash = transform.Find("ClubSlash").gameObject;
+		myKnifeStab = transform.Find("KnifeStab").gameObject;
 
        
 	}
@@ -54,7 +54,7 @@ public class SurvivorStateMachine : MonoBehaviour {
     public void SetMyPofilePic(string url)
     {
         my_face.sprite = GameManager.instance.profileImageManager.GetMyProfilePic(survivor.survivor_id, url);
-        Image healthbar_img = myStamSlider.transform.FindChild("Profile pic").GetComponent<Image>();
+        Image healthbar_img = myStamSlider.transform.Find("Profile pic").GetComponent<Image>();
         healthbar_img.sprite = my_face.sprite;
         my_face.gameObject.SetActive(false);
     }

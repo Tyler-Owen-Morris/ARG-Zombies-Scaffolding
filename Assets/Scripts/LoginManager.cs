@@ -366,6 +366,10 @@ public class LoginManager : MonoBehaviour {
 					Debug.Log("Player is a zombie ==> force loading game over scene");
                     //must load start and end times into game manager before loading Game over scene.
                     GameManager.instance.timeCharacterStarted = DateTime.Parse(zombStatJson[2]["char_created_DateTime"].ToString());
+                    GameManager.instance.brains = (int)zombStatJson[2]["brains"];
+                    if (zombStatJson[4] != null) {
+                    	GameManager.instance.myBaitedJsonText = JsonMapper.ToJson(zombStatJson[4]);
+                    }
                     string end_time = zombStatJson[2]["game_over_datetime"].ToString();
                     if (end_time != "")
                     {

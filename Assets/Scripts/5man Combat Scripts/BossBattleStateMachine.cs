@@ -117,7 +117,7 @@ public class BossBattleStateMachine : MonoBehaviour {
                 mySurvivorStateMachine.teamPos = myPlayCard.team_pos;
                 mySurvivorStateMachine.sliderNameText.text = myPlayCard.survivor.name;
                 mySurvivorStateMachine.my_face.sprite = GameManager.instance.my_profile_pic;
-                mySurvivorStateMachine.myStamSlider.gameObject.transform.FindChild("Profile pic").GetComponent<Image>().sprite = GameManager.instance.my_profile_pic;
+                mySurvivorStateMachine.myStamSlider.gameObject.transform.Find("Profile pic").GetComponent<Image>().sprite = GameManager.instance.my_profile_pic;
                 mySurvivorStateMachine.my_face.gameObject.SetActive(false);
             }
             else if (myPlayCard.team_pos == 4)
@@ -372,7 +372,7 @@ public class BossBattleStateMachine : MonoBehaviour {
             case (PlayerInput.ACTIVATE):
                 if (survivorTurnList.Count > 0)
                 {
-                    survivorTurnList[0].transform.FindChild("arrow").gameObject.SetActive(true);
+                    survivorTurnList[0].transform.Find("arrow").gameObject.SetActive(true);
                     survivorTurnList[0].GetComponent<SurvivorStateMachine>().isSelected = true;
                     playerGUI = PlayerInput.WAITING;
                 }

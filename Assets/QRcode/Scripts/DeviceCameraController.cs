@@ -32,7 +32,7 @@ public class DeviceCameraController : MonoBehaviour {
 	void Awake()  
 	{  
 		StartCoroutine(CamCon());  
-		e_CameraPlaneObj = transform.FindChild ("CameraPlane").gameObject;
+		e_CameraPlaneObj = transform.Find ("CameraPlane").gameObject;
 
 	}
 	

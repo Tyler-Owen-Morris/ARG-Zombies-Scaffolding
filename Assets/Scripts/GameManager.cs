@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour {
     public ProfileImageManager profileImageManager;
 
 	public bool gameDataInitialized = false, updateWeaponAndSurvivorMapLevelUI = false, survivorFound = false, playerInTutorial = false, weaponHasBeenSelected = false, playerIsZombie = false, blazeOfGloryActive = false, firstSurvivorFound = false;
-	public int daysSurvived, /*supply,*/wood, metal, ammo, trap, barrel, greenhouse, reportedWood, reportedMetal, reportedWater, reportedFood, playerCurrentStamina, playerMaxStamina, foodCount, waterCount, mealCount, distanceCoveredThisSession, zombieKill_HighScore, zombieKill_score, zm_zombieHordeCount;
+	public int daysSurvived, /*supply,*/wood, metal, ammo, trap, barrel, greenhouse, brains, reportedWood, reportedMetal, reportedWater, reportedFood, playerCurrentStamina, playerMaxStamina, foodCount, waterCount, mealCount, distanceCoveredThisSession, zombieKill_HighScore, zombieKill_score, zm_zombieHordeCount;
 	public DateTime timeCharacterStarted, lastHomebaseSetTime, gameOverTime, activeBldg_lastclear;
 	//public PopulatedBuilding active_building;
 	public float homebaseLat, homebaseLong;
@@ -41,7 +41,7 @@ public class GameManager : MonoBehaviour {
 	//made this public while working on the server "cleared list" data retention. it should go back to private
 	public string activeBldg_name, zombie_to_kill_id ="", activeBldg_lootcode, activeBldg_id;
 	public int activeBldg_zAcross, activeBldg_wood, activeBldg_metal, activeBldg_food, activeBldg_water, activeBldg_zombies;
-	public string myWallsJsonText, locationJsonText, googleBldgJsonTextpg1, googleBldgJsonTextpg2, googleBldgJsonTextpg3, survivorJsonText, weaponJsonText, clearedBldgJsonText, outpostJsonText, missionJsonText, starvationHungerJsonText, injuryJsonText, foundSurvivorJsonText, survivorWallJsonText;
+	public string myBaitedJsonText, myWallsJsonText, locationJsonText, googleBldgJsonTextpg1, googleBldgJsonTextpg2, googleBldgJsonTextpg3, survivorJsonText, weaponJsonText, clearedBldgJsonText, outpostJsonText, missionJsonText, starvationHungerJsonText, injuryJsonText, foundSurvivorJsonText, survivorWallJsonText;
 	public JsonData missionData;
 
 	public string userId;
@@ -280,14 +280,14 @@ public class GameManager : MonoBehaviour {
 					survivorJsonText = "";
 				}
 				//Debug.Log(survivorJsonText);
-
+				//weapons
 				//Debug.Log(JsonMapper.ToJson(fullGameData[3]));
 				if (fullGameData[3] != null) {
 					weaponJsonText = JsonMapper.ToJson(fullGameData[3]);
 				}else {
 					weaponJsonText = "";
 				}
-
+				//cleared buildings
 				if (fullGameData[4] != null) {
 					clearedBldgJsonText = JsonMapper.ToJson(fullGameData[4]);
 					//Debug.Log(JsonMapper.ToJson(fullGameData[4]));
@@ -295,37 +295,43 @@ public class GameManager : MonoBehaviour {
 					clearedBldgJsonText = "";
 				}
 
-
+				//declared outposts
 				if (fullGameData[5] != null) {
 					outpostJsonText = JsonMapper.ToJson(fullGameData[5]);
 				}else {
 					outpostJsonText = "";
 				}
-
+				//mission status
 				if (fullGameData[6] != null) {
 					missionJsonText = JsonMapper.ToJson(fullGameData[6]);
 				} else {
 					missionJsonText = "";
 				}
-
+				//starvation status
 				if (fullGameData[7] != null) {
 					starvationHungerJsonText = JsonMapper.ToJson(fullGameData[7]);
 				}else {
 					starvationHungerJsonText = "";
 				}
-
+				//injured survivors
 				if (fullGameData[8] != null) {
 					injuryJsonText = JsonMapper.ToJson(fullGameData[8]);
 				}else {
 					injuryJsonText = "";
 				}
-
+				//tagged walls
                 if (fullGameData[9] != null)
                 {
                     myWallsJsonText = JsonMapper.ToJson(fullGameData[9]);
                 }else
                 {
                     myWallsJsonText = "";
+                }
+                //baited locations
+                if (fullGameData[10] != null) {
+                	myBaitedJsonText = JsonMapper.ToJson(fullGameData[10]);
+                }else{
+                	myBaitedJsonText = "";
                 }
 
 				//***************
@@ -1021,6 +1027,8 @@ public class GameManager : MonoBehaviour {
 		GameManager.instance.homebaseLat = 0.0f;
 		GameManager.instance.homebaseLong = 0.0f;
 		GameManager.instance.lastLoginTime = "12/31/1999 11:59:59";
+		GameManager.instance.brains = 0;
+		GameManager.instance.zm_zombieHordeCount = 0;
         GameManager.instance.activeBldg_zombies = 1; //set up the 1 zombie for the weapon-select combat
         GameManager.instance.activeBldg_zAcross = 1; //set up the building data for weapon-select combat
 		playerInTutorial = true;

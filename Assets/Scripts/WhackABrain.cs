@@ -8,6 +8,8 @@ public class WhackABrain : MonoBehaviour {
 	public int maxWhacks, currWhacks;
 	public Image displayImage;
 	public Sprite[] theSprites;
+	public AudioClip bite1;
+	public AudioSource myAudioSource;
 
 	private ZombieModeManager myLevelManager;
 
@@ -21,6 +23,8 @@ public class WhackABrain : MonoBehaviour {
 		if (myLevelManager==null) {
 			Debug.LogWarning("Unable to Locate the Zombie Mode level Manager");
 		}
+
+		myAudioSource = this.GetComponent<AudioSource>();
 	}
 	
 	public void Whack () {
@@ -33,11 +37,15 @@ public class WhackABrain : MonoBehaviour {
 			}else if (currWhacks==1){
 				displayImage.sprite = theSprites[2];
 			}
+
+			myAudioSource.PlayOneShot(bite1);
 		} else {
 			//brain is expired.
 			//notify the level manager- who will handle updating UI and server.
 			if (myLevelManager!=null){
-				myLevelManager.BrainEaten(this.gameObject);
+				myAudioSource.PlayOneShot(bite1);
+				displayImage.sprite = theSprites[3]; //disable the sprite
+				myLevelManager.BrainEaten(this.gameObject, bite1.length);
 			}else{
 				Debug.LogError("Level manager not found");
 			}

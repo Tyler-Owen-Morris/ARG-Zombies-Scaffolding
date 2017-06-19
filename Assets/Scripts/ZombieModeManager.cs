@@ -3,13 +3,14 @@ using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using LitJson;
+using System;
 
 public class ZombieModeManager : MonoBehaviour {
 
     
     public GameObject zombieQRpanel, zombieAdPanel, buildingPanel, buildingSpawnerObject;
-    public Text ad_countText, qrPanelText, bldgDistanceText, bldgNameText, hordeCountText;
-    public int adsToRevive, zombieHorde, brainsEaten, metersPerZombieGather;
+    public Text ad_countText, qrPanelText, bldgDistanceText, bldgNameText, hordeCountText, brainCountText;
+    public int adsToRevive, brainsEaten, metersPerZombieGather;
     public string[] zStatusFailedStrings, zStatusProcessingStrings;
 	public ZM_BuildingSpawner buildingSpawner;
 	public BrainSpawner brainSpawner;
@@ -20,10 +21,10 @@ public class ZombieModeManager : MonoBehaviour {
 	private string zombieUpdateURL = GameManager.serverURL + "/GatherZombies.php";
 	private string zombieStatusURL = GameManager.serverURL + "/GetZombieStatus.php";
 	private string brainEatingURL = GameManager.serverURL + "/BrainsEaten.php";
+	private string baitBuildingURL = GameManager.serverURL + "/BaitBuilding.php";
 
     void Start ()
     {
-		zombieHorde = GameManager.instance.zm_zombieHordeCount;
         UpdateAdCountText();
 		buildingSpawner = buildingSpawnerObject.GetComponent<ZM_BuildingSpawner> ();
 		if (buildingSpawner != null) {
@@ -35,7 +36,8 @@ public class ZombieModeManager : MonoBehaviour {
     }
 
 	void UpdateTheUI () {
-		hordeCountText.text = zombieHorde.ToString ();
+		hordeCountText.text = GameManager.instance.zm_zombieHordeCount.ToString();
+		brainCountText.text = GameManager.instance.brains.ToString();
 	}
 
     private bool requestInProgress = false;
@@ -43,7 +45,7 @@ public class ZombieModeManager : MonoBehaviour {
     {
         if (requestInProgress)
         {
-            int num = Random.Range(0, zStatusProcessingStrings.Length);//minus 1 to convert to index #
+            int num = UnityEngine.Random.Range(0, zStatusProcessingStrings.Length);//minus 1 to convert to index #
             int index = num - 1;
             if (index < 0)
             {
@@ -57,17 +59,23 @@ public class ZombieModeManager : MonoBehaviour {
         }
     }
 
-    public void BrainEaten (GameObject brain) {
+    public void BrainEaten (GameObject brain, float timer) {
     	brainsEaten ++;
-    	Destroy(brain);
+    	//Destroy(brain);
+    	StartCoroutine(DestroyAfterSec(brain, timer));
 
     	StartCoroutine(EatenBrain());
+    }
+
+    IEnumerator DestroyAfterSec (GameObject to_dest, float sec) {
+    	yield return new WaitForSeconds(sec);
+    	Destroy(to_dest);
     }
 
     IEnumerator EatenBrain () {
 		WWWForm form = new WWWForm();
         form.AddField("id", GameManager.instance.userId);
-        form.AddField("login_ts", GameManager.instance.lastLoginTime.ToString());
+		form.AddField("login_ts", "12/31/1999 11:59:59" /*GameManager.instance.lastLoginTime.ToString()*/); //temporarily pushing the login-check, as the timestamp is not saved first time in zombie mode.
         form.AddField("client", "mob");
 
         WWW www = new WWW(brainEatingURL, form);
@@ -75,7 +83,14 @@ public class ZombieModeManager : MonoBehaviour {
 
         if (www.error == null){
         	Debug.Log(www.text);
+        	JsonData json_return = JsonMapper.ToObject(www.text);
+        	if(json_return[0].ToString() == "Success"){
+				GameManager.instance.lastLoginTime = json_return[1]["mob_login_ts"].ToString();
+				GameManager.instance.brains = (int)json_return[1]["brains"];
+				UpdateTheUI();
 
+				brainSpawner.ResetBrainSpawner();
+        	}
 
         }else{
         	Debug.LogError(www.error);
@@ -92,12 +107,16 @@ public class ZombieModeManager : MonoBehaviour {
 
         WWW www = new WWW(zombieStatusURL, form);
         yield return www;
-        Debug.Log(www.text);
+        Debug.LogWarning(www.text);
 
         if (www.error == null)
         {
             JsonData zombStatJson = JsonMapper.ToObject(www.text);
-
+            if (zombStatJson[2]["mob_login_ts"] != null){
+            	GameManager.instance.lastLoginTime = zombStatJson[2]["mob_login_ts"].ToString();
+            }else{
+            	Debug.LogWarning("no timestamp returned after login auth success");
+            }
             if (zombStatJson[0].ToString() == "Success")
             {
                 int stat = (int)zombStatJson[1];
@@ -146,6 +165,65 @@ public class ZombieModeManager : MonoBehaviour {
         requestInProgress = false;
     }
 
+    //spend brains to ressurect
+    public void BrainsForRessurection () {
+    	if (GameManager.instance.brains >= 50){
+    		GameManager.instance.brains = GameManager.instance.brains-50;
+    		GameManager.instance.StartNewCharacter();
+    	}else{
+    		Debug.Log("Not enough brains to ressurect");
+    	}
+    }
+
+    //baiting buildings with brains functions
+    public void AttemptBaitBuilding () {
+    	if (GameManager.instance.brains >= 25) {
+    		GameManager.instance.brains = GameManager.instance.brains - 25;
+    		UpdateTheUI();
+    		StartCoroutine(BaitTheBuilding());
+    	} else {
+    		Debug.LogWarning("Not enough brains to bait this location- 25 needed");
+    	}
+    }
+
+    private bool baitingBldg = false;
+    IEnumerator BaitTheBuilding () {
+    	if (baitingBldg == true) {
+    		yield break;
+    	}
+    	baitingBldg = true;
+    	WWWForm form = new WWWForm();
+    	form.AddField("id", GameManager.instance.userId);
+		form.AddField("login_ts", "12/31/1999 11:59:59"/* GameManager.instance.lastLoginTime.ToString()*/);
+    	form.AddField("client", "mob");
+    	form.AddField("building_id", GameManager.instance.activeBldg_id);
+
+    	WWW www = new WWW(baitBuildingURL , form);
+    	yield return www;
+    	Debug.Log(www.text);
+
+    	if(www.error == null){
+
+    		buildingPanel.SetActive(false);
+    		JsonData baitedJson = JsonMapper.ToObject(www.text);
+
+    		if (baitedJson[0].ToString() == "Success"){
+    			GameManager.instance.brains = (int)baitedJson[1]["brains"];
+    			GameManager.instance.myBaitedJsonText = JsonMapper.ToJson(baitedJson[2]);
+    			UpdateTheUI();
+    			buildingSpawner.UpdateBuildings();
+    		}else{
+    			Debug.LogWarning("SERVER RETURNED FAILURE");
+    		}
+
+    	}else{
+    		Debug.LogError(www.error);
+    	}
+    	baitingBldg = false;
+    }
+
+
+    //UI functions and coroutines
     IEnumerator PostTempQRPanelText(string txt, float dur)
     {
         qrPanelText.text = txt;
@@ -287,6 +365,10 @@ public class ZombieModeManager : MonoBehaviour {
 	public void ActivateBuildingInspector (ZM_Building myBuilding) {
 		CancelInvoke ("CheckAndUpdateMap"); //stop the background map from updating
 
+		//copy info onto GameManager.instance
+		GameManager.instance.activeBldg_id = myBuilding.buildingID;
+		GameManager.instance.activeBldg_name = myBuilding.name;
+
 		//calculate the distance to this building.
 		float distToBldg = (int)CalculateDistanceToTarget (myBuilding.myLattitude, myBuilding.myLongitude);
 		distToActiveBldg = distToBldg;
@@ -351,7 +433,7 @@ public class ZombieModeManager : MonoBehaviour {
 
 		if (www.error == null) {
 			Debug.Log(www.text);
-			zombieHorde += zomb;
+			GameManager.instance.zm_zombieHordeCount += zomb;
 			UpdateTheUI ();
 		} else {
 			Debug.Log(www.error);

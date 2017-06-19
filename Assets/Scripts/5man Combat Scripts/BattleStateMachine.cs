@@ -155,7 +155,7 @@ public class BattleStateMachine : MonoBehaviour {
 				mySurvivorStateMachine.teamPos = myPlayCard.team_pos;
 				mySurvivorStateMachine.sliderNameText.text = myPlayCard.survivor.name;
                 mySurvivorStateMachine.my_face.sprite = GameManager.instance.my_profile_pic;
-                mySurvivorStateMachine.myStamSlider.gameObject.transform.FindChild("Profile pic").GetComponent<Image>().sprite = GameManager.instance.my_profile_pic;
+                mySurvivorStateMachine.myStamSlider.gameObject.transform.Find("Profile pic").GetComponent<Image>().sprite = GameManager.instance.my_profile_pic;
                 mySurvivorStateMachine.my_face.gameObject.SetActive(false);
 			} else if (myPlayCard.team_pos == 4) {
 				SurvivorStateMachine mySurvivorStateMachine = playerPos2.GetComponent<SurvivorStateMachine>();
@@ -377,7 +377,7 @@ public class BattleStateMachine : MonoBehaviour {
 
 			case (PlayerInput.ACTIVATE):
 				if (survivorTurnList.Count > 0) {
-					survivorTurnList [0].transform.FindChild("arrow").gameObject.SetActive(true);
+					survivorTurnList [0].transform.Find("arrow").gameObject.SetActive(true);
 					survivorTurnList [0].GetComponent<SurvivorStateMachine>().isSelected = true;
 					playerGUI =  PlayerInput.WAITING;
 				}
@@ -1379,7 +1379,7 @@ public class BattleStateMachine : MonoBehaviour {
         {//on players
             for (int i=0; i<suvList.Length; i++) { 
                 SurvivorStateMachine mySSM = suvList[i].GetComponent<SurvivorStateMachine>();
-                mySSM.myStamSlider.gameObject.transform.FindChild("Profile pic").gameObject.SetActive(false) ;
+                mySSM.myStamSlider.gameObject.transform.Find("Profile pic").gameObject.SetActive(false) ;
                 mySSM.my_face.gameObject.SetActive(true);
             }
         }else
@@ -1387,7 +1387,7 @@ public class BattleStateMachine : MonoBehaviour {
             for (int i = 0; i < suvList.Length; i++)
             {
                 SurvivorStateMachine mySSM = suvList[i].GetComponent<SurvivorStateMachine>();
-                mySSM.myStamSlider.gameObject.transform.FindChild("Profile pic").gameObject.SetActive(true);
+                mySSM.myStamSlider.gameObject.transform.Find("Profile pic").gameObject.SetActive(true);
                 mySSM.my_face.gameObject.SetActive(false);
             }
         }

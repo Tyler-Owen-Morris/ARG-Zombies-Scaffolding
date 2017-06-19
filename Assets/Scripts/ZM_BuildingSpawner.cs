@@ -137,6 +137,26 @@ public class ZM_BuildingSpawner : MonoBehaviour {
 			instance.gameObject.transform.localScale = new Vector3 (1, 1, 1);
 
 		}
+
+		DeactivateBaitedBuildings();
+	}
+
+	void DeactivateBaitedBuildings () {
+		if(GameManager.instance.myBaitedJsonText != ""){
+			JsonData baited_json = JsonMapper.ToObject(GameManager.instance.myBaitedJsonText);
+			GameObject[] zm_buildings = GameObject.FindGameObjectsWithTag("building");
+
+			for (int i = 0 ; i < baited_json.Count; i++) {
+				foreach (GameObject building in zm_buildings) {
+					ZM_Building myBuildingScript = building.GetComponent<ZM_Building>();
+					if (myBuildingScript.buildingID == baited_json[i]["building_id"].ToString()){
+						myBuildingScript.ThisBuildingIsBaited();
+					}
+				}
+			}
+		}else{
+			Debug.LogWarning("No baited buildings found on GameManager record");
+		}
 	}
 
 
