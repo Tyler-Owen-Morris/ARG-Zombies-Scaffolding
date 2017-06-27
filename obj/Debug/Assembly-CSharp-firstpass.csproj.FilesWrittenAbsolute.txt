@@ -125,3 +125,7 @@
 /Users/Owen/ARG-Zombies-Scaffolding/Temp/bin/Debug/Mono.Cecil.Pdb.dll
 /Users/Owen/ARG-Zombies-Scaffolding/Temp/bin/Debug/Mono.Cecil.Mdb.dll
 /Users/Owen/ARG-Zombies-Scaffolding/Temp/bin/Debug/UnityEngine.PlaymodeTestsRunner.dll
+/Users/owenmorris/ARG-Zombies-Scaffolding/Temp/bin/Debug/UnityEngine.TestRunner.dll
+/Users/owenmorris/ARG-Zombies-Scaffolding/Temp/bin/Debug/nunit.framework.dll
+/Users/owenmorris/ARG-Zombies-Scaffolding/Temp/bin/Debug/UnityEngine.HoloLens.dll
+/Users/owenmorris/ARG-Zombies-Scaffolding/Temp/bin/Debug/UnityEngine.VR.dll

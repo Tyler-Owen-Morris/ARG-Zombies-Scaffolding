@@ -158,3 +158,12 @@
 /Users/Owen/ARG-Zombies-Scaffolding/Temp/bin/Debug/UnityEditor.EditorTestsRunner.dll
 /Users/Owen/ARG-Zombies-Scaffolding/Temp/bin/Debug/UnityEditor.PlaymodeTestsRunner.dll
 /Users/Owen/ARG-Zombies-Scaffolding/Temp/bin/Debug/UnityEngine.PlaymodeTestsRunner.dll
+/Users/owenmorris/ARG-Zombies-Scaffolding/Temp/bin/Debug/UnityEditor.TestRunner.dll
+/Users/owenmorris/ARG-Zombies-Scaffolding/Temp/bin/Debug/UnityEngine.TestRunner.dll
+/Users/owenmorris/ARG-Zombies-Scaffolding/Temp/bin/Debug/UnityEditor.Analytics.dll
+/Users/owenmorris/ARG-Zombies-Scaffolding/Temp/bin/Debug/UnityEditor.HoloLens.dll
+/Users/owenmorris/ARG-Zombies-Scaffolding/Temp/bin/Debug/UnityEngine.HoloLens.dll
+/Users/owenmorris/ARG-Zombies-Scaffolding/Temp/bin/Debug/UnityEditor.Purchasing.dll
+/Users/owenmorris/ARG-Zombies-Scaffolding/Temp/bin/Debug/UnityEditor.VR.dll
+/Users/owenmorris/ARG-Zombies-Scaffolding/Temp/bin/Debug/UnityEngine.VR.dll
+/Users/owenmorris/ARG-Zombies-Scaffolding/Temp/bin/Debug/UnityEditor.iOS.Extensions.Xcode.xml

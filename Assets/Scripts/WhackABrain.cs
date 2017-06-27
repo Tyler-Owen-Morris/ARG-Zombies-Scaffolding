@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class WhackABrain : MonoBehaviour {
 
 	public int maxWhacks, currWhacks;
+	public float timeLimit;
 	public Image displayImage;
 	public Sprite[] theSprites;
 	public AudioClip bite1;
@@ -16,6 +17,7 @@ public class WhackABrain : MonoBehaviour {
 	void Start () {
 		displayImage = gameObject.GetComponent<Image>();
 		maxWhacks = 3;
+		timeLimit = 7;
 		currWhacks=maxWhacks;
 		displayImage.sprite = theSprites[0];//reset image
 
@@ -51,4 +53,20 @@ public class WhackABrain : MonoBehaviour {
 			}
 		}
 	}
+
+	void Update ()  {
+		timeLimit = Time.deltaTime;
+		if (timeLimit <= 0) {
+			BrainSpawner myBrainSpawner = BrainSpawner.FindObjectOfType<BrainSpawner> ();
+			if (myBrainSpawner != null) {
+				Debug.Log ("Brain has Timed out!!!");
+				myBrainSpawner.ResetBrainSpawner ();
+				Destroy (this.gameObject);
+			} else {
+				Debug.LogWarning ("unable to locate brainspawner in scene");
+			}
+		}
+
+	}
+
 }
