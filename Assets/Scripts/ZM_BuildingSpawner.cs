@@ -49,8 +49,7 @@ public class ZM_BuildingSpawner : MonoBehaviour {
 			lastGoogleLng = Input.location.lastData.longitude;
 
 		}  else {
-			myWwwString += "37.70897,-122.4292";
-			//this is assuming my home location
+			myWwwString += GameManager.instance.defaultLat+","+GameManager.instance.defaultLng;
 		}
 		myWwwString += "&radius=500";
 		//myWwwString += "&keyword=things";
@@ -59,7 +58,7 @@ public class ZM_BuildingSpawner : MonoBehaviour {
 		Debug.Log(myWwwString);
 		WWW www = new WWW(myWwwString);
 		yield return www;
-		//Debug.Log(www.text);
+		Debug.Log(www.text);
 
 		//File.WriteAllText(Application.dataPath + "/Resources/googlelocations.json", www.text.ToString());
 		//googleJsonReturn = www.text;
@@ -112,11 +111,13 @@ public class ZM_BuildingSpawner : MonoBehaviour {
 			double deltaLatitude = 0;
 			double deltaLongitude = 0;
 			if (Input.location.status == LocationServiceStatus.Running){
+				//load from last data
 				deltaLatitude = (Input.location.lastData.latitude - lat);
 				deltaLongitude = (Input.location.lastData.longitude - lng);
 			}  else {
-				deltaLatitude = (37.70883f - lat);
-				deltaLongitude = (-122.4293 - lng);
+				//use gamemanager defaults
+				deltaLatitude = (float.Parse(GameManager.instance.defaultLat) - lat);
+				deltaLongitude = (float.Parse(GameManager.instance.defaultLng) - lng);
 			}
 			double xDistMeters = deltaLongitude * m_per_deg_lon;
 			double yDistMeters = deltaLatitude * m_per_deg_lat;
@@ -177,7 +178,8 @@ public class ZM_BuildingSpawner : MonoBehaviour {
 			my_lat = Input.location.lastData.latitude;
 		}else
 		{
-			my_lat = 37.70897f;
+			//my_lat = 37.70897f; //this is the SF lat
+			my_lat = float.Parse(GameManager.instance.defaultLat); // this is the SD lat
 		}
 		//double my_value = 156543.03392f *( Mathf.Cos((my_lat*Mathf.PI) / 180 ) / Mathf.Pow(2,zoom));
 		double my_value = (Mathf.Cos(my_lat*Mathf.PI/180)*2*Mathf.PI*6378137)/(256*Mathf.Pow(2, zoom));

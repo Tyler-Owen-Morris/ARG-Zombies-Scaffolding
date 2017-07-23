@@ -189,6 +189,7 @@ public class QRPanelController : MonoBehaviour {
 			float base_lat = float.Parse(scannedJson[2].ToString());
 			float base_lng = float.Parse(scannedJson[3].ToString());
 
+			//log the scan to analyitics
 			Analytics.CustomEvent("QR_homebaseScanned", new Dictionary<string, object>				
 			{
 				{"userID", GameManager.instance.userId},

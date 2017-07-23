@@ -55,7 +55,7 @@ public class WhackABrain : MonoBehaviour {
 	}
 
 	void Update ()  {
-		timeLimit = Time.deltaTime;
+		timeLimit = timeLimit - Time.deltaTime;
 		if (timeLimit <= 0) {
 			BrainSpawner myBrainSpawner = BrainSpawner.FindObjectOfType<BrainSpawner> ();
 			if (myBrainSpawner != null) {

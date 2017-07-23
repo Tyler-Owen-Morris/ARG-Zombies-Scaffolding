@@ -59,9 +59,13 @@ public class BuildingSpawner : MonoBehaviour {
 				lastGoogleLat = Input.location.lastData.latitude;
 				lastGoogleLng = Input.location.lastData.longitude;
 
-			}  else {
-				myWwwString += "37.70897,-122.4292";
-				//this is assuming my home location
+			} else {
+				//myWwwString += "37.70897,-122.4292";
+				//this is assuming my home location in San Francisco
+				//myWwwString += "32.864330,-117.214787";
+				//this is the location of the condo in San Diego
+
+				myWwwString += GameManager.instance.defaultLat+","+GameManager.instance.defaultLng;
 			}
 			myWwwString += "&radius=500";
 			//myWwwString += "&keyword=things";
@@ -96,8 +100,12 @@ public class BuildingSpawner : MonoBehaviour {
         }
         else
         {
-            myWwwString += "37.70897,-122.4292";
-            //this is assuming my home location
+            //myWwwString += "37.70897,-122.4292";
+            //this is assuming my home location in San Francisco
+			//myWwwString += "32.864330,-117.214787";
+			//this is the condo in San Diego
+
+			myWwwString += GameManager.instance.defaultLat + "," + GameManager.instance.defaultLng;
         }
         myWwwString += "&radius=400";
         //myWwwString += "&keyword=things";
@@ -229,8 +237,8 @@ public class BuildingSpawner : MonoBehaviour {
 				deltaLatitude = (Input.location.lastData.latitude - lat);
 				deltaLongitude = (Input.location.lastData.longitude - lng);
 			}  else {
-				deltaLatitude = (37.70883f - lat);
-				deltaLongitude = (-122.4293 - lng);
+				deltaLatitude = (float.Parse(GameManager.instance.defaultLat) - lat);
+				deltaLongitude = (float.Parse(GameManager.instance.defaultLng) - lng);
 			}
 			double xDistMeters = deltaLongitude * m_per_deg_lon;
 			double yDistMeters = deltaLatitude * m_per_deg_lat;
@@ -470,8 +478,8 @@ public class BuildingSpawner : MonoBehaviour {
                 }
                 else
                 {
-                    deltaLatitude = (37.70883f - lat);
-                    deltaLongitude = (-122.4293 - lng);
+					deltaLatitude = (float.Parse(GameManager.instance.defaultLat) - lat);
+					deltaLongitude = (float.Parse(GameManager.instance.defaultLng) - lng);
                 }
                 double xDistMeters = deltaLongitude * m_per_deg_lon;
                 double yDistMeters = deltaLatitude * m_per_deg_lat;
@@ -958,7 +966,7 @@ public class BuildingSpawner : MonoBehaviour {
             my_lat = Input.location.lastData.latitude;
         }else
         {
-            my_lat = 37.70897f;
+			my_lat = float.Parse (GameManager.instance.defaultLat);
         }
         //double my_value = 156543.03392f *( Mathf.Cos((my_lat*Mathf.PI) / 180 ) / Mathf.Pow(2,zoom));
         double my_value = (Mathf.Cos(my_lat*Mathf.PI/180)*2*Mathf.PI*6378137)/(256*Mathf.Pow(2, zoom));
@@ -982,7 +990,7 @@ public class BuildingSpawner : MonoBehaviour {
 					deltaLongitude = (Input.location.lastData.longitude - homeLon);
 				}  else {
 					deltaLatitude = (37.70883f - homeLat);
-					deltaLongitude = (-122.4293 - homeLon);
+					deltaLongitude = (-122.4293f - homeLon);
 				}
 				double xDistMeters = deltaLongitude * m_per_deg_lon;
 				double yDistMeters = deltaLatitude * m_per_deg_lat;

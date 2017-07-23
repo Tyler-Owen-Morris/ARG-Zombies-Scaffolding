@@ -9,7 +9,7 @@ public class ZombieModeManager : MonoBehaviour {
 
     
     public GameObject zombieQRpanel, zombieAdPanel, buildingPanel, buildingSpawnerObject;
-    public Text ad_countText, qrPanelText, bldgDistanceText, bldgNameText, hordeCountText, brainCountText;
+    public Text ad_countText, qrPanelText, bldgDistanceText, bldgNameText, hordeCountText, brainCountText, tempResponseText;
     public int adsToRevive, brainsEaten, metersPerZombieGather;
     public string[] zStatusFailedStrings, zStatusProcessingStrings;
 	public ZM_BuildingSpawner buildingSpawner;
@@ -72,7 +72,13 @@ public class ZombieModeManager : MonoBehaviour {
     	Destroy(to_dest);
     }
 
+	private bool eatingInProgress = false;
     IEnumerator EatenBrain () {
+		if (eatingInProgress == true) {
+			yield break;
+		}
+
+		eatingInProgress = true;
 		WWWForm form = new WWWForm();
         form.AddField("id", GameManager.instance.userId);
 		form.AddField("login_ts", "12/31/1999 11:59:59" /*GameManager.instance.lastLoginTime.ToString()*/); //temporarily pushing the login-check, as the timestamp is not saved first time in zombie mode.
@@ -88,13 +94,13 @@ public class ZombieModeManager : MonoBehaviour {
 				GameManager.instance.lastLoginTime = json_return[1]["mob_login_ts"].ToString();
 				GameManager.instance.brains = (int)json_return[1]["brains"];
 				UpdateTheUI();
-
 				brainSpawner.ResetBrainSpawner();
         	}
 
         }else{
         	Debug.LogError(www.error);
         }
+		eatingInProgress = false;
     }
 
     IEnumerator ZombieChecker()
@@ -172,14 +178,16 @@ public class ZombieModeManager : MonoBehaviour {
     		GameManager.instance.StartNewCharacter();
     	}else{
     		Debug.Log("Not enough brains to ressurect");
+
     	}
     }
 
     //baiting buildings with brains functions
     public void AttemptBaitBuilding () {
     	if (GameManager.instance.brains >= 25) {
-    		GameManager.instance.brains = GameManager.instance.brains - 25;
-    		UpdateTheUI();
+    		//GameManager.instance.brains = GameManager.instance.brains - 25; 
+    		//UpdateTheUI();
+			// do this after the coroutine^^^^
     		StartCoroutine(BaitTheBuilding());
     	} else {
     		Debug.LogWarning("Not enough brains to bait this location- 25 needed");
@@ -194,7 +202,7 @@ public class ZombieModeManager : MonoBehaviour {
     	baitingBldg = true;
     	WWWForm form = new WWWForm();
     	form.AddField("id", GameManager.instance.userId);
-		form.AddField("login_ts", "12/31/1999 11:59:59"/* GameManager.instance.lastLoginTime.ToString()*/);
+		form.AddField("login_ts", "12/31/1999 11:59:59"/* GameManager.instance.lastLoginTime.ToString()*/); //DIRTY HACK!! FIX THIS
     	form.AddField("client", "mob");
     	form.AddField("building_id", GameManager.instance.activeBldg_id);
 

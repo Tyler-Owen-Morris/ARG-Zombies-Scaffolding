@@ -135,6 +135,7 @@ public class MapLevelManager : MonoBehaviour {
 	public void QrScanPressed () {
 		if (qrPanel.activeInHierarchy == true) {
 			qrPanel.SetActive(false);
+			locationReportText.gameObject.SetActive (false);
 		} else {
 			//qrPanel.SetActive(true);
 			ActivateWindowPanel(qrPanel);

@@ -355,34 +355,34 @@
  <HintPath>/Applications/Unity/Unity.app/Contents/PlaybackEngines/MacStandaloneSupport/UnityEditor.OSXStandalone.Extensions.dll</HintPath>
  </Reference>
  <Reference Include="Newtonsoft.Json">
- <HintPath>/Users/owenmorris/ARG-Zombies-Scaffolding/Assets/Plugins/Newtonsoft.Json.dll</HintPath>
+ <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Assets/Plugins/Newtonsoft.Json.dll</HintPath>
  </Reference>
  <Reference Include="Common">
- <HintPath>/Users/owenmorris/ARG-Zombies-Scaffolding/Assets/Plugins/UnityPurchasing/Bin/Common.dll</HintPath>
+ <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Assets/Plugins/UnityPurchasing/Bin/Common.dll</HintPath>
  </Reference>
  <Reference Include="Editor">
- <HintPath>/Users/owenmorris/ARG-Zombies-Scaffolding/Assets/Plugins/UnityPurchasing/Bin/Editor.dll</HintPath>
+ <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Assets/Plugins/UnityPurchasing/Bin/Editor.dll</HintPath>
  </Reference>
  <Reference Include="Security">
- <HintPath>/Users/owenmorris/ARG-Zombies-Scaffolding/Assets/Plugins/UnityPurchasing/Bin/Security.dll</HintPath>
+ <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Assets/Plugins/UnityPurchasing/Bin/Security.dll</HintPath>
  </Reference>
  <Reference Include="Stores">
- <HintPath>/Users/owenmorris/ARG-Zombies-Scaffolding/Assets/Plugins/UnityPurchasing/Bin/Stores.dll</HintPath>
+ <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Assets/Plugins/UnityPurchasing/Bin/Stores.dll</HintPath>
  </Reference>
  <Reference Include="Apple">
- <HintPath>/Users/owenmorris/ARG-Zombies-Scaffolding/Assets/Plugins/UnityPurchasing/Bin/Apple/Apple.dll</HintPath>
+ <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Assets/Plugins/UnityPurchasing/Bin/Apple/Apple.dll</HintPath>
  </Reference>
  <Reference Include="Tizen">
- <HintPath>/Users/owenmorris/ARG-Zombies-Scaffolding/Assets/Plugins/UnityPurchasing/Bin/Tizen/Tizen.dll</HintPath>
+ <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Assets/Plugins/UnityPurchasing/Bin/Tizen/Tizen.dll</HintPath>
  </Reference>
  <Reference Include="winrt">
- <HintPath>/Users/owenmorris/ARG-Zombies-Scaffolding/Assets/Plugins/UnityPurchasing/winrt/winrt.dll</HintPath>
+ <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Assets/Plugins/UnityPurchasing/winrt/winrt.dll</HintPath>
  </Reference>
  <Reference Include="QRCode">
- <HintPath>/Users/owenmorris/ARG-Zombies-Scaffolding/Assets/QRcode/Plugins/QRCode.dll</HintPath>
+ <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Assets/QRcode/Plugins/QRCode.dll</HintPath>
  </Reference>
  <Reference Include="LitJson">
- <HintPath>/Users/owenmorris/ARG-Zombies-Scaffolding/Assets/Resources/LitJson.dll</HintPath>
+ <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Assets/Resources/LitJson.dll</HintPath>
  </Reference>
   </ItemGroup>
   <ItemGroup>

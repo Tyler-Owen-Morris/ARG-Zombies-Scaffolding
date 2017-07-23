@@ -52,6 +52,10 @@ public class GameManager : MonoBehaviour {
 	public static string serverURL = "http://game.argzombie.com/ARGZ_DEV_SERVER";
 	public static string QR_encryption_key = "12345678901234567890123456789012";
 
+	//public string defaultLatLngLocation = "37.70897,-122.4292"; // this is San Francisco as Default
+	public string defaultLat = "32.864330";
+	public string defaultLng =	"-117.214787"; //this is San Diego as default
+
 	private string startNewCharURL = serverURL+"/StartNewCharacter.php";
 	private string resumeCharacterUrl = serverURL+"/ResumeCharacter.php";
 	private string buildingClearedURL = serverURL+"/NewBuildingCleared.php";
