@@ -989,8 +989,8 @@ public class BuildingSpawner : MonoBehaviour {
 					deltaLatitude = (Input.location.lastData.latitude - homeLat);
 					deltaLongitude = (Input.location.lastData.longitude - homeLon);
 				}  else {
-					deltaLatitude = (37.70883f - homeLat);
-					deltaLongitude = (-122.4293f - homeLon);
+					deltaLatitude = (float.Parse(GameManager.instance.defaultLat) - homeLat);
+					deltaLongitude = (float.Parse(GameManager.instance.defaultLng) - homeLon);
 				}
 				double xDistMeters = deltaLongitude * m_per_deg_lon;
 				double yDistMeters = deltaLatitude * m_per_deg_lat;

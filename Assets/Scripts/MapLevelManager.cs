@@ -1426,9 +1426,10 @@ public class MapLevelManager : MonoBehaviour {
 
 	public void DeactivateBuildingInspector () {
         activeBuilding.gameObject.tag = "building"; //re-tag the gameobject so that it may be deleted
-        InvokeRepeating("CheckAndUpdateMap", 10f, 10f);
-		buildingPanel.SetActive(false);
-        clearedBuildingPanel.SetActive(false);
+        InvokeRepeating("CheckAndUpdateMap", 10f, 10f); //restart the repeating updater.
+		buildingPanel.SetActive(false); //turn off panel
+        clearedBuildingPanel.SetActive(false); //redundancy
+		bldgSpawner.UpdateBuildings (); //refresh to fix the current zoom level.
 	}
 
     public void DeactivateWallInspector() {

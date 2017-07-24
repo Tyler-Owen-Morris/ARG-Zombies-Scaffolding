@@ -307,7 +307,20 @@ public class LoginManager : MonoBehaviour {
                         //Set up the clock for active character.
                         string zombStatJsonString = zombStatJson[2]["char_created_DateTime"].ToString();
                         if (zombStatJsonString != "") {
+							//set up quest status so that the timer evaluates correctly beyond 24hr
+							if ((int)zombStatJson [2] ["first_scan"] == 1) {
+								GameManager.instance.firstSurvivorFound = true;
+							} else {
+								GameManager.instance.firstSurvivorFound = false;
+							}
+							//set the homebase checker	
+							if (float.Parse(zombStatJson[2]["homebase_lat"].ToString()) == 0.0f && float.Parse(zombStatJson[2]["homebase_lon"].ToString())== 0.0f) {
+								GameManager.instance.homebase_set = false;
+							}else{
+								GameManager.instance.homebase_set = true;
+							}
 
+							//set up the clock itself
                             time_game_start = DateTime.Parse(zombStatJsonString);
 							GameManager.instance.timeCharacterStarted = time_game_start;
 
