@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using UnityEngine.Analytics;
+using System.Collections.Generic;
 
 public class ContinueRunningButtonManager : MonoBehaviour {
 
@@ -22,8 +24,34 @@ public class ContinueRunningButtonManager : MonoBehaviour {
 	}
 
 	public void KeepRunning () {
+		string choice = "Keep Running";
+		Analytics.CustomEvent("Survivor Run- failed", new Dictionary<string, object>
+			{
+				{"userID", GameManager.instance.userId},
+				{"bldg_name", GameManager.instance.activeBldg_name},
+				{"bldg_id", GameManager.instance.activeBldg_id},
+				{"player_choice", choice},
+				{"time_alive", GameManager.instance.GetCurrentTimeAlive()}
+			});
+
 		myBSM.PlayerChoosesRunAway();
 		myPanel.SetActive(false);
+	}
+
+	public void TurnAndFight () {
+
+		string choice = "Turn And Fight";
+		Analytics.CustomEvent("Survivor Run- failed", new Dictionary<string, object>
+			{
+				{"userID", GameManager.instance.userId},
+				{"bldg_name", GameManager.instance.activeBldg_name},
+				{"bldg_id", GameManager.instance.activeBldg_id},
+				{"player_choice", choice},
+				{"time_alive", GameManager.instance.GetCurrentTimeAlive()}
+			});
+
+		GameObject parent = gameObject.GetComponentInParent<GameObject> ();
+		parent.SetActive (false);
 	}
 
 	void Update () {

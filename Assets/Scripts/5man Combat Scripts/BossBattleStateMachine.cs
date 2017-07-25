@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using LitJson;
+using UnityEngine.Analytics;
 
 public class BossBattleStateMachine : MonoBehaviour {
 
@@ -432,6 +433,16 @@ public class BossBattleStateMachine : MonoBehaviour {
 
     public void SurvivorHasBeenBit(SurvivorStateMachine bitSurvivor)
     {
+		Analytics.CustomEvent("SurvivorBit-Boss", new Dictionary<string, object>
+			{
+				{"userID", GameManager.instance.userId},
+				{"bldg_name", GameManager.instance.activeBldg_name},
+				{"bldg_id", GameManager.instance.activeBldg_id},
+				{"stamina at bite", bitSurvivor.survivor.curStamina},
+				{"max stamina", bitSurvivor.survivor.baseStamina},
+				{"time_alive", GameManager.instance.GetCurrentTimeAlive()}
+			});
+
         //if it's player character, startup the end-game panel, otherwise just the survivor panel.
         GameObject[] battle_survivors = GameObject.FindGameObjectsWithTag("survivor");
         if (bitSurvivor.teamPos == 5 && battle_survivors.Length == 1)

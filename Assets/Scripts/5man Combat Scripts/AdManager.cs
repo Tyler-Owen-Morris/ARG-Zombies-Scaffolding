@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.Advertisements;
 using System.Collections;
+using UnityEngine.Analytics;
+using System.Collections.Generic;
 
 public class AdManager : MonoBehaviour {
 
@@ -9,6 +11,12 @@ public class AdManager : MonoBehaviour {
         if (Advertisement.IsReady())
         {
             Advertisement.Show("", new ShowOptions(){resultCallback = HandleAdResult});
+
+			Analytics.CustomEvent("Show Ad chosen", new Dictionary<string, object>
+				{
+					{"userID", GameManager.instance.userId},
+					{"time_alive", GameManager.instance.GetCurrentTimeAlive()}
+				});
         } 
     }
 
@@ -43,6 +51,11 @@ public class AdManager : MonoBehaviour {
             case ShowResult.Failed:
                 //kill the survivor horribler...
 
+			Analytics.CustomEvent("AdWatch Failed", new Dictionary<string, object>
+				{
+					{"userID", GameManager.instance.userId},
+					{"time_alive", GameManager.instance.GetCurrentTimeAlive()}
+				});
                 break;
         }
     }

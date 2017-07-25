@@ -744,6 +744,15 @@ public class MapLevelManager : MonoBehaviour {
         myBuilding.gameObject.tag = "Untagged";
 		CancelInvoke("CheckAndUpdateMap");
 
+		//store analytics for opened building
+		Analytics.CustomEvent("Building Inspected", new Dictionary<string, object>
+			{
+				{"userID", GameManager.instance.userId},
+				{"bldg_name", GameManager.instance.activeBldg_name},
+				{"bldg_id", GameManager.instance.activeBldg_id},
+				{"time_alive", GameManager.instance.GetCurrentTimeAlive()}
+			});
+
 		//load building data into MapLevelManager
 		activeBuilding = myBuilding;
 		bldgName = myBuilding.buildingName;

@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using LitJson;
 using Newtonsoft.Json;
+using UnityEngine.Analytics;
 
 public class BattleStateMachine : MonoBehaviour {
 
@@ -117,6 +118,15 @@ public class BattleStateMachine : MonoBehaviour {
         {
             blazeOfGloryImage.SetActive(false);
         }
+			
+		Analytics.CustomEvent("Building Entered", new Dictionary<string, object>
+			{
+				{"userID", GameManager.instance.userId},
+				{"bldg_name", GameManager.instance.activeBldg_name},
+				{"bldg_id", GameManager.instance.activeBldg_id},
+				{"zombies", GameManager.instance.activeBldg_zombies},
+				{"time_alive", GameManager.instance.GetCurrentTimeAlive()}
+			});
 	}
 
     void PlayIntroSound ()
@@ -229,7 +239,8 @@ public class BattleStateMachine : MonoBehaviour {
 
     void SetZombieModelsForThisBuilding()
     {
-        
+		//retain the total number killed for analyitics
+		GameManager.instance.activeBldg_totalZombies = GameManager.instance.activeBldg_zombies;
 
         GameObject[] zombies = GameObject.FindGameObjectsWithTag("zombie");//grab all the models in the scene
         Debug.Log("The game sees: " + zombies.Length+" zombies");
@@ -723,6 +734,17 @@ public class BattleStateMachine : MonoBehaviour {
 	}
 
 	public void SurvivorHasBeenBit (SurvivorStateMachine bitSurvivor) {
+		//register the bite for Analytics
+		Analytics.CustomEvent("SurvivorBit", new Dictionary<string, object>
+			{
+				{"userID", GameManager.instance.userId},
+				{"bldg_name", GameManager.instance.activeBldg_name},
+				{"bldg_id", GameManager.instance.activeBldg_id},
+				{"stamina at bite", bitSurvivor.survivor.curStamina},
+				{"max stamina", bitSurvivor.survivor.baseStamina},
+				{"time_alive", GameManager.instance.GetCurrentTimeAlive()}
+			});
+
 		//if it's player character, startup the end-game panel, otherwise just the survivor panel.
 		GameObject[] battle_survivors = GameObject.FindGameObjectsWithTag("survivor");
 		if (bitSurvivor.teamPos == 5 && battle_survivors.Length == 1) {
@@ -839,6 +861,16 @@ public class BattleStateMachine : MonoBehaviour {
 	}
 
 	public void PlayerChooseKillSurvivor () {
+
+		string choice = "Kill";
+		Analytics.CustomEvent("Survivor bit- killed", new Dictionary<string, object>
+			{
+				{"userID", GameManager.instance.userId},
+				{"bldg_name", GameManager.instance.activeBldg_name},
+				{"bldg_id", GameManager.instance.activeBldg_id},
+				{"player_choice", choice},
+				{"time_alive", GameManager.instance.GetCurrentTimeAlive()}
+			});
 		
 		//send survivor ID to the server to destoy the record on the server.
 		int survivorIDtoDestroy = survivorWithBite.survivor.survivor_id;
@@ -893,6 +925,17 @@ public class BattleStateMachine : MonoBehaviour {
 
 	//this handles a non-player survivor being bit
 	public void PlayerChoosesToFightOn () {
+
+		string choice = "Fight On";
+		Analytics.CustomEvent("Survivor bit- Fight On Chosen", new Dictionary<string, object>
+			{
+				{"userID", GameManager.instance.userId},
+				{"bldg_name", GameManager.instance.activeBldg_name},
+				{"bldg_id", GameManager.instance.activeBldg_id},
+				{"player_choice", choice},
+				{"time_alive", GameManager.instance.GetCurrentTimeAlive()}
+			});
+
         //destroy survivor on the server
         if (survivorWithBite.teamPos != 5)
         {
@@ -970,6 +1013,13 @@ public class BattleStateMachine : MonoBehaviour {
 	}
 
 	public void PlayerChoosePurchaseSurvivorSave () {
+
+		Analytics.CustomEvent("AdWatch-Success", new Dictionary<string, object>
+			{
+				{"userID", GameManager.instance.userId},
+				{"time_alive", GameManager.instance.GetCurrentTimeAlive()}
+			});
+
 		int survIDtoRestore = survivorWithBite.survivor.survivor_id;
 		//disable both bite panels
 		survivorBitPanel.SetActive(false);
@@ -1019,6 +1069,12 @@ public class BattleStateMachine : MonoBehaviour {
 
     public void PlayerPartiallyWatchedAD ()
     {
+		Analytics.CustomEvent("AdWatch partial", new Dictionary<string, object>
+			{
+				{"userID", GameManager.instance.userId},
+				{"time_alive", GameManager.instance.GetCurrentTimeAlive()}
+			});
+
         //no stamina gain is assessed- no need to update server.
         survivorWithBite = null; //off the chopping block
         playerBitPanel.SetActive(false); //panel gone
@@ -1103,6 +1159,14 @@ public class BattleStateMachine : MonoBehaviour {
 		if (got_away == running_away) {
 			//SceneManager.LoadScene("02a Map Level");
             //StartCoroutine(GameManager.instance.LoadAllGameData());
+
+			Analytics.CustomEvent("Run Away- success", new Dictionary<string, object>
+				{
+					{"userID", GameManager.instance.userId},
+					{"bldg_name", GameManager.instance.activeBldg_name},
+					{"bldg_id", GameManager.instance.activeBldg_id},
+					{"time_alive", GameManager.instance.GetCurrentTimeAlive()}
+				});
 
 			DumpTurnsToServer(false); //send all stored turn data to server
 		}

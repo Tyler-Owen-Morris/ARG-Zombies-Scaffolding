@@ -149,6 +149,8 @@ public class QRPanelController : MonoBehaviour {
     }
 
 	void DetermineTypeOfScannedCode (string scannedText) {
+		Debug.Log ("Determining type of code scanned");
+
         if (scannedText.Contains("http://"))
         {
             Debug.Log("this is not a valid game barcode");

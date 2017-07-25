@@ -40,7 +40,7 @@ public class GameManager : MonoBehaviour {
 	private Scene activeScene;
 	//made this public while working on the server "cleared list" data retention. it should go back to private
 	public string activeBldg_name, zombie_to_kill_id ="", activeBldg_lootcode, activeBldg_id;
-	public int activeBldg_zAcross, activeBldg_wood, activeBldg_metal, activeBldg_food, activeBldg_water, activeBldg_zombies;
+	public int activeBldg_zAcross, activeBldg_wood, activeBldg_metal, activeBldg_food, activeBldg_water, activeBldg_zombies, activeBldg_totalZombies;
 	public string myBaitedJsonText, myWallsJsonText, locationJsonText, googleBldgJsonTextpg1, googleBldgJsonTextpg2, googleBldgJsonTextpg3, survivorJsonText, weaponJsonText, clearedBldgJsonText, outpostJsonText, missionJsonText, starvationHungerJsonText, injuryJsonText, foundSurvivorJsonText, survivorWallJsonText;
 	public JsonData missionData;
 
@@ -1469,9 +1469,9 @@ public class GameManager : MonoBehaviour {
 				if(GameManager.instance.activeBldg_name != "blaze_of_glory"){
 					if (GameManager.instance.activeBldg_name != "bite_case") {
 
-						string jsonString = GameManager.instance.locationJsonText;
-						JsonData bldgJson = JsonMapper.ToObject(jsonString);
-						string bldg_id = "";
+						//string jsonString = GameManager.instance.locationJsonText;
+						//JsonData bldgJson = JsonMapper.ToObject(jsonString);
+						//string bldg_id = "";
 
 //						for (int i = 0; i < bldgJson["results"].Count; i++) {
 //							if (bldgJson["results"][i]["name"].ToString() == GameManager.instance.activeBldg_name) {
@@ -1591,9 +1591,10 @@ public class GameManager : MonoBehaviour {
 									{"water",GameManager.instance.activeBldg_water},
 									{"wood", GameManager.instance.activeBldg_wood},
 									{"metal", GameManager.instance.activeBldg_metal},
-									{"time_alive", GetCurrentTimeAlive()}
+									{"time_alive", GetCurrentTimeAlive()},
+									{"zombies_killed", GameManager.instance.activeBldg_totalZombies}
 								});
-
+								Debug.Log ("Building Cleared Analytics should have registered");
 							}
 						} else {
 							Debug.Log(www.error);
@@ -1698,15 +1699,16 @@ public class GameManager : MonoBehaviour {
 			//if player is trying to send the tutorial building for reward- skip it, load game data, and load into map level.
 			playerInTutorial = false;
 			weaponHasBeenSelected = false;
-			StartCoroutine(LoadAllGameData());
-			SceneManager.LoadScene("02a Map Level");
-			StopCoroutine(SendClearedBuilding(false));
-
+		
 			//post the tutorial completion
 			Analytics.CustomEvent("tutorialComplete", new Dictionary<string, object>
 			{
 				{"userID", GameManager.instance.userId}
 			});
+			
+			StartCoroutine(LoadAllGameData());
+			SceneManager.LoadScene("02a Map Level");
+			StopCoroutine(SendClearedBuilding(false));
 		}
 		yield return new WaitForSeconds(2.0f);
 		clearedBuildingSendInProgress=false;
