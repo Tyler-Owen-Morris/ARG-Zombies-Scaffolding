@@ -10,6 +10,7 @@ public class SurvivorStateMachine : MonoBehaviour {
 	public int teamPos, turnsTillTurning;
 	public GameObject mySelectedIcon, myGunShot, myClubSlash, myKnifeStab, combatTextPrefab;
 	public Slider myStamSlider;
+	public Color myStamSliderColor;
 	public GameObject[] myWepSprites;
 	public Text sliderNameText;
     public SpriteRenderer my_face;
@@ -541,9 +542,26 @@ public class SurvivorStateMachine : MonoBehaviour {
 
 	public void UpdateStaminaBar () {
 		float sliderValue = ((float)(survivor.curStamina) / (float)(survivor.baseStamina));
-		if (sliderValue <=0) {
-			sliderValue=0;
+
+
+
+		if (sliderValue <0) {
+			sliderValue= (float)(survivor.curStamina) / -((float)(survivor.baseStamina));
+			//find the slider's color and change the value
+			Image fillImage = (myStamSlider.gameObject.transform.Find("Fill Area").Find("Fill").GetComponent<Image>());
+			fillImage.color = Color.yellow;
 		}
+		if (sliderValue < -1) {
+			sliderValue = ((float)(survivor.curStamina) / (-2*(float)(survivor.baseStamina)));
+			//find the slider's color and change it again
+			Image fillImage = (myStamSlider.gameObject.transform.Find("Fill Area").Find("Fill").GetComponent<Image>());
+			fillImage.color = Color.red;
+		}
+		if (sliderValue > 0) {
+			Image fillImage = (myStamSlider.gameObject.transform.Find("Fill Area").Find("Fill").GetComponent<Image>());
+			fillImage.color = Color.green;
+		}
+
 		myStamSlider.value = sliderValue;
 		//Debug.Log ("Setting "+gameObject.name+" stamina slider to "+sliderValue);
 	}

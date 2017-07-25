@@ -49,7 +49,7 @@ public class GameManager : MonoBehaviour {
 	public string userLastName;
 	public string userName;
 
-	public static string serverURL = "http://game.argzombie.com/ARGZ_SERVER";
+	public static string serverURL = "http://game.argzombie.com/ARGZ_DEV_SERVER";
 	public static string QR_encryption_key = "12345678901234567890123456789012";
 
 	//public string defaultLatLngLocation = "37.70897,-122.4292"; // this is San Francisco as Default
@@ -1565,6 +1565,7 @@ public class GameManager : MonoBehaviour {
 							if (buildingClearReturn[0].ToString() == "Success") {
 								Debug.Log(buildingClearReturn[1].ToString());
 
+								/* //this is for the survivor discovery, which no longer exists- it's creating crashes so I'm just disabling it.
 								//if there has been a survivor added to the players team.
 								if ((int)buildingClearReturn[2] > 0) {
                                     foundSurvivorJsonText = JsonMapper.ToJson(buildingClearReturn[3]);
@@ -1577,6 +1578,8 @@ public class GameManager : MonoBehaviour {
 									foundSurvivorEntryID = (int)buildingClearReturn[3][0]["entry_id"];
 								    */
                                 }
+								*/
+
 
                                 //store custom event for analytics
 								Analytics.CustomEvent("BuildingClearedSuccessfully", new Dictionary<string, object>

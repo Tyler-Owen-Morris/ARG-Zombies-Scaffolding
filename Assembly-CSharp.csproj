@@ -228,6 +228,7 @@
      <Compile Include="Assets\Scripts\TMP_locationplaceholder.cs" />
      <Compile Include="Assets\Scripts\UIStatusToggler.cs" />
      <Compile Include="Assets\Scripts\Util.cs" />
+     <Compile Include="Assets\Scripts\VersionText.cs" />
      <Compile Include="Assets\Scripts\VictoryScreenController.cs" />
      <Compile Include="Assets\Scripts\WeaponGFX.cs" />
      <Compile Include="Assets\Scripts\WeaponListElementManager.cs" />
