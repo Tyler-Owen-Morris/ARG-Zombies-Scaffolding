@@ -1570,13 +1570,13 @@ public class GameManager : MonoBehaviour {
 								if ((int)buildingClearReturn[2] > 0) {
                                     foundSurvivorJsonText = JsonMapper.ToJson(buildingClearReturn[3]);
                                     Debug.Log(foundSurvivorJsonText);
-                                    /*
-									foundSurvivorName = buildingClearReturn[3][0]["name"].ToString();
-									foundSurvivorCurStam = (int)buildingClearReturn[3][0]["base_stam"];
-									foundSurvivorMaxStam = (int)buildingClearReturn[3][0]["base_stam"];
-									foundSurvivorAttack = (int)buildingClearReturn[3][0]["base_attack"];
-									foundSurvivorEntryID = (int)buildingClearReturn[3][0]["entry_id"];
-								    */
+                                    
+									//foundSurvivorName = buildingClearReturn[3][0]["name"].ToString();
+									//foundSurvivorCurStam = (int)buildingClearReturn[3][0]["base_stam"];
+									//foundSurvivorMaxStam = (int)buildingClearReturn[3][0]["base_stam"];
+									//foundSurvivorAttack = (int)buildingClearReturn[3][0]["base_attack"];
+									//foundSurvivorEntryID = (int)buildingClearReturn[3][0]["entry_id"];
+								    
                                 }
 								*/
 
