@@ -16,7 +16,7 @@ public class MapLevelManager : MonoBehaviour {
 	public Text survivorWallDescriptionText, survivorWallBldgNametext, woodText, metalText, justDayAlivetext, daysAliveText, survivorsAliveText, currentLatText, currentLonText, locationReportText, zombieKillText, foodText, waterText, gearText, expirationText, playerNameText, clearedBuildingNameText, bldgNameText, bldgWoodText, bldgMetalText, bldgFoodText, bldgWaterText, clearedBldgWoodText, clearedBldgMetalText, clearedBldgFoodText, clearedBldgWaterText, zombieCountText, bldgDistText, homebaseLatText, homebaseLonText, missionConfirmationText;
 
 	[SerializeField]
-	private Slider playerHealthSlider, playerHealthSliderDuplicate;
+	private Slider playerHealthSlider, teamHealthSlider;
 
 	[SerializeField]
 	private BuildingSpawner bldgSpawner;
@@ -573,7 +573,7 @@ public class MapLevelManager : MonoBehaviour {
 
 		//duplicate health slider updates
 		playerHealthSlider.value = (CalculatePlayerHealthSliderValue());
-		playerHealthSliderDuplicate.value = (CalculateActiveTeamStamina());
+		teamHealthSlider.value = (CalculateActiveTeamStamina());
 
 		bldgSpawner.PlaceHomebaseGraphic();
 		bldgSpawner.UpdateBuildings();
@@ -1592,9 +1592,27 @@ public class MapLevelManager : MonoBehaviour {
 				break;
 			}
 		}
-		//Debug.Log(baseStam.ToString()+" "+currStam.ToString());
-		float value = (float)currStam/(float)baseStam;
-		return value;//the number 100 is a plceholder for total health possible.
+		// compensate for negative stamina values
+		float value = 0.0f;//initialize the float
+		if (currStam < 0) {
+			if (currStam < -baseStam) {
+				if (currStam < (-2 * baseStam)) {
+					//last wind
+					value = (float)(currStam + (baseStam * 3)) / (float)(baseStam);
+				} else {
+					//third wind
+					value = (float)(currStam + (baseStam * 2)) / (float)(baseStam);	
+				}
+			} else {
+				//second wind
+				value = (float)(currStam+baseStam)/(float)(baseStam);
+			}
+		} else {
+			//first wind
+			value = (float)currStam/(float)baseStam;
+		}
+
+		return value;
 	}
 
 	private float CalculateActiveTeamStamina () {

@@ -791,18 +791,15 @@ public class BossBattleStateMachine : MonoBehaviour {
             {
                 odds += 3;
             }
-            if (mySSM.survivor.curStamina <= -1 * mySSM.survivor.baseStamina)
-            {
-                odds = odds * 5; //should =30%
-            }
-            if (mySSM.survivor.curStamina <= -2 * mySSM.survivor.baseStamina)
-            {
-                odds = odds * 2; //should =60%
-            }
-            if (mySSM.survivor.curStamina <= -3 * mySSM.survivor.baseStamina)
-            {
-                odds = odds + 30; //should total 90%
-            }
+			if (mySSM.survivor.curStamina <= -1*mySSM.survivor.baseStamina) {
+				odds = odds * 1.3f; 
+			}
+			if (mySSM.survivor.curStamina <= -2*mySSM.survivor.baseStamina) {
+				odds = odds * 1.6f; 
+			}
+			if (mySSM.survivor.curStamina <= -3*mySSM.survivor.baseStamina) {
+				odds = odds + 2.2f; 
+			}
 
             float roll = UnityEngine.Random.Range(0.0f, 100.0f);
             if (roll <= odds)

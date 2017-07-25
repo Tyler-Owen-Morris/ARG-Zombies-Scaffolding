@@ -216,6 +216,7 @@ public class ZombieStateMachine : MonoBehaviour {
 			targetSurvivor.survivor.curStamina -= myDmg;
 			SpawnCombatDamageText (target.gameObject, myDmg);
 
+			#region Bite-Rules
 			//check for having bit the player
 			float odds = 2.0f;
 			bool survivorBit= false;
@@ -237,15 +238,23 @@ public class ZombieStateMachine : MonoBehaviour {
 			} else {
 				odds += 1.1f;//starting odds for a survivor to get bitten.
 			}
+			//second wind
 			int cur_stam = targetSurvivor.survivor.curStamina;
 			if (cur_stam < 1) {
-				//if player is exhausted, 2.5x the odds to get bitten
-				odds = odds*2.5f;
+				//if player is exhausted, increase the odds to get bitten
+				odds = odds*1.3f; //1.3=130%
 			}
+			//third wind
 			int double_neg_stam = targetSurvivor.survivor.baseStamina * -2;
 			if (cur_stam < double_neg_stam) {
-				odds = (float)(odds*2.5f);
+				odds = (float)(odds*1.5f);
 			}
+			//last wind
+			int triple_neg_stam = double_neg_stam - targetSurvivor.survivor.baseStamina;
+			if (cur_stam < triple_neg_stam) {
+				odds = (float)(odds*1.7f);
+			}
+
 			float roll = Random.Range(0.0f, 100.0f);
 			if (roll < odds) {
 				//TARGET HAS BEEN BITTEN
@@ -253,6 +262,7 @@ public class ZombieStateMachine : MonoBehaviour {
 				BSM.SurvivorHasBeenBit (targetSurvivor);
 				survivorBit = true;
 			}
+			#endregion
 
             //server update is repaced with locally storing the completed attack data here:
             StoreAttack(targetSurvivor.survivor.survivor_id, survivorBit);

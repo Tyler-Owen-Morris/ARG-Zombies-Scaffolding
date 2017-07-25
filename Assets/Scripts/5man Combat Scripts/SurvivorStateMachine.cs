@@ -545,22 +545,26 @@ public class SurvivorStateMachine : MonoBehaviour {
 
 
 
-		if (sliderValue <0) {
-			sliderValue= (float)(survivor.curStamina) / -((float)(survivor.baseStamina));
+		if (sliderValue < 0) {
+			sliderValue = (float)(survivor.curStamina + survivor.baseStamina) / ((float)(survivor.baseStamina));
 			//find the slider's color and change the value
-			Image fillImage = (myStamSlider.gameObject.transform.Find("Fill Area").Find("Fill").GetComponent<Image>());
+			Image fillImage = (myStamSlider.gameObject.transform.Find ("Fill Area").Find ("Fill").GetComponent<Image> ());
 			fillImage.color = Color.yellow;
-		}
-		if (sliderValue < -1) {
-			sliderValue = ((float)(survivor.curStamina) / (-2*(float)(survivor.baseStamina)));
-			//find the slider's color and change it again
-			Image fillImage = (myStamSlider.gameObject.transform.Find("Fill Area").Find("Fill").GetComponent<Image>());
-			fillImage.color = Color.red;
-		}
-		if (sliderValue > 0) {
+
+			float inverse_max_stam = survivor.baseStamina * -1;
+			if (survivor.curStamina < inverse_max_stam) {
+				sliderValue = ((float)(survivor.curStamina + (float)(survivor.baseStamina*2)) / ((float)(survivor.baseStamina)));
+				//find the slider's color and change it again
+				fillImage.color = Color.red;
+			}
+
+
+		} else {
 			Image fillImage = (myStamSlider.gameObject.transform.Find("Fill Area").Find("Fill").GetComponent<Image>());
 			fillImage.color = Color.green;
 		}
+
+
 
 		myStamSlider.value = sliderValue;
 		//Debug.Log ("Setting "+gameObject.name+" stamina slider to "+sliderValue);
