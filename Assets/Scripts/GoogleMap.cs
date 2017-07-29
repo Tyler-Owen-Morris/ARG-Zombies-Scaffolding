@@ -30,6 +30,8 @@ public class GoogleMap : MonoBehaviour
         else
         {
             //this.gameObject.SetActive(false);
+			centerLocation.latitude = float.Parse(GameManager.instance.defaultLat);
+			centerLocation.longitude = float.Parse(GameManager.instance.defaultLng);
         }
 
         if (loadOnStart) Refresh();
