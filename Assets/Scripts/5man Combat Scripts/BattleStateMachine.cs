@@ -784,7 +784,7 @@ public class BattleStateMachine : MonoBehaviour {
 		battleState = PerformAction.BITECASE;
 		playerBitPanel.SetActive(true);
 		KillYourselfButtonManager KYBM = KillYourselfButtonManager.FindObjectOfType<KillYourselfButtonManager>();
-		float timer = UnityEngine.Random.Range(4.0f, 12.0f);
+		float timer = UnityEngine.Random.Range(8.0f, 22.0f);
 		KYBM.StartTheCountdown(timer);
 	}
 
