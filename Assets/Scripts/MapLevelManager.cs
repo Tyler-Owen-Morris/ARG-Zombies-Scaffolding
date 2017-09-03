@@ -281,7 +281,8 @@ public class MapLevelManager : MonoBehaviour {
 			endGameButton.SetActive(false);
 		}else{
 			Debug.Log("Turning end game panel button on");
-			endGameButton.SetActive(true);
+			//endGameButton.SetActive(true);
+			endGameButton.SetActive(false);
 		}
 		
 	}

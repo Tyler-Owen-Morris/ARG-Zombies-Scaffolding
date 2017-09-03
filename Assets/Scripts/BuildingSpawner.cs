@@ -227,8 +227,8 @@ public class BuildingSpawner : MonoBehaviour {
 
 			//calculate the average latitude between the two locations, and then calculate the meters/DEGREE lat/lon
 			float latMid =(Input.location.lastData.latitude + lat)/2f;
-			m_per_deg_lat = 111132.954 - 559.822 * Mathf.Cos( 2 * latMid ) + 1.175 * Mathf.Cos( 4 * latMid);
-			m_per_deg_lon = 111132.954 * Mathf.Cos( latMid );
+			m_per_deg_lat = 111321.954 - 559.822 * Mathf.Cos( 2 * latMid ) + 1.175 * Mathf.Cos( 4 * latMid);
+			m_per_deg_lon = 111321.954 * Mathf.Cos( latMid );
 
 			//Debug.Log ("for the " + name + " building, meters per degree calculated as " + m_per_deg_lat + " m/deg lat, and " + m_per_deg_lon +" m/deg lon");
 			double deltaLatitude = 0;
@@ -244,7 +244,7 @@ public class BuildingSpawner : MonoBehaviour {
 			double yDistMeters = deltaLatitude * m_per_deg_lat;
             float xScreenDist = (float)(xDistMeters * m_per_screen_pixel);
             float yScreenDist = (float)(yDistMeters * m_per_screen_pixel);
-			
+			Debug.Log (myName + " is being loaded with lat:"+lat+"&Lng:"+lng+"  ||  which calculates an offset in Meters X: "+xDistMeters+", Y:"+yDistMeters+"  ::: calculated int pixels using a m_perPixel of "+m_per_screen_pixel+ " results in X pixel offset: "+xScreenDist+"and Y pixel offset: "+yScreenDist);
 
 			
 			PopulatedBuilding instance = Instantiate(populatedBuildingPrefab);
@@ -466,7 +466,9 @@ public class BuildingSpawner : MonoBehaviour {
                 //calculate the average latitude between the two locations, and then calculate the meters/DEGREE lat/lon
                 float latMid = (Input.location.lastData.latitude + lat) / 2f;
                 m_per_deg_lat = 111132.954 - 559.822 * Mathf.Cos(2 * latMid) + 1.175 * Mathf.Cos(4 * latMid);
-                m_per_deg_lon = 111132.954 * Mathf.Cos(latMid);
+				m_per_deg_lon = 111132.954 * Mathf.Cos(latMid * Mathf.PI / 180.0f);
+				//remove me !!!
+//				m_per_deg_lon = m_per_deg_lat;
 
                 //Debug.Log ("for the " + name + " building, meters per degree calculated as " + m_per_deg_lat + " m/deg lat, and " + m_per_deg_lon +" m/deg lon");
                 double deltaLatitude = 0;
@@ -475,6 +477,7 @@ public class BuildingSpawner : MonoBehaviour {
                 {
                     deltaLatitude = (Input.location.lastData.latitude - lat);
                     deltaLongitude = (Input.location.lastData.longitude - lng);
+					Debug.Log("Device lat:"+Input.location.lastData.latitude+" lng:"+Input.location.lastData.longitude+" , Offset lat:"+deltaLatitude+" lng:"+deltaLongitude);
                 }
                 else
                 {
@@ -486,7 +489,7 @@ public class BuildingSpawner : MonoBehaviour {
                 float xScreenDist = (float)(xDistMeters * m_per_screen_pixel);
                 float yScreenDist = (float)(yDistMeters * m_per_screen_pixel);
 
-
+				Debug.Log (myName + " is being loaded with lat:"+lat+"&Lng:"+lng+" ||  which calculates an offset in Meters X: "+xDistMeters+", Y:"+yDistMeters+"  ::: calculated int pixels using a m_perDegreeLon of "+m_per_deg_lon+ " and m_perDegLat: "+m_per_deg_lat+" results in X pixel offset: "+xScreenDist+"and Y pixel offset: "+yScreenDist);
 
                 PopulatedBuilding instance = Instantiate(populatedBuildingPrefab);
                 instance.GenerateZombies();
@@ -568,7 +571,7 @@ public class BuildingSpawner : MonoBehaviour {
                         //calculate the average latitude between the two locations, and then calculate the meters/DEGREE lat/lon
                         float latMid = (Input.location.lastData.latitude + lat) / 2f;
                         m_per_deg_lat = 111132.954 - 559.822 * Mathf.Cos(2 * latMid) + 1.175 * Mathf.Cos(4 * latMid);
-                        m_per_deg_lon = 111132.954 * Mathf.Cos(latMid);
+						m_per_deg_lon = 111132.954 * Mathf.Cos(latMid * Mathf.PI / 180.0f);
 
                         //Debug.Log ("for the " + name + " building, meters per degree calculated as " + m_per_deg_lat + " m/deg lat, and " + m_per_deg_lon +" m/deg lon");
                         double deltaLatitude = 0;
@@ -577,6 +580,7 @@ public class BuildingSpawner : MonoBehaviour {
                         {
                             deltaLatitude = (Input.location.lastData.latitude - lat);
                             deltaLongitude = (Input.location.lastData.longitude - lng);
+							Debug.Log("Device lat:"+Input.location.lastData.latitude+" lng:"+Input.location.lastData.longitude+" , Offset lat:"+deltaLatitude+" lng:"+deltaLongitude);
                         }
                         else
                         {
@@ -588,7 +592,7 @@ public class BuildingSpawner : MonoBehaviour {
                         float xScreenDist = (float)(xDistMeters * m_per_screen_pixel);
                         float yScreenDist = (float)(yDistMeters * m_per_screen_pixel);
 
-
+						Debug.Log (myName + " is being loaded with lat:"+lat+"&Lng:"+lng+" ||  which calculates an offset in Meters X: "+xDistMeters+", Y:"+yDistMeters+"  ::: calculated int pixels using a m_perDegreeLon of "+m_per_deg_lon+ " and m_perDegLat: "+m_per_deg_lat+" results in X pixel offset: "+xScreenDist+"and Y pixel offset: "+yScreenDist);
 
                         PopulatedBuilding instance = Instantiate(populatedBuildingPrefab);
                         instance.GenerateZombies();
@@ -679,7 +683,7 @@ public class BuildingSpawner : MonoBehaviour {
                         //calculate the average latitude between the two locations, and then calculate the meters/DEGREE lat/lon
                         float latMid = (Input.location.lastData.latitude + lat) / 2f;
                         m_per_deg_lat = 111132.954 - 559.822 * Mathf.Cos(2 * latMid) + 1.175 * Mathf.Cos(4 * latMid);
-                        m_per_deg_lon = 111132.954 * Mathf.Cos(latMid);
+						m_per_deg_lon = 111132.954 * Mathf.Cos(latMid * Mathf.PI / 180.0f);
 
                         //Debug.Log ("for the " + name + " building, meters per degree calculated as " + m_per_deg_lat + " m/deg lat, and " + m_per_deg_lon +" m/deg lon");
                         double deltaLatitude = 0;
@@ -688,6 +692,7 @@ public class BuildingSpawner : MonoBehaviour {
                         {
                             deltaLatitude = (Input.location.lastData.latitude - lat);
                             deltaLongitude = (Input.location.lastData.longitude - lng);
+							Debug.Log("Device lat:"+Input.location.lastData.latitude+" lng:"+Input.location.lastData.longitude+" , Offset lat:"+deltaLatitude+" lng:"+deltaLongitude);
                         }
                         else
                         {
@@ -699,7 +704,7 @@ public class BuildingSpawner : MonoBehaviour {
                         float xScreenDist = (float)(xDistMeters * m_per_screen_pixel);
                         float yScreenDist = (float)(yDistMeters * m_per_screen_pixel);
 
-
+						Debug.Log (myName + " is being loaded with lat:"+lat+"&Lng:"+lng+" ||  which calculates an offset in Meters X: "+xDistMeters+", Y:"+yDistMeters+"  ::: calculated int pixels using a m_perDegreeLon of "+m_per_deg_lon+ " and m_perDegLat: "+m_per_deg_lat+" results in X pixel offset: "+xScreenDist+"and Y pixel offset: "+yScreenDist);
 
                         PopulatedBuilding instance = Instantiate(populatedBuildingPrefab);
                         instance.GenerateZombies();
