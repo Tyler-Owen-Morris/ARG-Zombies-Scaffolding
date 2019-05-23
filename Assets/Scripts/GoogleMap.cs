@@ -20,6 +20,9 @@ public class GoogleMap : MonoBehaviour
 	public bool doubleResolution = false;
 	public GoogleMapMarker[] markers;
 	public GoogleMapPath[] paths;
+	public Sprite inc_image_delete_this_variable;
+
+	private string googleStaticMapsAPIKey = "AIzaSyC0Ly6W_ljFCk5sV4n-T73e-rhRdNpiEe4";
 	
 	void Start() {
         if (Input.location.status == LocationServiceStatus.Running)
@@ -94,16 +97,19 @@ public class GoogleMap : MonoBehaviour
 					qs += "|" + WWW.UnEscapeURL (string.Format ("{0},{1}", loc.latitude, loc.longitude));
 			}
 		}
-		
-		
-		var req = new WWW(url + "?" + qs);
+
+		string mapQuery = url + "?" + qs + "&key=" + googleStaticMapsAPIKey;
+		Debug.Log ("Pinging Googlemaps api with: " + mapQuery);
+		var req = new WWW(mapQuery);
         yield return req;
         //GetComponent<Renderer>().material.mainTexture = req.texture;
         int width = req.texture.width;
         int height = req.texture.height;
         Debug.Log("Screen HxW: " + Screen.height + ", " + Screen.width + "  google image dimensions: " + height + ", " + width);
         Sprite map_pic = Sprite.Create(req.texture, new Rect(0, 0, width, height), new Vector2());
+		inc_image_delete_this_variable = map_pic;//delete this line of code DEBUG ONLY!
         GetComponent<Image>().sprite = map_pic;
+		Debug.Log ( "The image that we're setting the sprite to is..." + map_pic );
         //GetComponent<SpriteRenderer>().sprite = map_pic;
         //InvertMySprite();
 

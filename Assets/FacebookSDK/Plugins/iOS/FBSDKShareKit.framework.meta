@@ -1,18 +1,24 @@
 fileFormatVersion: 2
-guid: e2391215de19348829e76c2710f5f6f8
+guid: b80de002be9f143e68d3cd11c33de1f5
 folderAsset: yes
-timeCreated: 1462497669
-licenseType: Free
+timeCreated: 1526624631
+licenseType: Store
 PluginImporter:
-  serializedVersion: 1
+  externalObjects: {}
+  serializedVersion: 2
   iconMap: {}
   executionOrder: {}
   isPreloaded: 0
+  isOverridable: 0
   platformData:
-    Any:
+  - first:
+      Any: 
+    second:
       enabled: 1
       settings: {}
-    Editor:
+  - first:
+      Editor: Editor
+    second:
       enabled: 0
       settings:
         DefaultValueInitialized: true

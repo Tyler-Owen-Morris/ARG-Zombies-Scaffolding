@@ -1,6 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <CscToolPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Tools/RoslynScripts</CscToolPath>
+    <CscToolExe>unity_csc.sh</CscToolExe>
+  </PropertyGroup>
+  <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.20506</ProductVersion>
@@ -10,19 +15,20 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <BaseDirectory>Assets</BaseDirectory>
+    <BaseDirectory>.</BaseDirectory>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>Temp\bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;UNITY_5_3_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_5_OR_NEWER;UNITY_5_6_OR_NEWER;UNITY_5_6_2;UNITY_5_6;UNITY_5;UNITY_PURCHASING;UNITY_ANALYTICS;UNITY_ADS;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_GENERICS;ENABLE_PVR_GI;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_RUNTIME_NAVMESH_BUILDING;ENABLE_SPRITERENDERER_FLIPPING;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_RAKNET;ENABLE_UNET;ENABLE_LZMA;ENABLE_UNITYEVENTS;ENABLE_WEBCAM;ENABLE_WWW;ENABLE_CLOUD_SERVICES_COLLAB;ENABLE_CLOUD_HUB;ENABLE_CLOUD_PROJECT_ID;ENABLE_CLOUD_SERVICES_UNET;ENABLE_CLOUD_SERVICES_BUILD;ENABLE_CLOUD_LICENSE;ENABLE_EDITOR_METRICS;ENABLE_EDITOR_METRICS_CACHING;ENABLE_NATIVE_ARRAY;INCLUDE_DYNAMIC_GI;INCLUDE_GI;PLATFORM_SUPPORTS_MONO;INCLUDE_PUBNUB;ENABLE_PLAYMODE_TESTS_RUNNER;ENABLE_SCRIPTING_NEW_CSHARP_COMPILER;ENABLE_VIDEO;ENABLE_RUNTIME_GI;ENABLE_SUBSTANCE;ENABLE_GAMECENTER;ENABLE_NETWORK;ENABLE_UNITYWEBREQUEST;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_ADS;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_PURCHASING;ENABLE_CLOUD_SERVICES_CRASH_REPORTING;ENABLE_CLOUD_SERVICES_IOS_NATIVE_CRASH_REPORTING;PLAYERCONNECTION_LISTENS_FIXED_PORT;DEBUGGER_LISTENS_FIXED_PORT;PLATFORM_SUPPORTS_ADS_ID;SUPPORT_ENVIRONMENT_VARIABLES;PLATFORM_SUPPORTS_PROFILER;PLATFORM_HAS_NO_SUPPORT_FOR_BUCKET_ALLOCATOR;STRICTCPP_NEW_DELETE_SIGNATURES;HAS_NEON_SKINNIG;UNITY_GFX_USE_PLATFORM_VSYNC;UNITY_INPUT_SIMULATE_EVENTS;PLATFORM_ALWAYS_USES_STDOUT_FOR_LOG;ENABLE_VR;ENABLE_UNITYADS_RUNTIME;UNITY_UNITYADS_API;UNITY_IOS;UNITY_IPHONE;UNITY_IPHONE_API;SUPPORT_MULTIPLE_DISPLAYS;ENABLE_IL2CPP;NET_2_0;ENABLE_PROFILER;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_OSX;ENABLE_NATIVE_ARRAY_CHECKS;UNITY_TEAM_LICENSE;ENABLE_IOS_ON_DEMAND_RESOURCES;ENABLE_IOS_APP_SLICING;UNITY_HAS_GOOGLEVR</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;UNITY_2019_1_3;UNITY_2019_1;UNITY_2019;UNITY_5_3_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_5_OR_NEWER;UNITY_5_6_OR_NEWER;UNITY_2017_1_OR_NEWER;UNITY_2017_2_OR_NEWER;UNITY_2017_3_OR_NEWER;UNITY_2017_4_OR_NEWER;UNITY_2018_1_OR_NEWER;UNITY_2018_2_OR_NEWER;UNITY_2018_3_OR_NEWER;UNITY_2019_1_OR_NEWER;UNITY_INCLUDE_TESTS;UNITY_PURCHASING;UNITY_ANALYTICS;UNITY_ADS;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_SPRITES;ENABLE_GRID;ENABLE_TILEMAP;ENABLE_TERRAIN;ENABLE_TEXTURE_STREAMING;ENABLE_DIRECTOR;ENABLE_UNET;ENABLE_LZMA;ENABLE_UNITYEVENTS;ENABLE_WEBCAM;ENABLE_WWW;ENABLE_CLOUD_SERVICES_COLLAB;ENABLE_CLOUD_SERVICES_COLLAB_SOFTLOCKS;ENABLE_CLOUD_HUB;ENABLE_CLOUD_PROJECT_ID;ENABLE_CLOUD_SERVICES_USE_WEBREQUEST;ENABLE_CLOUD_SERVICES_UNET;ENABLE_CLOUD_SERVICES_BUILD;ENABLE_CLOUD_LICENSE;ENABLE_EDITOR_HUB;ENABLE_EDITOR_HUB_LICENSE;ENABLE_WEBSOCKET_CLIENT;ENABLE_DIRECTOR_AUDIO;ENABLE_DIRECTOR_TEXTURE;ENABLE_TIMELINE;ENABLE_EDITOR_METRICS;ENABLE_EDITOR_METRICS_CACHING;ENABLE_MANAGED_JOBS;ENABLE_MANAGED_TRANSFORM_JOBS;ENABLE_MANAGED_ANIMATION_JOBS;ENABLE_MANAGED_AUDIO_JOBS;INCLUDE_DYNAMIC_GI;INCLUDE_GI;ENABLE_MONO_BDWGC;PLATFORM_SUPPORTS_MONO;INCLUDE_PUBNUB;ENABLE_VIDEO;ENABLE_CUSTOM_RENDER_TEXTURE;ENABLE_LOCALIZATION;ENABLE_RUNTIME_GI;ENABLE_SUBSTANCE;ENABLE_GAMECENTER;ENABLE_NETWORK;ENABLE_UNITYWEBREQUEST;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_ADS;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_PURCHASING;ENABLE_CLOUD_SERVICES_CRASH_REPORTING;ENABLE_CLOUD_SERVICES_IOS_NATIVE_CRASH_REPORTING;ENABLE_IOS_ON_DEMAND_RESOURCES;ENABLE_IOS_APP_SLICING;ENABLE_SCRIPTING_GC_WBARRIERS;PLAYERCONNECTION_LISTENS_FIXED_PORT;DEBUGGER_LISTENS_FIXED_PORT;PLATFORM_SUPPORTS_ADS_ID;SUPPORT_ENVIRONMENT_VARIABLES;PLATFORM_SUPPORTS_PROFILER;ENABLE_ENGINE_CODE_STRIPPING;PLATFORM_HAS_NO_SUPPORT_FOR_BUCKET_ALLOCATOR;STRICTCPP_NEW_DELETE_SIGNATURES;HAS_NEON_SKINNING;UNITY_GFX_USE_PLATFORM_VSYNC;UNITY_INPUT_SIMULATE_EVENTS;PLATFORM_ALWAYS_USES_STDOUT_FOR_LOG;ENABLE_CRUNCH_TEXTURE_COMPRESSION;UNITY_ASTC_ONLY_DECOMPRESS;SUPPORTS_GRANULAR_MODULE_REGISTRATION;ENABLE_UNITYADS_RUNTIME;UNITY_UNITYADS_API;PLATFORM_IOS;UNITY_IOS;PLATFORM_IPHONE;UNITY_IPHONE;UNITY_IPHONE_API;SUPPORT_MULTIPLE_DISPLAYS;ENABLE_VR;ENABLE_AR;UNITY_HAS_GOOGLEVR;ENABLE_SPATIALTRACKING;ENABLE_MONO;NET_STANDARD_2_0;ENABLE_PROFILER;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_OSX;ENABLE_UNITY_COLLECTIONS_CHECKS;ENABLE_BURST_AOT;UNITY_TEAM_LICENSE;ENABLE_VSTU;CSHARP_7_OR_LATER;CSHARP_7_3_OR_NEWER</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <NoWarn>0169</NoWarn>
+    <NoWarn>0169;CS0649;IDE0051</NoWarn>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,544 +36,1014 @@
     <OutputPath>Temp\bin\Release\</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <NoWarn>0169</NoWarn>
+    <NoWarn>0169;CS0649;IDE0051</NoWarn>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup>
+    <NoConfig>true</NoConfig>
+    <NoStdLib>true</NoStdLib>
+    <AddAdditionalExplicitAssemblyReferences>false</AddAdditionalExplicitAssemblyReferences>
+    <ImplicitlyExpandNETStandardFacades>false</ImplicitlyExpandNETStandardFacades>
+    <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ProjectTypeGuids>{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <UnityProjectGenerator>Unity/VSTU</UnityProjectGenerator>
+    <UnityProjectType>Game:1</UnityProjectType>
+    <UnityBuildTarget>iOS:9</UnityBuildTarget>
+    <UnityVersion>2019.1.3f1</UnityVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.XML" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="UnityEngine">
-      <HintPath>/Applications/Unity/Unity.app/Contents/Managed/UnityEngine.dll</HintPath>
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor">
-      <HintPath>/Applications/Unity/Unity.app/Contents/Managed/UnityEditor.dll</HintPath>
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEditor.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\FacebookSDK\Examples\Scripts\ConsoleBase.cs" />
-     <Compile Include="Assets\FacebookSDK\Examples\Scripts\LogView.cs" />
-     <Compile Include="Assets\FacebookSDK\Examples\Scripts\MenuBase.cs" />
-     <Compile Include="Assets\FacebookSDK\Examples\Scripts\SubMenus\AccessTokenMenu.cs" />
-     <Compile Include="Assets\FacebookSDK\Examples\Scripts\SubMenus\AppEvents.cs" />
-     <Compile Include="Assets\FacebookSDK\Examples\Scripts\SubMenus\AppInvites.cs" />
-     <Compile Include="Assets\FacebookSDK\Examples\Scripts\SubMenus\AppLinks.cs" />
-     <Compile Include="Assets\FacebookSDK\Examples\Scripts\SubMenus\AppRequests.cs" />
-     <Compile Include="Assets\FacebookSDK\Examples\Scripts\SubMenus\DialogShare.cs" />
-     <Compile Include="Assets\FacebookSDK\Examples\Scripts\SubMenus\GameGroups.cs" />
-     <Compile Include="Assets\FacebookSDK\Examples\Scripts\SubMenus\GraphRequest.cs" />
-     <Compile Include="Assets\FacebookSDK\Examples\Scripts\SubMenus\MainMenu.cs" />
-     <Compile Include="Assets\FacebookSDK\Examples\Scripts\SubMenus\Pay.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\AccessToken.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\AppEventName.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\AppEventParameterName.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\CallbackManager.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Canvas\CanvasFacebook.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Canvas\CanvasFacebookGameObject.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Canvas\CanvasFacebookLoader.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Canvas\CanvasJSWrapper.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Canvas\ICanvasFacebook.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Canvas\ICanvasFacebookCallbackHandler.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Canvas\ICanvasFacebookImplementation.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Canvas\ICanvasFacebookResultHandler.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Canvas\ICanvasJSWrapper.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Canvas\JsBridge.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\ComponentFactory.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Constants.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\FB.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\FacebookBase.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\FacebookGameObject.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\FacebookSdkVersion.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\FacebookSettings.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\FacebookUnityPlatform.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\IFacebook.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\IFacebookCallbackHandler.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\IFacebookImplementation.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\IFacebookResultHandler.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\IPayFacebook.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\MethodArguments.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\MethodCall.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Mobile\Android\AndroidFacebook.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Mobile\Android\AndroidFacebookGameObject.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Mobile\Android\AndroidFacebookLoader.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Mobile\Android\FBJavaClass.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Mobile\Android\IAndroidJavaClass.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Mobile\IMobileFacebook.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Mobile\IMobileFacebookCallbackHandler.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Mobile\IMobileFacebookImplementation.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Mobile\IMobileFacebookResultHandler.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Mobile\IOS\IIOSWrapper.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Mobile\IOS\IOSFacebook.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Mobile\IOS\IOSFacebookGameObject.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Mobile\IOS\IOSFacebookLoader.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Mobile\IOS\IOSWrapper.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Mobile\MobileFacebook.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Mobile\MobileFacebookGameObject.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\NativeDialogModes.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\OGActionType.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\PlatformEditor\EditorFacebook.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\PlatformEditor\EditorFacebookGameObject.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\PlatformEditor\EditorFacebookLoader.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\PlatformEditor\EditorFacebookMockDialog.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\PlatformEditor\MockDialogs\EmptyMockDialog.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\PlatformEditor\MockDialogs\MockLoginDialog.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\PlatformEditor\MockDialogs\MockShareDialog.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Properties\AssemblyInfo.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Results\AccessTokenRefreshResult.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Results\AppInviteResult.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Results\AppLinkResult.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Results\AppReqeustResult.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Results\GraphResult.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Results\GroupCreateResult.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Results\GroupJoinResult.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Results\IAccessTokenRefreshResult.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Results\IAppInviteResult.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Results\IAppLinkResult.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Results\IAppRequestResult.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Results\IGraphResult.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Results\IGroupCreateResult.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Results\IGroupJoinResult.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Results\IInternalResult.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Results\ILoginResult.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Results\IPayResult.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Results\IResult.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Results\IShareResult.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Results\LoginResult.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Results\PayResult.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Results\ResultBase.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Results\ResultContainer.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Results\ShareResult.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Utils\AsyncRequestString.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Utils\FacebookLogger.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Utils\HttpMethod.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Utils\IFacebookLogger.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Utils\MiniJson.cs" />
-     <Compile Include="Assets\FacebookSDK\SDK\Scripts\Utils\Utilities.cs" />
-     <Compile Include="Assets\QRcode\Plugins\Loom\Loom.cs" />
-     <Compile Include="Assets\QRcode\Scripts\CameraPlaneController.cs" />
-     <Compile Include="Assets\QRcode\Scripts\DeviceCameraController.cs" />
-     <Compile Include="Assets\QRcode\Scripts\QRCodeDecodeController.cs" />
-     <Compile Include="Assets\QRcode\Scripts\QRCodeEncodeController.cs" />
-     <Compile Include="Assets\QRcode\Scripts\QRDecodeTest.cs" />
-     <Compile Include="Assets\QRcode\Scripts\QREncodeTest.cs" />
-     <Compile Include="Assets\Scripts\5man Combat Scripts\AdManager.cs" />
-     <Compile Include="Assets\Scripts\5man Combat Scripts\AmputationButtonManager.cs" />
-     <Compile Include="Assets\Scripts\5man Combat Scripts\BaseSurvivor.cs" />
-     <Compile Include="Assets\Scripts\5man Combat Scripts\BaseWeapon.cs" />
-     <Compile Include="Assets\Scripts\5man Combat Scripts\BaseZombie.cs" />
-     <Compile Include="Assets\Scripts\5man Combat Scripts\BattleStateMachine.cs" />
-     <Compile Include="Assets\Scripts\5man Combat Scripts\BossBattleStateMachine.cs" />
-     <Compile Include="Assets\Scripts\5man Combat Scripts\BossStateMachine.cs" />
-     <Compile Include="Assets\Scripts\5man Combat Scripts\CombatWeaponListElementManager.cs" />
-     <Compile Include="Assets\Scripts\5man Combat Scripts\CombatWeaponListPopulator.cs" />
-     <Compile Include="Assets\Scripts\5man Combat Scripts\ContinueRunningButtonManager.cs" />
-     <Compile Include="Assets\Scripts\5man Combat Scripts\KillYourselfButtonManager.cs" />
-     <Compile Include="Assets\Scripts\5man Combat Scripts\SurvivorStateMachine.cs" />
-     <Compile Include="Assets\Scripts\5man Combat Scripts\TurnHandler.cs" />
-     <Compile Include="Assets\Scripts\5man Combat Scripts\TurnResultHolder.cs" />
-     <Compile Include="Assets\Scripts\5man Combat Scripts\WeaponManager.cs" />
-     <Compile Include="Assets\Scripts\5man Combat Scripts\ZombieStateMachine.cs" />
-     <Compile Include="Assets\Scripts\BackgroundRandomizer.cs" />
-     <Compile Include="Assets\Scripts\BlazeOGImageOscillator.cs" />
-     <Compile Include="Assets\Scripts\BlinkingSlider.cs" />
-     <Compile Include="Assets\Scripts\BrainSpawner.cs" />
-     <Compile Include="Assets\Scripts\Building.cs" />
-     <Compile Include="Assets\Scripts\BuildingClearTextController.cs" />
-     <Compile Include="Assets\Scripts\BuildingFilterButtonManager.cs" />
-     <Compile Include="Assets\Scripts\BuildingSpawner.cs" />
-     <Compile Include="Assets\Scripts\ClearedBuildingPanelManager.cs" />
-     <Compile Include="Assets\Scripts\CurrentLocationUpdater.cs" />
-     <Compile Include="Assets\Scripts\EndGamePanelController.cs" />
-     <Compile Include="Assets\Scripts\FadeIn.cs" />
-     <Compile Include="Assets\Scripts\FadeToCombatPanelManager.cs" />
-     <Compile Include="Assets\Scripts\FitBitAPI.cs" />
-     <Compile Include="Assets\Scripts\FitbitCaller.cs" />
-     <Compile Include="Assets\Scripts\FitbitData.cs" />
-     <Compile Include="Assets\Scripts\FitbitInterfaceManager.cs" />
-     <Compile Include="Assets\Scripts\FloatingText.cs" />
-     <Compile Include="Assets\Scripts\FloatingTextController.cs" />
-     <Compile Include="Assets\Scripts\GameManager.cs" />
-     <Compile Include="Assets\Scripts\GameOverLevelManager.cs" />
-     <Compile Include="Assets\Scripts\GamePreferences.cs" />
-     <Compile Include="Assets\Scripts\GoogleMap.cs" />
-     <Compile Include="Assets\Scripts\Health.cs" />
-     <Compile Include="Assets\Scripts\HeartbeatSoundManager.cs" />
-     <Compile Include="Assets\Scripts\IAPManager.cs" />
-     <Compile Include="Assets\Scripts\Intro_ImageLoader.cs" />
-     <Compile Include="Assets\Scripts\JSONObject.cs" />
-     <Compile Include="Assets\Scripts\LevelManager.cs" />
-     <Compile Include="Assets\Scripts\LoginManager.cs" />
-     <Compile Include="Assets\Scripts\MapLevelManager.cs" />
-     <Compile Include="Assets\Scripts\MissionCombatSimulator.cs" />
-     <Compile Include="Assets\Scripts\MissionCompletePanelManager.cs" />
-     <Compile Include="Assets\Scripts\MissionListElementManager.cs" />
-     <Compile Include="Assets\Scripts\MissionListPopulator.cs" />
-     <Compile Include="Assets\Scripts\MusicManager.cs" />
-     <Compile Include="Assets\Scripts\MusicPlayer.cs" />
-     <Compile Include="Assets\Scripts\OAuth2AccessToken.cs" />
-     <Compile Include="Assets\Scripts\OptionsController.cs" />
-     <Compile Include="Assets\Scripts\Outpost.cs" />
-     <Compile Include="Assets\Scripts\OutpostPanelController.cs" />
-     <Compile Include="Assets\Scripts\PlayerPrefsManager.cs" />
-     <Compile Include="Assets\Scripts\PopulatedBuilding.cs" />
-     <Compile Include="Assets\Scripts\ProfileImageHolder.cs" />
-     <Compile Include="Assets\Scripts\ProfileImageManager.cs" />
-     <Compile Include="Assets\Scripts\Purchaser.cs" />
-     <Compile Include="Assets\Scripts\QRPanelController.cs" />
-     <Compile Include="Assets\Scripts\SetStartVolume.cs" />
-     <Compile Include="Assets\Scripts\StaminaText.cs" />
-     <Compile Include="Assets\Scripts\StoryDrag.cs" />
-     <Compile Include="Assets\Scripts\StoryPanelManager.cs" />
-     <Compile Include="Assets\Scripts\SuicideButtonShuffler.cs" />
-     <Compile Include="Assets\Scripts\SurvivorListElementManager.cs" />
-     <Compile Include="Assets\Scripts\SurvivorListPopulator.cs" />
-     <Compile Include="Assets\Scripts\SurvivorPlayCard.cs" />
-     <Compile Include="Assets\Scripts\SurvivorWallElementManager.cs" />
-     <Compile Include="Assets\Scripts\SwipeIconBlinker.cs" />
-     <Compile Include="Assets\Scripts\TMP_locationplaceholder.cs" />
-     <Compile Include="Assets\Scripts\UIStatusToggler.cs" />
-     <Compile Include="Assets\Scripts\Util.cs" />
-     <Compile Include="Assets\Scripts\VersionText.cs" />
-     <Compile Include="Assets\Scripts\VictoryScreenController.cs" />
-     <Compile Include="Assets\Scripts\WeaponGFX.cs" />
-     <Compile Include="Assets\Scripts\WeaponListElementManager.cs" />
-     <Compile Include="Assets\Scripts\WeaponListPopulator.cs" />
-     <Compile Include="Assets\Scripts\WeaponSelectManager.cs" />
-     <Compile Include="Assets\Scripts\WhackABrain.cs" />
-     <Compile Include="Assets\Scripts\ZM_Building.cs" />
-     <Compile Include="Assets\Scripts\ZM_BuildingSpawner.cs" />
-     <Compile Include="Assets\Scripts\ZombieModeManager.cs" />
-     <Compile Include="Assets\Scripts\ZombieQRController.cs" />
-     <Compile Include="Assets\SpriteColorFX\Demos\Blend\Scripts\Blender.cs" />
-     <Compile Include="Assets\SpriteColorFX\Demos\Blend\Scripts\Flare.cs" />
-     <Compile Include="Assets\SpriteColorFX\Demos\Dissolve\Scripts\DemoDissolve.cs" />
-     <Compile Include="Assets\SpriteColorFX\Demos\Glass\Scripts\PredatorController.cs" />
-     <Compile Include="Assets\SpriteColorFX\Demos\Instagram\Scripts\DemoInstagram.cs" />
-     <Compile Include="Assets\SpriteColorFX\Demos\Masks\Scripts\DemoMasks3.cs" />
-     <Compile Include="Assets\SpriteColorFX\Demos\Outline\Scripts\DemoOutline.cs" />
-     <Compile Include="Assets\SpriteColorFX\Demos\Ramp\Scripts\DemoRamp.cs" />
-     <Compile Include="Assets\SpriteColorFX\Demos\Ramp\Scripts\Pedestal.cs" />
-     <Compile Include="Assets\SpriteColorFX\Demos\Scripts\HSBColor.cs" />
-     <Compile Include="Assets\SpriteColorFX\Demos\Scripts\Spawner.cs" />
-     <Compile Include="Assets\SpriteColorFX\Demos\Scripts\Sun.cs" />
-     <Compile Include="Assets\SpriteColorFX\Demos\Scripts\UVTransform.cs" />
-     <Compile Include="Assets\SpriteColorFX\Demos\Shift\Scripts\DemoShiftLinear.cs" />
-     <Compile Include="Assets\SpriteColorFX\Demos\Shift\Scripts\DemoShiftRadial.cs" />
-     <Compile Include="Assets\SpriteColorFX\Scripts\Blend\SpriteColorBlend.cs" />
-     <Compile Include="Assets\SpriteColorFX\Scripts\Dissolve\SpriteColorDissolve.cs" />
-     <Compile Include="Assets\SpriteColorFX\Scripts\Glass\SpriteColorGlass.cs" />
-     <Compile Include="Assets\SpriteColorFX\Scripts\Instagram\SpriteColorInstagram.cs" />
-     <Compile Include="Assets\SpriteColorFX\Scripts\Masks\SpriteColorMasks3.cs" />
-     <Compile Include="Assets\SpriteColorFX\Scripts\Outline\SpriteColorOutline.cs" />
-     <Compile Include="Assets\SpriteColorFX\Scripts\Ramp\SpriteColorRamp.cs" />
-     <Compile Include="Assets\SpriteColorFX\Scripts\Ramp\SpriteColorRampMask.cs" />
-     <Compile Include="Assets\SpriteColorFX\Scripts\Ramp\SpriteColorRampPalettes.cs" />
-     <Compile Include="Assets\SpriteColorFX\Scripts\Shift\SpriteColorShiftLinear.cs" />
-     <Compile Include="Assets\SpriteColorFX\Scripts\Shift\SpriteColorShiftRadial.cs" />
-     <Compile Include="Assets\SpriteColorFX\Scripts\SpriteColorBase.cs" />
-     <Compile Include="Assets\SpriteColorFX\Scripts\SpriteColorHelper.cs" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureDarkerBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendLighten.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorHardMixBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\BumpLit\SpriteColorOutlineNoOverlapMaskBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendMultiplyBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3OverlayBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendDarkenBumpLit.shader" />
-     <None Include="Assets\FacebookSDK\SDK\Editor\android\DefaultAndroidManifest.xml" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorLighterBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorHue.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorSaturationBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendLuminosity.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\SpriteColorOutlineNoOverlapTextureMask.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorAdditiveBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Shift\SpriteColorShiftLinear.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendHardMixBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3DivideBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureLuminosity.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendSaturationBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorDivideBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorAdditive.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3Hue.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorDifference.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendPinLight.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorSolid.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendDifference.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\SpriteColorOutlineMask.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\SpriteColorOutlineGradientVertical.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureHardLightBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorSoftLightBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorOverlay.shader" />
-     <None Include="Assets\Plugins\Newtonsoft.Json.xml" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureHueBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorBurnBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendSubtract.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3SubtractBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3Color.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendAdditiveBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3HardLight.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendLuminosityBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendScreenBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Ramp\SpriteColorRampMask.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendSoftLight.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureSolidBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendHardMix.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureDarker.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureLightenBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureSubtract.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendLighterBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTexturePinLight.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3Difference.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\BumpLit\SpriteColorOutlineGradientVerticalBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\SpriteColorOutlineNoOverlapGradientVerticalMask.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureLuminosityBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3Lighter.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3LightenBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureColor.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3AdditiveBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorLighten.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorLuminosityBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendVividLightBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Shift\BumpLit\SpriteColorShiftRadialBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\SpriteColorOutlineNoOverlapMask.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\BumpLit\SpriteColorOutlineNoOverlapTextureBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorDodge.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendColor.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorSubtractBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendLightenBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureBurn.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureDifference.shader" />
-     <None Include="Assets\QRcode\CamMat\WebCam.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3Saturation.shader" />
-     <None Include="Assets\Plugins\Android\AndroidManifest.xml" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendHue.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorLightenBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendDarken.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorColorBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendDodge.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendOverlayBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3Burn.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorMultiply.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\SpriteColorOutlineTexture.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3Darker.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\SpriteColorFXCG.cginc" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\SpriteColorOutlineNoOverlap.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorSoftLight.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureAdditive.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\BumpLit\SpriteColorOutlineNoOverlapGradientVerticalMaskBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3PinLightBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureHardMixBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3PinLight.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureDifferenceBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureMultiplyBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Demos\Readme.txt" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\BumpLit\SpriteColorOutlineTextureMaskBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureLighter.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3Darken.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorHardMix.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3LighterBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\SpriteColorOutlineGradientHorizontalMask.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Glass\SpriteColorGlass.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\SpriteColorOutline.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorDarkenBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorDivide.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\SpriteColorOutlineTextureMask.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendHueBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Instagram\BumpLit\SpriteColorInstagramBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorSubtract.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendSolid.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3SaturationBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\BumpLit\SpriteColorOutlineTextureBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Ramp\BumpLit\SpriteColorRampBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureLighten.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureDarkenBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorDifferenceBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorOverlayBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3Dodge.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\BumpLit\SpriteColorOutlineGradientHorizontalBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\SpriteColorOutlineNoOverlapGradientHorizontal.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureBurnBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\SpriteColorOutlineGradientVerticalMask.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveNormal.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorScreenBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorHueBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3VividLight.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendDarkerBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\BumpLit\SpriteColorOutlineBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorVividLight.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3Solid.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureOverlayBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorLuminosity.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureSolid.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3HardMix.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureLighterBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendSaturation.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorSolidBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendDodgeBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Shift\SpriteColorShiftRadial.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3HardLightBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\BumpLit\SpriteColorOutlineNoOverlapGradientHorizontalBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3Screen.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureSubtractBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3DarkerBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\BumpLit\SpriteColorOutlineNoOverlapBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3BurnBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureSaturation.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendSubtractBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\BumpLit\SpriteColorOutlineGradientVerticalMaskBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3HardMixBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureScreenBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureSoftLightBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorVividLightBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Changelog.txt" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendVividLight.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorMultiplyBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureSoftLight.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\BumpLit\SpriteColorOutlineMaskBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendDivideBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3ScreenBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Instagram\SpriteColorInstagram.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\SpriteColorOutlineNoOverlapGradientVertical.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3ColorBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureDivideBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureHardMix.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureSaturationBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\BumpLit\SpriteColorOutlineNoOverlapGradientVerticalBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3DifferenceBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorScreen.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureDodgeBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorDarker.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3DodgeBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3Subtract.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorHardLight.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\BumpLit\SpriteColorOutlineNoOverlapTextureMaskBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3Luminosity.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendColorBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorLighter.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\BumpLit\SpriteColorOutlineGradientHorizontalMaskBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3Additive.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3Lighten.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureColorBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureScreen.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\BumpLit\SpriteColorOutlineNoOverlapGradientHorizontalMaskBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureDodge.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Ramp\SpriteColorRamp.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTexturePinLightBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureDivide.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureAdditiveBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3MultiplyBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3Divide.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorBurn.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorSaturation.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3SolidBumpLit.shader" />
-     <None Include="Assets\FacebookSDK\SDK\Scripts\Canvas\Resources\JSSDKBindings.txt" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureOverlay.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendHardLightBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendScreen.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendPinLightBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureHardLight.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3Multiply.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\SpriteColorOutlineNoOverlapGradientHorizontalMask.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureHue.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendLighter.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Shift\BumpLit\SpriteColorShiftLinearBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorDodgeBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorDarkerBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendMultiply.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendSolidBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendHardLight.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorColor.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendBurn.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendOverlay.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendDifferenceBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3VividLightBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureVividLightBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorHardLightBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3Overlay.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendAdditive.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3SoftLightBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureMultiply.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendDarker.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorDarken.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3SoftLight.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\SpriteColorOutlineNoOverlapTexture.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3LuminosityBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorPinLightBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureVividLight.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3DarkenBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3HueBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveNormalBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorPinLight.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureDarken.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Ramp\BumpLit\SpriteColorRampMaskBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendSoftLightBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Glass\BumpLit\SpriteColorGlassBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendDivide.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendBurnBumpLit.shader" />
-     <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\SpriteColorOutlineGradientHorizontal.shader" />
- <Reference Include="UnityEngine.Advertisements">
- <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/Advertisements/UnityEngine.Advertisements.dll</HintPath>
- </Reference>
- <Reference Include="UnityEngine.UI">
- <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
- </Reference>
- <Reference Include="UnityEngine.Networking">
- <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll</HintPath>
- </Reference>
- <Reference Include="UnityEngine.TestRunner">
- <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/TestRunner/UnityEngine.TestRunner.dll</HintPath>
- </Reference>
- <Reference Include="nunit.framework">
- <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/TestRunner/net35/unity-custom/nunit.framework.dll</HintPath>
- </Reference>
- <Reference Include="UnityEngine.Analytics">
- <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/UnityAnalytics/UnityEngine.Analytics.dll</HintPath>
- </Reference>
- <Reference Include="UnityEngine.HoloLens">
- <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/UnityHoloLens/RuntimeEditor/UnityEngine.HoloLens.dll</HintPath>
- </Reference>
- <Reference Include="UnityEngine.Purchasing">
- <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/UnityPurchasing/UnityEngine.Purchasing.dll</HintPath>
- </Reference>
- <Reference Include="UnityEngine.VR">
- <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/UnityVR/RuntimeEditor/UnityEngine.VR.dll</HintPath>
- </Reference>
- <Reference Include="Newtonsoft.Json">
- <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Assets/Plugins/Newtonsoft.Json.dll</HintPath>
- </Reference>
- <Reference Include="Common">
- <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Assets/Plugins/UnityPurchasing/Bin/Common.dll</HintPath>
- </Reference>
- <Reference Include="Editor">
- <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Assets/Plugins/UnityPurchasing/Bin/Editor.dll</HintPath>
- </Reference>
- <Reference Include="Security">
- <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Assets/Plugins/UnityPurchasing/Bin/Security.dll</HintPath>
- </Reference>
- <Reference Include="Stores">
- <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Assets/Plugins/UnityPurchasing/Bin/Stores.dll</HintPath>
- </Reference>
- <Reference Include="Apple">
- <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Assets/Plugins/UnityPurchasing/Bin/Apple/Apple.dll</HintPath>
- </Reference>
- <Reference Include="Tizen">
- <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Assets/Plugins/UnityPurchasing/Bin/Tizen/Tizen.dll</HintPath>
- </Reference>
- <Reference Include="winrt">
- <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Assets/Plugins/UnityPurchasing/winrt/winrt.dll</HintPath>
- </Reference>
- <Reference Include="QRCode">
- <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Assets/QRcode/Plugins/QRCode.dll</HintPath>
- </Reference>
- <Reference Include="LitJson">
- <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Assets/Resources/LitJson.dll</HintPath>
- </Reference>
+    <Compile Include="Assets\FacebookSDK\Examples\Scripts\ConsoleBase.cs" />
+    <Compile Include="Assets\FacebookSDK\Examples\Scripts\LogView.cs" />
+    <Compile Include="Assets\FacebookSDK\Examples\Scripts\MenuBase.cs" />
+    <Compile Include="Assets\FacebookSDK\Examples\Scripts\SubMenus\AccessTokenMenu.cs" />
+    <Compile Include="Assets\FacebookSDK\Examples\Scripts\SubMenus\AppEvents.cs" />
+    <Compile Include="Assets\FacebookSDK\Examples\Scripts\SubMenus\AppInvites.cs" />
+    <Compile Include="Assets\FacebookSDK\Examples\Scripts\SubMenus\AppLinks.cs" />
+    <Compile Include="Assets\FacebookSDK\Examples\Scripts\SubMenus\AppRequests.cs" />
+    <Compile Include="Assets\FacebookSDK\Examples\Scripts\SubMenus\DialogShare.cs" />
+    <Compile Include="Assets\FacebookSDK\Examples\Scripts\SubMenus\GraphRequest.cs" />
+    <Compile Include="Assets\FacebookSDK\Examples\Scripts\SubMenus\MainMenu.cs" />
+    <Compile Include="Assets\FacebookSDK\Examples\Scripts\SubMenus\Pay.cs" />
+    <Compile Include="Assets\QRcode\Plugins\Loom\Loom.cs" />
+    <Compile Include="Assets\QRcode\Scripts\CameraPlaneController.cs" />
+    <Compile Include="Assets\QRcode\Scripts\DeviceCameraController.cs" />
+    <Compile Include="Assets\QRcode\Scripts\QRCodeDecodeController.cs" />
+    <Compile Include="Assets\QRcode\Scripts\QRCodeEncodeController.cs" />
+    <Compile Include="Assets\QRcode\Scripts\QRDecodeTest.cs" />
+    <Compile Include="Assets\QRcode\Scripts\QREncodeTest.cs" />
+    <Compile Include="Assets\Scripts\5man Combat Scripts\AdManager.cs" />
+    <Compile Include="Assets\Scripts\5man Combat Scripts\AmputationButtonManager.cs" />
+    <Compile Include="Assets\Scripts\5man Combat Scripts\BaseSurvivor.cs" />
+    <Compile Include="Assets\Scripts\5man Combat Scripts\BaseWeapon.cs" />
+    <Compile Include="Assets\Scripts\5man Combat Scripts\BaseZombie.cs" />
+    <Compile Include="Assets\Scripts\5man Combat Scripts\BattleStateMachine.cs" />
+    <Compile Include="Assets\Scripts\5man Combat Scripts\BossBattleStateMachine.cs" />
+    <Compile Include="Assets\Scripts\5man Combat Scripts\BossStateMachine.cs" />
+    <Compile Include="Assets\Scripts\5man Combat Scripts\CombatWeaponListElementManager.cs" />
+    <Compile Include="Assets\Scripts\5man Combat Scripts\CombatWeaponListPopulator.cs" />
+    <Compile Include="Assets\Scripts\5man Combat Scripts\ContinueRunningButtonManager.cs" />
+    <Compile Include="Assets\Scripts\5man Combat Scripts\KillYourselfButtonManager.cs" />
+    <Compile Include="Assets\Scripts\5man Combat Scripts\SurvivorStateMachine.cs" />
+    <Compile Include="Assets\Scripts\5man Combat Scripts\TurnHandler.cs" />
+    <Compile Include="Assets\Scripts\5man Combat Scripts\TurnResultHolder.cs" />
+    <Compile Include="Assets\Scripts\5man Combat Scripts\WeaponManager.cs" />
+    <Compile Include="Assets\Scripts\5man Combat Scripts\ZombieStateMachine.cs" />
+    <Compile Include="Assets\Scripts\BackgroundRandomizer.cs" />
+    <Compile Include="Assets\Scripts\BlazeOGImageOscillator.cs" />
+    <Compile Include="Assets\Scripts\BlinkingSlider.cs" />
+    <Compile Include="Assets\Scripts\BrainSpawner.cs" />
+    <Compile Include="Assets\Scripts\Building.cs" />
+    <Compile Include="Assets\Scripts\BuildingClearTextController.cs" />
+    <Compile Include="Assets\Scripts\BuildingFilterButtonManager.cs" />
+    <Compile Include="Assets\Scripts\BuildingSpawner.cs" />
+    <Compile Include="Assets\Scripts\ClearedBuildingPanelManager.cs" />
+    <Compile Include="Assets\Scripts\CurrentLocationUpdater.cs" />
+    <Compile Include="Assets\Scripts\EndGamePanelController.cs" />
+    <Compile Include="Assets\Scripts\FadeIn.cs" />
+    <Compile Include="Assets\Scripts\FadeToCombatPanelManager.cs" />
+    <Compile Include="Assets\Scripts\FitBitAPI.cs" />
+    <Compile Include="Assets\Scripts\FitbitCaller.cs" />
+    <Compile Include="Assets\Scripts\FitbitData.cs" />
+    <Compile Include="Assets\Scripts\FitbitInterfaceManager.cs" />
+    <Compile Include="Assets\Scripts\FloatingText.cs" />
+    <Compile Include="Assets\Scripts\FloatingTextController.cs" />
+    <Compile Include="Assets\Scripts\GameManager.cs" />
+    <Compile Include="Assets\Scripts\GameOverLevelManager.cs" />
+    <Compile Include="Assets\Scripts\GamePreferences.cs" />
+    <Compile Include="Assets\Scripts\GoogleMap.cs" />
+    <Compile Include="Assets\Scripts\Health.cs" />
+    <Compile Include="Assets\Scripts\HeartbeatSoundManager.cs" />
+    <Compile Include="Assets\Scripts\IAPManager.cs" />
+    <Compile Include="Assets\Scripts\Intro_ImageLoader.cs" />
+    <Compile Include="Assets\Scripts\JSONObject.cs" />
+    <Compile Include="Assets\Scripts\LevelManager.cs" />
+    <Compile Include="Assets\Scripts\LoginManager.cs" />
+    <Compile Include="Assets\Scripts\MapLevelManager.cs" />
+    <Compile Include="Assets\Scripts\MissionCombatSimulator.cs" />
+    <Compile Include="Assets\Scripts\MissionCompletePanelManager.cs" />
+    <Compile Include="Assets\Scripts\MissionListElementManager.cs" />
+    <Compile Include="Assets\Scripts\MissionListPopulator.cs" />
+    <Compile Include="Assets\Scripts\MusicManager.cs" />
+    <Compile Include="Assets\Scripts\MusicPlayer.cs" />
+    <Compile Include="Assets\Scripts\OAuth2AccessToken.cs" />
+    <Compile Include="Assets\Scripts\OptionsController.cs" />
+    <Compile Include="Assets\Scripts\Outpost.cs" />
+    <Compile Include="Assets\Scripts\OutpostPanelController.cs" />
+    <Compile Include="Assets\Scripts\PlayerPrefsManager.cs" />
+    <Compile Include="Assets\Scripts\PopulatedBuilding.cs" />
+    <Compile Include="Assets\Scripts\ProfileImageHolder.cs" />
+    <Compile Include="Assets\Scripts\ProfileImageManager.cs" />
+    <Compile Include="Assets\Scripts\Purchaser.cs" />
+    <Compile Include="Assets\Scripts\QRPanelController.cs" />
+    <Compile Include="Assets\Scripts\SetStartVolume.cs" />
+    <Compile Include="Assets\Scripts\StaminaText.cs" />
+    <Compile Include="Assets\Scripts\StoryDrag.cs" />
+    <Compile Include="Assets\Scripts\StoryPanelManager.cs" />
+    <Compile Include="Assets\Scripts\SuicideButtonShuffler.cs" />
+    <Compile Include="Assets\Scripts\SurvivorListElementManager.cs" />
+    <Compile Include="Assets\Scripts\SurvivorListPopulator.cs" />
+    <Compile Include="Assets\Scripts\SurvivorPlayCard.cs" />
+    <Compile Include="Assets\Scripts\SurvivorWallElementManager.cs" />
+    <Compile Include="Assets\Scripts\SwipeIconBlinker.cs" />
+    <Compile Include="Assets\Scripts\TMP_locationplaceholder.cs" />
+    <Compile Include="Assets\Scripts\UIStatusToggler.cs" />
+    <Compile Include="Assets\Scripts\Util.cs" />
+    <Compile Include="Assets\Scripts\VersionText.cs" />
+    <Compile Include="Assets\Scripts\VictoryScreenController.cs" />
+    <Compile Include="Assets\Scripts\WeaponGFX.cs" />
+    <Compile Include="Assets\Scripts\WeaponListElementManager.cs" />
+    <Compile Include="Assets\Scripts\WeaponListPopulator.cs" />
+    <Compile Include="Assets\Scripts\WeaponSelectManager.cs" />
+    <Compile Include="Assets\Scripts\WhackABrain.cs" />
+    <Compile Include="Assets\Scripts\ZM_Building.cs" />
+    <Compile Include="Assets\Scripts\ZM_BuildingSpawner.cs" />
+    <Compile Include="Assets\Scripts\ZombieModeManager.cs" />
+    <Compile Include="Assets\Scripts\ZombieQRController.cs" />
+    <Compile Include="Assets\SpriteColorFX\Demos\Blend\Scripts\Blender.cs" />
+    <Compile Include="Assets\SpriteColorFX\Demos\Blend\Scripts\Flare.cs" />
+    <Compile Include="Assets\SpriteColorFX\Demos\Dissolve\Scripts\DemoDissolve.cs" />
+    <Compile Include="Assets\SpriteColorFX\Demos\Glass\Scripts\PredatorController.cs" />
+    <Compile Include="Assets\SpriteColorFX\Demos\Instagram\Scripts\DemoInstagram.cs" />
+    <Compile Include="Assets\SpriteColorFX\Demos\Masks\Scripts\DemoMasks3.cs" />
+    <Compile Include="Assets\SpriteColorFX\Demos\Outline\Scripts\DemoOutline.cs" />
+    <Compile Include="Assets\SpriteColorFX\Demos\Ramp\Scripts\DemoRamp.cs" />
+    <Compile Include="Assets\SpriteColorFX\Demos\Ramp\Scripts\Pedestal.cs" />
+    <Compile Include="Assets\SpriteColorFX\Demos\Scripts\HSBColor.cs" />
+    <Compile Include="Assets\SpriteColorFX\Demos\Scripts\Spawner.cs" />
+    <Compile Include="Assets\SpriteColorFX\Demos\Scripts\Sun.cs" />
+    <Compile Include="Assets\SpriteColorFX\Demos\Scripts\UVTransform.cs" />
+    <Compile Include="Assets\SpriteColorFX\Demos\Shift\Scripts\DemoShiftLinear.cs" />
+    <Compile Include="Assets\SpriteColorFX\Demos\Shift\Scripts\DemoShiftRadial.cs" />
+    <Compile Include="Assets\SpriteColorFX\Scripts\Blend\SpriteColorBlend.cs" />
+    <Compile Include="Assets\SpriteColorFX\Scripts\Dissolve\SpriteColorDissolve.cs" />
+    <Compile Include="Assets\SpriteColorFX\Scripts\Glass\SpriteColorGlass.cs" />
+    <Compile Include="Assets\SpriteColorFX\Scripts\Instagram\SpriteColorInstagram.cs" />
+    <Compile Include="Assets\SpriteColorFX\Scripts\Masks\SpriteColorMasks3.cs" />
+    <Compile Include="Assets\SpriteColorFX\Scripts\Outline\SpriteColorOutline.cs" />
+    <Compile Include="Assets\SpriteColorFX\Scripts\Ramp\SpriteColorRamp.cs" />
+    <Compile Include="Assets\SpriteColorFX\Scripts\Ramp\SpriteColorRampMask.cs" />
+    <Compile Include="Assets\SpriteColorFX\Scripts\Ramp\SpriteColorRampPalettes.cs" />
+    <Compile Include="Assets\SpriteColorFX\Scripts\Shift\SpriteColorShiftLinear.cs" />
+    <Compile Include="Assets\SpriteColorFX\Scripts\Shift\SpriteColorShiftRadial.cs" />
+    <Compile Include="Assets\SpriteColorFX\Scripts\SpriteColorBase.cs" />
+    <Compile Include="Assets\SpriteColorFX\Scripts\SpriteColorHelper.cs" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureDarkerBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendLighten.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorHardMixBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\BumpLit\SpriteColorOutlineNoOverlapMaskBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendMultiplyBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3OverlayBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendDarkenBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorLighterBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorHue.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorSaturationBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendLuminosity.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\SpriteColorOutlineNoOverlapTextureMask.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorAdditiveBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Shift\SpriteColorShiftLinear.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendHardMixBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3DivideBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureLuminosity.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendSaturationBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorDivideBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorAdditive.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3Hue.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorDifference.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendPinLight.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorSolid.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendDifference.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\SpriteColorOutlineMask.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\SpriteColorOutlineGradientVertical.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureHardLightBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorSoftLightBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorOverlay.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureHueBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorBurnBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendSubtract.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3SubtractBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3Color.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendAdditiveBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3HardLight.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendLuminosityBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendScreenBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Ramp\SpriteColorRampMask.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendSoftLight.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureSolidBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendHardMix.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureDarker.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureLightenBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureSubtract.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendLighterBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTexturePinLight.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3Difference.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\BumpLit\SpriteColorOutlineGradientVerticalBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\SpriteColorOutlineNoOverlapGradientVerticalMask.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureLuminosityBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3Lighter.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3LightenBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureColor.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3AdditiveBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorLighten.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorLuminosityBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendVividLightBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Shift\BumpLit\SpriteColorShiftRadialBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\SpriteColorOutlineNoOverlapMask.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\BumpLit\SpriteColorOutlineNoOverlapTextureBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorDodge.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendColor.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorSubtractBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendLightenBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureBurn.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureDifference.shader" />
+    <None Include="Assets\QRcode\CamMat\WebCam.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3Saturation.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendHue.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorLightenBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendDarken.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorColorBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendDodge.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendOverlayBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3Burn.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorMultiply.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\SpriteColorOutlineTexture.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3Darker.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\SpriteColorFXCG.cginc" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\SpriteColorOutlineNoOverlap.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorSoftLight.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureAdditive.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\BumpLit\SpriteColorOutlineNoOverlapGradientVerticalMaskBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3PinLightBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureHardMixBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3PinLight.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureDifferenceBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureMultiplyBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Demos\Readme.txt" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\BumpLit\SpriteColorOutlineTextureMaskBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureLighter.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3Darken.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorHardMix.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3LighterBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\SpriteColorOutlineGradientHorizontalMask.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Glass\SpriteColorGlass.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\SpriteColorOutline.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorDarkenBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorDivide.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\SpriteColorOutlineTextureMask.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendHueBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Instagram\BumpLit\SpriteColorInstagramBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorSubtract.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendSolid.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3SaturationBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\BumpLit\SpriteColorOutlineTextureBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Ramp\BumpLit\SpriteColorRampBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureLighten.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureDarkenBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorDifferenceBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorOverlayBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3Dodge.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\BumpLit\SpriteColorOutlineGradientHorizontalBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\SpriteColorOutlineNoOverlapGradientHorizontal.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureBurnBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\SpriteColorOutlineGradientVerticalMask.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveNormal.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorScreenBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorHueBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3VividLight.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendDarkerBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\BumpLit\SpriteColorOutlineBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorVividLight.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3Solid.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureOverlayBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorLuminosity.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureSolid.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3HardMix.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureLighterBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendSaturation.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorSolidBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendDodgeBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Shift\SpriteColorShiftRadial.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3HardLightBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\BumpLit\SpriteColorOutlineNoOverlapGradientHorizontalBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3Screen.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureSubtractBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3DarkerBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\BumpLit\SpriteColorOutlineNoOverlapBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3BurnBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureSaturation.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendSubtractBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\BumpLit\SpriteColorOutlineGradientVerticalMaskBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3HardMixBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureScreenBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureSoftLightBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorVividLightBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Changelog.txt" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendVividLight.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorMultiplyBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureSoftLight.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\BumpLit\SpriteColorOutlineMaskBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendDivideBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3ScreenBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Instagram\SpriteColorInstagram.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\SpriteColorOutlineNoOverlapGradientVertical.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3ColorBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureDivideBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureHardMix.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureSaturationBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\BumpLit\SpriteColorOutlineNoOverlapGradientVerticalBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3DifferenceBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorScreen.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureDodgeBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorDarker.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3DodgeBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3Subtract.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorHardLight.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\BumpLit\SpriteColorOutlineNoOverlapTextureMaskBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3Luminosity.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendColorBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorLighter.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\BumpLit\SpriteColorOutlineGradientHorizontalMaskBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3Additive.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3Lighten.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureColorBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureScreen.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\BumpLit\SpriteColorOutlineNoOverlapGradientHorizontalMaskBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureDodge.shader" />
+    <None Include="Assets\FacebookSDK\link.xml" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Ramp\SpriteColorRamp.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTexturePinLightBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureDivide.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureAdditiveBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3MultiplyBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3Divide.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorBurn.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorSaturation.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3SolidBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureOverlay.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendHardLightBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendScreen.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendPinLightBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureHardLight.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3Multiply.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\SpriteColorOutlineNoOverlapGradientHorizontalMask.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureHue.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendLighter.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Shift\BumpLit\SpriteColorShiftLinearBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorDodgeBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorDarkerBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendMultiply.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendSolidBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendHardLight.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorColor.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendBurn.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendOverlay.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendDifferenceBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3VividLightBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderTextureVividLightBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorHardLightBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3Overlay.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendAdditive.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3SoftLightBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureMultiply.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendDarker.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorDarken.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\SpriteColorMasks3SoftLight.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\SpriteColorOutlineNoOverlapTexture.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3LuminosityBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveBorderColorPinLightBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureVividLight.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3DarkenBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Masks\BumpLit\SpriteColorMasks3HueBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\BumpLit\SpriteColorDissolveNormalBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderColorPinLight.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Dissolve\SpriteColorDissolveBorderTextureDarken.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Ramp\BumpLit\SpriteColorRampMaskBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendSoftLightBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Glass\BumpLit\SpriteColorGlassBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\SpriteColorBlendDivide.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Blend\BumpLit\SpriteColorBlendBurnBumpLit.shader" />
+    <None Include="Assets\SpriteColorFX\Resources\Shaders\Outline\SpriteColorOutlineGradientHorizontal.shader" />
+    <Reference Include="Unity.Timeline.Editor">
+      <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro.Editor">
+      <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.PackageManagerUI.Editor">
+      <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Timeline">
+      <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Library/ScriptAssemblies/Unity.Timeline.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.CollabProxy.Editor">
+      <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Library/ScriptAssemblies/Unity.CollabProxy.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Analytics.DataPrivacy">
+      <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Library/ScriptAssemblies/Unity.Analytics.DataPrivacy.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AIModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.AIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ARModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.ARModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AccessibilityModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.AccessibilityModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AnimationModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.AnimationModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AssetBundleModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.AssetBundleModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AudioModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.AudioModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ClothModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.ClothModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CrashReportingModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.CrashReportingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.DirectorModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.DirectorModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.FileSystemHttpModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.FileSystemHttpModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.GameCenterModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.GameCenterModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.GridModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.GridModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.HotReloadModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.HotReloadModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.IMGUIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ImageConversionModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.ImageConversionModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.InputModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.InputModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.JSONSerializeModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.JSONSerializeModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.LocalizationModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.LocalizationModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ParticleSystemModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.ParticleSystemModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.PerformanceReportingModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.PerformanceReportingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.PhysicsModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.PhysicsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.Physics2DModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.Physics2DModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ProfilerModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.ProfilerModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ScreenCaptureModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.ScreenCaptureModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SharedInternalsModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.SharedInternalsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SpriteMaskModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.SpriteMaskModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SpriteShapeModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.SpriteShapeModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.StreamingModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.StreamingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.StyleSheetsModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.StyleSheetsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SubstanceModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.SubstanceModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TLSModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.TLSModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TerrainModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.TerrainModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TerrainPhysicsModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.TerrainPhysicsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TextCoreModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.TextCoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.TextRenderingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TilemapModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.TilemapModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.UIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UIElementsModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.UIElementsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UNETModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.UNETModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UmbraModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.UmbraModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityAnalyticsModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.UnityAnalyticsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityConnectModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.UnityConnectModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityTestProtocolModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.UnityTestProtocolModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.UnityWebRequestModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestAssetBundleModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.UnityWebRequestAssetBundleModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestAudioModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestTextureModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.UnityWebRequestTextureModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestWWWModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VFXModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.VFXModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VRModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.VRModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VehiclesModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.VehiclesModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VideoModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.VideoModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.WindModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.WindModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.XRModule">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.XRModule.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Locator">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/Managed/Unity.Locator.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TestRunner">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/UnityExtensions/Unity/TestRunner/UnityEngine.TestRunner.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/UnityExtensions/Unity/TestRunner/net35/unity-custom/nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Facebook.Unity">
+      <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Assets/FacebookSDK/Plugins/Facebook.Unity.dll</HintPath>
+    </Reference>
+    <Reference Include="Facebook.Unity.Canvas">
+      <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Assets/FacebookSDK/Plugins/Canvas/Facebook.Unity.Canvas.dll</HintPath>
+    </Reference>
+    <Reference Include="Facebook.Unity.Gameroom">
+      <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Assets/FacebookSDK/Plugins/Gameroom/Facebook.Unity.Gameroom.dll</HintPath>
+    </Reference>
+    <Reference Include="FacebookNamedPipeClient">
+      <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Assets/FacebookSDK/Plugins/Gameroom/FacebookNamedPipeClient.dll</HintPath>
+    </Reference>
+    <Reference Include="Facebook.Unity.Settings">
+      <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Assets/FacebookSDK/Plugins/Settings/Facebook.Unity.Settings.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Assets/Plugins/Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Common">
+      <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Assets/Plugins/UnityPurchasing/Bin/Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Editor">
+      <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Assets/Plugins/UnityPurchasing/Bin/Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Security">
+      <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Assets/Plugins/UnityPurchasing/Bin/Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Stores">
+      <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Assets/Plugins/UnityPurchasing/Bin/Stores.dll</HintPath>
+    </Reference>
+    <Reference Include="Apple">
+      <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Assets/Plugins/UnityPurchasing/Bin/Apple/Apple.dll</HintPath>
+    </Reference>
+    <Reference Include="Tizen">
+      <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Assets/Plugins/UnityPurchasing/Bin/Tizen/Tizen.dll</HintPath>
+    </Reference>
+    <Reference Include="winrt">
+      <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Assets/Plugins/UnityPurchasing/winrt/winrt.dll</HintPath>
+    </Reference>
+    <Reference Include="QRCode">
+      <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Assets/QRcode/Plugins/QRCode.dll</HintPath>
+    </Reference>
+    <Reference Include="LitJson">
+      <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Assets/Resources/LitJson.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.Advertisements">
+      <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Library/PackageCache/com.unity.ads@2.0.8/UnityEngine.Advertisements.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Analytics.Editor">
+      <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Library/PackageCache/com.unity.analytics@3.3.2/Unity.Analytics.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Analytics.StandardEvents">
+      <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Library/PackageCache/com.unity.analytics@3.3.2/Unity.Analytics.StandardEvents.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Analytics.Tracker">
+      <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Library/PackageCache/com.unity.analytics@3.3.2/Unity.Analytics.Tracker.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.Purchasing">
+      <HintPath>/Users/owenmorris/Documents/GitHub/ARG-Zombies-Scaffolding/Library/PackageCache/com.unity.purchasing@2.0.6/UnityEngine.Purchasing.dll</HintPath>
+    </Reference>
+    <Reference Include="netstandard">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/ref/2.0.0/netstandard.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Win32.Primitives">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/Microsoft.Win32.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.AppContext">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.AppContext.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections.Concurrent">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Collections.Concurrent.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections.NonGeneric">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Collections.NonGeneric.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections.Specialized">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Collections.Specialized.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Collections.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.EventBasedAsync">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.ComponentModel.EventBasedAsync.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.Primitives">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.ComponentModel.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.TypeConverter">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.ComponentModel.TypeConverter.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.ComponentModel.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Console">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Console.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.Common">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Data.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Diagnostics.Contracts">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Diagnostics.Contracts.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Diagnostics.Debug">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Diagnostics.Debug.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Diagnostics.FileVersionInfo">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Diagnostics.FileVersionInfo.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Diagnostics.Process">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Diagnostics.Process.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Diagnostics.StackTrace">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Diagnostics.StackTrace.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Diagnostics.TextWriterTraceListener">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Diagnostics.TextWriterTraceListener.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Diagnostics.Tools">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Diagnostics.Tools.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Diagnostics.TraceSource">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Diagnostics.TraceSource.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Diagnostics.Tracing">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Diagnostics.Tracing.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Drawing.Primitives">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Drawing.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Dynamic.Runtime">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Dynamic.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Globalization.Calendars">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Globalization.Calendars.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Globalization.Extensions">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Globalization.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Globalization">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Globalization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.Compression.ZipFile">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.IO.Compression.ZipFile.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.Compression">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.IO.Compression.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.FileSystem.DriveInfo">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.IO.FileSystem.DriveInfo.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.FileSystem.Primitives">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.IO.FileSystem.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.FileSystem.Watcher">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.IO.FileSystem.Watcher.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.FileSystem">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.IO.FileSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.IsolatedStorage">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.IO.IsolatedStorage.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.MemoryMappedFiles">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.IO.MemoryMappedFiles.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.Pipes">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.IO.Pipes.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.UnmanagedMemoryStream">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.IO.UnmanagedMemoryStream.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.IO.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Linq.Expressions">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Linq.Expressions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Linq.Parallel">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Linq.Parallel.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Linq.Queryable">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Linq.Queryable.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Linq">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Net.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.NameResolution">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Net.NameResolution.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.NetworkInformation">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Net.NetworkInformation.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Ping">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Net.Ping.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Primitives">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Net.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Requests">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Net.Requests.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Security">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Net.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Sockets">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Net.Sockets.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.WebHeaderCollection">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Net.WebHeaderCollection.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.WebSockets.Client">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Net.WebSockets.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.WebSockets">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Net.WebSockets.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ObjectModel">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.ObjectModel.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reflection.Extensions">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Reflection.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reflection.Primitives">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Reflection.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reflection">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Reflection.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Resources.Reader">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Resources.Reader.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Resources.ResourceManager">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Resources.ResourceManager.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Resources.Writer">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Resources.Writer.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.VisualC">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Runtime.CompilerServices.VisualC.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Extensions">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Runtime.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Handles">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Runtime.Handles.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.InteropServices.RuntimeInformation">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.InteropServices">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Runtime.InteropServices.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Numerics">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Runtime.Numerics.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization.Formatters">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Runtime.Serialization.Formatters.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization.Json">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Runtime.Serialization.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization.Primitives">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Runtime.Serialization.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization.Xml">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Runtime.Serialization.Xml.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Claims">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Security.Claims.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Algorithms">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Security.Cryptography.Algorithms.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Csp">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Security.Cryptography.Csp.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Encoding">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Security.Cryptography.Encoding.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Primitives">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Security.Cryptography.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.X509Certificates">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Security.Cryptography.X509Certificates.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Principal">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Security.Principal.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.SecureString">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Security.SecureString.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Encoding.Extensions">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Text.Encoding.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Encoding">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Text.Encoding.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.RegularExpressions">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Text.RegularExpressions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Overlapped">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Threading.Overlapped.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Parallel">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Threading.Tasks.Parallel.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Threading.Tasks.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Thread">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Threading.Thread.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.ThreadPool">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Threading.ThreadPool.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Timer">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Threading.Timer.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Threading.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.ReaderWriter">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Xml.ReaderWriter.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.XDocument">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Xml.XDocument.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.XPath.XDocument">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Xml.XPath.XDocument.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.XPath">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Xml.XPath.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.XmlDocument">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Xml.XmlDocument.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.XmlSerializer">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netstandard/System.Xml.XmlSerializer.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics.Vectors">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/Extensions/2.0.0/System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.InteropServices.WindowsRuntime">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/Extensions/2.0.0/System.Runtime.InteropServices.WindowsRuntime.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.Composition">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netfx/System.ComponentModel.Composition.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netfx/System.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netfx/System.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Drawing">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netfx/System.Drawing.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.Compression.FileSystem">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netfx/System.IO.Compression.FileSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netfx/System.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netfx/System.Numerics.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netfx/System.Runtime.Serialization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ServiceModel.Web">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netfx/System.ServiceModel.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Transactions">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netfx/System.Transactions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netfx/System.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netfx/System.Windows.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netfx/System.Xml.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Serialization">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netfx/System.Xml.Serialization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netfx/System.Xml.dll</HintPath>
+    </Reference>
+    <Reference Include="System">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netfx/System.dll</HintPath>
+    </Reference>
+    <Reference Include="mscorlib">
+      <HintPath>/Applications/Unity/Hub/Editor/2019.1.3f1/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netfx/mscorlib.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Assembly-CSharp-firstpass.csproj">
-      <Project>{0131BA15-EBAE-83A6-C035-9B62B416D83B}</Project>      <Name>Assembly-CSharp-firstpass</Name>    </ProjectReference>
+      <Project>{0131BA15-EBAE-83A6-C035-9B62B416D83B}</Project>
+      <Name>Assembly-CSharp-firstpass</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="GenerateTargetFrameworkMonikerAttribute" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
@@ -575,5 +1051,4 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  
 </Project>

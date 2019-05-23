@@ -25,6 +25,7 @@ public class LoginManager : MonoBehaviour {
 	public JsonData staticSurvivorData, facebookSurvivorData;
 	public SurvivorPlayCard[] survivorDraftCardArray;
 	public Sprite genericSurvivorPortrait;
+	public Text versionNumber;
 
 	private string newSurvivorUrl = GameManager.serverURL+"/create_new_survivor.php";
 	//private string findUserAcctURL = GameManager.serverURL+"/UserAcctLookup.php";
@@ -33,8 +34,11 @@ public class LoginManager : MonoBehaviour {
     private string profileImageUploadURL = GameManager.serverURL + "/UploadProfileImage.php";
     private string playAsZombieURL = GameManager.serverURL + "/PlayAsZombie.php";
 
-    // Use this for initialization
     void Start () { 
+		//set the version text from the settings
+		versionNumber.text = "v" + Application.version;
+		//Debug.Log (Application.version);
+
         if (FB.IsInitialized) {
             FB.ActivateApp();
         } else {

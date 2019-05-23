@@ -33,6 +33,8 @@ namespace Facebook.Unity.Example
 
         protected override void GetGui()
         {
+            GUILayout.BeginVertical();
+
             bool enabled = GUI.enabled;
             if (this.Button("FB.Init"))
             {
@@ -56,33 +58,30 @@ namespace Facebook.Unity.Example
                 this.Status = "Login (for publish_actions) called";
             }
 
-            #if UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_EDITOR
+            // Fix GUILayout margin issues
+            GUILayout.Label(GUIContent.none, GUILayout.MinWidth(ConsoleBase.MarginFix));
+            GUILayout.EndHorizontal();
+
+
+            GUILayout.BeginHorizontal();
+
+            // Fix GUILayout margin issues
+            GUILayout.Label(GUIContent.none, GUILayout.MinWidth(ConsoleBase.MarginFix));
+            GUILayout.EndHorizontal();
+
+            #if !UNITY_WEBGL
             if (this.Button("Logout"))
             {
                 CallFBLogout();
                 this.Status = "Logout called";
             }
             #endif
-            // Fix GUILayout margin issues
-            GUILayout.Label(GUIContent.none, GUILayout.MinWidth(ConsoleBase.MarginFix));
-            GUILayout.EndHorizontal();
 
             GUI.enabled = enabled && FB.IsInitialized;
             if (this.Button("Share Dialog"))
             {
                 this.SwitchMenu(typeof(DialogShare));
             }
-
-            bool savedEnabled = GUI.enabled;
-            GUI.enabled = enabled &&
-                AccessToken.CurrentAccessToken != null &&
-                AccessToken.CurrentAccessToken.Permissions.Contains("publish_actions");
-            if (this.Button("Game Groups"))
-            {
-                this.SwitchMenu(typeof(GameGroups));
-            }
-
-            GUI.enabled = savedEnabled;
 
             if (this.Button("App Requests"))
             {
@@ -118,6 +117,8 @@ namespace Facebook.Unity.Example
             {
                 this.SwitchMenu(typeof(AccessTokenMenu));
             }
+
+            GUILayout.EndVertical();
 
             GUI.enabled = enabled;
         }
