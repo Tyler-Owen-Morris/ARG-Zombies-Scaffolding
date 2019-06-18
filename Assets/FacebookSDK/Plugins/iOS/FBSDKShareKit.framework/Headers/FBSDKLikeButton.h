@@ -24,7 +24,6 @@
 #import <FBSDKShareKit/FBSDKLiking.h>
 
 /**
-  Warning: This class is deprecated.
   A button to like an object.
 
  Tapping the receiver will invoke an API call to the Facebook app through a fast-app-switch that allows
@@ -32,7 +31,6 @@
  currentAccessToken has "publish_actions" permission and the object is an Open Graph object, then the like can happen
  seamlessly without the fast-app-switch.
  */
-__attribute__ ((deprecated))
 @interface FBSDKLikeButton : FBSDKButton <FBSDKLiking>
 
 /**

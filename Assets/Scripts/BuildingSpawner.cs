@@ -74,15 +74,15 @@ public class BuildingSpawner : MonoBehaviour {
 			Debug.Log(myWwwString);
 			WWW www = new WWW(myWwwString);
 			yield return www;
-			//Debug.Log(www.text);
+			Debug.Log(www.text);
 
 			//File.WriteAllText(Application.dataPath + "/Resources/googlelocations.json", www.text.ToString());
 			//googleJsonReturn = www.text;
 			GameManager.instance.locationJsonText = www.text;
-			Turn60GoogleJsonIntoBuildings(); //this function allows up to 60 locations
-			//TurnGoogleJsonIntoBuildings (); //this function only loads 20 buildings
+			//Turn60GoogleJsonIntoBuildings(); //this function allows up to 60 locations
+			TurnGoogleJsonIntoBuildings (); //this function only loads 20 buildings
 			googleBldgsNeedUpdate = false;
-
+            Debug.Log("20 building loader done pulling loactions from Google- sending to spawner");
 	}
 
 
@@ -200,9 +200,9 @@ public class BuildingSpawner : MonoBehaviour {
 		}
     	
 		//string jsonString = File.ReadAllText(Application.dataPath + "/Resources/googlelocations.json");
-		//Debug.Log(GameManager.instance.locationJsonText);
+		Debug.Log(GameManager.instance.locationJsonText);
 		JsonData bldgJson = JsonMapper.ToObject(GameManager.instance.locationJsonText);
-		//Debug.Log(JsonMapper.ToJson(bldgJson));
+		Debug.Log(JsonMapper.ToJson(bldgJson));
         //JsonData foursquareJson = JsonMapper.ToObject(jsonReturn);
 
         double m_per_pixel_mapBG = GetMetersPerPixelOfGoogleMapImage();
@@ -212,8 +212,9 @@ public class BuildingSpawner : MonoBehaviour {
         Debug.Log("Calculating m/px-BG: " + m_per_pixel_mapBG + "  Map width in meters: "+map_height_in_meters+"  and meters/pixel for building placement: " + m_per_screen_pixel);
 	        
         for (int i = 0; i < bldgJson["results"].Count; i++) {
+            Debug.Log(JsonMapper.ToJson(bldgJson["results"][i]));
 			string myName = (string)bldgJson["results"][i]["name"];
-			string myBldgID = (string)bldgJson["results"][i]["id"];
+			string myBldgID = (string)bldgJson["results"][i]["place_id"];
             JsonData thisEntry = JsonMapper.ToObject(JsonMapper.ToJson(bldgJson["results"][i]));
             string my_photo_ref = "";
             if (thisEntry.Keys.Contains("photos")) {
@@ -368,7 +369,7 @@ public class BuildingSpawner : MonoBehaviour {
 			}
 		}
 
-		/*
+        /*
       	//deactivate any cleared buildings
     	if (GameManager.instance.clearedBldgJsonText != "") {
     		JsonData clearedJson = JsonMapper.ToObject(GameManager.instance.clearedBldgJsonText);
@@ -398,9 +399,13 @@ public class BuildingSpawner : MonoBehaviour {
 		}
 		*/
 
-		PlaceHomebaseGraphic();
+
+        MapLevelManager myMapMgr = FindObjectOfType<MapLevelManager>();
+        myMapMgr.levelLoadingPanel.SetActive(false); //locate and turn off the loading panel
+        PlaceHomebaseGraphic();
       	//StartCoroutine(GameManager.instance.FetchOutpostData());
-      	SpawnOutpostsToMap(); 
+      	SpawnOutpostsToMap();
+        Debug.LogWarning("All locations should be loaded, and the loading screen should be deactivated... if it's not this is fuct");
     }
 
     public bool CurrentlyPlacing60Bldgs = false;
@@ -450,7 +455,7 @@ public class BuildingSpawner : MonoBehaviour {
             for (int i = 0; i < GoogleBldgJsonpg1["results"].Count; i++)
             {
                 string myName = (string)GoogleBldgJsonpg1["results"][i]["name"];
-                string myBldgID = (string)GoogleBldgJsonpg1["results"][i]["id"];
+                string myBldgID = (string)GoogleBldgJsonpg1["results"][i]["place_id"];
                 JsonData thisEntry = JsonMapper.ToObject(JsonMapper.ToJson(GoogleBldgJsonpg1["results"][i]));
                 string my_photo_ref = "";
                 if (thisEntry.Keys.Contains("photos"))
@@ -555,7 +560,7 @@ public class BuildingSpawner : MonoBehaviour {
                     for (int i = 0; i < GoogleBldgJsonpg2["results"].Count; i++)
                     {
                         string myName = (string)GoogleBldgJsonpg2["results"][i]["name"];
-                        string myBldgID = (string)GoogleBldgJsonpg2["results"][i]["id"];
+                        string myBldgID = (string)GoogleBldgJsonpg2["results"][i]["place_id"];
                         JsonData thisEntry = JsonMapper.ToObject(JsonMapper.ToJson(GoogleBldgJsonpg2["results"][i]));
                         string my_photo_ref = "";
                         if (thisEntry.Keys.Contains("photos"))
@@ -667,7 +672,7 @@ public class BuildingSpawner : MonoBehaviour {
                     for (int i = 0; i < googleBldgJsonpg3["results"].Count; i++)
                     {
                         string myName = (string)googleBldgJsonpg3["results"][i]["name"];
-                        string myBldgID = (string)googleBldgJsonpg3["results"][i]["id"];
+                        string myBldgID = (string)googleBldgJsonpg3["results"][i]["place_id"];
                         JsonData thisEntry = JsonMapper.ToObject(JsonMapper.ToJson(googleBldgJsonpg3["results"][i]));
                         string my_photo_ref = "";
                         if (thisEntry.Keys.Contains("photos"))
