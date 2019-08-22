@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 91da3ab9c8aa549c685ec93106d71d95
-timeCreated: 1488390591
+guid: 516664901472b44fe83b720b195b5b60
+timeCreated: 1561663362
 licenseType: Pro
 PluginImporter:
   serializedVersion: 2
@@ -27,6 +27,7 @@ PluginImporter:
           Exclude Win: 1
           Exclude Win64: 1
           Exclude iOS: 0
+          Exclude tvOS: 1
     data:
       first:
         '': Editor
@@ -37,17 +38,17 @@ PluginImporter:
           OS: AnyOS
     data:
       first:
-        '': data
-      second:
-        enabled: 0
-        settings: {}
-    data:
-      first:
         Android: Android
       second:
         enabled: 0
         settings:
           CPU: ARMv7
+    data:
+      first:
+        Any: 
+      second:
+        enabled: 0
+        settings: {}
     data:
       first:
         Editor: Editor
@@ -85,6 +86,13 @@ PluginImporter:
           CPU: x86_64
     data:
       first:
+        Standalone: LinuxUniversal
+      second:
+        enabled: 0
+        settings:
+          CPU: None
+    data:
+      first:
         Standalone: OSXIntel
       second:
         enabled: 0
@@ -97,6 +105,13 @@ PluginImporter:
         enabled: 0
         settings:
           CPU: AnyCPU
+    data:
+      first:
+        Standalone: OSXUniversal
+      second:
+        enabled: 0
+        settings:
+          CPU: None
     data:
       first:
         Standalone: Win
@@ -123,6 +138,14 @@ PluginImporter:
         iPhone: iOS
       second:
         enabled: 1
+        settings:
+          CompileFlags: 
+          FrameworkDependencies: 
+    data:
+      first:
+        tvOS: tvOS
+      second:
+        enabled: 0
         settings:
           CompileFlags: 
           FrameworkDependencies: 

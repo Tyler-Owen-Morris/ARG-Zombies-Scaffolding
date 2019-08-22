@@ -172,7 +172,8 @@ public class QRPanelController : MonoBehaviour {
 				{"userID", GameManager.instance.userId},
 				{"scanned_userID", scannedJson[1].ToString()}
 			});
-			
+
+            //Check that the scanned player is not our user
 			if(scannedJson[1].ToString() != GameManager.instance.userId) {
 				StartCoroutine(mapLvlMgr.PostTempLocationText("pairing with survivor"));
 				StartCoroutine(SendQRPairToServer(decrypted_text));
@@ -362,7 +363,8 @@ public class QRPanelController : MonoBehaviour {
 						if (qrJson[0].ToString() == "Success") {
 
 							PostQRResultText("You have successfully paired with "+qrJson[1]["name"].ToString());
-							GameManager.instance.survivorJsonText = JsonMapper.ToJson(qrJson[2]);
+                            //store the new survivor to the Game data, and map it into the rest of the game.
+                            GameManager.instance.survivorJsonText = JsonMapper.ToJson(qrJson[2]);
 							Debug.Log(GameManager.instance.survivorJsonText);
 							GameManager.instance.CreateSurvivorsFromGameManagerJson();
 
